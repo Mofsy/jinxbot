@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<namespace name="JinxBot.Controls.Design">
+    <summary>
+        <para>
+            The <b>ShinyDesign.Design</b> namespace provides types related to the design-time settings of properties.
+        </para>
+        <para>
+            The <see cref="ShinyDesign.Design.TypeDescriptorSurrogate">TypeDescriptorSurrogate</see> class enables the extended property appearances
+            available on the <see cref="ShinyDesign.PropertyGridEx">PropertyGridEx</see> control to be used on the
+            <see cref="System.Windows.Forms.PropertyGrid">PropertyGrid</see> control (with some exceptions).  For more information, see the class remarks.
+        </para>
+        <para>
+            The <see cref="ShinyDesign.Design.NameAttribute">[Name] attribute</see> enables properties and enumeration fields to be displayed with
+            friendly names, including spaces and special characters typically considered tokenizers in programming languages.
+        </para>
+        <para>
+            The <see cref="ShinyDesign.Design.TabAttribute">[Tab] attribute</see> enables properties to be declaratively set on other property tab pages
+            (besides the primary) when using the <b>PropertyGridEx</b> control.
+        </para>
+    </summary>
+    <remarks>
+        <para>
+            Libraries utilizing the [Name] and [Tab] attributes should consider creating derived classes that provide access to resources within the defining
+            assembly.  These attributes allow straightforward localization capabilities; for more information, see their class pages.
+        </para>
+    </remarks>
+</namespace>

@@ -1,0 +1,289 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{48E3907C-69BB-48C1-817D-6E5B4BE51EF6}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>JinxBot.Controls</RootNamespace>
+    <AssemblyName>JinxBot.Controls</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRules>-Microsoft.Design#CA1003;-Microsoft.Mobility#CA1600;-Microsoft.Mobility#CA1601;-Microsoft.Naming#CA1704;-Microsoft.Naming#CA1703</CodeAnalysisRules>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <DocumentationFile>bin\Debug\JinxBot.Controls.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.mshtml, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Program Files\Microsoft.NET\Primary Interop Assemblies\Microsoft.mshtml.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ChatBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ChatBox.Designer.cs">
+      <DependentUpon>ChatBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Design\EnumTypeConverter.cs" />
+    <Compile Include="Design\FlagsEditorUI.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Design\FlagsEditorUI.Designer.cs">
+      <DependentUpon>FlagsEditorUI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Design\FlagsEnumTypeEditor.cs" />
+    <Compile Include="Design\PropertyDescriptorEx.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Design\PropertyGridEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Design\TypeDescriptorSurrogate.cs" />
+    <Compile Include="DisplayBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DisplayBox.Designer.cs">
+      <DependentUpon>DisplayBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ChatNode.cs" />
+    <Compile Include="ChatNodeRendererAttribute.cs" />
+    <Compile Include="ChatNodeRenderer.cs" />
+    <Compile Include="Contract.cs" />
+    <Compile Include="Docking\DockContentEventArgs.cs" />
+    <Compile Include="Docking\AppearanceStyle.cs" />
+    <Compile Include="Docking\AutoHideStripBase.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Docking\Design\DockAreasEditor.cs" />
+    <Compile Include="Docking\DockContentHandler.cs" />
+    <Compile Include="Docking\DockContent.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Docking\DockContentCollection.cs" />
+    <Compile Include="Docking\DockHelper.cs" />
+    <Compile Include="Docking\DockOutlineBase.cs" />
+    <Compile Include="Docking\DockPane.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Docking\DrawHelper.cs" />
+    <Compile Include="Docking\GetPersistStringCallback.cs" />
+    <Compile Include="Docking\Win32Helper.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Interop\Enums.cs" />
+    <Compile Include="MessageEventArgs.cs" />
+    <Compile Include="Interop\NativeMethods.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ChatBox.resx">
+      <DependentUpon>ChatBox.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DisplayBox.resx">
+      <DependentUpon>DisplayBox.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Docking\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Docking\Strings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="DesignResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>DesignResources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DockPanel.bmp" />
+    <Content Include="License.txt" />
+    <Content Include="NamespaceComments.xml" />
+    <None Include="Resources\DockPane_OptionOverflow.bmp" />
+    <None Include="Resources\DockPane_Option.bmp" />
+    <None Include="Resources\DockPane_Dock.bmp" />
+    <None Include="Resources\DockPane_Close.bmp" />
+    <None Include="Resources\DockPane_AutoHide.bmp" />
+    <None Include="Resources\DockIndicator_PanelTop_Active.bmp" />
+    <None Include="Resources\DockIndicator_PanelTop.bmp" />
+    <None Include="Resources\DockIndicator_PanelRight_Active.bmp" />
+    <None Include="Resources\DockIndicator_PanelRight.bmp" />
+    <None Include="Resources\DockIndicator_PanelLeft_Active.bmp" />
+    <None Include="Resources\DockIndicator_PanelLeft.bmp" />
+    <None Include="Resources\DockIndicator_PanelFill_Active.bmp" />
+    <None Include="Resources\DockIndicator_PanelFill.bmp" />
+    <None Include="Resources\DockIndicator_PanelBottom_Active.bmp" />
+    <None Include="Resources\DockIndicator_PanelBottom.bmp" />
+    <None Include="Resources\DockIndicator_PaneDiamond_Top.bmp" />
+    <None Include="Resources\DockIndicator_PaneDiamond_Right.bmp" />
+    <None Include="Resources\DockIndicator_PaneDiamond_Left.bmp" />
+    <None Include="Resources\DockIndicator_PaneDiamond_HotSpotIndex.bmp" />
+    <None Include="Resources\DockIndicator_PaneDiamond_HotSpot.bmp" />
+    <None Include="Resources\DockIndicator_PaneDiamond_Fill.bmp" />
+    <None Include="Resources\DockIndicator_PaneDiamond_Bottom.bmp" />
+    <None Include="Resources\DockIndicator_PaneDiamond.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DesignResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DesignResources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Design\NameAttribute.cs" />
+    <Compile Include="Docking\DeserializeDockContent.cs" />
+    <Compile Include="Docking\Design\DockPanelDesigner.cs" />
+    <Compile Include="Docking\DockableDocument.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Docking\DockableToolWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Docking\DockAlignment.cs" />
+    <Compile Include="Docking\DockAreas.cs" />
+    <Compile Include="Docking\DockPane.SplitterControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Docking\DockPaneCaptionBase.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Docking\DockPaneCollection.cs" />
+    <Compile Include="Docking\DockPanel.AutoHideWindow.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Docking\DockPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Docking\DockPanel.DockDragHandler.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Docking\DockPanel.DragHandler.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Docking\DockPanel.FocusManager.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Docking\DockPanel.MdiClientController.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Docking\DockPanel.Persistor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Docking\DockPanel.SplitterDragHandler.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Docking\DockPanelExtender.cs" />
+    <Compile Include="Docking\DockPaneStripBase.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Docking\DockState.cs" />
+    <Compile Include="Docking\DockWindow.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Docking\DockWindow.SplitterControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Docking\DockWindowCollection.cs" />
+    <Compile Include="Docking\DocumentStyle.cs" />
+    <Compile Include="Docking\DragForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Docking\DummyControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Docking\FloatWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Docking\FloatWindowCollection.cs" />
+    <Compile Include="Docking\IContentFocusManager.cs" />
+    <Compile Include="Docking\IDockContent.cs" />
+    <Compile Include="Docking\IDockDragSource.cs" />
+    <Compile Include="Docking\IDragSource.cs" />
+    <Compile Include="Docking\InertButtonBase.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Docking\INestedPanesContainer.cs" />
+    <Compile Include="Docking\ISplitterDragSource.cs" />
+    <Compile Include="Docking\Measures.cs" />
+    <Compile Include="Docking\NestedDockingStatus.cs" />
+    <Compile Include="Docking\NestedPaneCollection.cs" />
+    <Compile Include="Docking\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Docking\SplitterBase.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Docking\Strings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Docking\VisibleNestedPaneCollection.cs" />
+    <Compile Include="Docking\VS2005AutoHideStrip.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Docking\VS2005DockPaneCaption.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Docking\VS2005DockPaneStrip.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Design\LocalizedCategoryAttribute.cs" />
+    <Compile Include="Design\LocalizedDescriptionAttribute.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
