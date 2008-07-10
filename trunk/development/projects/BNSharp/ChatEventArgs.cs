@@ -8,8 +8,12 @@ namespace BNSharp
     /// <summary>
     /// Provides the base information about a chat event.
     /// </summary>
+#if !NET_2_ONLY
+    [DataContract]
+#endif
     public abstract class ChatEventArgs : BaseEventArgs
     {
+        [DataMember]
         private ChatEventType m_evType;
         /// <summary>
         /// Initializes a new <see>ChatEventArgs</see>.
@@ -27,23 +31,5 @@ namespace BNSharp
         {
             get { return m_evType; }
         }
-
-        #region serialization
-        private const string SER_EVENT_TYPE = "EventType";
-
-        /// <inheritdoc />
-        protected ChatEventArgs(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-            m_evType = (ChatEventType)info.GetInt32(SER_EVENT_TYPE);
-        }
-
-        /// <inheritdoc />
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-            info.AddValue(SER_EVENT_TYPE, (int)m_evType);
-        }
-        #endregion
     }
 }

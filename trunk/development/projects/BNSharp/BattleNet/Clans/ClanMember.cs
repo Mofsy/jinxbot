@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Runtime.Serialization;
 
 namespace BNSharp.BattleNet.Clans
 {
@@ -10,12 +11,28 @@ namespace BNSharp.BattleNet.Clans
     /// <remarks>
     /// <para>This class cannot be directly instantiated.  Rather, it is provided when you log on via the <see>TODO</see> event.</para>
     /// </remarks>
+    [Serializable]
+#if !NET_2_ONLY
+    [DataContract]
+#endif
     public class ClanMember
     {
         #region fields
+#if !NET_2_ONLY
+        [DataMember]
+#endif
         private string m_userName;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
         private ClanRank m_rank;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
         private ClanMemberStatus m_online;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
         private string m_location;
         #endregion
 

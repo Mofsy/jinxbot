@@ -133,14 +133,6 @@ namespace BNSharp.Net
             }
         }
 
-        internal IntPtr SocketHandle
-        {
-            get
-            {
-                return m_client.Client.Handle;
-            }
-        }
-
         /// <summary>
         /// For derived classes, sends the specified binary data to the server.
         /// </summary>

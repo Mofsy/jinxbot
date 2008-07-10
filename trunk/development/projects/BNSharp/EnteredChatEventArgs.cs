@@ -15,10 +15,35 @@ namespace BNSharp
     /// <summary>
     /// Specifies the event arguments for when the client entered chat.
     /// </summary>
+#if !NET_2_ONLY
+    [DataContract]
+#endif
     public class EnteredChatEventArgs : BaseEventArgs
     {
-        private string m_uun, m_ss, m_an;
-        internal EnteredChatEventArgs(string uniqueName, string statstring, string acctName)
+        #region fields
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private string m_uun;
+
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private string m_ss;
+
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private string m_an;
+        #endregion
+
+        /// <summary>
+        /// Creates a new instance of <see>EnteredChatEventArgs</see>.
+        /// </summary>
+        /// <param name="uniqueName">The unique display name of the client.</param>
+        /// <param name="statstring">The client's stat string.</param>
+        /// <param name="acctName">The client's account name.</param>
+        public EnteredChatEventArgs(string uniqueName, string statstring, string acctName)
         {
             m_uun = uniqueName;
             m_ss = statstring;
@@ -39,58 +64,5 @@ namespace BNSharp
         /// Gets the user's login account name.
         /// </summary>
         public string AccountName { get { return m_an; } }
-
-        #region serialization
-        private const string SER_UNIQUE = "UniqueName";
-        private const string SER_STATS = "Statstring";
-        private const string SER_NAME = "AccountName";
-
-        /// <inheritdoc />
-        protected EnteredChatEventArgs(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-            m_uun = info.GetString(SER_UNIQUE);
-            m_ss = info.GetString(SER_STATS);
-            m_an = info.GetString(SER_NAME);
-        }
-
-        /// <inheritdoc />
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-
-            info.AddValue(SER_UNIQUE, m_uun);
-            info.AddValue(SER_STATS, m_ss);
-            info.AddValue(SER_NAME, m_an);
-        }
-
-        /// <summary>
-        /// Creates a default instance of <see>EnteredChatEventArgs</see>.
-        /// </summary>
-        /// <remarks>
-        /// <para>This constructor supports XML serialization and is not intended to be used from your code.</para>
-        /// </remarks>
-        public EnteredChatEventArgs() { }
-
-        /// <inheritdoc />
-        public override void ReadXml(System.Xml.XmlReader reader)
-        {
-            base.ReadXml(reader);
-
-            m_uun = reader.GetAttribute(SER_UNIQUE);
-            m_ss = reader.GetAttribute(SER_STATS);
-            m_an = reader.GetAttribute(SER_NAME);
-        }
-
-        /// <inheritdoc />
-        public override void WriteXml(System.Xml.XmlWriter writer)
-        {
-            base.WriteXml(writer);
-
-            WriteValue(writer, SER_UNIQUE, m_uun);
-            WriteValue(writer, SER_STATS, m_ss);
-            WriteValue(writer, SER_STATS, m_an);
-        }
-        #endregion
     }
 }

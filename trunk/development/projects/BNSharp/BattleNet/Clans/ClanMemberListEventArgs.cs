@@ -1,17 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Runtime.Serialization;
 
 namespace BNSharp.BattleNet.Clans
 {
     /// <summary>
     /// The event arguments for the clan member list notification.
     /// </summary>
+    [Serializable]
+#if !NET_2_ONLY
+    [DataContract]
+#endif
     public class ClanMemberListEventArgs : BaseEventArgs
     {
+        #region fields
+#if !NET_2_ONLY
+        [DataMember]
+#endif
         private ClanMember[] m_members;
+        #endregion
 
-        internal ClanMemberListEventArgs(ClanMember[] members)
+        /// <summary>
+        /// Creates a new instance of <see>ClanMemberListEventArgs</see>.
+        /// </summary>
+        /// <param name="members">The clan members in the list.</param>
+        public ClanMemberListEventArgs(ClanMember[] members)
         {
             m_members = members;
         }

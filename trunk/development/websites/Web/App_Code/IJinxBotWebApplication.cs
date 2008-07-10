@@ -7,7 +7,7 @@ using System.Text;
 using BNSharp;
 
 // NOTE: If you change the interface name "IJinxBotWebApplication" here, you must also update the reference to "IJinxBotWebApplication" in Web.config.
-[ServiceContract]
+[ServiceContract(Namespace="http://www.jinxbot.net/jinxbotweb/")]
 public interface IJinxBotWebApplication
 {
     [OperationContract(IsOneWay = true)]

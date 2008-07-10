@@ -40,6 +40,10 @@ MSHelp\:link
 	filterString: ;
 }
 
+#collapseAllLabel, #expandAllLabel
+{
+	color: #a5a5ec
+}
 
 /***********************************************************
  *             CONTENT PRESENTATION STYLES
@@ -189,7 +193,7 @@ div#mainBody p, div#mainBody ol, div#mainBody ul, div#mainBody dl
 div#header
 {
 	background-color: #313439;
-	background-image: url('http://www.jinxbot.net/wiki/images/wiki.png');
+	background-image: url('http://www.jinxbot.net/images/jinxbot-doc.png');
 	background-position: top right;
 	background-repeat: no-repeat;
 	padding-top:	0;

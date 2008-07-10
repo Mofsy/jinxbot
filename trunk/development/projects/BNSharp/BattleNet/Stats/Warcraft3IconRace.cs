@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Runtime.Serialization;
 
 namespace BNSharp.BattleNet.Stats
 {
     /// <summary>
     /// The list of races that are supported by Warcraft III for Battle.net.
     /// </summary>
+#if !NET_2_ONLY
+    [DataContract]
+#endif
     public enum Warcraft3IconRace
     {
         /// <summary>

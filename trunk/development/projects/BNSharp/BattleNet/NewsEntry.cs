@@ -11,10 +11,21 @@ namespace BNSharp.BattleNet
     /// Represents a news entry.
     /// </summary>
     [Serializable]
-    public sealed class NewsEntry : ISerializable
+#if !NET_2_ONLY
+    [DataContract]
+#endif
+    public sealed class NewsEntry
     {
+        #region fields
+#if !NET_2_ONLY
+        [DataMember]
+#endif
         private DateTime m_ts;
-        private string m_news;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private string m_news; 
+        #endregion
 
         /// <summary>
         /// Creates a new <see>NewsEntry</see> with the specified timestamp and content.
@@ -42,25 +53,6 @@ namespace BNSharp.BattleNet
         {
             get { return m_news; }
         }
-
-
-        #region ISerializable Members
-        private const string TIMESTAMP = "NewsEntry_TimeStamp";
-        private const string NEWS = "NewsEntry_News";
-        private NewsEntry(SerializationInfo info, StreamingContext context)
-        {
-            m_ts = info.GetDateTime(TIMESTAMP);
-            m_news = info.GetString(NEWS);
-        }
-
-        [SecurityPermission(SecurityAction.LinkDemand, SerializationFormatter = true)]
-        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue(TIMESTAMP, m_ts);
-            info.AddValue(NEWS, m_news);
-        }
-
-        #endregion
 
         /// <summary>
         /// Gets a string representation of this news entry.

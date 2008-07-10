@@ -61,12 +61,6 @@ namespace JinxBot
             RebindProfiles();
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            ProfileDisplay pd = new ProfileDisplay();
-            pd.Show();
-        }
-
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Close();

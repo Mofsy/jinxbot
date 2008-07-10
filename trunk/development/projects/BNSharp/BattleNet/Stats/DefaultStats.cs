@@ -1,15 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Runtime.Serialization;
 
 namespace BNSharp.BattleNet.Stats
 {
     /// <summary>
     /// Gets information about the user's product when the product is otherwise unrecognized.
     /// </summary>
+#if !NET_2_ONLY
+    [DataContract]
+#endif
     public class DefaultStats : UserStats
     {
-        private Product m_prod;
+        #region fields
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private Product m_prod; 
+        #endregion
 
         internal DefaultStats(string productID)
         {

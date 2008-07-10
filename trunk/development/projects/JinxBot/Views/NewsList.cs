@@ -36,16 +36,7 @@ namespace JinxBot.Views
         {
             ThreadStart del = delegate
             {
-                foreach (NewsEntry ne in e.Entries)
-                {
-                    comboBox1.Items.Add(ne);
-                }
-
-                if (e.Entries.Length > 0)
-                {
-                    this.comboBox1.SelectedIndex = 0;
-                    comboBox1_SelectedIndexChanged(this, e);
-                }
+                this.comboBox1.Items.Add(e.Entry);
             };
             if (InvokeRequired)
                 BeginInvoke(del);

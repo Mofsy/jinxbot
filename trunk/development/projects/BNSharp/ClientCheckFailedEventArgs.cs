@@ -15,12 +15,28 @@ namespace BNSharp
     /// <summary>
     /// Specifies the arguments for a client versioning check failure event.
     /// </summary>
+#if !NET_2_ONLY
+    [DataContract]
+#endif
     public class ClientCheckFailedEventArgs : BaseEventArgs
     {
+        #region fields
+#if !NET_2_ONLY
+        [DataMember]
+#endif
         private ClientCheckFailureCause m_reason;
-        private string m_info;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private string m_info; 
+        #endregion
 
-        internal ClientCheckFailedEventArgs(ClientCheckFailureCause reason, string additionalInformation)
+        /// <summary>
+        /// Creates a new instance of <see>ClientCheckFailedEventArgs</see>.
+        /// </summary>
+        /// <param name="reason">The failure code for version checking.</param>
+        /// <param name="additionalInformation">Additional information, if available.</param>
+        public ClientCheckFailedEventArgs(ClientCheckFailureCause reason, string additionalInformation)
         {
             m_reason = reason;
             m_info = additionalInformation;
@@ -47,27 +63,5 @@ namespace BNSharp
                 return m_info;
             }
         }
-
-        #region serialization
-        private const string SER_REASON = "Reason";
-        private const string SER_INFO = "Info";
-
-        /// <inheritdoc />
-        protected ClientCheckFailedEventArgs(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-            m_reason = (ClientCheckFailureCause)info.GetInt32(SER_REASON);
-            m_info = info.GetString(SER_INFO);
-        }
-
-        /// <inheritdoc />
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-
-            info.AddValue(SER_REASON, (int)m_reason);
-            info.AddValue(SER_INFO, m_info);
-        }
-        #endregion
     }
 }

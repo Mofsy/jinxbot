@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Runtime.Serialization;
 
 namespace BNSharp
 {
@@ -14,10 +15,21 @@ namespace BNSharp
     /// <summary>
     /// Specifies error event information.
     /// </summary>
+#if !NET_2_ONLY
+    [DataContract]
+#endif
     public class ErrorEventArgs : BaseEventArgs
     {
+        #region fields
+#if !NET_2_ONLY
+        [DataMember]
+#endif
         private string m_err;
-        private bool m_disc;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private bool m_disc; 
+        #endregion
 
         /// <summary>
         /// Creates a new instance of <see>ErrorEventArgs</see>.

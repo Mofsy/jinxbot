@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using BNSharp.MBNCSUtil;
+using System.Runtime.Serialization;
 
 namespace BNSharp.BattleNet.Stats
 {
@@ -13,13 +14,40 @@ namespace BNSharp.BattleNet.Stats
     /// <para>This class cannot be instantiated directly.  To obtain an instance of this class, use 
     /// <see cref="UserStats.Parse">UserStats.Parse</see>, and cast the result to this class.</para>
     /// </remarks>
+#if !NET_2_ONLY
+    [DataContract]
+#endif
     public class StarcraftStats : UserStats
     {
         #region fields
+#if !NET_2_ONLY
+        [DataMember]
+#endif
         private Product m_prod;
 
-        private int m_ladderRating, m_ladderRank, m_wins, m_highestLadderRating;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private int m_ladderRating;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private int m_ladderRank;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private int m_wins;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private int m_highestLadderRating;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
         private string m_iconCode;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
         private bool m_isSpawned;
         #endregion
 
