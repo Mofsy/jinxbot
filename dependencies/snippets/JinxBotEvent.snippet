@@ -1,0 +1,214 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>JinxBot Event</Title>
+			<Shortcut>jbevent</Shortcut>
+			<Description>Code snippet for declaring a JinxBot event.</Description>
+			<Author>MyndFyre</Author>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+		</Header>
+		<Snippet>
+			<Declarations>
+				<Literal>
+					<ID>eventName</ID>
+					<ToolTip>The name of the event.</ToolTip>
+					<Default>EventName</Default>
+				</Literal>
+				<Literal>
+					<ID>eventtype</ID>
+					<ToolTip>The type name component for the delegate and event arguments used by this event.  For example, 
+					you might enter "EnteredChat" for EnteredChatEventHandler and EnteredChatEventArgs.</ToolTip>
+					<Default>EventType</Default>
+				</Literal>
+				<Literal>
+					<ID>eventdesc</ID>
+					<ToolTip>The comment to include.</ToolTip>
+					<Default>CommentText</Default>
+				</Literal>
+			</Declarations>
+			<Code Language="csharp">
+				<![CDATA[#region $eventName$ event
+		[NonSerialized]
+		private Dictionary<Priority, List<$eventtype$EventHandler>> __$eventName$ = new Dictionary<Priority, List<$eventtype$EventHandler>>(3)
+        {
+            { Priority.High, new List<$eventtype$EventHandler>() },
+            { Priority.Normal, new List<$eventtype$EventHandler>() },
+            { Priority.Low, new List<$eventtype$EventHandler>() }
+        };
+		/// <summary>
+	    /// Informs listeners $eventdesc$
+		/// </summary>
+		/// <remarks>
+		/// <para>Registering for this event with this member will register with <see cref="Priority">Normal priority</see>.  To register for 
+		/// <see cref="Priority">High</see> or <see cref="Priority">Low</see> priority, use the <see>Register$eventName$Notification</see> and
+		/// <see>Unregister$eventName$Notification</see> methods.</para>
+		/// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+		/// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+		/// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+		/// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+		/// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+		/// </remarks>
+        public event $eventtype$EventHandler $eventName$
+		{
+			add
+			{
+				lock (__$eventName$)
+				{
+					if (!__$eventName$.ContainsKey(Priority.Normal))
+					{
+						__$eventName$.Add(Priority.Normal, new List<$eventtype$EventHandler>());
+					}
+				}
+				__$eventName$[Priority.Normal].Add(value);
+			}
+			remove
+			{
+				if (__$eventName$.ContainsKey(Priority.Normal))
+				{
+					__$eventName$[Priority.Normal].Remove(value);
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Registers for notification of the <see>$eventName$</see> event at the specified priority.
+		/// </summary>
+		/// <remarks>
+		/// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
+		/// normal syntax to register for events at <see cref="Priority">Normal priority</see>, so no special registration is needed; this is 
+		/// accessed through normal event handling syntax (the += syntax in C#, or the <see langword="Handles" lang="VB" /> in Visual Basic.</para>
+		/// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+		/// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+		/// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+		/// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+		/// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+		///	<para>To be well-behaved within JinxBot, plugins should always unregister themselves when they are being unloaded or when they 
+		/// otherwise need to do so.  Plugins may opt-in to a Reflection-based event handling registration system which uses attributes to 
+		/// mark methods that should be used as event handlers.</para>
+		/// </remarks>
+        /// <param name="p">The priority at which to register.</param>
+        /// <param name="callback">The event handler that should be registered for this event.</param>
+		/// <seealso cref="$eventName$" />
+		/// <seealso cref="Unregister$eventName$Notification" />
+		public void Register$eventName$Notification(Priority p, $eventtype$EventHandler callback)
+		{
+			lock (__$eventName$)
+			{
+				if (!__$eventName$.ContainsKey(p))
+				{
+					__$eventName$.Add(p, new List<$eventtype$EventHandler>());
+				}
+			}
+			__$eventName$[p].Add(callback);
+		}
+		
+		/// <summary>
+		/// Unregisters for notification of the <see>$eventName$</see> event at the specified priority.
+		/// </summary>
+		/// <remarks>
+		/// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
+		/// normal syntax to register for events at <see cref="Priority">Normal priority</see>, so no special registration is needed; this is 
+		/// accessed through normal event handling syntax (the += syntax in C#, or the <see langword="Handles" lang="VB" /> in Visual Basic.</para>
+		/// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+		/// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+		/// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+		/// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+		/// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+		///	<para>To be well-behaved within JinxBot, plugins should always unregister themselves when they are being unloaded or when they 
+		/// otherwise need to do so.  Plugins may opt-in to a Reflection-based event handling registration system which uses attributes to 
+		/// mark methods that should be used as event handlers.</para>
+		/// </remarks>
+        /// <param name="p">The priority from which to unregister.</param>
+        /// <param name="callback">The event handler that should be unregistered for this event.</param>
+		/// <seealso cref="$eventName$" />
+		/// <seealso cref="Register$eventName$Notification" />
+		public void Unregister$eventName$Notification(Priority p, $eventtype$EventHandler callback)
+		{
+			if (__$eventName$.ContainsKey(p))
+			{
+				__$eventName$[p].Remove(callback);
+			}
+		}
+		
+		/// <summary>
+		/// Raises the $eventName$ event.
+		/// </summary>
+		/// <remarks>
+		/// <para>Only high-priority events are invoked immediately; others are deferred.  For more information, see <see>$eventName$</see>.</para>
+		/// </remarks>
+        /// <param name="e">The event arguments.</param>
+		/// <seealso cref="$eventName$" />
+		protected virtual void On$eventName$($eventtype$EventArgs e)
+		{
+			foreach ($eventtype$EventHandler eh in __$eventName$[Priority.High])
+			{
+				try 
+				{
+					eh(this, e);
+				} 
+				catch (Exception ex)
+				{
+					ReportException(
+						ex,
+						new KeyValuePair<string, object>("delegate", eh), 
+						new KeyValuePair<string, object>("Event", "$eventName$"),
+						new KeyValuePair<string, object>("param: priority", Priority.High),
+						new KeyValuePair<string, object>("param: this", this),
+						new KeyValuePair<string, object>("param: e", e)
+						);
+				}
+			}
+			
+			ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+			{
+				foreach ($eventtype$EventHandler eh in __$eventName$[Priority.Normal])
+				{
+					try 
+					{
+						eh(this, e);
+					} 
+					catch (Exception ex)
+					{
+						ReportException(
+							ex,
+							new KeyValuePair<string, object>("delegate", eh), 
+							new KeyValuePair<string, object>("Event", "$eventName$"),
+							new KeyValuePair<string, object>("param: priority", Priority.Normal),
+							new KeyValuePair<string, object>("param: this", this),
+							new KeyValuePair<string, object>("param: e", e)
+							);
+					}
+				}
+				ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+				{
+					foreach ($eventtype$EventHandler eh in __$eventName$[Priority.Low])
+					{
+						try 
+						{
+							eh(this, e);
+						} 
+						catch (Exception ex)
+						{
+							ReportException(
+								ex,
+								new KeyValuePair<string, object>("delegate", eh), 
+								new KeyValuePair<string, object>("Event", "$eventName$"),
+								new KeyValuePair<string, object>("param: priority", Priority.Low),
+								new KeyValuePair<string, object>("param: this", this),
+								new KeyValuePair<string, object>("param: e", e)
+								);
+						}
+					}
+                    FreeArgumentResources(e as BaseEventArgs);
+				});
+			});
+		}
+		#endregion
+		]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

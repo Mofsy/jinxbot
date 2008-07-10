@@ -1,0 +1,246 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{AB0945C2-7421-4D55-98AE-AB28B813E59D}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>JinxBot</RootNamespace>
+    <AssemblyName>JinxBot</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WizardBase, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\dependencies\WizardBase.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ClientProfile.cs" />
+    <Compile Include="Configuration\GlobalSettings.cs" />
+    <Compile Include="Configuration\IconType.cs" />
+    <Compile Include="Configuration\JinxBotConfiguration.cs" />
+    <Compile Include="Design\BattleNetServerTypeConverter.cs" />
+    <Compile Include="Design\BinFileBrowserTypeEditor.cs" />
+    <Compile Include="Design\DllFileBrowserTypeEditor.cs" />
+    <Compile Include="Design\ExeFileBrowserTypeEditor.cs" />
+    <Compile Include="Design\ProductStringTypeConverter.cs" />
+    <Compile Include="Design\Server.cs" />
+    <Compile Include="Design\ServerTypeConverter.cs" />
+    <Compile Include="Design\VersionByteTypeConverter.cs" />
+    <Compile Include="MainWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainWindow.Designer.cs">
+      <DependentUpon>MainWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Plugins\IIconProvider.cs" />
+    <Compile Include="ProfileDisplay.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ProfileDisplay.Designer.cs">
+      <DependentUpon>ProfileDisplay.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ChannelSelect.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\ChannelSelect.Designer.cs">
+      <DependentUpon>ChannelSelect.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Chat\BniIconProvider.cs" />
+    <Compile Include="Views\Chat\ImageChatNode.cs" />
+    <Compile Include="Views\Chat\ImageChatNodeProtocol.cs" />
+    <Compile Include="Views\Chat\ImageChatNodeRenderer.cs" />
+    <Compile Include="Views\NewsList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\NewsList.Designer.cs">
+      <DependentUpon>NewsList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ProfileResourceProvider.cs" />
+    <Compile Include="Views\ProfileSettingsEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\ProfileSettingsEditor.Designer.cs">
+      <DependentUpon>ProfileSettingsEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="MainWindow.resx">
+      <DependentUpon>MainWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProfileDisplay.resx">
+      <DependentUpon>ProfileDisplay.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\ChannelList.resx">
+      <DependentUpon>ChannelList.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\ChannelSelect.resx">
+      <DependentUpon>ChannelSelect.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\ClanList.resx">
+      <DependentUpon>ClanList.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\NewsList.resx">
+      <DependentUpon>NewsList.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\ProfileSettingsEditor.resx">
+      <DependentUpon>ProfileSettingsEditor.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\ChatDocument.resx">
+      <DependentUpon>ChatDocument.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\FriendsList.resx">
+      <DependentUpon>FriendsList.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\ProfileDocument.resx">
+      <DependentUpon>ProfileDocument.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Wizards\CreateProfileWizard.resx">
+      <DependentUpon>CreateProfileWizard.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Wizards\FirstRunWizard.resx">
+      <DependentUpon>FirstRunWizard.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="Views\ChannelList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\ChannelList.Designer.cs">
+      <DependentUpon>ChannelList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ChatDocument.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\ChatDocument.Designer.cs">
+      <DependentUpon>ChatDocument.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ClanList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\ClanList.Designer.cs">
+      <DependentUpon>ClanList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FriendsList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\FriendsList.Designer.cs">
+      <DependentUpon>FriendsList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ProfileDocument.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\ProfileDocument.Designer.cs">
+      <DependentUpon>ProfileDocument.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WebProtocols\AbortEvent.cs" />
+    <Compile Include="WebProtocols\NativeMethods.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="WebProtocols\NonAdminComRegistration.cs" />
+    <Compile Include="WebProtocols\PluggableProtocolHandler.cs" />
+    <Compile Include="WebProtocols\PluggableProtocolRegistrationServices.cs" />
+    <Compile Include="WebProtocols\PluggableProtocolRequest.cs" />
+    <Compile Include="WebProtocols\PluggableProtocolResponse.cs" />
+    <Compile Include="WebProtocols\TraceHelper.cs" />
+    <Compile Include="Wizards\CreateProfileWizard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Wizards\CreateProfileWizard.Designer.cs">
+      <DependentUpon>CreateProfileWizard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Wizards\FirstRunWizard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Wizards\FirstRunWizard.Designer.cs">
+      <DependentUpon>FirstRunWizard.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BNSharp\BNSharp.csproj">
+      <Project>{2D02D43C-BC3B-41D2-9226-4E215939107F}</Project>
+      <Name>BNSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\JinxBot.Controls\JinxBot.Controls.csproj">
+      <Project>{48E3907C-69BB-48C1-817D-6E5B4BE51EF6}</Project>
+      <Name>JinxBot.Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\JinxBot.Data.LinqToSqlClient\JinxBot.Data.LinqToSqlClient.csproj">
+      <Project>{158210D7-9F67-4C81-85E3-240115A08685}</Project>
+      <Name>JinxBot.Data.LinqToSqlClient</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
