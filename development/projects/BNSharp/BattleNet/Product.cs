@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Runtime.Serialization;
 
 namespace BNSharp.BattleNet
 {
@@ -12,12 +13,23 @@ namespace BNSharp.BattleNet
     /// access one of the static fields.  Equality can also be tested by comparing a user's product to an instance retrieved from the fields exposed
     /// by this class.</para>
     /// </remarks>
+#if !NET_2_ONLY
+    [DataContract]
+#endif
     public sealed class Product
     {
         private static Dictionary<string, Product> s_products;
 
+        #region fields
+#if !NET_2_ONLY
+        [DataMember]
+#endif
         private string m_prodCode;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
         private string m_descriptiveTitle;
+        #endregion
 
         private Product(string productCode, string descriptiveTitle)
         {

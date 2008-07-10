@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Runtime.Serialization;
 
 namespace BNSharp
 {
     /// <summary>
     /// Specifies types of chat events that may occur.
     /// </summary>
+#if !NET_2_ONLY
+    [DataContract]
+#endif
     public enum ChatEventType
     {
         /// <summary>

@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BNSharp</RootNamespace>
     <AssemblyName>BNSharp</AssemblyName>
-    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -38,6 +38,12 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.ServiceModel">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -83,8 +89,10 @@
     </Compile>
     <Compile Include="Net\BattleNetClient.Clan.cs" />
     <Compile Include="Net\BattleNetClient.cs" />
+    <Compile Include="Net\BattleNetClient.CustomParsers.cs" />
     <Compile Include="Net\BattleNetClient.ErrorHandling.cs" />
     <Compile Include="Net\BattleNetClient.Events.cs" />
+    <Compile Include="Net\BattleNetClient.EventSink.cs" />
     <Compile Include="Net\BattleNetClient.Listen.cs" />
     <Compile Include="BattleNetClientResources.cs" />
     <Compile Include="Net\BattleNetClient.ParseData.cs" />
@@ -129,7 +137,9 @@
     <Compile Include="MBNCSUtil\Util\PeFileReader.cs" />
     <Compile Include="MBNCSUtil\XSha1.cs" />
     <Compile Include="Net\WarcraftCommands.cs" />
+    <Compile Include="Plugins\IBattleNetEvents.cs" />
     <Compile Include="Plugins\IWardenModule.cs" />
+    <Compile Include="Plugins\ParseCallback.cs" />
     <Compile Include="Priority.cs" />
     <Compile Include="PriorityQueue.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

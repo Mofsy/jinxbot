@@ -1,17 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Runtime.Serialization;
 
 namespace BNSharp.BattleNet.Clans
 {
     /// <summary>
     /// Specifies the event arguments for a clan member's status change event.
     /// </summary>
+#if !NET_2_ONLY
+    [DataContract]
+#endif
     public class ClanMemberStatusEventArgs : BaseEventArgs
     {
+#if !NET_2_ONLY
+        [DataMember]
+#endif
         private ClanMember m_member;
 
-        internal ClanMemberStatusEventArgs(ClanMember associatedMember)
+        /// <summary>
+        /// Creates a new <see>ClanMemberStatusEventArgs</see>.
+        /// </summary>
+        /// <param name="associatedMember">The members whose status has changed.</param>
+        public ClanMemberStatusEventArgs(ClanMember associatedMember)
         {
             m_member = associatedMember;
         }

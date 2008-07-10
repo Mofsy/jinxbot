@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using BNSharp.MBNCSUtil;
 using System.IO;
+using System.Runtime.Serialization;
 
 namespace BNSharp.BattleNet.Stats
 {
@@ -16,19 +17,75 @@ namespace BNSharp.BattleNet.Stats
     /// <para>This class is only meaningful if the user is logged on as a realm character.  To determine 
     /// whether the user is logged on with a Realm character, check the <see>IsRealmCharacter</see> property.</para>
     /// </remarks>
+#if !NET_2_ONLY
+    [DataContract]
+#endif
     public class Diablo2Stats : UserStats
     {
         #region fields
         private static readonly Regex RealmCharacterTest = new Regex(@"(?<Character>\S+@\w+)\*(?<Username>\S+)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
+#if !NET_2_ONLY
+        [DataMember]
+#endif
         private bool m_isRealm;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
         private Product m_prod;
 
-        private string m_charName, m_realm, m_userName;
-        private bool m_isExpCharacter, m_isHardcore, m_isDead, m_isLadder, m_isMale, m_hasCompletedGame;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private string m_charName;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private string m_realm;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private string m_userName;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private bool m_isExpCharacter;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private bool m_isHardcore;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private bool m_isDead;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private bool m_isLadder;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private bool m_isMale;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private bool m_hasCompletedGame;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
         private Diablo2DifficultyLevel m_difficulty;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
         private Diablo2CharacterClass m_class;
-        private int m_level, m_numActsCompleted;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private int m_level;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private int m_numActsCompleted;
         #endregion
 
         #region constructor

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics;
+using System.Runtime.Serialization;
 
 namespace BNSharp.BattleNet
 {
@@ -13,25 +14,37 @@ namespace BNSharp.BattleNet
     public delegate void ServerNewsEventHandler(object sender, ServerNewsEventArgs e);
 
     /// <summary>
-    /// Represents a group of server news entries.
+    /// Represents a single news entry.
     /// </summary>
+#if !NET_2_ONLY
+    [DataContract]
+#endif
     public class ServerNewsEventArgs : BaseEventArgs
     {
-        private List<NewsEntry> m_entries;
+        #region fields
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private NewsEntry m_entry; 
+        #endregion
 
-        internal ServerNewsEventArgs(List<NewsEntry> entries)
+        /// <summary>
+        /// Creates a new instance of <see>ServerNewsEventArgs</see>.
+        /// </summary>
+        /// <param name="entry">The entry for this news event.</param>
+        public ServerNewsEventArgs(NewsEntry entry)
         {
-            Debug.Assert(entries != null);
+            Debug.Assert(entry != null);
 
-            m_entries = entries;
+            m_entry = entry;
         }
 
         /// <summary>
-        /// Gets an array of the news entries associated with the event.
+        /// Gets the news entry that triggered the event..
         /// </summary>
-        public NewsEntry[] Entries
+        public NewsEntry Entry
         {
-            get { return m_entries.ToArray(); }
+            get { return m_entry; }
         }
     }
 }

@@ -16,9 +16,17 @@ namespace BNSharp
     /// Specifies informational event arguments.
     /// </summary>
     [Serializable]
+#if !NET_2_ONLY
+    [DataContract]
+#endif
     public class InformationEventArgs : BaseEventArgs
     {
+        #region fields
+#if !NET_2_ONLY
+        [DataMember]
+#endif
         private string m_info;
+        #endregion
 
         /// <summary>
         /// Initializes a new <see>InformationEventArgs</see>.
@@ -39,35 +47,5 @@ namespace BNSharp
                 return m_info;
             }
         }
-
-        #region serialization support
-        private const string SER_INFO = "info";
-
-        /// <inheritdoc />
-        protected InformationEventArgs(SerializationInfo info, StreamingContext context)
-        {
-            m_info = info.GetString(SER_INFO);
-        }
-
-        /// <inheritdoc />
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-
-            info.AddValue(SER_INFO, m_info);
-        }
-
-        /// <inheritdoc />
-        public override void ReadXml(System.Xml.XmlReader reader)
-        {
-            base.ReadXml(reader);
-        }
-
-        /// <inheritdoc />
-        public override void WriteXml(System.Xml.XmlWriter writer)
-        {
-            base.WriteXml(writer);
-        }
-        #endregion
     }
 }

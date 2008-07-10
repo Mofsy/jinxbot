@@ -25,7 +25,8 @@ public class JinxBotWebClient : System.Web.Services.WebService
     [WebMethod]
     public EnteredChatEventArgs GetArgs()
     {
-        return new EnteredChatEventArgs("DarkTemplar~AoA#2", "STAR", "DarkTemplar~AoA");
+        return null;
+        //return new EnteredChatEventArgs("DarkTemplar~AoA#2", "STAR", "DarkTemplar~AoA");
     }
 
 }

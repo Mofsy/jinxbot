@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using System.Text;
 using BNSharp.MBNCSUtil;
+using System.Runtime.Serialization;
 
 namespace BNSharp.BattleNet.Stats
 {
     /// <summary>
     /// Contains information about a user who is logged on with a Warcraft III client.
     /// </summary>
+#if !NET_2_ONLY
+    [DataContract]
+#endif
     public class Warcraft3Stats : UserStats
     {
         #region fields
@@ -21,9 +25,25 @@ namespace BNSharp.BattleNet.Stats
             { 'N', Warcraft3IconRace.NightElf }
         };
 
+#if !NET_2_ONLY
+        [DataMember]
+#endif
         private Product m_prod;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
         private Warcraft3IconRace m_race;
-        private int m_iconTier, m_level;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private int m_iconTier;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private int m_level;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
         private string m_clanTag;
         #endregion
 

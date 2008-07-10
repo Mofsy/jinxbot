@@ -15,10 +15,25 @@ namespace BNSharp
     /// <summary>
     /// Represents the event information associated with a chat event with a given user and communication.
     /// </summary>
+#if !NET_2_ONLY
+    [DataContract]
+#endif
     public class ChatMessageEventArgs : ChatEventArgs
     {
+        #region fields
+#if !NET_2_ONLY
+        [DataMember]
+#endif
         private UserFlags m_flags;
-        private string m_un, m_txt;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private string m_un;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private string m_txt;
+        #endregion
 
         /// <summary>
         /// Creates a new instance of <see>ChatMessageEventArgs</see> with the given parameters.
@@ -49,31 +64,5 @@ namespace BNSharp
         /// Gets the message.
         /// </summary>
         public string Text { get { return m_txt; } }
-
-        #region serialization
-
-        private const string SER_USERNAME = "UserName";
-        private const string SER_TEXT = "Text";
-        private const string SER_FLAGS = "Flags";
-
-        /// <inheritdoc />
-        protected ChatMessageEventArgs(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-            info.AddValue(SER_USERNAME, m_un);
-            info.AddValue(SER_TEXT, m_txt);
-            info.AddValue(SER_FLAGS, (int)m_flags);
-        }
-
-        /// <inheritdoc />
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-
-            m_un = info.GetString(SER_USERNAME);
-            m_txt = info.GetString(SER_TEXT);
-            m_flags = (UserFlags)info.GetInt32(SER_FLAGS);
-        }
-        #endregion
     }
 }

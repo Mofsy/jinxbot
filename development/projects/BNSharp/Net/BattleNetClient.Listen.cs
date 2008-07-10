@@ -23,6 +23,44 @@ namespace BNSharp.Net
         private EventWaitHandle m_parseWait;
         private Dictionary<BncsPacketId, Priority> m_packetToPriorityMap;
         private Tmr m_tmr;
+        private Dictionary<BncsPacketId, ParseCallback> m_packetToParserMap;
+
+        partial void InitializeParseDictionaries()
+        {
+            m_customEventSink = new EventSink(this);
+
+            m_packetToParserMap = new Dictionary<BncsPacketId, ParseCallback>()
+            {
+                { BncsPacketId.EnterChat, new ParseCallback(HandleEnterChat) },
+                { BncsPacketId.GetChannelList, new ParseCallback(HandleGetChannelList) },
+                { BncsPacketId.ChatEvent, new ParseCallback(HandleChatEvent) },
+                { BncsPacketId.Ping, new ParseCallback(HandlePing) },
+                { BncsPacketId.LogonResponse, new ParseCallback(HandleLogonResponse) },
+                { BncsPacketId.LogonResponse2, new ParseCallback(HandleLogonResponse2) },
+                { BncsPacketId.WarcraftGeneral, new ParseCallback(HandleWarcraftGeneral) },
+                { BncsPacketId.NewsInfo, new ParseCallback(HandleNewsInfo) },
+                { BncsPacketId.AuthInfo, new ParseCallback(HandleAuthInfo) },
+                { BncsPacketId.AuthCheck, new ParseCallback(HandleAuthCheck) },
+                { BncsPacketId.AuthAccountCreate, new ParseCallback(HandleAuthAccountCreate) },
+                { BncsPacketId.AuthAccountLogon, new ParseCallback(HandleAuthAccountLogon) },
+                { BncsPacketId.AuthAccountLogonProof, new ParseCallback(HandleAuthAccountLogonProof) },
+                { BncsPacketId.AuthAccountChange, new ParseCallback(HandleAuthAccountChange) },
+                { BncsPacketId.AuthAccountChangeProof, new ParseCallback(HandleAuthAccountChangeProof) },
+                { BncsPacketId.Warden, new ParseCallback(HandleWarden) },
+                { BncsPacketId.ClanInfo, new ParseCallback(HandleClanInfo) },
+                { BncsPacketId.ClanQuitNotify, new ParseCallback(HandleClanQuitNotify) },
+                { BncsPacketId.ClanInvitation, new ParseCallback(HandleClanInvitation) },
+                { BncsPacketId.ClanRemoveMember, new ParseCallback(HandleClanRemoveMember) },
+                { BncsPacketId.ClanInvitationResponse, new ParseCallback(HandleClanInvitationResponse) },
+                { BncsPacketId.ClanRankChange, new ParseCallback(HandleClanRankChange) },
+                { BncsPacketId.ClanMOTD, new ParseCallback(HandleClanMotd) },
+                { BncsPacketId.ClanMemberList, new ParseCallback(HandleClanMemberList) },
+                { BncsPacketId.ClanMemberRemoved, new ParseCallback(HandleClanMemberRemoved) },
+                { BncsPacketId.ClanMemberStatusChanged, new ParseCallback(HandleClanMemberStatusChanged) },
+                { BncsPacketId.ClanMemberRankChange, new ParseCallback(HandleClanRankChange) },
+                { BncsPacketId.ClanMemberInformation, new ParseCallback(HandleClanMemberInformation) }
+            };
+        }
 
         /// <summary>
         /// This is the listening thread.  All it does is loop on receive.
@@ -85,217 +123,26 @@ namespace BNSharp.Net
                     }
 
                     ParseData data = m_packetQueue.Dequeue();
-                    switch (data.PacketID)
+                    if (m_packetToParserMap.ContainsKey(data.PacketID))
                     {
-                        #region SID_NULL
-                        case BncsPacketId.Null:
-                            break;
-                        #endregion
-                        #region SID_ENTERCHAT 0x0a
-                        case BncsPacketId.EnterChat:
-                            HandleEnterChat(data);
-                            break;
-                        #endregion
-                        #region SID_GETCHANNELLIST 0x0b
-                        case BncsPacketId.GetChannelList:
-                            HandleGetChannelList(data);
-                            break;
-                        #endregion
-                        #region SID_CHATEVENT 0x0f
-                        case BncsPacketId.ChatEvent:
-                            HandleChatEvent(data);
-                            break;
-                        #endregion
-                        #region SID_PING 0x25
-                        case BncsPacketId.Ping:
-                            HandlePing(data);
-                            break;
-                        #endregion
-                        #region SID_LOGONRESPONSE 0x29
-                        case BncsPacketId.LogonResponse:
-                            HandleLogonResponse(data);
-                            break;
-                        #endregion
-                        #region SID_LOGONRESPONSE2 0x3a
-                        case BncsPacketId.LogonResponse2:
-                            HandleLogonResponse2(data);
-                            break;
-                        #endregion
-                        #region SID_WARCRAFTGENERAL
-                        case BncsPacketId.WarcraftGeneral:
-                            HandleWarcraftGeneral(data);
-                            break;
-                        #endregion
-                        #region SID_NEWSINFO
-                        case BncsPacketId.NewsInfo:
-                            HandleNewsInfo(data);
-                            break;
-                        #endregion
-                        #region NLS messages 0x50-0x56
-                        #region SID_AUTH_INFO
-                        case BncsPacketId.AuthInfo:
-                            HandleAuthInfo(data);
-                            break;
-                        #endregion
-                        #region SID_AUTH_CHECK
-                        case BncsPacketId.AuthCheck:
-                            HandleAuthCheck(data);
-                            break;
-                        #endregion
-                        #region SID_AUTH_ACCOUNTCREATE
-                        case BncsPacketId.AuthAccountCreate:
-                            HandleAuthAccountCreate(data);
-                            break;
-                        #endregion
-                        #region SID_AUTH_ACCOUNTLOGON
-                        case BncsPacketId.AuthAccountLogon:
-                            HandleAuthAccountLogon(data);
-                            break;
-                        #endregion
-                        #region SID_AUTH_ACCOUNTLOGONPROOF
-                        case BncsPacketId.AuthAccountLogonProof:
-                            HandleAuthAccountLogonProof(data);
-                            break;
-                        #endregion
-                        #region SID_AUTH_ACCOUNTCHANGE
-                        case BncsPacketId.AuthAccountChange:
-                            HandleAuthAccountChange(data);
-                            break;
-                        #endregion
-                        #region SID_AUTH_ACCOUNTCHANGEPROOF
-                        case BncsPacketId.AuthAccountChangeProof:
-                            HandleAuthAccountChangeProof(data);
-                            break;
-                        #endregion
-                        #endregion
-                        #region SID_WARDEN 0x5e
-                        case BncsPacketId.Warden:
-                            HandleWarden(data);
-                            break;
-                        #endregion
-                        #region clan messages 0x70 to 0x82
-                        #region SID_CLANFINDCANDIDATES (0x70)
-                        case BncsPacketId.ClanFindCandidates:
-                            if (!BattleNetClientResources.IncomingBufferPool.FreeBuffer(data.Data))
-                            {
-                                Debug.WriteLine(data.PacketID, "Incoming buffer was not freed for packet");
-                            }
-                            break;
-                        #endregion
-                        #region SID_CLANINVITEMULTIPLE (0x71)
-                        case BncsPacketId.ClanInviteMultiple:
-                            if (!BattleNetClientResources.IncomingBufferPool.FreeBuffer(data.Data))
-                            {
-                                Debug.WriteLine(data.PacketID, "Incoming buffer was not freed for packet");
-                            }
-                            break;
-                        #endregion
-                        #region SID_CLANCREATIONINVITATION (0x72)
-                        case BncsPacketId.ClanCreationInvitation:
-                            if (!BattleNetClientResources.IncomingBufferPool.FreeBuffer(data.Data))
-                            {
-                                Debug.WriteLine(data.PacketID, "Incoming buffer was not freed for packet");
-                            }
-                            break;
-                        #endregion
-                        #region SID_CLANDISBAND (0x73)
-                        case BncsPacketId.ClanDisband:
-                            if (!BattleNetClientResources.IncomingBufferPool.FreeBuffer(data.Data))
-                            {
-                                Debug.WriteLine(data.PacketID, "Incoming buffer was not freed for packet");
-                            }
-                            break;
-                        #endregion
-                        #region SID_CLANMAKECHIEFTAN (0x74)
-                        case BncsPacketId.ClanMakeChieftan:
-                            if (!BattleNetClientResources.IncomingBufferPool.FreeBuffer(data.Data))
-                            {
-                                Debug.WriteLine(data.PacketID, "Incoming buffer was not freed for packet");
-                            }
-                            break;
-                        #endregion
-                        #region SID_CLANINFO (0x75)
-                        case BncsPacketId.ClanInfo:
-                            HandleClanInfo(data);
-                            break;
-                        #endregion
-                        #region SID_CLANQUITNOTIFY (0x76)
-                        case BncsPacketId.ClanQuitNotify:
-                            HandleClanQuitNotify(data);
-                            break;
-                        #endregion
-                        #region SID_CLANINVITATION (0x77)
-                        case BncsPacketId.ClanInvitation:
-                            if (!BattleNetClientResources.IncomingBufferPool.FreeBuffer(data.Data))
-                            {
-                                Debug.WriteLine(data.PacketID, "Incoming buffer was not freed for packet");
-                            }
-                            break;
-                        #endregion
-                        #region SID_CLANREMOVEMEMBER (0x78)
-                        case BncsPacketId.ClanRemoveMember:
-                            HandleClanMemberRemoved(data);
-                            break;
-                        #endregion
-                        #region SID_CLANINVITATIONRESPONSE (0x79)
-                        case BncsPacketId.ClanInvitationResponse:
-                            if (!BattleNetClientResources.IncomingBufferPool.FreeBuffer(data.Data))
-                            {
-                                Debug.WriteLine(data.PacketID, "Incoming buffer was not freed for packet");
-                            }
-                            break;
-                        #endregion
-                        #region SID_CLANRANKCHANGE (0x7a)
-                        case BncsPacketId.ClanRankChange:
-                            if (!BattleNetClientResources.IncomingBufferPool.FreeBuffer(data.Data))
-                            {
-                                Debug.WriteLine(data.PacketID, "Incoming buffer was not freed for packet");
-                            }
-                            break;
-                        #endregion
-                        #region SID_CLANMOTD (0x7c)
-                        case BncsPacketId.ClanMOTD:
-                            HandleClanMotd(data);
-                            break;
-                        #endregion
-                        #region SID_CLANMEMBERLIST (0x7d)
-                        case BncsPacketId.ClanMemberList:
-                            HandleClanMemberList(data);
-                            break;
-                        #endregion
-                        #region SID_CLANMEMBERREMOVED (0x7e)
-                        case BncsPacketId.ClanMemberRemoved:
-                            if (!BattleNetClientResources.IncomingBufferPool.FreeBuffer(data.Data))
-                            {
-                                Debug.WriteLine(data.PacketID, "Incoming buffer was not freed for packet");
-                            }
-                            break;
-                        #endregion
-                        #region SID_CLANMEMBERSTATUSCHANGED (0x7f)
-                        case BncsPacketId.ClanMemberStatusChanged:
-                            HandleClanMemberStatusChanged(data);
-                            break;
-                        #endregion
-                        #region SID_CLANMEMBERRANKCHANGE (0x81)
-                        case BncsPacketId.ClanMemberRankChange:
-                            HandleClanRankChange(data);
-                            break;
-                        #endregion
-                        #region SID_CLANMEMBERINFORMATION (0x82)
-                        case BncsPacketId.ClanMemberInformation:
-                            if (!BattleNetClientResources.IncomingBufferPool.FreeBuffer(data.Data))
-                            {
-                                Debug.WriteLine(data.PacketID, "Incoming buffer was not freed for packet");
-                            }
-                            break;
-                        #endregion
-                        #endregion
-                        default:
-                            if (!BattleNetClientResources.IncomingBufferPool.FreeBuffer(data.Data))
-                            {
-                                Debug.WriteLine(data.PacketID, "Incoming buffer was not freed for packet");
-                            }
-                            break;
+                        m_packetToParserMap[data.PacketID](data);
+                    }
+                    else
+                    {
+                        switch (data.PacketID)
+                        {
+                            #region SID_NULL
+                            case BncsPacketId.Null:
+                                break;
+                            #endregion
+                            default:
+                                Trace.WriteLine(data.PacketID, "Unhandled packet");
+                                if (!BattleNetClientResources.IncomingBufferPool.FreeBuffer(data.Data))
+                                {
+                                    Debug.WriteLine(data.PacketID, "Incoming buffer was not freed for packet");
+                                }
+                                break;
+                        }
                     }
                 }
             }
@@ -333,13 +180,10 @@ namespace BNSharp.Net
 
                     string text = dr.ReadCString();
                     NewsEntry news = new NewsEntry(newsDateUtc, text);
-                    m_news.Add(news);
+                    OnServerNews(new ServerNewsEventArgs(news));
                 }
 
-                m_news.Sort((NewsEntry a, NewsEntry b) => b.DatePosted.CompareTo(a.DatePosted));
-                ServerNewsEventArgs args = new ServerNewsEventArgs(m_news);
-                args.EventData = data;
-                OnServerNews(args);
+                BattleNetClientResources.IncomingBufferPool.FreeBuffer(data.Data);
             }
         }
 
@@ -734,7 +578,7 @@ namespace BNSharp.Net
             {
                 try
                 {
-                    if (m_warden.InitWarden(BitConverter.ToInt32(key1Hash, 0), SocketHandle, m_settings.GameFile3) == 0)
+                    if (m_warden.InitWarden(BitConverter.ToInt32(key1Hash, 0)))
                     {
                         m_warden.UninitWarden();
                         OnError(new ErrorEventArgs("The Warden module failed to initialize.  You will not be immediately disconnected; however, you may be disconnected after a short period of time.", false));
@@ -1085,6 +929,7 @@ namespace BNSharp.Net
         #endregion
 
         #region warden
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         private void HandleWarden(ParseData data)
         {
             if (m_warden != null)
@@ -1158,12 +1003,6 @@ namespace BNSharp.Net
         }
         #endregion
         #region shortcuts
-        [Obsolete("Not used.", true)]
-        private void Inform(string p)
-        {
-            OnInformation(new InformationEventArgs(p));
-        }
-
         private void CloseWithError(string p)
         {
             OnError(new ErrorEventArgs(p, true));

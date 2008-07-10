@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Runtime.Serialization;
 
 namespace BNSharp.BattleNet.Clans
 {
     /// <summary>
     /// Specifies the ranks a clan member may have within a clan.
     /// </summary>
+#if !NET_2_ONLY
+    [DataContract]
+#endif
     public enum ClanRank
     {
         /// <summary>

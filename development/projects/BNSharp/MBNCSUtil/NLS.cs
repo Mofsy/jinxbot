@@ -421,10 +421,7 @@ namespace BNSharp.MBNCSUtil
 
             BigInteger cor_res = new BigInteger(ms_res.GetBuffer());
             ms_res.Close();
-#if DEBUG
-            DataFormatter.WriteToTrace(cor_res.GetBytes(), "cor_res");
-            DataFormatter.WriteToTrace(res.GetBytes(), "res");
-#endif
+
             return cor_res.Equals(res);
         }
         #endregion 

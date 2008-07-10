@@ -15,7 +15,7 @@ namespace BNSharp.Net
         /// implementing a custom handler for one or more messages.</para>
         /// </remarks>
         [CLSCompliant(false)]
-        private class ParseData
+        public class ParseData
         {
             internal ParseData(byte packetID, ushort len, byte[] data)
             {

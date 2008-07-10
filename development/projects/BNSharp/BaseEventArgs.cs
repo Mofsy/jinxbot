@@ -5,6 +5,8 @@ using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using System.Xml;
 using System.Xml.Schema;
+using System.Reflection;
+using BNSharp.Net;
 
 namespace BNSharp
 {
@@ -12,7 +14,11 @@ namespace BNSharp
     /// Provides the base class from which all BN# event argument class should derive.
     /// </summary>
     [Serializable]
-    public class BaseEventArgs : EventArgs //, ISerializable, IXmlSerializable
+#if !NET_2_ONLY
+    [DataContract]
+    [KnownType("GetKnownTypes")]
+#endif
+    public class BaseEventArgs : EventArgs
     {
         /// <summary>
         /// Creates a new instance of <see>BaseEventArgs</see>.
@@ -20,87 +26,52 @@ namespace BNSharp
         protected BaseEventArgs() { }
 
         [NonSerialized]
-        private object m_parse;
+        private BattleNetClient.ParseData m_parse;
         /// <summary>
-        /// Gets or sets the underlying connection data that was used to drive this event.
+        /// Gets or sets the underlying connection data that was used to drive this event.  This property is not CLS-compliant.
         /// </summary>
-        internal object EventData
+        [CLSCompliant(false)]
+        public BattleNetClient.ParseData EventData
         {
             get { return m_parse; }
             set { m_parse = value; }
         }
 
         /// <summary>
-        /// Gets a new empty BaseEventArgs object for a specified event data object.
+        /// Gets a new empty BaseEventArgs object for a specified event data object.  This method is not CLS-compliant.
         /// </summary>
-        /// <param name="eventData"></param>
-        /// <returns></returns>
-        internal static BaseEventArgs GetEmpty(object eventData)
+        /// <param name="eventData">The client parsing data.</param>
+        /// <returns>An empty instance with the specified client parsing data.</returns>
+        [CLSCompliant(false)]
+        public static BaseEventArgs GetEmpty(BattleNetClient.ParseData eventData)
         {
             BaseEventArgs e = new BaseEventArgs();
             e.EventData = eventData;
             return e;
         }
 
+#if !NET_2_ONLY
         /// <summary>
-        /// Gets the name of this EventArgs type.
+        /// This method is provided as infrastructure code for WCF services.  This allows inheritence
+        /// to function correctly on all types derived from BaseEventArgs that are known to the server.
+        /// For more information, see the MSDN Library article "Data Contract Known Types" at 
+        /// http://msdn.microsoft.com/en-us/library/ms730167.aspx
         /// </summary>
-        public string TypeName
+        private static Type[] GetKnownTypes()
         {
-            get { return GetType().Name; }
+            List<Type> types = new List<Type>();
+            Assembly asm = Assembly.GetExecutingAssembly();
+            Type baseEventArgsType = typeof(BaseEventArgs);
+            foreach (Type t in asm.GetTypes())
+            {
+                if (baseEventArgsType.IsAssignableFrom(t))
+                {
+                    types.Add(t);
+                }
+            }
+
+            return types.ToArray();
         }
-
-        #region ISerializable Members
-        private const string SER_TYPENAME = "TypeName";
-
-        /// <summary>
-        /// Initializes a <see>BaseEventArgs</see> from a serialization stream.
-        /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        protected BaseEventArgs(SerializationInfo info, StreamingContext context)
-        {
-
-        }
-
-        /// <inheritdoc />
-        public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            
-        }
-
-        #endregion
-
-        #region IXmlSerializable Members
-
-        /// <inheritdoc />
-        public XmlSchema GetSchema()
-        {
-            return null;
-        }
-
-        /// <inheritdoc />
-        public virtual void ReadXml(XmlReader reader)
-        {
-
-        }
-
-        /// <inheritdoc />
-        public virtual void WriteXml(XmlWriter writer)
-        {
-            
-        }
-
-        /// <summary>
-        /// Writes an element and value to an XML writer during serialization.
-        /// </summary>
-        /// <param name="elementName">The element name.</param>
-        /// <param name="content">The value to write.</param>
-        protected virtual void WriteValue(XmlWriter writer, string elementName, string content)
-        {
-            writer.WriteAttributeString(elementName, content);
-        }
-
-        #endregion
+#endif
     }
 }

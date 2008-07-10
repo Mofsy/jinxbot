@@ -20,10 +20,12 @@ namespace BNSharp.Net
     {
         #region partial methods that exist in the other partial files
         partial void InitializeListenState();
+        partial void InitializeParseDictionaries();
         #endregion
 
         #region fields
         private IBattleNetSettings m_settings;
+        private bool m_closing;
         #endregion
 
         #region .ctor
@@ -38,6 +40,8 @@ namespace BNSharp.Net
             m_settings = settings;
 
             InitializeListenState();
+
+            InitializeParseDictionaries();
         }
         #endregion
 
@@ -105,14 +109,20 @@ namespace BNSharp.Net
         public override void Close()
         {
             base.Close();
+            if (!m_closing)
+            {
+                m_closing = true;
 
-            BattleNetClientResources.UnregisterClient(this);
+                BattleNetClientResources.UnregisterClient(this);
 
-            OnDisconnected(BaseEventArgs.GetEmpty(null));
+                OnDisconnected(BaseEventArgs.GetEmpty(null));
 
-            ResetConnectionState();
+                ResetConnectionState();
 
-            StopParsingAndListening();
+                StopParsingAndListening();
+            }
+            else 
+                m_closing = false;
         }
 
         /// <summary>

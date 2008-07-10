@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Runtime.Serialization;
 
 namespace BNSharp
 {
@@ -15,12 +16,33 @@ namespace BNSharp
     /// Specifies event information for chat events that involve another user, but not specifically communication.
     /// </summary>
     /// <para>An example of when this class would be used is for a user joined or user left event.</para>
+#if !NET_2_ONLY
+    [DataContract]
+#endif
     public class UserEventArgs : ChatEventArgs
     {
+        #region fields
+#if !NET_2_ONLY
+        [DataMember]
+#endif
         private int m_ping;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
         private UserFlags m_flags;
-        private string m_un, m_txt;
-        private byte[] m_statBytes;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private string m_un;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private string m_txt;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private byte[] m_statBytes; 
+        #endregion
 
         /// <summary>
         /// Creates a new <see>UserEventArgs</see> with the specified settings.

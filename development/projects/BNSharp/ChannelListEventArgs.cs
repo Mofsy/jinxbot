@@ -15,10 +15,22 @@ namespace BNSharp
     /// <summary>
     /// Specifies the channel list event arguments.
     /// </summary>
+#if !NET_2_ONLY
+    [DataContract]
+#endif
     public class ChannelListEventArgs : BaseEventArgs
     {
+        #region fields
+#if !NET_2_ONLY
+        [DataMember]
+#endif
         private string[] m_list;
-        internal ChannelListEventArgs(string[] channels)
+        #endregion
+        /// <summary>
+        /// Creates a new instance of <see>ChannelListEventArgs</see>.
+        /// </summary>
+        /// <param name="channels">The channels to list.</param>
+        public ChannelListEventArgs(string[] channels)
         {
             m_list = channels;
         }
@@ -35,24 +47,5 @@ namespace BNSharp
                 return channels;
             }
         }
-
-        #region serialization
-        private const string CHANNEL_LIST = "ChannelList";
-
-        /// <inheritdoc />
-        protected ChannelListEventArgs(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-            m_list = info.GetValue(CHANNEL_LIST, typeof(string[])) as string[];
-        }
-
-        /// <inheritdoc />
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-
-            info.AddValue(CHANNEL_LIST, m_list);
-        }
-        #endregion
     }
 }

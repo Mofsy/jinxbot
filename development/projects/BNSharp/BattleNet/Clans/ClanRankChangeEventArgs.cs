@@ -1,18 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Runtime.Serialization;
 
 namespace BNSharp.BattleNet.Clans
 {
     /// <summary>
     /// Contains information about when the client's user's clan rank has changed.
     /// </summary>
+#if !NET_2_ONLY
+    [DataContract]
+#endif
     public class ClanRankChangeEventArgs : BaseEventArgs
     {
-        private ClanRank m_old, m_new;
-        private ClanMember m_changer;
+        #region fields
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private ClanRank m_old;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private ClanRank m_new;
+#if !NET_2_ONLY
+        [DataMember]
+#endif
+        private ClanMember m_changer; 
+        #endregion
 
-        internal ClanRankChangeEventArgs(ClanRank oldRank, ClanRank newRank, ClanMember memberWhoChangedTheRank)
+        /// <summary>
+        /// Creates a new instance of <see>ClanRankChangeEventArgs</see>.
+        /// </summary>
+        /// <param name="oldRank">The previous rank.</param>
+        /// <param name="newRank">The new rank.</param>
+        /// <param name="memberWhoChangedTheRank">The member who was responsible for the rank change.</param>
+        public ClanRankChangeEventArgs(ClanRank oldRank, ClanRank newRank, ClanMember memberWhoChangedTheRank)
         {
             m_old = oldRank;
             m_new = newRank;

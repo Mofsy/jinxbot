@@ -13,10 +13,8 @@ namespace BNSharp.Plugins
         /// Initializes the Warden module with the specified CD key hash part, the native socket handle, and the game file.
         /// </summary>
         /// <param name="keyHashPart">The key hash part provided.</param>
-        /// <param name="socketHandle">The native OS socket handle to optionally directly send results.</param>
-        /// <param name="gameFile3">The path to the Battle.snp file.</param>
-        /// <returns>Nonzero if it succeeds; otherwise zero.</returns>
-        int InitWarden(int keyHashPart, IntPtr socketHandle, string gameFile3);
+        /// <returns><see langword="true" /> if successful; otherwise <see langword="false" />.</returns>
+        bool InitWarden(int keyHashPart);
         /// <summary>
         /// Uninitializes the Warden module.
         /// </summary>
