@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<CodeSnippet Format="1.0.0">
+		<Header>
+			<Title>Copy-of-Array Property</Title>
+			<Shortcut>arcpy</Shortcut>
+			<Description>Code snippet for declaring a property that returns a copy of an array.</Description>
+			<Author>MyndFyre</Author>
+			<SnippetTypes>
+				<SnippetType>Expansion</SnippetType>
+			</SnippetTypes>
+		</Header>
+		<Snippet>
+			<Declarations>
+				<Literal>
+					<ID>descriptiveText</ID>
+					<ToolTip>The XML comment name.</ToolTip>
+					<Default>(comment text here)</Default>
+				</Literal>
+				<Literal>
+					<ID>type</ID>
+					<ToolTip>The type of the array being returned.</ToolTip>
+					<Default>TypeName</Default>
+				</Literal>
+				<Literal>
+					<ID>propname</ID>
+					<ToolTip>The name of the property.</ToolTip>
+					<Default>PropertyName</Default>
+				</Literal>
+                <Literal>
+                    <ID>localname</ID>
+                    <ToolTip>The name of the backing store being copied.</ToolTip>
+                    <Default>fieldName</Default>
+                </Literal>
+
+            </Declarations>
+			<Code Language="csharp">
+				<![CDATA[/// <summary>
+        /// Gets a copy of $descriptiveText$.
+        /// </summary>
+        public $type$[] $propname$
+        {
+            get
+            {
+                $type$[] copy = new $type$[$localname$.Length];
+                Array.Copy($localname$, copy, copy.Length);
+                return copy;
+            }
+        }]]>
+			</Code>
+		</Snippet>
+	</CodeSnippet>
+</CodeSnippets>

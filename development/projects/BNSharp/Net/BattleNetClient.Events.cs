@@ -6456,6 +6456,896 @@ namespace BNSharp.Net
             });
         }
         #endregion
+
+        #region ClanCandidatesSearchCompleted event
+        [NonSerialized]
+        private Dictionary<Priority, List<ClanCandidatesSearchEventHandler>> __ClanCandidatesSearchCompleted = new Dictionary<Priority, List<ClanCandidatesSearchEventHandler>>(3)
+        {
+            { Priority.High, new List<ClanCandidatesSearchEventHandler>() },
+            { Priority.Normal, new List<ClanCandidatesSearchEventHandler>() },
+            { Priority.Low, new List<ClanCandidatesSearchEventHandler>() }
+        };
+        /// <summary>
+        /// Informs listeners that a clan candidates search has completed.
+        /// </summary>
+        /// <remarks>
+        /// <para>Registering for this event with this member will register with <see cref="Priority">Normal priority</see>.  To register for 
+        /// <see cref="Priority">High</see> or <see cref="Priority">Low</see> priority, use the <see>RegisterClanCandidatesSearchCompletedNotification</see> and
+        /// <see>UnregisterClanCandidatesSearchCompletedNotification</see> methods.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        /// </remarks>
+        public event ClanCandidatesSearchEventHandler ClanCandidatesSearchCompleted
+        {
+            add
+            {
+                lock (__ClanCandidatesSearchCompleted)
+                {
+                    if (!__ClanCandidatesSearchCompleted.ContainsKey(Priority.Normal))
+                    {
+                        __ClanCandidatesSearchCompleted.Add(Priority.Normal, new List<ClanCandidatesSearchEventHandler>());
+                    }
+                }
+                __ClanCandidatesSearchCompleted[Priority.Normal].Add(value);
+            }
+            remove
+            {
+                if (__ClanCandidatesSearchCompleted.ContainsKey(Priority.Normal))
+                {
+                    __ClanCandidatesSearchCompleted[Priority.Normal].Remove(value);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Registers for notification of the <see>ClanCandidatesSearchCompleted</see> event at the specified priority.
+        /// </summary>
+        /// <remarks>
+        /// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
+        /// normal syntax to register for events at <see cref="Priority">Normal priority</see>, so no special registration is needed; this is 
+        /// accessed through normal event handling syntax (the += syntax in C#, or the <see langword="Handles" lang="VB" /> in Visual Basic.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        ///	<para>To be well-behaved within JinxBot, plugins should always unregister themselves when they are being unloaded or when they 
+        /// otherwise need to do so.  Plugins may opt-in to a Reflection-based event handling registration system which uses attributes to 
+        /// mark methods that should be used as event handlers.</para>
+        /// </remarks>
+        /// <param name="p">The priority at which to register.</param>
+        /// <param name="callback">The event handler that should be registered for this event.</param>
+        /// <seealso cref="ClanCandidatesSearchCompleted" />
+        /// <seealso cref="UnregisterClanCandidatesSearchCompletedNotification" />
+        public void RegisterClanCandidatesSearchCompletedNotification(Priority p, ClanCandidatesSearchEventHandler callback)
+        {
+            lock (__ClanCandidatesSearchCompleted)
+            {
+                if (!__ClanCandidatesSearchCompleted.ContainsKey(p))
+                {
+                    __ClanCandidatesSearchCompleted.Add(p, new List<ClanCandidatesSearchEventHandler>());
+                }
+            }
+            __ClanCandidatesSearchCompleted[p].Add(callback);
+        }
+
+        /// <summary>
+        /// Unregisters for notification of the <see>ClanCandidatesSearchCompleted</see> event at the specified priority.
+        /// </summary>
+        /// <remarks>
+        /// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
+        /// normal syntax to register for events at <see cref="Priority">Normal priority</see>, so no special registration is needed; this is 
+        /// accessed through normal event handling syntax (the += syntax in C#, or the <see langword="Handles" lang="VB" /> in Visual Basic.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        ///	<para>To be well-behaved within JinxBot, plugins should always unregister themselves when they are being unloaded or when they 
+        /// otherwise need to do so.  Plugins may opt-in to a Reflection-based event handling registration system which uses attributes to 
+        /// mark methods that should be used as event handlers.</para>
+        /// </remarks>
+        /// <param name="p">The priority from which to unregister.</param>
+        /// <param name="callback">The event handler that should be unregistered for this event.</param>
+        /// <seealso cref="ClanCandidatesSearchCompleted" />
+        /// <seealso cref="RegisterClanCandidatesSearchCompletedNotification" />
+        public void UnregisterClanCandidatesSearchCompletedNotification(Priority p, ClanCandidatesSearchEventHandler callback)
+        {
+            if (__ClanCandidatesSearchCompleted.ContainsKey(p))
+            {
+                __ClanCandidatesSearchCompleted[p].Remove(callback);
+            }
+        }
+
+        /// <summary>
+        /// Raises the ClanCandidatesSearchCompleted event.
+        /// </summary>
+        /// <remarks>
+        /// <para>Only high-priority events are invoked immediately; others are deferred.  For more information, see <see>ClanCandidatesSearchCompleted</see>.</para>
+        /// </remarks>
+        /// <param name="e">The event arguments.</param>
+        /// <seealso cref="ClanCandidatesSearchCompleted" />
+        protected virtual void OnClanCandidatesSearchCompleted(ClanCandidatesSearchEventArgs e)
+        {
+            foreach (ClanCandidatesSearchEventHandler eh in __ClanCandidatesSearchCompleted[Priority.High])
+            {
+                try
+                {
+                    eh(this, e);
+                }
+                catch (Exception ex)
+                {
+                    ReportException(
+                        ex,
+                        new KeyValuePair<string, object>("delegate", eh),
+                        new KeyValuePair<string, object>("Event", "ClanCandidatesSearchCompleted"),
+                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: this", this),
+                        new KeyValuePair<string, object>("param: e", e)
+                        );
+                }
+            }
+
+            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            {
+                foreach (ClanCandidatesSearchEventHandler eh in __ClanCandidatesSearchCompleted[Priority.Normal])
+                {
+                    try
+                    {
+                        eh(this, e);
+                    }
+                    catch (Exception ex)
+                    {
+                        ReportException(
+                            ex,
+                            new KeyValuePair<string, object>("delegate", eh),
+                            new KeyValuePair<string, object>("Event", "ClanCandidatesSearchCompleted"),
+                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
+                            new KeyValuePair<string, object>("param: this", this),
+                            new KeyValuePair<string, object>("param: e", e)
+                            );
+                    }
+                }
+                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+                {
+                    foreach (ClanCandidatesSearchEventHandler eh in __ClanCandidatesSearchCompleted[Priority.Low])
+                    {
+                        try
+                        {
+                            eh(this, e);
+                        }
+                        catch (Exception ex)
+                        {
+                            ReportException(
+                                ex,
+                                new KeyValuePair<string, object>("delegate", eh),
+                                new KeyValuePair<string, object>("Event", "ClanCandidatesSearchCompleted"),
+                                new KeyValuePair<string, object>("param: priority", Priority.Low),
+                                new KeyValuePair<string, object>("param: this", this),
+                                new KeyValuePair<string, object>("param: e", e)
+                                );
+                        }
+                    }
+                    FreeArgumentResources(e as BaseEventArgs);
+                });
+            });
+        }
+        #endregion
+
+        #region ClanFormationCompleted event
+        [NonSerialized]
+        private Dictionary<Priority, List<ClanFormationEventHandler>> __ClanFormationCompleted = new Dictionary<Priority, List<ClanFormationEventHandler>>(3)
+        {
+            { Priority.High, new List<ClanFormationEventHandler>() },
+            { Priority.Normal, new List<ClanFormationEventHandler>() },
+            { Priority.Low, new List<ClanFormationEventHandler>() }
+        };
+        /// <summary>
+        /// Informs listeners that an attempt to form a clan has completed.
+        /// </summary>
+        /// <remarks>
+        /// <para>Registering for this event with this member will register with <see cref="Priority">Normal priority</see>.  To register for 
+        /// <see cref="Priority">High</see> or <see cref="Priority">Low</see> priority, use the <see>RegisterClanFormationCompletedNotification</see> and
+        /// <see>UnregisterClanFormationCompletedNotification</see> methods.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        /// </remarks>
+        public event ClanFormationEventHandler ClanFormationCompleted
+        {
+            add
+            {
+                lock (__ClanFormationCompleted)
+                {
+                    if (!__ClanFormationCompleted.ContainsKey(Priority.Normal))
+                    {
+                        __ClanFormationCompleted.Add(Priority.Normal, new List<ClanFormationEventHandler>());
+                    }
+                }
+                __ClanFormationCompleted[Priority.Normal].Add(value);
+            }
+            remove
+            {
+                if (__ClanFormationCompleted.ContainsKey(Priority.Normal))
+                {
+                    __ClanFormationCompleted[Priority.Normal].Remove(value);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Registers for notification of the <see>ClanFormationCompleted</see> event at the specified priority.
+        /// </summary>
+        /// <remarks>
+        /// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
+        /// normal syntax to register for events at <see cref="Priority">Normal priority</see>, so no special registration is needed; this is 
+        /// accessed through normal event handling syntax (the += syntax in C#, or the <see langword="Handles" lang="VB" /> in Visual Basic.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        ///	<para>To be well-behaved within JinxBot, plugins should always unregister themselves when they are being unloaded or when they 
+        /// otherwise need to do so.  Plugins may opt-in to a Reflection-based event handling registration system which uses attributes to 
+        /// mark methods that should be used as event handlers.</para>
+        /// </remarks>
+        /// <param name="p">The priority at which to register.</param>
+        /// <param name="callback">The event handler that should be registered for this event.</param>
+        /// <seealso cref="ClanFormationCompleted" />
+        /// <seealso cref="UnregisterClanFormationCompletedNotification" />
+        public void RegisterClanFormationCompletedNotification(Priority p, ClanFormationEventHandler callback)
+        {
+            lock (__ClanFormationCompleted)
+            {
+                if (!__ClanFormationCompleted.ContainsKey(p))
+                {
+                    __ClanFormationCompleted.Add(p, new List<ClanFormationEventHandler>());
+                }
+            }
+            __ClanFormationCompleted[p].Add(callback);
+        }
+
+        /// <summary>
+        /// Unregisters for notification of the <see>ClanFormationCompleted</see> event at the specified priority.
+        /// </summary>
+        /// <remarks>
+        /// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
+        /// normal syntax to register for events at <see cref="Priority">Normal priority</see>, so no special registration is needed; this is 
+        /// accessed through normal event handling syntax (the += syntax in C#, or the <see langword="Handles" lang="VB" /> in Visual Basic.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        ///	<para>To be well-behaved within JinxBot, plugins should always unregister themselves when they are being unloaded or when they 
+        /// otherwise need to do so.  Plugins may opt-in to a Reflection-based event handling registration system which uses attributes to 
+        /// mark methods that should be used as event handlers.</para>
+        /// </remarks>
+        /// <param name="p">The priority from which to unregister.</param>
+        /// <param name="callback">The event handler that should be unregistered for this event.</param>
+        /// <seealso cref="ClanFormationCompleted" />
+        /// <seealso cref="RegisterClanFormationCompletedNotification" />
+        public void UnregisterClanFormationCompletedNotification(Priority p, ClanFormationEventHandler callback)
+        {
+            if (__ClanFormationCompleted.ContainsKey(p))
+            {
+                __ClanFormationCompleted[p].Remove(callback);
+            }
+        }
+
+        /// <summary>
+        /// Raises the ClanFormationCompleted event.
+        /// </summary>
+        /// <remarks>
+        /// <para>Only high-priority events are invoked immediately; others are deferred.  For more information, see <see>ClanFormationCompleted</see>.</para>
+        /// </remarks>
+        /// <param name="e">The event arguments.</param>
+        /// <seealso cref="ClanFormationCompleted" />
+        protected virtual void OnClanFormationCompleted(ClanFormationEventArgs e)
+        {
+            foreach (ClanFormationEventHandler eh in __ClanFormationCompleted[Priority.High])
+            {
+                try
+                {
+                    eh(this, e);
+                }
+                catch (Exception ex)
+                {
+                    ReportException(
+                        ex,
+                        new KeyValuePair<string, object>("delegate", eh),
+                        new KeyValuePair<string, object>("Event", "ClanFormationCompleted"),
+                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: this", this),
+                        new KeyValuePair<string, object>("param: e", e)
+                        );
+                }
+            }
+
+            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            {
+                foreach (ClanFormationEventHandler eh in __ClanFormationCompleted[Priority.Normal])
+                {
+                    try
+                    {
+                        eh(this, e);
+                    }
+                    catch (Exception ex)
+                    {
+                        ReportException(
+                            ex,
+                            new KeyValuePair<string, object>("delegate", eh),
+                            new KeyValuePair<string, object>("Event", "ClanFormationCompleted"),
+                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
+                            new KeyValuePair<string, object>("param: this", this),
+                            new KeyValuePair<string, object>("param: e", e)
+                            );
+                    }
+                }
+                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+                {
+                    foreach (ClanFormationEventHandler eh in __ClanFormationCompleted[Priority.Low])
+                    {
+                        try
+                        {
+                            eh(this, e);
+                        }
+                        catch (Exception ex)
+                        {
+                            ReportException(
+                                ex,
+                                new KeyValuePair<string, object>("delegate", eh),
+                                new KeyValuePair<string, object>("Event", "ClanFormationCompleted"),
+                                new KeyValuePair<string, object>("param: priority", Priority.Low),
+                                new KeyValuePair<string, object>("param: this", this),
+                                new KeyValuePair<string, object>("param: e", e)
+                                );
+                        }
+                    }
+                    FreeArgumentResources(e as BaseEventArgs);
+                });
+            });
+        }
+        #endregion
+
+        #region ClanFormationInvitationReceived event
+        [NonSerialized]
+        private Dictionary<Priority, List<ClanFormationInvitationEventHandler>> __ClanFormationInvitationReceived = new Dictionary<Priority, List<ClanFormationInvitationEventHandler>>(3)
+        {
+            { Priority.High, new List<ClanFormationInvitationEventHandler>() },
+            { Priority.Normal, new List<ClanFormationInvitationEventHandler>() },
+            { Priority.Low, new List<ClanFormationInvitationEventHandler>() }
+        };
+        /// <summary>
+        /// Informs listeners that the client has been invited to join a clan as it is forming.
+        /// </summary>
+        /// <remarks>
+        /// <para>Registering for this event with this member will register with <see cref="Priority">Normal priority</see>.  To register for 
+        /// <see cref="Priority">High</see> or <see cref="Priority">Low</see> priority, use the <see>RegisterClanFormationInvitationReceivedNotification</see> and
+        /// <see>UnregisterClanFormationInvitationReceivedNotification</see> methods.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        /// </remarks>
+        public event ClanFormationInvitationEventHandler ClanFormationInvitationReceived
+        {
+            add
+            {
+                lock (__ClanFormationInvitationReceived)
+                {
+                    if (!__ClanFormationInvitationReceived.ContainsKey(Priority.Normal))
+                    {
+                        __ClanFormationInvitationReceived.Add(Priority.Normal, new List<ClanFormationInvitationEventHandler>());
+                    }
+                }
+                __ClanFormationInvitationReceived[Priority.Normal].Add(value);
+            }
+            remove
+            {
+                if (__ClanFormationInvitationReceived.ContainsKey(Priority.Normal))
+                {
+                    __ClanFormationInvitationReceived[Priority.Normal].Remove(value);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Registers for notification of the <see>ClanFormationInvitationReceived</see> event at the specified priority.
+        /// </summary>
+        /// <remarks>
+        /// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
+        /// normal syntax to register for events at <see cref="Priority">Normal priority</see>, so no special registration is needed; this is 
+        /// accessed through normal event handling syntax (the += syntax in C#, or the <see langword="Handles" lang="VB" /> in Visual Basic.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        ///	<para>To be well-behaved within JinxBot, plugins should always unregister themselves when they are being unloaded or when they 
+        /// otherwise need to do so.  Plugins may opt-in to a Reflection-based event handling registration system which uses attributes to 
+        /// mark methods that should be used as event handlers.</para>
+        /// </remarks>
+        /// <param name="p">The priority at which to register.</param>
+        /// <param name="callback">The event handler that should be registered for this event.</param>
+        /// <seealso cref="ClanFormationInvitationReceived" />
+        /// <seealso cref="UnregisterClanFormationInvitationReceivedNotification" />
+        public void RegisterClanFormationInvitationReceivedNotification(Priority p, ClanFormationInvitationEventHandler callback)
+        {
+            lock (__ClanFormationInvitationReceived)
+            {
+                if (!__ClanFormationInvitationReceived.ContainsKey(p))
+                {
+                    __ClanFormationInvitationReceived.Add(p, new List<ClanFormationInvitationEventHandler>());
+                }
+            }
+            __ClanFormationInvitationReceived[p].Add(callback);
+        }
+
+        /// <summary>
+        /// Unregisters for notification of the <see>ClanFormationInvitationReceived</see> event at the specified priority.
+        /// </summary>
+        /// <remarks>
+        /// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
+        /// normal syntax to register for events at <see cref="Priority">Normal priority</see>, so no special registration is needed; this is 
+        /// accessed through normal event handling syntax (the += syntax in C#, or the <see langword="Handles" lang="VB" /> in Visual Basic.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        ///	<para>To be well-behaved within JinxBot, plugins should always unregister themselves when they are being unloaded or when they 
+        /// otherwise need to do so.  Plugins may opt-in to a Reflection-based event handling registration system which uses attributes to 
+        /// mark methods that should be used as event handlers.</para>
+        /// </remarks>
+        /// <param name="p">The priority from which to unregister.</param>
+        /// <param name="callback">The event handler that should be unregistered for this event.</param>
+        /// <seealso cref="ClanFormationInvitationReceived" />
+        /// <seealso cref="RegisterClanFormationInvitationReceivedNotification" />
+        public void UnregisterClanFormationInvitationReceivedNotification(Priority p, ClanFormationInvitationEventHandler callback)
+        {
+            if (__ClanFormationInvitationReceived.ContainsKey(p))
+            {
+                __ClanFormationInvitationReceived[p].Remove(callback);
+            }
+        }
+
+        /// <summary>
+        /// Raises the ClanFormationInvitationReceived event.
+        /// </summary>
+        /// <remarks>
+        /// <para>Only high-priority events are invoked immediately; others are deferred.  For more information, see <see>ClanFormationInvitationReceived</see>.</para>
+        /// </remarks>
+        /// <param name="e">The event arguments.</param>
+        /// <seealso cref="ClanFormationInvitationReceived" />
+        protected virtual void OnClanFormationInvitationReceived(ClanFormationInvitationEventArgs e)
+        {
+            foreach (ClanFormationInvitationEventHandler eh in __ClanFormationInvitationReceived[Priority.High])
+            {
+                try
+                {
+                    eh(this, e);
+                }
+                catch (Exception ex)
+                {
+                    ReportException(
+                        ex,
+                        new KeyValuePair<string, object>("delegate", eh),
+                        new KeyValuePair<string, object>("Event", "ClanFormationInvitationReceived"),
+                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: this", this),
+                        new KeyValuePair<string, object>("param: e", e)
+                        );
+                }
+            }
+
+            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            {
+                foreach (ClanFormationInvitationEventHandler eh in __ClanFormationInvitationReceived[Priority.Normal])
+                {
+                    try
+                    {
+                        eh(this, e);
+                    }
+                    catch (Exception ex)
+                    {
+                        ReportException(
+                            ex,
+                            new KeyValuePair<string, object>("delegate", eh),
+                            new KeyValuePair<string, object>("Event", "ClanFormationInvitationReceived"),
+                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
+                            new KeyValuePair<string, object>("param: this", this),
+                            new KeyValuePair<string, object>("param: e", e)
+                            );
+                    }
+                }
+                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+                {
+                    foreach (ClanFormationInvitationEventHandler eh in __ClanFormationInvitationReceived[Priority.Low])
+                    {
+                        try
+                        {
+                            eh(this, e);
+                        }
+                        catch (Exception ex)
+                        {
+                            ReportException(
+                                ex,
+                                new KeyValuePair<string, object>("delegate", eh),
+                                new KeyValuePair<string, object>("Event", "ClanFormationInvitationReceived"),
+                                new KeyValuePair<string, object>("param: priority", Priority.Low),
+                                new KeyValuePair<string, object>("param: this", this),
+                                new KeyValuePair<string, object>("param: e", e)
+                                );
+                        }
+                    }
+                    FreeArgumentResources(e as BaseEventArgs);
+                });
+            });
+        }
+        #endregion
+
+        #region ClanDisbandCompleted event
+        [NonSerialized]
+        private Dictionary<Priority, List<ClanDisbandEventHandler>> __ClanDisbandCompleted = new Dictionary<Priority, List<ClanDisbandEventHandler>>(3)
+        {
+            { Priority.High, new List<ClanDisbandEventHandler>() },
+            { Priority.Normal, new List<ClanDisbandEventHandler>() },
+            { Priority.Low, new List<ClanDisbandEventHandler>() }
+        };
+        /// <summary>
+        /// Informs listeners that an attempt to disband the clan has been completed.
+        /// </summary>
+        /// <remarks>
+        /// <para>Registering for this event with this member will register with <see cref="Priority">Normal priority</see>.  To register for 
+        /// <see cref="Priority">High</see> or <see cref="Priority">Low</see> priority, use the <see>RegisterClanDisbandCompletedNotification</see> and
+        /// <see>UnregisterClanDisbandCompletedNotification</see> methods.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        /// </remarks>
+        public event ClanDisbandEventHandler ClanDisbandCompleted
+        {
+            add
+            {
+                lock (__ClanDisbandCompleted)
+                {
+                    if (!__ClanDisbandCompleted.ContainsKey(Priority.Normal))
+                    {
+                        __ClanDisbandCompleted.Add(Priority.Normal, new List<ClanDisbandEventHandler>());
+                    }
+                }
+                __ClanDisbandCompleted[Priority.Normal].Add(value);
+            }
+            remove
+            {
+                if (__ClanDisbandCompleted.ContainsKey(Priority.Normal))
+                {
+                    __ClanDisbandCompleted[Priority.Normal].Remove(value);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Registers for notification of the <see>ClanDisbandCompleted</see> event at the specified priority.
+        /// </summary>
+        /// <remarks>
+        /// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
+        /// normal syntax to register for events at <see cref="Priority">Normal priority</see>, so no special registration is needed; this is 
+        /// accessed through normal event handling syntax (the += syntax in C#, or the <see langword="Handles" lang="VB" /> in Visual Basic.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        ///	<para>To be well-behaved within JinxBot, plugins should always unregister themselves when they are being unloaded or when they 
+        /// otherwise need to do so.  Plugins may opt-in to a Reflection-based event handling registration system which uses attributes to 
+        /// mark methods that should be used as event handlers.</para>
+        /// </remarks>
+        /// <param name="p">The priority at which to register.</param>
+        /// <param name="callback">The event handler that should be registered for this event.</param>
+        /// <seealso cref="ClanDisbandCompleted" />
+        /// <seealso cref="UnregisterClanDisbandCompletedNotification" />
+        public void RegisterClanDisbandCompletedNotification(Priority p, ClanDisbandEventHandler callback)
+        {
+            lock (__ClanDisbandCompleted)
+            {
+                if (!__ClanDisbandCompleted.ContainsKey(p))
+                {
+                    __ClanDisbandCompleted.Add(p, new List<ClanDisbandEventHandler>());
+                }
+            }
+            __ClanDisbandCompleted[p].Add(callback);
+        }
+
+        /// <summary>
+        /// Unregisters for notification of the <see>ClanDisbandCompleted</see> event at the specified priority.
+        /// </summary>
+        /// <remarks>
+        /// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
+        /// normal syntax to register for events at <see cref="Priority">Normal priority</see>, so no special registration is needed; this is 
+        /// accessed through normal event handling syntax (the += syntax in C#, or the <see langword="Handles" lang="VB" /> in Visual Basic.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        ///	<para>To be well-behaved within JinxBot, plugins should always unregister themselves when they are being unloaded or when they 
+        /// otherwise need to do so.  Plugins may opt-in to a Reflection-based event handling registration system which uses attributes to 
+        /// mark methods that should be used as event handlers.</para>
+        /// </remarks>
+        /// <param name="p">The priority from which to unregister.</param>
+        /// <param name="callback">The event handler that should be unregistered for this event.</param>
+        /// <seealso cref="ClanDisbandCompleted" />
+        /// <seealso cref="RegisterClanDisbandCompletedNotification" />
+        public void UnregisterClanDisbandCompletedNotification(Priority p, ClanDisbandEventHandler callback)
+        {
+            if (__ClanDisbandCompleted.ContainsKey(p))
+            {
+                __ClanDisbandCompleted[p].Remove(callback);
+            }
+        }
+
+        /// <summary>
+        /// Raises the ClanDisbandCompleted event.
+        /// </summary>
+        /// <remarks>
+        /// <para>Only high-priority events are invoked immediately; others are deferred.  For more information, see <see>ClanDisbandCompleted</see>.</para>
+        /// </remarks>
+        /// <param name="e">The event arguments.</param>
+        /// <seealso cref="ClanDisbandCompleted" />
+        protected virtual void OnClanDisbandCompleted(ClanDisbandEventArgs e)
+        {
+            foreach (ClanDisbandEventHandler eh in __ClanDisbandCompleted[Priority.High])
+            {
+                try
+                {
+                    eh(this, e);
+                }
+                catch (Exception ex)
+                {
+                    ReportException(
+                        ex,
+                        new KeyValuePair<string, object>("delegate", eh),
+                        new KeyValuePair<string, object>("Event", "ClanDisbandCompleted"),
+                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: this", this),
+                        new KeyValuePair<string, object>("param: e", e)
+                        );
+                }
+            }
+
+            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            {
+                foreach (ClanDisbandEventHandler eh in __ClanDisbandCompleted[Priority.Normal])
+                {
+                    try
+                    {
+                        eh(this, e);
+                    }
+                    catch (Exception ex)
+                    {
+                        ReportException(
+                            ex,
+                            new KeyValuePair<string, object>("delegate", eh),
+                            new KeyValuePair<string, object>("Event", "ClanDisbandCompleted"),
+                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
+                            new KeyValuePair<string, object>("param: this", this),
+                            new KeyValuePair<string, object>("param: e", e)
+                            );
+                    }
+                }
+                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+                {
+                    foreach (ClanDisbandEventHandler eh in __ClanDisbandCompleted[Priority.Low])
+                    {
+                        try
+                        {
+                            eh(this, e);
+                        }
+                        catch (Exception ex)
+                        {
+                            ReportException(
+                                ex,
+                                new KeyValuePair<string, object>("delegate", eh),
+                                new KeyValuePair<string, object>("Event", "ClanDisbandCompleted"),
+                                new KeyValuePair<string, object>("param: priority", Priority.Low),
+                                new KeyValuePair<string, object>("param: this", this),
+                                new KeyValuePair<string, object>("param: e", e)
+                                );
+                        }
+                    }
+                    FreeArgumentResources(e as BaseEventArgs);
+                });
+            });
+        }
+        #endregion
+
+        #region ClanChangeChieftanCompleted event
+        [NonSerialized]
+        private Dictionary<Priority, List<ClanChieftanChangeEventHandler>> __ClanChangeChieftanCompleted = new Dictionary<Priority, List<ClanChieftanChangeEventHandler>>(3)
+        {
+            { Priority.High, new List<ClanChieftanChangeEventHandler>() },
+            { Priority.Normal, new List<ClanChieftanChangeEventHandler>() },
+            { Priority.Low, new List<ClanChieftanChangeEventHandler>() }
+        };
+        /// <summary>
+        /// Informs listeners that a request to change the clan chieftan has completed.
+        /// </summary>
+        /// <remarks>
+        /// <para>Registering for this event with this member will register with <see cref="Priority">Normal priority</see>.  To register for 
+        /// <see cref="Priority">High</see> or <see cref="Priority">Low</see> priority, use the <see>RegisterClanChangeChieftanCompletedNotification</see> and
+        /// <see>UnregisterClanChangeChieftanCompletedNotification</see> methods.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        /// </remarks>
+        public event ClanChieftanChangeEventHandler ClanChangeChieftanCompleted
+        {
+            add
+            {
+                lock (__ClanChangeChieftanCompleted)
+                {
+                    if (!__ClanChangeChieftanCompleted.ContainsKey(Priority.Normal))
+                    {
+                        __ClanChangeChieftanCompleted.Add(Priority.Normal, new List<ClanChieftanChangeEventHandler>());
+                    }
+                }
+                __ClanChangeChieftanCompleted[Priority.Normal].Add(value);
+            }
+            remove
+            {
+                if (__ClanChangeChieftanCompleted.ContainsKey(Priority.Normal))
+                {
+                    __ClanChangeChieftanCompleted[Priority.Normal].Remove(value);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Registers for notification of the <see>ClanChangeChieftanCompleted</see> event at the specified priority.
+        /// </summary>
+        /// <remarks>
+        /// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
+        /// normal syntax to register for events at <see cref="Priority">Normal priority</see>, so no special registration is needed; this is 
+        /// accessed through normal event handling syntax (the += syntax in C#, or the <see langword="Handles" lang="VB" /> in Visual Basic.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        ///	<para>To be well-behaved within JinxBot, plugins should always unregister themselves when they are being unloaded or when they 
+        /// otherwise need to do so.  Plugins may opt-in to a Reflection-based event handling registration system which uses attributes to 
+        /// mark methods that should be used as event handlers.</para>
+        /// </remarks>
+        /// <param name="p">The priority at which to register.</param>
+        /// <param name="callback">The event handler that should be registered for this event.</param>
+        /// <seealso cref="ClanChangeChieftanCompleted" />
+        /// <seealso cref="UnregisterClanChangeChieftanCompletedNotification" />
+        public void RegisterClanChangeChieftanCompletedNotification(Priority p, ClanChieftanChangeEventHandler callback)
+        {
+            lock (__ClanChangeChieftanCompleted)
+            {
+                if (!__ClanChangeChieftanCompleted.ContainsKey(p))
+                {
+                    __ClanChangeChieftanCompleted.Add(p, new List<ClanChieftanChangeEventHandler>());
+                }
+            }
+            __ClanChangeChieftanCompleted[p].Add(callback);
+        }
+
+        /// <summary>
+        /// Unregisters for notification of the <see>ClanChangeChieftanCompleted</see> event at the specified priority.
+        /// </summary>
+        /// <remarks>
+        /// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
+        /// normal syntax to register for events at <see cref="Priority">Normal priority</see>, so no special registration is needed; this is 
+        /// accessed through normal event handling syntax (the += syntax in C#, or the <see langword="Handles" lang="VB" /> in Visual Basic.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        ///	<para>To be well-behaved within JinxBot, plugins should always unregister themselves when they are being unloaded or when they 
+        /// otherwise need to do so.  Plugins may opt-in to a Reflection-based event handling registration system which uses attributes to 
+        /// mark methods that should be used as event handlers.</para>
+        /// </remarks>
+        /// <param name="p">The priority from which to unregister.</param>
+        /// <param name="callback">The event handler that should be unregistered for this event.</param>
+        /// <seealso cref="ClanChangeChieftanCompleted" />
+        /// <seealso cref="RegisterClanChangeChieftanCompletedNotification" />
+        public void UnregisterClanChangeChieftanCompletedNotification(Priority p, ClanChieftanChangeEventHandler callback)
+        {
+            if (__ClanChangeChieftanCompleted.ContainsKey(p))
+            {
+                __ClanChangeChieftanCompleted[p].Remove(callback);
+            }
+        }
+
+        /// <summary>
+        /// Raises the ClanChangeChieftanCompleted event.
+        /// </summary>
+        /// <remarks>
+        /// <para>Only high-priority events are invoked immediately; others are deferred.  For more information, see <see>ClanChangeChieftanCompleted</see>.</para>
+        /// </remarks>
+        /// <param name="e">The event arguments.</param>
+        /// <seealso cref="ClanChangeChieftanCompleted" />
+        protected virtual void OnClanChangeChieftanCompleted(ClanChieftanChangeEventArgs e)
+        {
+            foreach (ClanChieftanChangeEventHandler eh in __ClanChangeChieftanCompleted[Priority.High])
+            {
+                try
+                {
+                    eh(this, e);
+                }
+                catch (Exception ex)
+                {
+                    ReportException(
+                        ex,
+                        new KeyValuePair<string, object>("delegate", eh),
+                        new KeyValuePair<string, object>("Event", "ClanChangeChieftanCompleted"),
+                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: this", this),
+                        new KeyValuePair<string, object>("param: e", e)
+                        );
+                }
+            }
+
+            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            {
+                foreach (ClanChieftanChangeEventHandler eh in __ClanChangeChieftanCompleted[Priority.Normal])
+                {
+                    try
+                    {
+                        eh(this, e);
+                    }
+                    catch (Exception ex)
+                    {
+                        ReportException(
+                            ex,
+                            new KeyValuePair<string, object>("delegate", eh),
+                            new KeyValuePair<string, object>("Event", "ClanChangeChieftanCompleted"),
+                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
+                            new KeyValuePair<string, object>("param: this", this),
+                            new KeyValuePair<string, object>("param: e", e)
+                            );
+                    }
+                }
+                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+                {
+                    foreach (ClanChieftanChangeEventHandler eh in __ClanChangeChieftanCompleted[Priority.Low])
+                    {
+                        try
+                        {
+                            eh(this, e);
+                        }
+                        catch (Exception ex)
+                        {
+                            ReportException(
+                                ex,
+                                new KeyValuePair<string, object>("delegate", eh),
+                                new KeyValuePair<string, object>("Event", "ClanChangeChieftanCompleted"),
+                                new KeyValuePair<string, object>("param: priority", Priority.Low),
+                                new KeyValuePair<string, object>("param: this", this),
+                                new KeyValuePair<string, object>("param: e", e)
+                                );
+                        }
+                    }
+                    FreeArgumentResources(e as BaseEventArgs);
+                });
+            });
+        }
+        #endregion
 		
         #endregion
     }

@@ -327,6 +327,17 @@ namespace BNSharp.MBNCSUtil
         }
 
         /// <summary>
+        /// Reads the next byte in the stream but does not consume it.
+        /// </summary>
+        /// <returns>A byte value (0-255) if the call succeeded, or else -1 if reading past the end of the stream.</returns>
+        public int Peek()
+        {
+            if (m_index >= m_data.Length)
+                return -1;
+            return m_data[m_index];
+        }
+
+        /// <summary>
         /// Peeks at the next possible four-byte string with the specified byte padding without advancing the index.
         /// </summary>
         /// <param name="padding">The byte used to pad the string to total four bytes.</param>

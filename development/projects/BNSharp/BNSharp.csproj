@@ -49,6 +49,13 @@
   <ItemGroup>
     <Compile Include="BaseEventArgs.cs" />
     <Compile Include="BattleNet\ChatUser.cs" />
+    <Compile Include="BattleNet\Clans\ClanCandidatesSearchEventArgs.cs" />
+    <Compile Include="BattleNet\Clans\ClanCandidatesSearchStatus.cs" />
+    <Compile Include="BattleNet\Clans\ClanChieftanChangeEventArgs.cs" />
+    <Compile Include="BattleNet\Clans\ClanChieftanChangeResult.cs" />
+    <Compile Include="BattleNet\Clans\ClanDisbandEventArgs.cs" />
+    <Compile Include="BattleNet\Clans\ClanFormationEventArgs.cs" />
+    <Compile Include="BattleNet\Clans\ClanFormationInvitationEventArgs.cs" />
     <Compile Include="BattleNet\Clans\ClanMember.cs" />
     <Compile Include="BattleNet\Clans\ClanMemberListEventArgs.cs" />
     <Compile Include="BattleNet\Clans\ClanMembershipEventArgs.cs" />

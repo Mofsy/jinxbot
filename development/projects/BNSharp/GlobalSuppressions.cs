@@ -84,3 +84,6 @@
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible", Scope = "type", Target = "BNSharp.Net.BattleNetClient+ParseData")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1020:AvoidNamespacesWithFewTypes", Scope = "namespace", Target = "BNSharp.BattleNet.Friends")]
 [assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "2#", Scope = "member", Target = "BNSharp.Net.BattleNetClient.#RegisterCustomPacketHandler(BNSharp.BncsPacketId,BNSharp.Plugins.ParseCallback,BNSharp.Plugins.ParseCallback&)")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Scope = "member", Target = "BNSharp.BattleNet.Clans.ClanCandidatesSearchEventArgs.#Candidates")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Scope = "member", Target = "BNSharp.BattleNet.Clans.ClanFormationEventArgs.#FailureAccountNames")]
+[assembly: System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays", Scope = "member", Target = "BNSharp.BattleNet.Clans.ClanFormationInvitationEventArgs.#InvitedUsers")]
