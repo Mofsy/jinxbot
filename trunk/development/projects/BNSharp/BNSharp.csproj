@@ -66,6 +66,13 @@
     <Compile Include="BattleNet\Clans\ClanResponseCode.cs" />
     <Compile Include="BattleNet\Diablo2CharacterClass.cs" />
     <Compile Include="BattleNet\Diablo2DifficultyLevel.cs" />
+    <Compile Include="BattleNet\Friends\FriendAddedEventArgs.cs" />
+    <Compile Include="BattleNet\Friends\FriendListReceivedEventArgs.cs" />
+    <Compile Include="BattleNet\Friends\FriendLocation.cs" />
+    <Compile Include="BattleNet\Friends\FriendMovedEventArgs.cs" />
+    <Compile Include="BattleNet\Friends\FriendRemovedEventArgs.cs" />
+    <Compile Include="BattleNet\Friends\FriendStatus.cs" />
+    <Compile Include="BattleNet\Friends\FriendUpdatedEventArgs.cs" />
     <Compile Include="BattleNet\Friends\FriendUser.cs" />
     <Compile Include="BattleNet\NewsEntry.cs" />
     <Compile Include="BattleNet\Product.cs" />
@@ -100,6 +107,7 @@
     <Compile Include="Net\BattleNetClient.ErrorHandling.cs" />
     <Compile Include="Net\BattleNetClient.Events.cs" />
     <Compile Include="Net\BattleNetClient.EventSink.cs" />
+    <Compile Include="Net\BattleNetClient.Friends.cs" />
     <Compile Include="Net\BattleNetClient.Listen.cs" />
     <Compile Include="BattleNetClientResources.cs" />
     <Compile Include="Net\BattleNetClient.ParseData.cs" />

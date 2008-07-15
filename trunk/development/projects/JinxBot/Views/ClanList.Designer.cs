@@ -58,7 +58,7 @@
             this.ClientSize = new System.Drawing.Size(274, 472);
             this.Controls.Add(this.lvClanMembers);
             this.Name = "ClanList";
-            this.TabText = "ClanList";
+            this.TabText = "Clan List";
             this.Text = "Clan List";
             this.ResumeLayout(false);
 

@@ -14,6 +14,9 @@ namespace BNSharp.BattleNet.Clans
     public class ClanChieftanChangeEventArgs : BaseEventArgs
     {
         #region fields
+#if !NET_2_ONLY
+        [DataMember(Name = "Result")]
+#endif
         private ClanChieftanChangeResult m_result;
         #endregion
 
@@ -29,6 +32,9 @@ namespace BNSharp.BattleNet.Clans
         /// <summary>
         /// Gets the result of the change attempt.
         /// </summary>
+        /// <remarks>
+        /// <para>When exposed under a WCF data contract, this property's backing store is given the name <c>Result</c>.</para>
+        /// </remarks>
         public ClanChieftanChangeResult Result
         {
             get { return m_result; }

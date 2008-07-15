@@ -15,11 +15,11 @@ namespace BNSharp.BattleNet.Clans
     {
         #region fields
 #if !NET_2_ONLY
-        [DataMember]
+        [DataMember(Name = "Rank")]
 #endif
         private ClanRank m_rank;
 #if !NET_2_ONLY
-        [DataMember]
+        [DataMember(Name = "Tag")]
 #endif
         private string m_tag;
         #endregion
@@ -38,6 +38,9 @@ namespace BNSharp.BattleNet.Clans
         /// <summary>
         /// Gets your current rank within the clan.
         /// </summary>
+        /// <remarks>
+        /// <para>When exposed under a WCF data contract, this property's backing store is given the name <c>Rank</c>.</para>
+        /// </remarks>
         public ClanRank Rank
         {
             get { return m_rank; }
@@ -46,6 +49,9 @@ namespace BNSharp.BattleNet.Clans
         /// <summary>
         /// Gets the tag of the clan to which you belong.
         /// </summary>
+        /// <remarks>
+        /// <para>When exposed under a WCF data contract, this property's backing store is given the name <c>Tag</c>.</para>
+        /// </remarks>
         public string Tag
         {
             get { return m_tag; }

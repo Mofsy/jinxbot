@@ -12,7 +12,7 @@
         <asp:Button ID="Button1" runat="server" Text="Button" OnClientClick="callService(); return false;" />
         <asp:ScriptManager ID="ScriptManager1" runat="server">
             <Services>
-                <asp:ServiceReference Path="~/JinxBotWebClient.asmx" InlineScript="false" />
+                <asp:ServiceReference Path="~/JinxBotWebClient.svc" InlineScript="false" />
             </Services>
         </asp:ScriptManager>
     </div>
@@ -29,6 +29,7 @@ function serviceSuccess(result)
 {
     debugger;
     alert(result);
+    
 }
 
 function serviceFailure(error)

@@ -15,23 +15,23 @@ namespace BNSharp.BattleNet.Clans
     {
         #region fields
         #if !NET_2_ONLY
-        [DataMember]
+        [DataMember(Name = "RequestID")]
 #endif
         private int m_cookie;
 #if !NET_2_ONLY
-        [DataMember]
+        [DataMember(Name = "Tag")]
 #endif
         private string m_tag;
 #if !NET_2_ONLY
-        [DataMember]
+        [DataMember(Name = "Name")]
 #endif
         private string m_clanName;
 #if !NET_2_ONLY
-        [DataMember]
+        [DataMember(Name = "Inviter")]
 #endif
         private string m_inviterName;
 #if !NET_2_ONLY
-        [DataMember]
+        [DataMember(Name = "InvitedUsers")]
 #endif
         private string[] m_invitedUsers;
         #endregion
@@ -58,6 +58,7 @@ namespace BNSharp.BattleNet.Clans
         /// </summary>
         /// <remarks>
         /// <para>This value should be used in the response.</para>
+        /// <para>When exposed under a WCF data contract, this property's backing store is given the name <c>RequestID</c>.</para>
         /// </remarks>
         public int RequestID
         {
@@ -67,6 +68,9 @@ namespace BNSharp.BattleNet.Clans
         /// <summary>
         /// Gets the Tag of the clan being formed.
         /// </summary>
+        /// <remarks>
+        /// <para>When exposed under a WCF data contract, this property's backing store is given the name <c>Tag</c>.</para>
+        /// </remarks>
         public string ClanTag
         {
             get { return m_tag; }
@@ -75,6 +79,9 @@ namespace BNSharp.BattleNet.Clans
         /// <summary>
         /// Gets the full name of the clan being formed.
         /// </summary>
+        /// <remarks>
+        /// <para>When exposed under a WCF data contract, this property's backing store is given the name <c>Name</c>.</para>
+        /// </remarks>
         public string ClanName
         {
             get { return m_clanName; }
@@ -83,6 +90,9 @@ namespace BNSharp.BattleNet.Clans
         /// <summary>
         /// Gets the screen name of the user sending the invitation.
         /// </summary>
+        /// <remarks>
+        /// <para>When exposed under a WCF data contract, this property's backing store is given the name <c>Inviter</c>.</para>
+        /// </remarks>
         public string InvitingUser
         {
             get { return m_inviterName; }
@@ -91,6 +101,9 @@ namespace BNSharp.BattleNet.Clans
         /// <summary>
         /// Gets a copy of the list of users being invited to join.
         /// </summary>
+        /// <remarks>
+        /// <para>When exposed under a WCF data contract, this property's backing store is given the name <c>InvitedUsers</c>.</para>
+        /// </remarks>
         public string[] InvitedUsers
         {
             get

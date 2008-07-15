@@ -15,15 +15,15 @@ namespace BNSharp.BattleNet.Clans
     {
         #region fields
 #if !NET_2_ONLY
-        [DataMember]
+        [DataMember(Name = "PreviousRank")]
 #endif
         private ClanRank m_old;
 #if !NET_2_ONLY
-        [DataMember]
+        [DataMember(Name = "NewRank")]
 #endif
         private ClanRank m_new;
 #if !NET_2_ONLY
-        [DataMember]
+        [DataMember(Name = "MemberResponsible")]
 #endif
         private ClanMember m_changer; 
         #endregion
@@ -44,6 +44,9 @@ namespace BNSharp.BattleNet.Clans
         /// <summary>
         /// Gets your previous clan rank.
         /// </summary>
+        /// <remarks>
+        /// <para>When exposed under a WCF data contract, this property's backing store is given the name <c>PreviousRank</c>.</para>
+        /// </remarks>
         public ClanRank PreviousRank
         {
             get { return m_old; }
@@ -52,6 +55,9 @@ namespace BNSharp.BattleNet.Clans
         /// <summary>
         /// Gets your new clan rank.
         /// </summary>
+        /// <remarks>
+        /// <para>When exposed under a WCF data contract, this property's backing store is given the name <c>NewRank</c>.</para>
+        /// </remarks>
         public ClanRank NewRank
         {
             get { return m_new; }
@@ -60,6 +66,9 @@ namespace BNSharp.BattleNet.Clans
         /// <summary>
         /// Gets the <see>ClanMember</see> who changed the rank.
         /// </summary>
+        /// <remarks>
+        /// <para>When exposed under a WCF data contract, this property's backing store is given the name <c>MemberResponsible</c>.</para>
+        /// </remarks>
         public ClanMember MemberResponsible
         {
             get { return m_changer; }

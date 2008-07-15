@@ -47,6 +47,11 @@ namespace BNSharp.Net
                 { BncsPacketId.AuthAccountChange, new ParseCallback(HandleAuthAccountChange) },
                 { BncsPacketId.AuthAccountChangeProof, new ParseCallback(HandleAuthAccountChangeProof) },
                 { BncsPacketId.Warden, new ParseCallback(HandleWarden) },
+                { BncsPacketId.FriendsList, new ParseCallback(HandleFriendsList) },
+                { BncsPacketId.FriendsAdd, new ParseCallback(HandleFriendAdded) },
+                { BncsPacketId.FriendsUpdate, new ParseCallback(HandleFriendUpdate) },
+                { BncsPacketId.FriendsRemove, new ParseCallback(HandleFriendRemoved) },
+                { BncsPacketId.FriendsPosition, new ParseCallback(HandleFriendMoved) },
                 { BncsPacketId.ClanFindCandidates, new ParseCallback(HandleClanFindCandidates) },
                 { BncsPacketId.ClanInviteMultiple, new ParseCallback(HandleClanInviteMultiple) },
                 { BncsPacketId.ClanCreationInvitation, new ParseCallback(HandleClanCreationInvitation) },
@@ -847,7 +852,7 @@ namespace BNSharp.Net
             BncsPacket pck = new BncsPacket((byte)BncsPacketId.EnterChat);
 
             bool isClientWar3 = (m_settings.Client.Equals("WAR3", StringComparison.Ordinal) || m_settings.Client.Equals("W3XP", StringComparison.Ordinal));
-
+            bool isClientStar = (m_settings.Client.Equals("STAR", StringComparison.Ordinal) || m_settings.Client.Equals("SEXP", StringComparison.Ordinal));
             if (isClientWar3)
             {
                 BncsPacket pck0x45 = new BncsPacket((byte)BncsPacketId.NetGamePort);
@@ -905,6 +910,12 @@ namespace BNSharp.Net
                 pckJoinChannel.InsertInt32((int)ChannelJoinFlags.FirstJoin);
                 pckJoinChannel.InsertCString(client);
                 Send(pckJoinChannel);
+            }
+
+            if (isClientWar3 || isClientStar)
+            {
+                pck = new BncsPacket((byte)BncsPacketId.FriendsList);
+                Send(pck);
             }
 
             m_tmr.Start();

@@ -241,6 +241,24 @@ namespace BNSharp {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Diablo Classic (Retail).
+        /// </summary>
+        internal static string ProdDRTL {
+            get {
+                return ResourceManager.GetString("ProdDRTL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Diablo Classic (Shareware).
+        /// </summary>
+        internal static string ProdDSHR {
+            get {
+                return ResourceManager.GetString("ProdDSHR", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Japan Starcraft.
         /// </summary>
         internal static string ProdJSTR {

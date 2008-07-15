@@ -1,33 +1,27 @@
 ﻿using System;
-using System.Collections;
 using System.Linq;
-using System.Web;
-using System.Web.Services;
-using System.Web.Services.Protocols;
-using System.Xml.Linq;
-using System.Web.Script.Services;
+using System.Runtime.Serialization;
+using System.ServiceModel;
+using System.ServiceModel.Activation;
+using System.ServiceModel.Web;
 using BNSharp;
+using BNSharp.BattleNet.Clans;
+using System.Collections.Generic;
 
-/// <summary>
-/// Summary description for JinxBotWebClient
-/// </summary>
-[WebService(Namespace = "http://www.jinxbot.net/")]
-[WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
-[ScriptService]
-public class JinxBotWebClient : System.Web.Services.WebService
+[ServiceContract(Namespace = "")]
+[ServiceBehavior(IncludeExceptionDetailInFaults = true)]
+[AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
+public class JinxBotWebClient
 {
-
-    public JinxBotWebClient()
+    [OperationContract]
+    [WebGet(ResponseFormat = WebMessageFormat.Json)]
+    public BaseEventArgs[] GetArgs()
     {
-
+        List<BaseEventArgs> args = new List<BaseEventArgs> {
+            new ServerChatEventArgs(ChatEventType.NewChannelJoined, (int)ChannelFlags.PublicChannel, "Starcraft USA-1"),
+            new UserEventArgs(ChatEventType.UserJoinedChannel, UserFlags.None, 110, "DarkTemplar~AoA", new byte[0]),
+            new ClanCandidatesSearchEventArgs(ClanCandidatesSearchStatus.Success, new string[] { "DarkTemplar~AoA", "iPayBack!~AoA", "AoA" })
+        };
+        return args.ToArray();
     }
-
-    [WebMethod]
-    public EnteredChatEventArgs GetArgs()
-    {
-        return null;
-        //return new EnteredChatEventArgs("DarkTemplar~AoA#2", "STAR", "DarkTemplar~AoA");
-    }
-
 }
-

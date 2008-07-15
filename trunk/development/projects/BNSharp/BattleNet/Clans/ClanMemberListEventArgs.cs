@@ -16,7 +16,7 @@ namespace BNSharp.BattleNet.Clans
     {
         #region fields
 #if !NET_2_ONLY
-        [DataMember]
+        [DataMember(Name = "Members")]
 #endif
         private ClanMember[] m_members;
         #endregion
@@ -33,6 +33,9 @@ namespace BNSharp.BattleNet.Clans
         /// <summary>
         /// Gets the list of members received from Battle.net.
         /// </summary>
+        /// <remarks>
+        /// <para>When exposed under a WCF data contract, this property's backing store is given the name <c>Members</c>.</para>
+        /// </remarks>
         public ClanMember[] Members
         {
             get { return m_members; }
