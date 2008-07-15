@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3F72F2CF-3003-4831-82A6-EAD137409162}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>JinxBot.Plugins.McpHandler</RootNamespace>
+    <AssemblyName>JinxBot.Plugins.McpHandler</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AvailableRealmsEventArgs.cs" />
+    <Compile Include="McpConnection.cs" />
+    <Compile Include="McpConnection.Events.cs" />
+    <Compile Include="McpConnection.Listen.cs" />
+    <Compile Include="McpConnectionHandlerPlugin.cs" />
+    <Compile Include="McpPacket.cs" />
+    <Compile Include="McpPacketId.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RealmFailedEventArgs.cs" />
+    <Compile Include="RealmFailureReason.cs" />
+    <Compile Include="RealmServer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BNSharp\BNSharp.csproj">
+      <Project>{2D02D43C-BC3B-41D2-9226-4E215939107F}</Project>
+      <Name>BNSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\JinxBot\JinxBot.csproj">
+      <Project>{AB0945C2-7421-4D55-98AE-AB28B813E59D}</Project>
+      <Name>JinxBot</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="McpClient.cs" />
+    <Compile Include="McpConnection.BnetHandlers.cs" />
+    <Compile Include="McpConnection.McpParseData.cs" />
+    <Compile Include="RealmConnectedEventArgs.cs" />
+    <Compile Include="RealmConnectionStatus.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

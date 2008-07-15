@@ -43,6 +43,8 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Web", "websites\Web\", "{E0
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JinxBot.Plugins.JinxBotWeb", "projects\JinxBot.Plugins.JinxBotWeb\JinxBot.Plugins.JinxBotWeb.csproj", "{639E9236-88E5-4E9B-B559-CA7CB2598200}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JinxBot.Plugins.McpHandler", "projects\JinxBot.Plugins.McpHandler\JinxBot.Plugins.McpHandler.csproj", "{3F72F2CF-3003-4831-82A6-EAD137409162}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|.NET = Debug|.NET
@@ -227,6 +229,21 @@ Global
 		{639E9236-88E5-4E9B-B559-CA7CB2598200}.Release|Any CPU.Build.0 = Release|Any CPU
 		{639E9236-88E5-4E9B-B559-CA7CB2598200}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{639E9236-88E5-4E9B-B559-CA7CB2598200}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{3F72F2CF-3003-4831-82A6-EAD137409162}.Debug|.NET.ActiveCfg = Debug|Any CPU
+		{3F72F2CF-3003-4831-82A6-EAD137409162}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F72F2CF-3003-4831-82A6-EAD137409162}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F72F2CF-3003-4831-82A6-EAD137409162}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{3F72F2CF-3003-4831-82A6-EAD137409162}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{3F72F2CF-3003-4831-82A6-EAD137409162}.Default|.NET.ActiveCfg = Debug|Any CPU
+		{3F72F2CF-3003-4831-82A6-EAD137409162}.Default|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F72F2CF-3003-4831-82A6-EAD137409162}.Default|Any CPU.Build.0 = Debug|Any CPU
+		{3F72F2CF-3003-4831-82A6-EAD137409162}.Default|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{3F72F2CF-3003-4831-82A6-EAD137409162}.Default|Mixed Platforms.Build.0 = Debug|Any CPU
+		{3F72F2CF-3003-4831-82A6-EAD137409162}.Release|.NET.ActiveCfg = Release|Any CPU
+		{3F72F2CF-3003-4831-82A6-EAD137409162}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F72F2CF-3003-4831-82A6-EAD137409162}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F72F2CF-3003-4831-82A6-EAD137409162}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{3F72F2CF-3003-4831-82A6-EAD137409162}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
