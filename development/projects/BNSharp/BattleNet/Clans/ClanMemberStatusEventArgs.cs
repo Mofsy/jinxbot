@@ -14,7 +14,7 @@ namespace BNSharp.BattleNet.Clans
     public class ClanMemberStatusEventArgs : BaseEventArgs
     {
 #if !NET_2_ONLY
-        [DataMember]
+        [DataMember(Name = "Member")]
 #endif
         private ClanMember m_member;
 
@@ -30,6 +30,9 @@ namespace BNSharp.BattleNet.Clans
         /// <summary>
         /// Gets the associated clan member.
         /// </summary>
+        /// <remarks>
+        /// <para>When exposed under a WCF data contract, this property's backing store is given the name <c>Member</c>.</para>
+        /// </remarks>
         public ClanMember Member
         {
             get { return m_member; }

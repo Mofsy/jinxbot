@@ -15,7 +15,7 @@ namespace BNSharp.BattleNet.Clans
     {
         #region fields
 #if !NET_2_ONLY
-        [DataMember]
+        [DataMember(Name = "Succeeded")]
 #endif
         private bool m_succeeded;
         #endregion
@@ -34,6 +34,7 @@ namespace BNSharp.BattleNet.Clans
         /// </summary>
         /// <remarks>
         /// <para>The disband may fail if the client is not the clan leader, or if the clan is not at least one week old.</para>
+        /// <para>When exposed under a WCF data contract, this property's backing store is given the name <c>Succeeded</c>.</para>
         /// </remarks>
         public bool DisbandSucceeded
         {

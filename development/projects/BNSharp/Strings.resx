@@ -177,6 +177,12 @@
   <data name="ProdD2XP" xml:space="preserve">
     <value>Diablo II: The Lord of Destruction</value>
   </data>
+  <data name="ProdDRTL" xml:space="preserve">
+    <value>Diablo Classic (Retail)</value>
+  </data>
+  <data name="ProdDSHR" xml:space="preserve">
+    <value>Diablo Classic (Shareware)</value>
+  </data>
   <data name="ProdJSTR" xml:space="preserve">
     <value>Japan Starcraft</value>
   </data>

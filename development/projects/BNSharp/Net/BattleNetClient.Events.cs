@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 using BNSharp.BattleNet;
 using BNSharp.BattleNet.Clans;
+using BNSharp.BattleNet.Friends;
 
 namespace BNSharp.Net
 {
@@ -7335,6 +7336,899 @@ namespace BNSharp.Net
                                 ex,
                                 new KeyValuePair<string, object>("delegate", eh),
                                 new KeyValuePair<string, object>("Event", "ClanChangeChieftanCompleted"),
+                                new KeyValuePair<string, object>("param: priority", Priority.Low),
+                                new KeyValuePair<string, object>("param: this", this),
+                                new KeyValuePair<string, object>("param: e", e)
+                                );
+                        }
+                    }
+                    FreeArgumentResources(e as BaseEventArgs);
+                });
+            });
+        }
+        #endregion
+		
+        #endregion
+
+        #region friend events
+        #region FriendListReceived event
+        [NonSerialized]
+        private Dictionary<Priority, List<FriendListReceivedEventHandler>> __FriendListReceived = new Dictionary<Priority, List<FriendListReceivedEventHandler>>(3)
+        {
+            { Priority.High, new List<FriendListReceivedEventHandler>() },
+            { Priority.Normal, new List<FriendListReceivedEventHandler>() },
+            { Priority.Low, new List<FriendListReceivedEventHandler>() }
+        };
+        /// <summary>
+        /// Informs listeners that the client's friend list has been received.
+        /// </summary>
+        /// <remarks>
+        /// <para>Registering for this event with this member will register with <see cref="Priority">Normal priority</see>.  To register for 
+        /// <see cref="Priority">High</see> or <see cref="Priority">Low</see> priority, use the <see>RegisterFriendListReceivedNotification</see> and
+        /// <see>UnregisterFriendListReceivedNotification</see> methods.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        /// </remarks>
+        public event FriendListReceivedEventHandler FriendListReceived
+        {
+            add
+            {
+                lock (__FriendListReceived)
+                {
+                    if (!__FriendListReceived.ContainsKey(Priority.Normal))
+                    {
+                        __FriendListReceived.Add(Priority.Normal, new List<FriendListReceivedEventHandler>());
+                    }
+                }
+                __FriendListReceived[Priority.Normal].Add(value);
+            }
+            remove
+            {
+                if (__FriendListReceived.ContainsKey(Priority.Normal))
+                {
+                    __FriendListReceived[Priority.Normal].Remove(value);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Registers for notification of the <see>FriendListReceived</see> event at the specified priority.
+        /// </summary>
+        /// <remarks>
+        /// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
+        /// normal syntax to register for events at <see cref="Priority">Normal priority</see>, so no special registration is needed; this is 
+        /// accessed through normal event handling syntax (the += syntax in C#, or the <see langword="Handles" lang="VB" /> in Visual Basic.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        ///	<para>To be well-behaved within JinxBot, plugins should always unregister themselves when they are being unloaded or when they 
+        /// otherwise need to do so.  Plugins may opt-in to a Reflection-based event handling registration system which uses attributes to 
+        /// mark methods that should be used as event handlers.</para>
+        /// </remarks>
+        /// <param name="p">The priority at which to register.</param>
+        /// <param name="callback">The event handler that should be registered for this event.</param>
+        /// <seealso cref="FriendListReceived" />
+        /// <seealso cref="UnregisterFriendListReceivedNotification" />
+        public void RegisterFriendListReceivedNotification(Priority p, FriendListReceivedEventHandler callback)
+        {
+            lock (__FriendListReceived)
+            {
+                if (!__FriendListReceived.ContainsKey(p))
+                {
+                    __FriendListReceived.Add(p, new List<FriendListReceivedEventHandler>());
+                }
+            }
+            __FriendListReceived[p].Add(callback);
+        }
+
+        /// <summary>
+        /// Unregisters for notification of the <see>FriendListReceived</see> event at the specified priority.
+        /// </summary>
+        /// <remarks>
+        /// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
+        /// normal syntax to register for events at <see cref="Priority">Normal priority</see>, so no special registration is needed; this is 
+        /// accessed through normal event handling syntax (the += syntax in C#, or the <see langword="Handles" lang="VB" /> in Visual Basic.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        ///	<para>To be well-behaved within JinxBot, plugins should always unregister themselves when they are being unloaded or when they 
+        /// otherwise need to do so.  Plugins may opt-in to a Reflection-based event handling registration system which uses attributes to 
+        /// mark methods that should be used as event handlers.</para>
+        /// </remarks>
+        /// <param name="p">The priority from which to unregister.</param>
+        /// <param name="callback">The event handler that should be unregistered for this event.</param>
+        /// <seealso cref="FriendListReceived" />
+        /// <seealso cref="RegisterFriendListReceivedNotification" />
+        public void UnregisterFriendListReceivedNotification(Priority p, FriendListReceivedEventHandler callback)
+        {
+            if (__FriendListReceived.ContainsKey(p))
+            {
+                __FriendListReceived[p].Remove(callback);
+            }
+        }
+
+        /// <summary>
+        /// Raises the FriendListReceived event.
+        /// </summary>
+        /// <remarks>
+        /// <para>Only high-priority events are invoked immediately; others are deferred.  For more information, see <see>FriendListReceived</see>.</para>
+        /// </remarks>
+        /// <param name="e">The event arguments.</param>
+        /// <seealso cref="FriendListReceived" />
+        protected virtual void OnFriendListReceived(FriendListReceivedEventArgs e)
+        {
+            foreach (FriendListReceivedEventHandler eh in __FriendListReceived[Priority.High])
+            {
+                try
+                {
+                    eh(this, e);
+                }
+                catch (Exception ex)
+                {
+                    ReportException(
+                        ex,
+                        new KeyValuePair<string, object>("delegate", eh),
+                        new KeyValuePair<string, object>("Event", "FriendListReceived"),
+                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: this", this),
+                        new KeyValuePair<string, object>("param: e", e)
+                        );
+                }
+            }
+
+            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            {
+                foreach (FriendListReceivedEventHandler eh in __FriendListReceived[Priority.Normal])
+                {
+                    try
+                    {
+                        eh(this, e);
+                    }
+                    catch (Exception ex)
+                    {
+                        ReportException(
+                            ex,
+                            new KeyValuePair<string, object>("delegate", eh),
+                            new KeyValuePair<string, object>("Event", "FriendListReceived"),
+                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
+                            new KeyValuePair<string, object>("param: this", this),
+                            new KeyValuePair<string, object>("param: e", e)
+                            );
+                    }
+                }
+                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+                {
+                    foreach (FriendListReceivedEventHandler eh in __FriendListReceived[Priority.Low])
+                    {
+                        try
+                        {
+                            eh(this, e);
+                        }
+                        catch (Exception ex)
+                        {
+                            ReportException(
+                                ex,
+                                new KeyValuePair<string, object>("delegate", eh),
+                                new KeyValuePair<string, object>("Event", "FriendListReceived"),
+                                new KeyValuePair<string, object>("param: priority", Priority.Low),
+                                new KeyValuePair<string, object>("param: this", this),
+                                new KeyValuePair<string, object>("param: e", e)
+                                );
+                        }
+                    }
+                    FreeArgumentResources(e as BaseEventArgs);
+                });
+            });
+        }
+        #endregion
+
+        #region FriendUpdated event
+        [NonSerialized]
+        private Dictionary<Priority, List<FriendUpdatedEventHandler>> __FriendUpdated = new Dictionary<Priority, List<FriendUpdatedEventHandler>>(3)
+        {
+            { Priority.High, new List<FriendUpdatedEventHandler>() },
+            { Priority.Normal, new List<FriendUpdatedEventHandler>() },
+            { Priority.Low, new List<FriendUpdatedEventHandler>() }
+        };
+        /// <summary>
+        /// Informs listeners that a friend on the client's friend list has had its status changed.
+        /// </summary>
+        /// <remarks>
+        /// <para>Registering for this event with this member will register with <see cref="Priority">Normal priority</see>.  To register for 
+        /// <see cref="Priority">High</see> or <see cref="Priority">Low</see> priority, use the <see>RegisterFriendUpdatedNotification</see> and
+        /// <see>UnregisterFriendUpdatedNotification</see> methods.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        /// </remarks>
+        public event FriendUpdatedEventHandler FriendUpdated
+        {
+            add
+            {
+                lock (__FriendUpdated)
+                {
+                    if (!__FriendUpdated.ContainsKey(Priority.Normal))
+                    {
+                        __FriendUpdated.Add(Priority.Normal, new List<FriendUpdatedEventHandler>());
+                    }
+                }
+                __FriendUpdated[Priority.Normal].Add(value);
+            }
+            remove
+            {
+                if (__FriendUpdated.ContainsKey(Priority.Normal))
+                {
+                    __FriendUpdated[Priority.Normal].Remove(value);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Registers for notification of the <see>FriendUpdated</see> event at the specified priority.
+        /// </summary>
+        /// <remarks>
+        /// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
+        /// normal syntax to register for events at <see cref="Priority">Normal priority</see>, so no special registration is needed; this is 
+        /// accessed through normal event handling syntax (the += syntax in C#, or the <see langword="Handles" lang="VB" /> in Visual Basic.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        ///	<para>To be well-behaved within JinxBot, plugins should always unregister themselves when they are being unloaded or when they 
+        /// otherwise need to do so.  Plugins may opt-in to a Reflection-based event handling registration system which uses attributes to 
+        /// mark methods that should be used as event handlers.</para>
+        /// </remarks>
+        /// <param name="p">The priority at which to register.</param>
+        /// <param name="callback">The event handler that should be registered for this event.</param>
+        /// <seealso cref="FriendUpdated" />
+        /// <seealso cref="UnregisterFriendUpdatedNotification" />
+        public void RegisterFriendUpdatedNotification(Priority p, FriendUpdatedEventHandler callback)
+        {
+            lock (__FriendUpdated)
+            {
+                if (!__FriendUpdated.ContainsKey(p))
+                {
+                    __FriendUpdated.Add(p, new List<FriendUpdatedEventHandler>());
+                }
+            }
+            __FriendUpdated[p].Add(callback);
+        }
+
+        /// <summary>
+        /// Unregisters for notification of the <see>FriendUpdated</see> event at the specified priority.
+        /// </summary>
+        /// <remarks>
+        /// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
+        /// normal syntax to register for events at <see cref="Priority">Normal priority</see>, so no special registration is needed; this is 
+        /// accessed through normal event handling syntax (the += syntax in C#, or the <see langword="Handles" lang="VB" /> in Visual Basic.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        ///	<para>To be well-behaved within JinxBot, plugins should always unregister themselves when they are being unloaded or when they 
+        /// otherwise need to do so.  Plugins may opt-in to a Reflection-based event handling registration system which uses attributes to 
+        /// mark methods that should be used as event handlers.</para>
+        /// </remarks>
+        /// <param name="p">The priority from which to unregister.</param>
+        /// <param name="callback">The event handler that should be unregistered for this event.</param>
+        /// <seealso cref="FriendUpdated" />
+        /// <seealso cref="RegisterFriendUpdatedNotification" />
+        public void UnregisterFriendUpdatedNotification(Priority p, FriendUpdatedEventHandler callback)
+        {
+            if (__FriendUpdated.ContainsKey(p))
+            {
+                __FriendUpdated[p].Remove(callback);
+            }
+        }
+
+        /// <summary>
+        /// Raises the FriendUpdated event.
+        /// </summary>
+        /// <remarks>
+        /// <para>Only high-priority events are invoked immediately; others are deferred.  For more information, see <see>FriendUpdated</see>.</para>
+        /// </remarks>
+        /// <param name="e">The event arguments.</param>
+        /// <seealso cref="FriendUpdated" />
+        protected virtual void OnFriendUpdated(FriendUpdatedEventArgs e)
+        {
+            foreach (FriendUpdatedEventHandler eh in __FriendUpdated[Priority.High])
+            {
+                try
+                {
+                    eh(this, e);
+                }
+                catch (Exception ex)
+                {
+                    ReportException(
+                        ex,
+                        new KeyValuePair<string, object>("delegate", eh),
+                        new KeyValuePair<string, object>("Event", "FriendUpdated"),
+                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: this", this),
+                        new KeyValuePair<string, object>("param: e", e)
+                        );
+                }
+            }
+
+            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            {
+                foreach (FriendUpdatedEventHandler eh in __FriendUpdated[Priority.Normal])
+                {
+                    try
+                    {
+                        eh(this, e);
+                    }
+                    catch (Exception ex)
+                    {
+                        ReportException(
+                            ex,
+                            new KeyValuePair<string, object>("delegate", eh),
+                            new KeyValuePair<string, object>("Event", "FriendUpdated"),
+                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
+                            new KeyValuePair<string, object>("param: this", this),
+                            new KeyValuePair<string, object>("param: e", e)
+                            );
+                    }
+                }
+                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+                {
+                    foreach (FriendUpdatedEventHandler eh in __FriendUpdated[Priority.Low])
+                    {
+                        try
+                        {
+                            eh(this, e);
+                        }
+                        catch (Exception ex)
+                        {
+                            ReportException(
+                                ex,
+                                new KeyValuePair<string, object>("delegate", eh),
+                                new KeyValuePair<string, object>("Event", "FriendUpdated"),
+                                new KeyValuePair<string, object>("param: priority", Priority.Low),
+                                new KeyValuePair<string, object>("param: this", this),
+                                new KeyValuePair<string, object>("param: e", e)
+                                );
+                        }
+                    }
+                    FreeArgumentResources(e as BaseEventArgs);
+                });
+            });
+        }
+        #endregion
+
+        #region FriendAdded event
+        [NonSerialized]
+        private Dictionary<Priority, List<FriendAddedEventHandler>> __FriendAdded = new Dictionary<Priority, List<FriendAddedEventHandler>>(3)
+        {
+            { Priority.High, new List<FriendAddedEventHandler>() },
+            { Priority.Normal, new List<FriendAddedEventHandler>() },
+            { Priority.Low, new List<FriendAddedEventHandler>() }
+        };
+        /// <summary>
+        /// Informs listeners that a new friend has been added to the client's friends list.
+        /// </summary>
+        /// <remarks>
+        /// <para>Registering for this event with this member will register with <see cref="Priority">Normal priority</see>.  To register for 
+        /// <see cref="Priority">High</see> or <see cref="Priority">Low</see> priority, use the <see>RegisterFriendAddedNotification</see> and
+        /// <see>UnregisterFriendAddedNotification</see> methods.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        /// </remarks>
+        public event FriendAddedEventHandler FriendAdded
+        {
+            add
+            {
+                lock (__FriendAdded)
+                {
+                    if (!__FriendAdded.ContainsKey(Priority.Normal))
+                    {
+                        __FriendAdded.Add(Priority.Normal, new List<FriendAddedEventHandler>());
+                    }
+                }
+                __FriendAdded[Priority.Normal].Add(value);
+            }
+            remove
+            {
+                if (__FriendAdded.ContainsKey(Priority.Normal))
+                {
+                    __FriendAdded[Priority.Normal].Remove(value);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Registers for notification of the <see>FriendAdded</see> event at the specified priority.
+        /// </summary>
+        /// <remarks>
+        /// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
+        /// normal syntax to register for events at <see cref="Priority">Normal priority</see>, so no special registration is needed; this is 
+        /// accessed through normal event handling syntax (the += syntax in C#, or the <see langword="Handles" lang="VB" /> in Visual Basic.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        ///	<para>To be well-behaved within JinxBot, plugins should always unregister themselves when they are being unloaded or when they 
+        /// otherwise need to do so.  Plugins may opt-in to a Reflection-based event handling registration system which uses attributes to 
+        /// mark methods that should be used as event handlers.</para>
+        /// </remarks>
+        /// <param name="p">The priority at which to register.</param>
+        /// <param name="callback">The event handler that should be registered for this event.</param>
+        /// <seealso cref="FriendAdded" />
+        /// <seealso cref="UnregisterFriendAddedNotification" />
+        public void RegisterFriendAddedNotification(Priority p, FriendAddedEventHandler callback)
+        {
+            lock (__FriendAdded)
+            {
+                if (!__FriendAdded.ContainsKey(p))
+                {
+                    __FriendAdded.Add(p, new List<FriendAddedEventHandler>());
+                }
+            }
+            __FriendAdded[p].Add(callback);
+        }
+
+        /// <summary>
+        /// Unregisters for notification of the <see>FriendAdded</see> event at the specified priority.
+        /// </summary>
+        /// <remarks>
+        /// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
+        /// normal syntax to register for events at <see cref="Priority">Normal priority</see>, so no special registration is needed; this is 
+        /// accessed through normal event handling syntax (the += syntax in C#, or the <see langword="Handles" lang="VB" /> in Visual Basic.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        ///	<para>To be well-behaved within JinxBot, plugins should always unregister themselves when they are being unloaded or when they 
+        /// otherwise need to do so.  Plugins may opt-in to a Reflection-based event handling registration system which uses attributes to 
+        /// mark methods that should be used as event handlers.</para>
+        /// </remarks>
+        /// <param name="p">The priority from which to unregister.</param>
+        /// <param name="callback">The event handler that should be unregistered for this event.</param>
+        /// <seealso cref="FriendAdded" />
+        /// <seealso cref="RegisterFriendAddedNotification" />
+        public void UnregisterFriendAddedNotification(Priority p, FriendAddedEventHandler callback)
+        {
+            if (__FriendAdded.ContainsKey(p))
+            {
+                __FriendAdded[p].Remove(callback);
+            }
+        }
+
+        /// <summary>
+        /// Raises the FriendAdded event.
+        /// </summary>
+        /// <remarks>
+        /// <para>Only high-priority events are invoked immediately; others are deferred.  For more information, see <see>FriendAdded</see>.</para>
+        /// </remarks>
+        /// <param name="e">The event arguments.</param>
+        /// <seealso cref="FriendAdded" />
+        protected virtual void OnFriendAdded(FriendAddedEventArgs e)
+        {
+            foreach (FriendAddedEventHandler eh in __FriendAdded[Priority.High])
+            {
+                try
+                {
+                    eh(this, e);
+                }
+                catch (Exception ex)
+                {
+                    ReportException(
+                        ex,
+                        new KeyValuePair<string, object>("delegate", eh),
+                        new KeyValuePair<string, object>("Event", "FriendAdded"),
+                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: this", this),
+                        new KeyValuePair<string, object>("param: e", e)
+                        );
+                }
+            }
+
+            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            {
+                foreach (FriendAddedEventHandler eh in __FriendAdded[Priority.Normal])
+                {
+                    try
+                    {
+                        eh(this, e);
+                    }
+                    catch (Exception ex)
+                    {
+                        ReportException(
+                            ex,
+                            new KeyValuePair<string, object>("delegate", eh),
+                            new KeyValuePair<string, object>("Event", "FriendAdded"),
+                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
+                            new KeyValuePair<string, object>("param: this", this),
+                            new KeyValuePair<string, object>("param: e", e)
+                            );
+                    }
+                }
+                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+                {
+                    foreach (FriendAddedEventHandler eh in __FriendAdded[Priority.Low])
+                    {
+                        try
+                        {
+                            eh(this, e);
+                        }
+                        catch (Exception ex)
+                        {
+                            ReportException(
+                                ex,
+                                new KeyValuePair<string, object>("delegate", eh),
+                                new KeyValuePair<string, object>("Event", "FriendAdded"),
+                                new KeyValuePair<string, object>("param: priority", Priority.Low),
+                                new KeyValuePair<string, object>("param: this", this),
+                                new KeyValuePair<string, object>("param: e", e)
+                                );
+                        }
+                    }
+                    FreeArgumentResources(e as BaseEventArgs);
+                });
+            });
+        }
+        #endregion
+
+        #region FriendRemoved event
+        [NonSerialized]
+        private Dictionary<Priority, List<FriendRemovedEventHandler>> __FriendRemoved = new Dictionary<Priority, List<FriendRemovedEventHandler>>(3)
+        {
+            { Priority.High, new List<FriendRemovedEventHandler>() },
+            { Priority.Normal, new List<FriendRemovedEventHandler>() },
+            { Priority.Low, new List<FriendRemovedEventHandler>() }
+        };
+        /// <summary>
+        /// Informs listeners that a friend has been removed from the client's friends list.
+        /// </summary>
+        /// <remarks>
+        /// <para>Registering for this event with this member will register with <see cref="Priority">Normal priority</see>.  To register for 
+        /// <see cref="Priority">High</see> or <see cref="Priority">Low</see> priority, use the <see>RegisterFriendRemovedNotification</see> and
+        /// <see>UnregisterFriendRemovedNotification</see> methods.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        /// </remarks>
+        public event FriendRemovedEventHandler FriendRemoved
+        {
+            add
+            {
+                lock (__FriendRemoved)
+                {
+                    if (!__FriendRemoved.ContainsKey(Priority.Normal))
+                    {
+                        __FriendRemoved.Add(Priority.Normal, new List<FriendRemovedEventHandler>());
+                    }
+                }
+                __FriendRemoved[Priority.Normal].Add(value);
+            }
+            remove
+            {
+                if (__FriendRemoved.ContainsKey(Priority.Normal))
+                {
+                    __FriendRemoved[Priority.Normal].Remove(value);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Registers for notification of the <see>FriendRemoved</see> event at the specified priority.
+        /// </summary>
+        /// <remarks>
+        /// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
+        /// normal syntax to register for events at <see cref="Priority">Normal priority</see>, so no special registration is needed; this is 
+        /// accessed through normal event handling syntax (the += syntax in C#, or the <see langword="Handles" lang="VB" /> in Visual Basic.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        ///	<para>To be well-behaved within JinxBot, plugins should always unregister themselves when they are being unloaded or when they 
+        /// otherwise need to do so.  Plugins may opt-in to a Reflection-based event handling registration system which uses attributes to 
+        /// mark methods that should be used as event handlers.</para>
+        /// </remarks>
+        /// <param name="p">The priority at which to register.</param>
+        /// <param name="callback">The event handler that should be registered for this event.</param>
+        /// <seealso cref="FriendRemoved" />
+        /// <seealso cref="UnregisterFriendRemovedNotification" />
+        public void RegisterFriendRemovedNotification(Priority p, FriendRemovedEventHandler callback)
+        {
+            lock (__FriendRemoved)
+            {
+                if (!__FriendRemoved.ContainsKey(p))
+                {
+                    __FriendRemoved.Add(p, new List<FriendRemovedEventHandler>());
+                }
+            }
+            __FriendRemoved[p].Add(callback);
+        }
+
+        /// <summary>
+        /// Unregisters for notification of the <see>FriendRemoved</see> event at the specified priority.
+        /// </summary>
+        /// <remarks>
+        /// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
+        /// normal syntax to register for events at <see cref="Priority">Normal priority</see>, so no special registration is needed; this is 
+        /// accessed through normal event handling syntax (the += syntax in C#, or the <see langword="Handles" lang="VB" /> in Visual Basic.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        ///	<para>To be well-behaved within JinxBot, plugins should always unregister themselves when they are being unloaded or when they 
+        /// otherwise need to do so.  Plugins may opt-in to a Reflection-based event handling registration system which uses attributes to 
+        /// mark methods that should be used as event handlers.</para>
+        /// </remarks>
+        /// <param name="p">The priority from which to unregister.</param>
+        /// <param name="callback">The event handler that should be unregistered for this event.</param>
+        /// <seealso cref="FriendRemoved" />
+        /// <seealso cref="RegisterFriendRemovedNotification" />
+        public void UnregisterFriendRemovedNotification(Priority p, FriendRemovedEventHandler callback)
+        {
+            if (__FriendRemoved.ContainsKey(p))
+            {
+                __FriendRemoved[p].Remove(callback);
+            }
+        }
+
+        /// <summary>
+        /// Raises the FriendRemoved event.
+        /// </summary>
+        /// <remarks>
+        /// <para>Only high-priority events are invoked immediately; others are deferred.  For more information, see <see>FriendRemoved</see>.</para>
+        /// </remarks>
+        /// <param name="e">The event arguments.</param>
+        /// <seealso cref="FriendRemoved" />
+        protected virtual void OnFriendRemoved(FriendRemovedEventArgs e)
+        {
+            foreach (FriendRemovedEventHandler eh in __FriendRemoved[Priority.High])
+            {
+                try
+                {
+                    eh(this, e);
+                }
+                catch (Exception ex)
+                {
+                    ReportException(
+                        ex,
+                        new KeyValuePair<string, object>("delegate", eh),
+                        new KeyValuePair<string, object>("Event", "FriendRemoved"),
+                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: this", this),
+                        new KeyValuePair<string, object>("param: e", e)
+                        );
+                }
+            }
+
+            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            {
+                foreach (FriendRemovedEventHandler eh in __FriendRemoved[Priority.Normal])
+                {
+                    try
+                    {
+                        eh(this, e);
+                    }
+                    catch (Exception ex)
+                    {
+                        ReportException(
+                            ex,
+                            new KeyValuePair<string, object>("delegate", eh),
+                            new KeyValuePair<string, object>("Event", "FriendRemoved"),
+                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
+                            new KeyValuePair<string, object>("param: this", this),
+                            new KeyValuePair<string, object>("param: e", e)
+                            );
+                    }
+                }
+                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+                {
+                    foreach (FriendRemovedEventHandler eh in __FriendRemoved[Priority.Low])
+                    {
+                        try
+                        {
+                            eh(this, e);
+                        }
+                        catch (Exception ex)
+                        {
+                            ReportException(
+                                ex,
+                                new KeyValuePair<string, object>("delegate", eh),
+                                new KeyValuePair<string, object>("Event", "FriendRemoved"),
+                                new KeyValuePair<string, object>("param: priority", Priority.Low),
+                                new KeyValuePair<string, object>("param: this", this),
+                                new KeyValuePair<string, object>("param: e", e)
+                                );
+                        }
+                    }
+                    FreeArgumentResources(e as BaseEventArgs);
+                });
+            });
+        }
+        #endregion
+
+        #region FriendMoved event
+        [NonSerialized]
+        private Dictionary<Priority, List<FriendMovedEventHandler>> __FriendMoved = new Dictionary<Priority, List<FriendMovedEventHandler>>(3)
+        {
+            { Priority.High, new List<FriendMovedEventHandler>() },
+            { Priority.Normal, new List<FriendMovedEventHandler>() },
+            { Priority.Low, new List<FriendMovedEventHandler>() }
+        };
+        /// <summary>
+        /// Informs listeners that a friend on the user's friends list has changed position on the list.
+        /// </summary>
+        /// <remarks>
+        /// <para>Registering for this event with this member will register with <see cref="Priority">Normal priority</see>.  To register for 
+        /// <see cref="Priority">High</see> or <see cref="Priority">Low</see> priority, use the <see>RegisterFriendMovedNotification</see> and
+        /// <see>UnregisterFriendMovedNotification</see> methods.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        /// </remarks>
+        public event FriendMovedEventHandler FriendMoved
+        {
+            add
+            {
+                lock (__FriendMoved)
+                {
+                    if (!__FriendMoved.ContainsKey(Priority.Normal))
+                    {
+                        __FriendMoved.Add(Priority.Normal, new List<FriendMovedEventHandler>());
+                    }
+                }
+                __FriendMoved[Priority.Normal].Add(value);
+            }
+            remove
+            {
+                if (__FriendMoved.ContainsKey(Priority.Normal))
+                {
+                    __FriendMoved[Priority.Normal].Remove(value);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Registers for notification of the <see>FriendMoved</see> event at the specified priority.
+        /// </summary>
+        /// <remarks>
+        /// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
+        /// normal syntax to register for events at <see cref="Priority">Normal priority</see>, so no special registration is needed; this is 
+        /// accessed through normal event handling syntax (the += syntax in C#, or the <see langword="Handles" lang="VB" /> in Visual Basic.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        ///	<para>To be well-behaved within JinxBot, plugins should always unregister themselves when they are being unloaded or when they 
+        /// otherwise need to do so.  Plugins may opt-in to a Reflection-based event handling registration system which uses attributes to 
+        /// mark methods that should be used as event handlers.</para>
+        /// </remarks>
+        /// <param name="p">The priority at which to register.</param>
+        /// <param name="callback">The event handler that should be registered for this event.</param>
+        /// <seealso cref="FriendMoved" />
+        /// <seealso cref="UnregisterFriendMovedNotification" />
+        public void RegisterFriendMovedNotification(Priority p, FriendMovedEventHandler callback)
+        {
+            lock (__FriendMoved)
+            {
+                if (!__FriendMoved.ContainsKey(p))
+                {
+                    __FriendMoved.Add(p, new List<FriendMovedEventHandler>());
+                }
+            }
+            __FriendMoved[p].Add(callback);
+        }
+
+        /// <summary>
+        /// Unregisters for notification of the <see>FriendMoved</see> event at the specified priority.
+        /// </summary>
+        /// <remarks>
+        /// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
+        /// normal syntax to register for events at <see cref="Priority">Normal priority</see>, so no special registration is needed; this is 
+        /// accessed through normal event handling syntax (the += syntax in C#, or the <see langword="Handles" lang="VB" /> in Visual Basic.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        ///	<para>To be well-behaved within JinxBot, plugins should always unregister themselves when they are being unloaded or when they 
+        /// otherwise need to do so.  Plugins may opt-in to a Reflection-based event handling registration system which uses attributes to 
+        /// mark methods that should be used as event handlers.</para>
+        /// </remarks>
+        /// <param name="p">The priority from which to unregister.</param>
+        /// <param name="callback">The event handler that should be unregistered for this event.</param>
+        /// <seealso cref="FriendMoved" />
+        /// <seealso cref="RegisterFriendMovedNotification" />
+        public void UnregisterFriendMovedNotification(Priority p, FriendMovedEventHandler callback)
+        {
+            if (__FriendMoved.ContainsKey(p))
+            {
+                __FriendMoved[p].Remove(callback);
+            }
+        }
+
+        /// <summary>
+        /// Raises the FriendMoved event.
+        /// </summary>
+        /// <remarks>
+        /// <para>Only high-priority events are invoked immediately; others are deferred.  For more information, see <see>FriendMoved</see>.</para>
+        /// </remarks>
+        /// <param name="e">The event arguments.</param>
+        /// <seealso cref="FriendMoved" />
+        protected virtual void OnFriendMoved(FriendMovedEventArgs e)
+        {
+            foreach (FriendMovedEventHandler eh in __FriendMoved[Priority.High])
+            {
+                try
+                {
+                    eh(this, e);
+                }
+                catch (Exception ex)
+                {
+                    ReportException(
+                        ex,
+                        new KeyValuePair<string, object>("delegate", eh),
+                        new KeyValuePair<string, object>("Event", "FriendMoved"),
+                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: this", this),
+                        new KeyValuePair<string, object>("param: e", e)
+                        );
+                }
+            }
+
+            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            {
+                foreach (FriendMovedEventHandler eh in __FriendMoved[Priority.Normal])
+                {
+                    try
+                    {
+                        eh(this, e);
+                    }
+                    catch (Exception ex)
+                    {
+                        ReportException(
+                            ex,
+                            new KeyValuePair<string, object>("delegate", eh),
+                            new KeyValuePair<string, object>("Event", "FriendMoved"),
+                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
+                            new KeyValuePair<string, object>("param: this", this),
+                            new KeyValuePair<string, object>("param: e", e)
+                            );
+                    }
+                }
+                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+                {
+                    foreach (FriendMovedEventHandler eh in __FriendMoved[Priority.Low])
+                    {
+                        try
+                        {
+                            eh(this, e);
+                        }
+                        catch (Exception ex)
+                        {
+                            ReportException(
+                                ex,
+                                new KeyValuePair<string, object>("delegate", eh),
+                                new KeyValuePair<string, object>("Event", "FriendMoved"),
                                 new KeyValuePair<string, object>("param: priority", Priority.Low),
                                 new KeyValuePair<string, object>("param: this", this),
                                 new KeyValuePair<string, object>("param: e", e)

@@ -61,6 +61,8 @@ namespace JinxBot.Views
                 m_friends = new FriendsList(client);
                 m_friends.Show(this.dock);
             }
+
+            m_channel.Show();
         }
 
         /// <summary>

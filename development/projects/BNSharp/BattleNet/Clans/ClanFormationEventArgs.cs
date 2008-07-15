@@ -15,19 +15,19 @@ namespace BNSharp.BattleNet.Clans
     {
         #region fields
 #if !NET_2_ONLY
-        [DataMember]
+        [DataMember(Name="Succeeded")]
 #endif
         private bool m_success;
 #if !NET_2_ONLY
-        [DataMember]
+        [DataMember(Name="Declined")]
 #endif
         private bool m_declined;
 #if !NET_2_ONLY
-        [DataMember]
+        [DataMember(Name = "Unavailable")]
 #endif
         private bool m_unavailable;
 #if !NET_2_ONLY
-        [DataMember]
+        [DataMember(Name = "FailedAccounts")]
 #endif
         private string[] m_failedAccounts;
         #endregion
@@ -59,6 +59,7 @@ namespace BNSharp.BattleNet.Clans
         /// </summary>
         /// <remarks>
         /// <para>When this property returns <see langword="true" />, the <see>FailureAccountNames</see> property will return a zero-length array.</para>
+        /// <para>When exposed under a WCF data contract, this property's backing store is given the name <c>Succeeded</c>.</para>
         /// </remarks>
         public bool Succeeded
         {
@@ -68,6 +69,9 @@ namespace BNSharp.BattleNet.Clans
         /// <summary>
         /// Gets whether the invitation failed because users declined.
         /// </summary>
+        /// <remarks>
+        /// <para>When exposed under a WCF data contract, this property's backing store is given the name <c>Declined</c>.</para>
+        /// </remarks>
         public bool UsersDeclined
         {
             get { return m_declined; }
@@ -76,6 +80,9 @@ namespace BNSharp.BattleNet.Clans
         /// <summary>
         /// Gets whether the invitation failed because users were unavailable.
         /// </summary>
+        /// <remarks>
+        /// <para>When exposed under a WCF data contract, this property's backing store is given the name <c>Unavailable</c>.</para>
+        /// </remarks>
         public bool UsersWereUnavailable
         {
             get { return m_unavailable; }
@@ -84,6 +91,9 @@ namespace BNSharp.BattleNet.Clans
         /// <summary>
         /// Gets a copy of the account names that failed being invited.
         /// </summary>
+        /// <remarks>
+        /// <para>When exposed under a WCF data contract, this property's backing store is given the name <c>FailedAccounts</c>.</para>
+        /// </remarks>
         public string[] FailureAccountNames
         {
             get

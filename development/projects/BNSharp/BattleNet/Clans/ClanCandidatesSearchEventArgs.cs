@@ -15,11 +15,11 @@ namespace BNSharp.BattleNet.Clans
     {
         #region fields
 #if !NET_2_ONLY
-        [DataMember]
+        [DataMember(Name = "Status")]
 #endif
         private ClanCandidatesSearchStatus m_status;
 #if !NET_2_ONLY
-        [DataMember]
+        [DataMember(Name = "CandidateNames")]
 #endif
         private string[] m_candidateNames;
         #endregion
@@ -50,6 +50,9 @@ namespace BNSharp.BattleNet.Clans
         /// <summary>
         /// Gets a copy of the list of candidates found in the channel.
         /// </summary>
+        /// <remarks>
+        /// <para>When exposed under a WCF data contract, this property's backing store is given the name <c>CandidateNames</c>.</para>
+        /// </remarks>
         public string[] Candidates
         {
             get
@@ -63,6 +66,9 @@ namespace BNSharp.BattleNet.Clans
         /// <summary>
         /// Gets the functional result of the search.
         /// </summary>
+        /// <remarks>
+        /// <para>When exposed under a WCF data contract, this property's backing store is given the name <c>Status</c>.</para>
+        /// </remarks>
         public ClanCandidatesSearchStatus Status
         {
             get { return m_status; }

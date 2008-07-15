@@ -49,8 +49,8 @@
             this.ClientSize = new System.Drawing.Size(282, 539);
             this.Controls.Add(this.listBox1);
             this.Name = "ChannelList";
-            this.TabText = "ChannelList";
-            this.Text = "ChannelList";
+            this.TabText = "Channel";
+            this.Text = "Channel";
             this.ResumeLayout(false);
 
         }

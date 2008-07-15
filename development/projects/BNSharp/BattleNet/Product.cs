@@ -70,6 +70,15 @@ namespace BNSharp.BattleNet
         public static readonly Product Warcraft2BNE = new Product("W2BN", Strings.ProdW2BN);
 
         /// <summary>
+        /// The <see>Product</see> object for Diablo (Retail).
+        /// </summary>
+        public static readonly Product DiabloRetail = new Product("DRTL", Strings.ProdDRTL);
+        /// <summary>
+        /// The <see>Product</see> object for Diablo (Shareware).
+        /// </summary>
+        public static readonly Product DiabloShareware = new Product("DSHR", Strings.ProdDSHR);
+
+        /// <summary>
         /// The <see>Product</see> object for Diablo 2 Shareware.
         /// </summary>
         public static readonly Product Diablo2Shareware = new Product("D2SH", Strings.ProdD2SH);
