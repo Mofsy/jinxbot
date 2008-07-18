@@ -32,24 +32,24 @@ namespace MBNCSUtil.Util
         {
             public byte[] data;
 
-            public static Comparison<LDHeapRecord> Comparison
-            {
-                get
-                {
-                    return delegate(LDHeapRecord a, LDHeapRecord b)
-                    {
-                        int valA = BitConverter.ToInt32(a.data, 0);
-                        int valB = BitConverter.ToInt32(b.data, 0);
+            //public static Comparison<LDHeapRecord> Comparison
+            //{
+            //    get
+            //    {
+            //        return delegate(LDHeapRecord a, LDHeapRecord b)
+            //        {
+            //            int valA = BitConverter.ToInt32(a.data, 0);
+            //            int valB = BitConverter.ToInt32(b.data, 0);
 
-                        if (valA < valB)
-                            return -1;
-                        else if (valA > valB)
-                            return 1;
+            //            if (valA < valB)
+            //                return -1;
+            //            else if (valA > valB)
+            //                return 1;
                         
-                        return 0;
-                    };
-                }
-            }
+            //            return 0;
+            //        };
+            //    }
+            //}
         }
         #endregion
 
@@ -78,22 +78,22 @@ namespace MBNCSUtil.Util
             m_obs.Add(rec);
         }
 
-        public void Sort()
-        {
-            m_obs.Sort(LDHeapRecord.Comparison);
-        }
+        //public void Sort()
+        //{
+        //    m_obs.Sort(LDHeapRecord.Comparison);
+        //}
 
-        public IntPtr ToIntPtr()
-        {
-            int byteLength = m_obs.Count * 16;
-            IntPtr mem = Marshal.AllocHGlobal(byteLength);
-            for (int i = 0; i < m_obs.Count; i++)
-            {
-                Marshal.Copy(m_obs[i].data, 0, new IntPtr(mem.ToInt64() + (i * 16)), 16);
-            }
+        //public IntPtr ToIntPtr()
+        //{
+        //    int byteLength = m_obs.Count * 16;
+        //    IntPtr mem = Marshal.AllocHGlobal(byteLength);
+        //    for (int i = 0; i < m_obs.Count; i++)
+        //    {
+        //        Marshal.Copy(m_obs[i].data, 0, new IntPtr(mem.ToInt64() + (i * 16)), 16);
+        //    }
 
-            return mem;
-        }
+        //    return mem;
+        //}
 
         public HeapPtr ToPointer()
         {

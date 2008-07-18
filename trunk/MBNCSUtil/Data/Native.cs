@@ -26,14 +26,14 @@ using System.Runtime.InteropServices;
 namespace MBNCSUtil.Data
 {
     #region interop support
-    internal static class Native
+    internal static class NativeMethods
     {
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, ThrowOnUnmappableChar = true, SetLastError = true)]
         public static extern IntPtr LoadLibrary(string path);
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", CharSet = CharSet.Ansi, ThrowOnUnmappableChar = true, SetLastError = true)]
         public static extern IntPtr GetProcAddress(IntPtr hModule, string procName);
-        [DllImport("kernel32.dll")]
-        public static extern void FreeLibrary(IntPtr hModule);
+        //[DllImport("kernel32.dll")]
+        //public static extern void FreeLibrary(IntPtr hModule);
 
         public static bool Is64BitProcess
         {

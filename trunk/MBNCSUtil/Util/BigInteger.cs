@@ -48,7 +48,9 @@ namespace MBNCSUtil.Util
 {
     internal class BigInteger
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
         public static readonly BigInteger Zero = new BigInteger(0);
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
         public static readonly BigInteger One = new BigInteger(1);
         
         // maximum length of the BigInteger in uint (4 bytes)
@@ -60,12 +62,14 @@ namespace MBNCSUtil.Util
         private int dataLength;                 // number of actual chars used
         #endregion
         #region constructors
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1805:DoNotInitializeUnnecessarily")]
         public BigInteger()
         {
             data = new uint[maxLength];
             dataLength = 1;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1805:DoNotInitializeUnnecessarily")]
         public BigInteger(long value)
         {
             data = new uint[maxLength];
@@ -97,6 +101,7 @@ namespace MBNCSUtil.Util
                 dataLength = 1;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1805:DoNotInitializeUnnecessarily")]
         public BigInteger(ulong value)
         {
             data = new uint[maxLength];
@@ -119,6 +124,7 @@ namespace MBNCSUtil.Util
                 dataLength = 1;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1805:DoNotInitializeUnnecessarily")]
         public BigInteger(BigInteger bi)
         {
             data = new uint[maxLength];
@@ -129,6 +135,7 @@ namespace MBNCSUtil.Util
                 data[i] = bi.data[i];
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1304:SpecifyCultureInfo", MessageId = "System.String.ToUpper"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1805:DoNotInitializeUnnecessarily")]
         public BigInteger(string value, int radix)
         {
             BigInteger multiplier = new BigInteger(1);
@@ -183,6 +190,7 @@ namespace MBNCSUtil.Util
             dataLength = result.dataLength;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         private static T[] ReverseArray<T>(T[] array)
         {
             T[] copy = new T[array.Length];
@@ -191,6 +199,7 @@ namespace MBNCSUtil.Util
             return copy;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1805:DoNotInitializeUnnecessarily")]
         public BigInteger(byte[] inData)
         {
             dataLength = inData.Length >> 2;
@@ -224,6 +233,7 @@ namespace MBNCSUtil.Util
             //Console.WriteLine("Len = " + dataLength);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1805:DoNotInitializeUnnecessarily")]
         public BigInteger(byte[] inData, int inLen)
         {
             dataLength = inLen >> 2;
@@ -261,6 +271,7 @@ namespace MBNCSUtil.Util
             //Console.WriteLine("Len = " + dataLength);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1805:DoNotInitializeUnnecessarily")]
         public BigInteger(uint[] inData)
         {
             dataLength = inData.Length;
@@ -1151,6 +1162,7 @@ namespace MBNCSUtil.Util
         #endregion
 
         #region utility operations
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public BigInteger Max(BigInteger bi)
         {
             if (this > bi)
@@ -1159,6 +1171,7 @@ namespace MBNCSUtil.Util
                 return (new BigInteger(bi));
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public BigInteger Min(BigInteger bi)
         {
             if (this < bi)
@@ -1168,6 +1181,7 @@ namespace MBNCSUtil.Util
 
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public BigInteger Abs()
         {
             if ((this.data[maxLength - 1] & 0x80000000) != 0)
@@ -1228,6 +1242,7 @@ namespace MBNCSUtil.Util
             return result;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.UInt32.ToString(System.String)")]
         public string ToHexString()
         {
             string result = data[dataLength - 1].ToString("X");
@@ -1306,6 +1321,7 @@ namespace MBNCSUtil.Util
         }
 
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         private BigInteger BarrettReduction(BigInteger x, BigInteger n, BigInteger constant)
         {
             int k = n.dataLength,
@@ -1403,11 +1419,13 @@ namespace MBNCSUtil.Util
             return bits;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public int ToInt32()
         {
             return (int)data[0];
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public long ToInt64()
         {
             long val = 0;
@@ -1426,6 +1444,7 @@ namespace MBNCSUtil.Util
             return val;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public BigInteger ModInverse(BigInteger modulus)
         {
             BigInteger[] p = { 0, 1 };
@@ -1521,6 +1540,7 @@ namespace MBNCSUtil.Util
             return result;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public void SetBit(uint bitNum)
         {
             uint bytePos = bitNum >> 5;             // divide by 32
@@ -1533,6 +1553,7 @@ namespace MBNCSUtil.Util
                 this.dataLength = (int)bytePos + 1;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public void UnsetBit(uint bitNum)
         {
             uint bytePos = bitNum >> 5;
@@ -1551,6 +1572,7 @@ namespace MBNCSUtil.Util
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         public BigInteger SquareRoot()
         {
             uint numBits = (uint)this.BitCount();

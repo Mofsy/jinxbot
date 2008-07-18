@@ -71,36 +71,36 @@ namespace MBNCSUtil.Util
             }
         }
 
-        internal unsafe static bool Strcmp(byte* strA, byte* strB)
-        {
-            byte a, b;
-            bool different = false;
-            do
-            {
-                a = *strA;
-                b = *strB;
-                strA++;
-                strB++;
-                if (a != b)
-                {
-                    different = true;
-                    break;
-                }
-            } while (a != 0 && b != 0);
-            return different;
-        }
+        //internal unsafe static bool Strcmp(byte* strA, byte* strB)
+        //{
+        //    byte a, b;
+        //    bool different = false;
+        //    do
+        //    {
+        //        a = *strA;
+        //        b = *strB;
+        //        strA++;
+        //        strB++;
+        //        if (a != b)
+        //        {
+        //            different = true;
+        //            break;
+        //        }
+        //    } while (a != 0 && b != 0);
+        //    return different;
+        //}
 
-        internal static unsafe int Strlen(byte* str)
-        {
-            int i = 0;
-            checked // checked causes OverflowException to be raised if i overflows at int.MaxValue.
-            {
-                while (str[i] != 0)
-                    i++;
-            }
+        //internal static unsafe int Strlen(byte* str)
+        //{
+        //    int i = 0;
+        //    checked // checked causes OverflowException to be raised if i overflows at int.MaxValue.
+        //    {
+        //        while (str[i] != 0)
+        //            i++;
+        //    }
 
-            return i;
-        }
+        //    return i;
+        //}
 
         internal static unsafe byte* Memmove(byte* dest, byte* src, int byteCount)
         {

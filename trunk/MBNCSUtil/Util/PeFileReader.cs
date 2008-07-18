@@ -32,55 +32,55 @@ using System.Collections.Specialized;
 
 namespace MBNCSUtil.Util
 {
-    internal class PeFileReader
+    internal static class PeFileReader
     {
-        public PeFileReader(MemoryStream ms, BinaryReader br)
-        {
-            DosHeader = new DosImageHeader(br);
-            ms.Seek(DosHeader.e_lfanew, SeekOrigin.Begin);
-            NtHeader = new NtHeaders(br);
-        }
-        public DosImageHeader DosHeader;
-        public NtHeaders NtHeader;
+        //public PeFileReader(MemoryStream ms, BinaryReader br)
+        //{
+        //    DosHeader = new DosImageHeader(br);
+        //    ms.Seek(DosHeader.e_lfanew, SeekOrigin.Begin);
+        //    NtHeader = new NtHeaders(br);
+        //}
+        //public DosImageHeader DosHeader;
+        //public NtHeaders NtHeader;
 
         #region _IMAGE_DOS_HEADER
         [StructLayout(LayoutKind.Sequential, Pack=1)]
         internal struct DosImageHeader
         {
-            public DosImageHeader(BinaryReader br)
-            {
-                e_magic = br.ReadInt16();
-                e_cblp = br.ReadInt16();
-                e_cp = br.ReadInt16();
-                e_crlc = br.ReadInt16();
-                e_cparhdr = br.ReadInt16();
-                e_minalloc = br.ReadInt16();
-                e_maxalloc = br.ReadInt16();
-                e_ss = br.ReadInt16();
-                e_sp = br.ReadInt16();
-                e_csum = br.ReadInt16();
-                e_ip = br.ReadInt16();
-                e_cs = br.ReadInt16();
-                e_lfarlc = br.ReadInt16();
-                e_ovno = br.ReadInt16();
-                e_res0 = br.ReadInt16();
-                e_res1 = br.ReadInt16();
-                e_res2 = br.ReadInt16();
-                e_res3 = br.ReadInt16();
-                e_oemid = br.ReadInt16();
-                e_oeminfo = br.ReadInt16();
-                e_res2_0 = br.ReadInt16();
-                e_res2_1 = br.ReadInt16();
-                e_res2_2 = br.ReadInt16();
-                e_res2_3 = br.ReadInt16();
-                e_res2_4 = br.ReadInt16();
-                e_res2_5 = br.ReadInt16();
-                e_res2_6 = br.ReadInt16();
-                e_res2_7 = br.ReadInt16();
-                e_res2_8 = br.ReadInt16();
-                e_res2_9 = br.ReadInt16();
-                e_lfanew = br.ReadInt32();
-            }
+            //public DosImageHeader(BinaryReader br)
+            //{
+            //    e_magic = br.ReadInt16();
+            //    e_cblp = br.ReadInt16();
+            //    e_cp = br.ReadInt16();
+            //    e_crlc = br.ReadInt16();
+            //    e_cparhdr = br.ReadInt16();
+            //    e_minalloc = br.ReadInt16();
+            //    e_maxalloc = br.ReadInt16();
+            //    e_ss = br.ReadInt16();
+            //    e_sp = br.ReadInt16();
+            //    e_csum = br.ReadInt16();
+            //    e_ip = br.ReadInt16();
+            //    e_cs = br.ReadInt16();
+            //    e_lfarlc = br.ReadInt16();
+            //    e_ovno = br.ReadInt16();
+            //    e_res0 = br.ReadInt16();
+            //    e_res1 = br.ReadInt16();
+            //    e_res2 = br.ReadInt16();
+            //    e_res3 = br.ReadInt16();
+            //    e_oemid = br.ReadInt16();
+            //    e_oeminfo = br.ReadInt16();
+            //    e_res2_0 = br.ReadInt16();
+            //    e_res2_1 = br.ReadInt16();
+            //    e_res2_2 = br.ReadInt16();
+            //    e_res2_3 = br.ReadInt16();
+            //    e_res2_4 = br.ReadInt16();
+            //    e_res2_5 = br.ReadInt16();
+            //    e_res2_6 = br.ReadInt16();
+            //    e_res2_7 = br.ReadInt16();
+            //    e_res2_8 = br.ReadInt16();
+            //    e_res2_9 = br.ReadInt16();
+            //    e_lfanew = br.ReadInt32();
+            //}
             public short e_magic, e_cblp, e_cp, e_crlc, e_cparhdr, e_minalloc, e_maxalloc, e_ss, e_sp, e_csum, e_ip, e_cs, e_lfarlc, e_ovno;
             public short e_res0, e_res1, e_res2, e_res3;
             public short e_oemid, e_oeminfo;
@@ -92,80 +92,80 @@ namespace MBNCSUtil.Util
         [StructLayout(LayoutKind.Explicit)]
         internal struct NtHeaders
         {
-            public NtHeaders(BinaryReader br)
-            {
-                Signature = br.ReadInt32();
-                Machine = br.ReadInt16();
-                NumberOfSections = br.ReadInt16();
-                TimeDateStamp = br.ReadInt32();
-                PointerToSymbolTable = br.ReadInt32();
-                NumberOfSymbols = br.ReadInt32();
-                SizeOfOptionalHeader = br.ReadInt16();
-                Characteristics = br.ReadInt16();
-                OptionalHeader = new OptionalHeader32(br);
-                //Header32 = new OptionalHeader32();
-                //Header64 = new OptionalHeader64();
+            //public NtHeaders(BinaryReader br)
+            //{
+            //    Signature = br.ReadInt32();
+            //    Machine = br.ReadInt16();
+            //    NumberOfSections = br.ReadInt16();
+            //    TimeDateStamp = br.ReadInt32();
+            //    PointerToSymbolTable = br.ReadInt32();
+            //    NumberOfSymbols = br.ReadInt32();
+            //    SizeOfOptionalHeader = br.ReadInt16();
+            //    Characteristics = br.ReadInt16();
+            //    OptionalHeader = new OptionalHeader32(br);
+            //    //Header32 = new OptionalHeader32();
+            //    //Header64 = new OptionalHeader64();
 
-                //if (IsImage32)                  // 32bit machine
-                //    Header32 = new OptionalHeader32(br);
-                //else                            // 64bit machine
-                //    Header64 = new OptionalHeader64(br);
-            }
+            //    //if (IsImage32)                  // 32bit machine
+            //    //    Header32 = new OptionalHeader32(br);
+            //    //else                            // 64bit machine
+            //    //    Header64 = new OptionalHeader64(br);
+            //}
 
             #region _IMAGE_OPTIONAL_HEADER
             #region 32-bit
             [StructLayout(LayoutKind.Sequential, Pack = 1)]
             internal struct OptionalHeader32
             {
-                public OptionalHeader32(BinaryReader br)
-                {
-                    Magic = br.ReadInt16();
-                    MajorLinkerVersion = br.ReadByte();
-                    MinorLinkerVersion = br.ReadByte();
-                    SizeOfCode = br.ReadInt32();
-                    SizeOfInitializedData = br.ReadInt32();
-                    SizeOfUninitializedData = br.ReadInt32();
-                    AddressOfEntryPoint = br.ReadInt32();
-                    BaseOfCode = br.ReadInt32();
-                    BaseOfData = br.ReadInt32();
-                    ImageBase = br.ReadInt32();
-                    SectionAlignment = br.ReadInt32();
-                    FileAlignment = br.ReadInt32();
-                    MajorOSVersion = br.ReadInt16();
-                    MinorOSVersion = br.ReadInt16();
-                    MajorImageVersion = br.ReadInt16();
-                    MinorImageVersion = br.ReadInt16();
-                    MajorSubsystemVersion = br.ReadInt16();
-                    MinorSubsystemVersion = br.ReadInt16();
-                    Win32VersionValue = br.ReadInt32();
-                    SizeOfImage = br.ReadInt32();
-                    SizeOfHeaders = br.ReadInt32();
-                    CheckSum = br.ReadInt32();
-                    Subsystem = br.ReadInt16();
-                    DllCharacteristics = br.ReadInt16();
-                    SizeOfStackReserve = br.ReadInt32();
-                    SizeOfStackCommit = br.ReadInt32();
-                    SizeOfHeapReserve = br.ReadInt32();
-                    SizeOfHeapCommit = br.ReadInt32();
-                    LoaderFlags = br.ReadInt32();
-                    NumberOfRvaAndSizes = br.ReadInt32();
-                    IDD0 = new ImageDataDirectory(br);
-                    IDD1 = new ImageDataDirectory(br);
-                    IDD2 = new ImageDataDirectory(br);
-                    IDD3 = new ImageDataDirectory(br);
-                    IDD4 = new ImageDataDirectory(br);
-                    IDD5 = new ImageDataDirectory(br);
-                    IDD6 = new ImageDataDirectory(br);
-                    IDD7 = new ImageDataDirectory(br);
-                    IDD8 = new ImageDataDirectory(br);
-                    IDD9 = new ImageDataDirectory(br);
-                    IDDA = new ImageDataDirectory(br);
-                    IDDB = new ImageDataDirectory(br);
-                    IDDC = new ImageDataDirectory(br);
-                    IDDD = new ImageDataDirectory(br);
-                    IDDE = new ImageDataDirectory(br);
-                    IDDF = new ImageDataDirectory(br);
-                }
+                //public OptionalHeader32(BinaryReader br)
+                //{
+                //    Magic = br.ReadInt16();
+                //    MajorLinkerVersion = br.ReadByte();
+                //    MinorLinkerVersion = br.ReadByte();
+                //    SizeOfCode = br.ReadInt32();
+                //    SizeOfInitializedData = br.ReadInt32();
+                //    SizeOfUninitializedData = br.ReadInt32();
+                //    AddressOfEntryPoint = br.ReadInt32();
+                //    BaseOfCode = br.ReadInt32();
+                //    BaseOfData = br.ReadInt32();
+                //    ImageBase = br.ReadInt32();
+                //    SectionAlignment = br.ReadInt32();
+                //    FileAlignment = br.ReadInt32();
+                //    MajorOSVersion = br.ReadInt16();
+                //    MinorOSVersion = br.ReadInt16();
+                //    MajorImageVersion = br.ReadInt16();
+                //    MinorImageVersion = br.ReadInt16();
+                //    MajorSubsystemVersion = br.ReadInt16();
+                //    MinorSubsystemVersion = br.ReadInt16();
+                //    Win32VersionValue = br.ReadInt32();
+                //    SizeOfImage = br.ReadInt32();
+                //    SizeOfHeaders = br.ReadInt32();
+                //    CheckSum = br.ReadInt32();
+                //    Subsystem = br.ReadInt16();
+                //    DllCharacteristics = br.ReadInt16();
+                //    SizeOfStackReserve = br.ReadInt32();
+                //    SizeOfStackCommit = br.ReadInt32();
+                //    SizeOfHeapReserve = br.ReadInt32();
+                //    SizeOfHeapCommit = br.ReadInt32();
+                //    LoaderFlags = br.ReadInt32();
+                //    NumberOfRvaAndSizes = br.ReadInt32();
+                //    IDD0 = new ImageDataDirectory(br);
+                //    IDD1 = new ImageDataDirectory(br);
+                //    IDD2 = new ImageDataDirectory(br);
+                //    IDD3 = new ImageDataDirectory(br);
+                //    IDD4 = new ImageDataDirectory(br);
+                //    IDD5 = new ImageDataDirectory(br);
+                //    IDD6 = new ImageDataDirectory(br);
+                //    IDD7 = new ImageDataDirectory(br);
+                //    IDD8 = new ImageDataDirectory(br);
+                //    IDD9 = new ImageDataDirectory(br);
+                //    IDDA = new ImageDataDirectory(br);
+                //    IDDB = new ImageDataDirectory(br);
+                //    IDDC = new ImageDataDirectory(br);
+                //    IDDD = new ImageDataDirectory(br);
+                //    IDDE = new ImageDataDirectory(br);
+                //    IDDF = new ImageDataDirectory(br);
+                //}
                 #region std fields
                 public short Magic;
                 public byte MajorLinkerVersion, MinorLinkerVersion;
@@ -257,11 +257,11 @@ namespace MBNCSUtil.Util
             #region _IMAGE_DATA_DIRECTORY
             internal struct ImageDataDirectory
             {
-                public ImageDataDirectory(BinaryReader br)
-                {
-                    VirtualAddress = br.ReadInt32();
-                    Size = br.ReadInt32();
-                }
+                //public ImageDataDirectory(BinaryReader br)
+                //{
+                //    VirtualAddress = br.ReadInt32();
+                //    Size = br.ReadInt32();
+                //}
                 public int VirtualAddress;
                 public int Size;
             }
@@ -370,37 +370,37 @@ namespace MBNCSUtil.Util
             public BitVector32 DirectoryOffsetVector;
 
 
-            public bool NameIsString
-            {
-                get
-                {
-                    return NameOffsetVector[31];
-                }
-            }
+            //public bool NameIsString
+            //{
+            //    get
+            //    {
+            //        return NameOffsetVector[31];
+            //    }
+            //}
 
-            public int NameOffset
-            {
-                get
-                {
-                    return (int)((NameOffsetVector.Data & 0x1e) >> 1);
-                }
-            }
+            //public int NameOffset
+            //{
+            //    get
+            //    {
+            //        return (int)((NameOffsetVector.Data & 0x1e) >> 1);
+            //    }
+            //}
 
-            public bool DataIsDirectory
-            {
-                get
-                {
-                    return DirectoryOffsetVector[31];
-                }
-            }
+            //public bool DataIsDirectory
+            //{
+            //    get
+            //    {
+            //        return DirectoryOffsetVector[31];
+            //    }
+            //}
 
-            public int OffsetToDirectory
-            {
-                get
-                {
-                    return (int)((NameOffsetVector.Data & 0x1e) >> 1);
-                }
-            }
+            //public int OffsetToDirectory
+            //{
+            //    get
+            //    {
+            //        return (int)((NameOffsetVector.Data & 0x1e) >> 1);
+            //    }
+            //}
         }
         #endregion
 

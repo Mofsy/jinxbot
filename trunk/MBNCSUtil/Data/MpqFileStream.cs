@@ -25,12 +25,14 @@ using System.IO;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using System.Security.Permissions;
 
 namespace MBNCSUtil.Data
 {
     /// <summary>
     /// Represents an MPQ file stream (that is, a stream within an MPQ file).
     /// </summary>
+    [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
     public class MpqFileStream : Stream, IDisposable
     {
         private IntPtr m_hFile;
@@ -56,7 +58,6 @@ namespace MBNCSUtil.Data
 
             m_path = internalPath;
             m_hFile = hFile;
-            m_pos = 0;
         }
 
         /// <summary>
@@ -72,6 +73,7 @@ namespace MBNCSUtil.Data
         public new void Dispose()
         {
             Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -93,9 +95,6 @@ namespace MBNCSUtil.Data
             }
 
             m_disposed = true;
-
-            if (disposing)
-                GC.SuppressFinalize(this);
         }
 
         #endregion

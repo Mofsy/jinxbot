@@ -71,9 +71,8 @@ namespace MBNCSUtil.Net
             {
                 m_fileName = fileName.Substring(fileName.LastIndexOf('\\') + 1);
             }
-            m_product = product.ToUpper();
+            m_product = product.ToUpperInvariant();
             
-            m_size = 0;
             m_time = fileTime;
 
             this.LocalFileName = fileName;

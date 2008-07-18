@@ -104,17 +104,5 @@ namespace MBNCSUtil
         {
 
         }
-
-        /// <summary>
-        /// Gets a hex representation of this data.
-        /// </summary>
-        /// <returns>A string representing this buffer's contents in hexadecimal notation.</returns>
-        public override string ToString()
-        {
-            BncsPacket pck = new BncsPacket(m_id);
-            pck.Insert(this.Data);
-            return pck.ToString();
-        }
-
     }
 }

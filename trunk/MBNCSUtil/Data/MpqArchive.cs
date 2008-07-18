@@ -23,12 +23,14 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Diagnostics;
+using System.Security.Permissions;
 
 namespace MBNCSUtil.Data
 {
     /// <summary>
     /// Represents an MPQ archive.
     /// </summary>
+    [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
     public class MpqArchive : IDisposable
     {
         private IntPtr m_hMPQ;
@@ -48,8 +50,6 @@ namespace MBNCSUtil.Data
 
             if (!File.Exists(path))
                 throw new FileNotFoundException(Resources.fileNotFound, path);
-
-            IntPtr hMPQ = IntPtr.Zero;
 
             m_hMPQ = LateBoundStormDllApi.SFileOpenArchive(path, 1, 0);
         }
@@ -93,11 +93,25 @@ namespace MBNCSUtil.Data
             return LateBoundStormDllApi.SFileHasFile(m_hMPQ, fileName);
         }
 
+        /// <summary>
+        /// Saves the specified file to the provided path.
+        /// </summary>
+        /// <param name="mpqFileName">The fully-qualified name of the file in the MPQ.</param>
+        /// <param name="pathBase">The path to which to save the file.</param>
+        /// <remarks>
+        /// <para>The file is saved as an immediate child of the path specified in <paramref name="pathBase"/>.</para>
+        /// </remarks>
         public void SaveToPath(string mpqFileName, string pathBase)
         {
             SaveToPath(mpqFileName, pathBase, false);
         }
 
+        /// <summary>
+        /// Saves the specified file to the specified path, optionally expanding the paths used in the MPQ.
+        /// </summary>
+        /// <param name="mpqFileName">The fully-qualified name of the file in the MPQ.</param>
+        /// <param name="pathBase">The root path to which to save the file.</param>
+        /// <param name="useFullMpqPath">Whether to create child directories based on the path to the file in the MPQ.</param>
         public void SaveToPath(string mpqFileName, string pathBase, bool useFullMpqPath)
         {
             string path;
@@ -136,6 +150,7 @@ namespace MBNCSUtil.Data
         public void Dispose()
         {
             Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -146,13 +161,16 @@ namespace MBNCSUtil.Data
         {
             if (m_disposed) return;
 
-            foreach (MpqFileStream mfs in m_files)
+            if (disposing)
             {
-                mfs.Dispose();
-            }
+                foreach (MpqFileStream mfs in m_files)
+                {
+                    mfs.Dispose();
+                }
 
-            m_files.Clear();
-            m_files = null;
+                m_files.Clear();
+                m_files = null;
+            }
 
             if (m_hMPQ != IntPtr.Zero)
             {
@@ -162,9 +180,6 @@ namespace MBNCSUtil.Data
             m_disposed = true;
 
             MpqServices.NotifyArchiveDisposed(this);
-
-            if (disposing) 
-                GC.SuppressFinalize(this);
         }
 
         #endregion

@@ -1,6 +1,7 @@
 ﻿<summary>
     <para>
-        The <b>MBNCSUtil.Data</b> namespace contains the classes necessary to access MPQ support in MBNCSUtil.
+        The <b>MBNCSUtil.Data</b> namespace contains the classes necessary to access MPQ support in MBNCSUtil as well as the 
+        extraction of images from .BLP, BLP2 (.BLP files found in World of Warcraft), and .BNI files.
         To open an MPQ archive, utilize the <see cref="MBNCSUtil.Data.MpqServices">MpqServices</see>
         class:
     </para>

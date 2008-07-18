@@ -1,10 +1,31 @@
-﻿using System;
+﻿/*
+MBNCSUtil -- Managed Battle.net Authentication Library
+Copyright (C) 2005-2008 by Robert Paveza
+
+Redistribution and use in source and binary forms, with or without modification, 
+are permitted provided that the following conditions are met: 
+
+1.) Redistributions of source code must retain the above copyright notice, 
+this list of conditions and the following disclaimer. 
+2.) Redistributions in binary form must reproduce the above copyright notice, 
+this list of conditions and the following disclaimer in the documentation 
+and/or other materials provided with the distribution. 
+3.) The name of the author may not be used to endorse or promote products derived 
+from this software without specific prior written permission. 
+	
+See LICENSE.TXT that should have accompanied this software for full terms and 
+conditions.
+
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace MBNCSUtil.Data
 {
-    internal class DXTCFormat
+    // Class that handles all DXTC format specific conversions
+    internal static class DXTCFormat
     {
         // takes DXT1 compressed 8 bit data in b, with width w and height w
         // returns uncompressed bitmap data as 32 bit RGBA
@@ -122,45 +143,6 @@ namespace MBNCSUtil.Data
             return r;
         }
 
-        // Searches the array "colors" for the one color who has the biggest distance to colors[n]
-        private static int furthestColor(int[][] colors, int n)
-        {
-            int max = 0, d, r = 0;
-            for (int i = 0; i < colors.Length; i++)
-            {
-                if (i == n)
-                    continue;
-                d = colorDistance(colors[i], colors[n]);
-                if (d > max)
-                {
-                    max = d;
-                    r = i;
-                }
-            }
-
-            return r;
-        }
-
-        // Searches the array "colors" for the one color closest to "color"
-        private static int closestColor(int[][] colors, int[] color)
-        {
-            int r = 0;
-            for (int i = 1; i < colors.Length; i++)
-            {
-                if (colorDistance(color, colors[i]) < colorDistance(color, colors[r]))
-                    r = i;
-            }
-
-            return r;
-        }
-
-        // Computes the distance between two colors as defined by simple euclidian metric
-        // There should be a sqrt in here but we don't need it since we only use this distance for comparisons, not math
-        private static int colorDistance(int[] c1, int[] c2)
-        {
-            return (c1[0] - c2[0]) * (c1[0] - c2[0]) + (c1[1] - c2[1]) * (c1[1] - c2[1]) + (c1[2] - c2[2]) * (c1[2] - c2[2]);
-        }
-
         // Encapsulates some of the bitshifting done for decoding DXT1 blocks
         private static int dxtcPixel(byte[] b, int s, int x, int y)
         {
@@ -196,12 +178,5 @@ namespace MBNCSUtil.Data
             return r;
         }
 
-        // Converts an array of 888 RGB color data into a 565 color value
-        private static int encodeColor(int[] color)
-        {
-            return color[2] / 8 + (color[1] / 4) * 32 + (color[0] / 8) * 2048;
-        }
-
     }
-
 }

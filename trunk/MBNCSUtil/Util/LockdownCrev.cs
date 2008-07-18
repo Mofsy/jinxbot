@@ -300,7 +300,7 @@ namespace MBNCSUtil.Util
             byte* firstSection;
             byte* baseaddr;
 
-            PeFileReader.NtHeaders.ImageDataDirectory* importDir;
+            //PeFileReader.NtHeaders.ImageDataDirectory* importDir;
             PeFileReader.NtHeaders.ImageDataDirectory* relocDir;
             PeFileReader.DosImageHeader* dosheader;
             PeFileReader.NtHeaders* ntheader;
@@ -315,7 +315,7 @@ namespace MBNCSUtil.Util
             sectionAlignment = ntheader->OptionalHeader.SectionAlignment;
             imageBase = (byte*)ntheader->OptionalHeader.ImageBase;
 
-            importDir = (PeFileReader.NtHeaders.ImageDataDirectory*)&ntheader->OptionalHeader.IDD1;
+            //importDir = (PeFileReader.NtHeaders.ImageDataDirectory*)&ntheader->OptionalHeader.IDD1;
             relocDir = (PeFileReader.NtHeaders.ImageDataDirectory*)&ntheader->OptionalHeader.IDD5;
 
             // roughly, IMAGE_FIRST_SECTION macro.  0x18 is the offset of the optional header, plus size of optional header.

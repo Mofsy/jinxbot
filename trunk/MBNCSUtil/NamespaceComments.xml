@@ -20,9 +20,8 @@
         This license supercedes previous licenses of this library for versions 1.2.0.4 and newer.
         Older libraries will continue to be licensed under their old license or, optionally, the 
         new BSD license.  For more information, consult the 
-        <a href="http://www.jinxbot.net/mbncsutil/license.txt" target="_blank">LICENSE.TXT</a>   
-        file that should have 
-        accompanied this file.
+        <a href="http://www.jinxbot.net/wiki/index.php?title=License" target="_blank">licensing terms</a>   
+        or the License.txt file that should have accompanied this code.
     </para>
     <para>
         This library includes binary code under license from Ladislave Zezula.  Separation of this library from the 
@@ -35,10 +34,9 @@
     <para>
         MBNCSUtil v2.0 is a relatively major departure from previous versions.  COM support is no longer included, 
         and the library is offered only for .NET 2.0.  Furthermore, assemblies are versioned for a specific
-        processor architecture.  <b>If your application is going to support both x86 and x64, it is highly recommended
-        that you include MBNCSUtil as a project within your project solution, add it as a reference to your project, and
-        ensure that you have x86 and x64 builds.  For more information on how to do this, consult the Visual Studio 
-        documentation.</b>
+        processor architecture.  <b>As of version 2.1, MBNCSUtil no longer has separate versions for x64- and x86-based 
+        processors.</b>  Also, MBNCSUtil has been moved into the JinxBot source code repository on the Google Code hosting
+        project.  
     </para>
     <para>
         <b>Changelog</b>
@@ -71,70 +69,66 @@
                     </list>
                 </description>
             </item>
-			<item>
-				<term>
-					2.1.6.20 Beta<br /> [<a href="http://www.jinxbot.net/mbncsutil/mbncsutil-2.1.6.20-doc.zip">documentation</a>]
-					[<a href="http://www.jinxbot.net/mbncsutil/mbncsutil-2.1.6.20-code.zip">code</a>]
-					<br /><span style="text-decoration: underline;">Binaries:</span><br />
-					<a href="http://www.jinxbot.net/mbncsutil/mbncsutil-2.1.6.20-x86chk.zip">x86 Debug</a><br />
-					<a href="http://www.jinxbot.net/mbncsutil/mbncsutil-2.1.6.20-x86fre.zip">x86 Release</a><br />
-					<a href="http://www.jinxbot.net/mbncsutil/mbncsutil-2.1.6.20-x64chk.zip">x64 Debug</a><br />
-					<a href="http://www.jinxbot.net/mbncsutil/mbncsutil-2.1.6.20-x64fre.zip">x64 Release</a><br />
-					<br /><span style="text-decoration: underline;">Utilities:</span><br />
-					<a href="http://www.jinxbot.net/mbncsutil/MBNCSUtilities-2.1.6.20-x86fre.msi">x86/32-bit</a><br />
-					<a href="http://www.jinxbot.net/mbncsutil/MBNCSUtilities-2.1.6.20-x64fre.msi">x64/64-bit</a><br />
-					Current SVN <br />Revision: <b>25</b>
-				</term>
-				<description>
-					<list type="bullet">
-						<item>
-							<description>
-								Support for BLP images - part of the <i>Warcraft 3</i> and <i>World of Warcraft</i>
-								interfaces - has been added.  All BLP1 code is original by me; code for BLP2 is loosely based
-								on Java code for BLP2PNG (which I can no longer find online to attribute to the author).  The
-								<see cref="MBNCSUtil.Data.ImageParser">ImageParser class</see> can be found in the 
-								<see>MBNCSUtil.Data</see> namespace.
-							</description>
-						</item>
-						<item>
-							<description>The <see>DataBuffer</see> class now implemented <see>IDisposable</see>.  This is not a 
-							breaking change, but should be respected in future builds.
-						</description>
-						</item>
-						<item>
-							<description>The <see>CdKey.Value2</see> property has been marked as obsolete; FxCop design rules suggested
-							a different strategy.  It will not cause build errors but will in future versions.  As an alternative, 
-							use the <see>CdKey.GetValue2</see> method.
-						</description>
-						</item>
-						<item>
-							<description>For the first time, I have begun auditing builds of MBNCSUtil with FxCop.  FxCop is a free
-							utility available from Microsoft that enables validation of .NET Framework Best Practices.  You may see 
-							a new file called GlobalSuppressions that contains assembly-level attributes, and you may also see these
-							attributes on class members.  Usually I commented why these are problems where appropriate.</description>
-						</item>
-						<item>
-							<description>
-								The MBNCSUtil Utilities, a series of utilities based on MBNCSUtil, is now available for download.
-								These utilities include:
-								<list type="bullet">
-									<item>
-										<description>MPQ#, a Windows Explorer-like utility for browsing MPQ files with integrated 
-										support for displaying BLP images and other texture files.</description>
-									</item>
-									<item>
-										<description>mmpq, a command-line tool for extracting files from MPQ files.</description>
-									</item>
-									<item>
-										<description>mbnftp, a command-line tool for downloading files from a 
-										Battle.net BnFTP server.</description>
-									</item>
-								</list>
-							</description>
-						</item>
-					</list>
-				</description>
-			</item>
+            <item>
+                <term>
+                    2.1.7.22<br /> <a href="http://code.google.com/p/jinxbot/downloads/list">Downloads</a>
+                </term>
+                <description>
+                    <list type="bullet">
+                        <item>
+                            <description>
+                                Support for BLP images - part of the <i>Warcraft 3</i> and <i>World of Warcraft</i>
+                                interfaces - has been added.  BLP1 and BLP2 parsing code is original.  The
+                                <see cref="MBNCSUtil.Data.ImageParser">ImageParser class</see> can be found in the
+                                <see>MBNCSUtil.Data</see> namespace.
+                            </description>
+                        </item>
+                        <item>
+                            <description>
+                                Support for .BNI image files such as icons_star.bni is also included as part of the 
+                                <see cref="MBNCSUtil.Data.BniFileParser">BniFilerParser</see> class.  This class has 
+                                different interface requirements than the ImageParser class and could not be related to 
+                                it.  This class is incompatible with BNI files included as part of Warcraft III; these 
+                                files are actually MPQ files.
+                            </description>
+                        </item>
+                        <item>
+                            <description>
+                                The <see>DataBuffer</see> class now implemented <see>IDisposable</see>.  This is not a
+                                breaking change, but should be respected in future builds.
+                            </description>
+                        </item>
+                        <item>
+                            <description>
+                                The <see>CdKey.Value2</see> property has been marked as obsolete; FxCop design rules suggested
+                                a different strategy.  It will not cause build errors but will in future versions.  As an alternative,
+                                use the <see>CdKey.GetValue2</see> method.
+                            </description>
+                        </item>
+                        <item>
+                            <description>
+                                For the first time, I have begun auditing builds of MBNCSUtil with FxCop.  FxCop is a free
+                                utility available from Microsoft that enables validation of .NET Framework Best Practices.  You may see
+                                a new file called GlobalSuppressions that contains assembly-level attributes, and you may also see these
+                                attributes on class members.  Usually I commented why these are problems where appropriate.
+                            </description>
+                        </item>
+                        <item>
+                            <description>
+                                MBNCSUtil has been changed so that it no longer has separate x86- and x64 builds.  Any problems
+                                related to loading MPQ files should be reported in the Google code issue tracker.
+                            </description>
+                        </item>
+                        <item>
+                            <description>
+                                The MBNCSUtil codebase has been merged into the JinxBot repository at Google Code hosting.  It can be 
+                                obtained through instructions located at <a href="http://www.jinxbot.net/wiki/index.php?title=Source_code" target="_blank">the JinxBot wiki</a>.
+                                The MBNCSUtil codebase is located in /branches/mbncsutil/.
+                            </description>
+                        </item>
+                    </list>
+                </description>
+            </item>
             <item>
                 <term>
                     2.0.5.18 Final<br /> [<a href="http://www.jinxbot.net/mbncsutil/mbncsutil-2.0.5.18-doc.zip">documentation</a>]

@@ -38,9 +38,9 @@ namespace MBNCSUtil.Net
     public class BnFtpVersion2Request : BnFtpRequestBase
     {
         private int m_adId;
-        private bool m_ad = false;
         private string m_adExt;
         private CdKey m_key;
+        private bool m_ad;
 
         /// <summary>
         /// Creates a standard Version 2 Battle.net FTP request.
@@ -99,6 +99,7 @@ namespace MBNCSUtil.Net
         /// </remarks>
         /// <exception cref="IOException">Thrown if the local file cannot be written.</exception>
         /// <exception cref="SocketException">Thrown if the remote host closes the connection prematurely.</exception>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "time")]
         public override void ExecuteRequest()
         {
             DataBuffer buf1 = new DataBuffer();
@@ -120,7 +121,7 @@ namespace MBNCSUtil.Net
             sck.Connect(Server, 6112);
 
             sck.Send(new byte[] { 2 });
-            sck.Send(buf1.GetData());
+            sck.Send(buf1.GetData(), 0, buf1.Count, SocketFlags.None);
 
             NetworkStream ns = new NetworkStream(sck, false);
             DataReader rdr = new DataReader(ns, 4);
@@ -147,7 +148,7 @@ namespace MBNCSUtil.Net
             buf2.InsertByteArray(m_key.GetHash(clientToken, serverToken));
             buf2.InsertCString(FileName);
 
-            sck.Send(buf2.GetData());
+            sck.Send(buf2.GetData(), 0, buf2.Count, SocketFlags.None);
 
             rdr = new DataReader(ns, 4);
             int msg2Size = rdr.ReadInt32() - 4;
@@ -158,7 +159,7 @@ namespace MBNCSUtil.Net
             long fileTime = rdr.ReadInt64();
             DateTime time = DateTime.FromFileTimeUtc(fileTime);
             string name = rdr.ReadCString();
-            if (string.Compare(name, FileName, true) != 0 || FileSize == 0)
+            if (string.Compare(name, FileName, StringComparison.OrdinalIgnoreCase) != 0 || FileSize == 0)
             {
                 throw new FileNotFoundException(Resources.bnftp_filenotfound);
             }

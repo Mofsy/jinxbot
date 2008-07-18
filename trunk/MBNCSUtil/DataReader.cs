@@ -42,6 +42,7 @@ namespace MBNCSUtil
         /// Gets a copy of the data used by the current instance.  When overridden in a 
         /// derived class, allows this class to access an alternative data source.
         /// </summary>
+        [Obsolete("This property is deprecated and should no longer be used.  To access the underlying data you should use the UnderlyingBuffer property.", true)]
         // Suppressing CA1819: It does not make sense to make this property a method or a collection.
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
         protected virtual byte[] Data
@@ -52,6 +53,14 @@ namespace MBNCSUtil
                 Buffer.BlockCopy(m_data, 0, dataCopy, 0, dataCopy.Length);
                 return dataCopy;
             }
+        }
+
+        /// <summary>
+        /// Gets a reference to the underlying buffer.
+        /// </summary>
+        protected byte[] UnderlyingBuffer
+        {
+            get { return m_data; }
         }
 
         #region ctors
@@ -88,8 +97,7 @@ namespace MBNCSUtil
             if (data == null)
                 throw new ArgumentNullException(Resources.param_data, Resources.dataNull);
 
-            m_data = new byte[data.Length];
-            Buffer.BlockCopy(data, 0, m_data, 0, data.Length);
+            m_data = data;
         }
         #endregion
 
@@ -103,7 +111,7 @@ namespace MBNCSUtil
         /// <returns>The next boolean value from the data stream.</returns>
         public bool ReadBoolean()
         {
-            return BitConverter.ToInt32(Data, m_index) != 0;
+            return BitConverter.ToInt32(m_data, m_index) != 0;
         }
 
         /// <summary>
@@ -112,7 +120,7 @@ namespace MBNCSUtil
         /// <returns>The next byte from the data stream.</returns>
         public byte ReadByte()
         {
-            return Data[m_index++];
+            return m_data[m_index++];
         }
 
         /// <summary>
@@ -123,7 +131,7 @@ namespace MBNCSUtil
         public byte[] ReadByteArray(int expectedItems)
         {
             byte[] data = new byte[expectedItems];
-            Buffer.BlockCopy(Data, m_index, data, 0, expectedItems);
+            Buffer.BlockCopy(m_data, m_index, data, 0, expectedItems);
             m_index += expectedItems;
             return data;
         }
@@ -139,11 +147,11 @@ namespace MBNCSUtil
         {
             int i = m_index;
 
-            while ((i < Data.Length) && (Data[i] != 0))
+            while ((i < m_data.Length) && (m_data[i] != 0))
                 i++;
 
             byte[] bytes = new byte[i - m_index];
-            Buffer.BlockCopy(Data, m_index, bytes, 0, bytes.Length);
+            Buffer.BlockCopy(m_data, m_index, bytes, 0, bytes.Length);
 
             m_index = ++i;
 
@@ -156,7 +164,7 @@ namespace MBNCSUtil
         /// <returns>The next 16-bit value from the data stream.</returns>
         public short ReadInt16()
         {
-            short s = BitConverter.ToInt16(Data, m_index);
+            short s = BitConverter.ToInt16(m_data, m_index);
             m_index += 2;
             return s;
         }
@@ -169,7 +177,7 @@ namespace MBNCSUtil
         public short[] ReadInt16Array(int expectedItems)
         {
             short[] data = new short[expectedItems];
-            Buffer.BlockCopy(Data, m_index, data, 0, expectedItems * 2);
+            Buffer.BlockCopy(m_data, m_index, data, 0, expectedItems * 2);
             m_index += (expectedItems * 2);
             return data;
         }
@@ -184,7 +192,7 @@ namespace MBNCSUtil
         [CLSCompliant(false)]
         public ushort ReadUInt16()
         {
-            ushort s = BitConverter.ToUInt16(Data, m_index);
+            ushort s = BitConverter.ToUInt16(m_data, m_index);
             m_index += 2;
             return s;
         }
@@ -201,7 +209,7 @@ namespace MBNCSUtil
         public ushort[] ReadUInt16Array(int expectedItems)
         {
             ushort[] data = new ushort[expectedItems];
-            Buffer.BlockCopy(Data, m_index, data, 0, expectedItems * 2);
+            Buffer.BlockCopy(m_data, m_index, data, 0, expectedItems * 2);
             m_index += (expectedItems * 2);
             return data;
         }
@@ -212,7 +220,7 @@ namespace MBNCSUtil
         /// <returns>The next 32-bit value from the data stream.</returns>
         public int ReadInt32()
         {
-            int i = BitConverter.ToInt32(Data, m_index);
+            int i = BitConverter.ToInt32(m_data, m_index);
             m_index += 4;
             return i;
         }
@@ -225,7 +233,7 @@ namespace MBNCSUtil
         public int[] ReadInt32Array(int expectedItems)
         {
             int[] data = new int[expectedItems];
-            Buffer.BlockCopy(Data, m_index, data, 0, expectedItems * 4);
+            Buffer.BlockCopy(m_data, m_index, data, 0, expectedItems * 4);
             m_index += (expectedItems * 4);
             return data;
         }
@@ -240,7 +248,7 @@ namespace MBNCSUtil
         [CLSCompliant(false)]
         public uint ReadUInt32()
         {
-            uint i = BitConverter.ToUInt32(Data, m_index);
+            uint i = BitConverter.ToUInt32(m_data, m_index);
             m_index += 4;
             return i;
         }
@@ -257,7 +265,7 @@ namespace MBNCSUtil
         public uint[] ReadUInt32Array(int expectedItems)
         {
             uint[] data = new uint[expectedItems];
-            Buffer.BlockCopy(Data, m_index, data, 0, expectedItems * 4);
+            Buffer.BlockCopy(m_data, m_index, data, 0, expectedItems * 4);
             m_index += (expectedItems * 4);
             return data;
         }
@@ -268,7 +276,7 @@ namespace MBNCSUtil
         /// <returns>The next 64-bit value from the data stream.</returns>
         public long ReadInt64()
         {
-            long l = BitConverter.ToInt64(Data, m_index);
+            long l = BitConverter.ToInt64(m_data, m_index);
             m_index += 8;
             return l;
         }
@@ -281,7 +289,7 @@ namespace MBNCSUtil
         public long[] ReadInt64Array(int expectedItems)
         {
             long[] data = new long[expectedItems];
-            Buffer.BlockCopy(Data, m_index, data, 0, expectedItems * 8);
+            Buffer.BlockCopy(m_data, m_index, data, 0, expectedItems * 8);
             m_index += (expectedItems * 8);
             return data;
         }
@@ -296,7 +304,7 @@ namespace MBNCSUtil
         [CLSCompliant(false)]
         public ulong ReadUInt64()
         {
-            ulong l = BitConverter.ToUInt64(Data, m_index);
+            ulong l = BitConverter.ToUInt64(m_data, m_index);
             m_index += 8;
             return l;
         }
@@ -313,9 +321,19 @@ namespace MBNCSUtil
         public ulong[] ReadUInt64Array(int expectedItems)
         {
             ulong[] data = new ulong[expectedItems];
-            Buffer.BlockCopy(Data, m_index, data, 0, expectedItems * 8);
+            Buffer.BlockCopy(m_data, m_index, data, 0, expectedItems * 8);
             m_index += (expectedItems * 8);
             return data;
+        }
+        /// <summary>
+        /// Reads the next byte in the stream but does not consume it.
+        /// </summary>
+        /// <returns>A byte value (0-255) if the call succeeded, or else -1 if reading past the end of the stream.</returns>
+        public int Peek()
+        {
+            if (m_index >= m_data.Length)
+                return -1;
+            return m_data[m_index];
         }
 
         /// <summary>
@@ -329,7 +347,7 @@ namespace MBNCSUtil
             int idx0 = -1;
             for (int i = m_index, j = 3; i < (m_index + 4); i++, j--)
             {
-                b[j] = Data[i];
+                b[j] = m_data[i];
                 if (b[j] == padding)
                     idx0 = j;
             }
@@ -386,7 +404,7 @@ namespace MBNCSUtil
         public string ReadPascalString(Encoding enc)
         {
             int len = ReadByte();
-            string s = enc.GetString(Data, m_index, len);
+            string s = enc.GetString(m_data, m_index, len);
             m_index += enc.GetByteCount(s);
             return s;
         }
@@ -408,7 +426,7 @@ namespace MBNCSUtil
         public string ReadWidePascalString(Encoding enc)
         {
             int len = ReadInt16();
-            string s = enc.GetString(Data, m_index, len);
+            string s = enc.GetString(m_data, m_index, len);
             m_index += enc.GetByteCount(s);
             return s;
         }
@@ -420,7 +438,7 @@ namespace MBNCSUtil
         {
             get
             {
-                return Data.Length;
+                return m_data.Length;
             }
         }
 
@@ -437,16 +455,16 @@ namespace MBNCSUtil
             int i = m_index;
             if (enc == Encoding.Unicode || enc == Encoding.BigEndianUnicode)
             {
-                while ((i < Data.Length) && ((i + 1 < Data.Length) && (BitConverter.ToChar(Data, i) != Terminator)))
+                while ((i < m_data.Length) && ((i + 1 < m_data.Length) && (BitConverter.ToChar(m_data, i) != Terminator)))
                     i++;
             }
             else
             {
-                while ((i < Data.Length) && (Data[i] != (Terminator & 0xff)))
+                while ((i < m_data.Length) && (m_data[i] != (Terminator & 0xff)))
                     i++;
             }
 
-            string s = enc.GetString(Data, m_index, i - m_index);
+            string s = enc.GetString(m_data, m_index, i - m_index);
             m_index = ++i;
 
             return s;
@@ -461,7 +479,7 @@ namespace MBNCSUtil
         public bool Seek(int offset)
         {
             bool fOk = false;
-            if (this.m_index + offset < Data.Length)
+            if (this.m_index + offset < m_data.Length)
             {
                 m_index += offset;
                 fOk = true;
@@ -475,7 +493,7 @@ namespace MBNCSUtil
         /// <returns>A string representing this buffer's contents in hexadecimal notation.</returns>
         public override string ToString()
         {
-            return DataFormatter.Format(Data);
+            return DataFormatter.Format(m_data, 0, Length);
         }
     }
 }

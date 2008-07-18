@@ -75,20 +75,20 @@ typedef struct
             return unchecked((int)ROTL32((uint)value, shift));
         }
 
-        static void Tweedle(ref int rotater, int bitwise, int bitwise2, int bitwise3, int[] buffer, int index, ref int result)
-        {
-            int adder = buffer[index];
-            result = result + (((ROTL32(bitwise3, 5)) + ((~(rotater) & bitwise2) | (rotater & bitwise))) + adder + 0x5a827999);
-            buffer[index] = 0;
-            rotater = ROTL32(rotater, 0x1e);
-        }
+        //static void Tweedle(ref int rotater, int bitwise, int bitwise2, int bitwise3, int[] buffer, int index, ref int result)
+        //{
+        //    int adder = buffer[index];
+        //    result = result + (((ROTL32(bitwise3, 5)) + ((~(rotater) & bitwise2) | (rotater & bitwise))) + adder + 0x5a827999);
+        //    buffer[index] = 0;
+        //    rotater = ROTL32(rotater, 0x1e);
+        //}
 
-        static void Tweedle(ref int rotater, int bitwise, int bitwise2, int bitwise3, ref int adder, ref int result)
-        {
-            result = result + (((ROTL32(bitwise3, 5)) + ((~(rotater) & bitwise2) | (rotater & bitwise))) + adder + 0x5a827999);
-            adder = 0;
-            rotater = ROTL32(rotater, 0x1e);
-        }
+        //static void Tweedle(ref int rotater, int bitwise, int bitwise2, int bitwise3, ref int adder, ref int result)
+        //{
+        //    result = result + (((ROTL32(bitwise3, 5)) + ((~(rotater) & bitwise2) | (rotater & bitwise))) + adder + 0x5a827999);
+        //    adder = 0;
+        //    rotater = ROTL32(rotater, 0x1e);
+        //}
 
         static unsafe void Tweedle(ref int rotater, int bitwise, int bitwise2, int bitwise3, int* adder, ref int result)
         {
@@ -97,20 +97,20 @@ typedef struct
             rotater = ROTL32(rotater, 0x1e);
         }
 
-        static void Twitter(ref int rotater, int bitwise, int rotater2, int bitwise2, int[] buffer, int index, ref int result)
-        {
-            int rotater3 = buffer[index];
-            result = result + ((((bitwise2 | bitwise) & rotater) | (bitwise2 & bitwise)) + ((ROTL32(rotater2, 5)) + rotater3) - 0x70e44324);
-            buffer[index] = 0;
-            rotater = ROTL32(rotater, 0x1e);
-        }
+        //static void Twitter(ref int rotater, int bitwise, int rotater2, int bitwise2, int[] buffer, int index, ref int result)
+        //{
+        //    int rotater3 = buffer[index];
+        //    result = result + ((((bitwise2 | bitwise) & rotater) | (bitwise2 & bitwise)) + ((ROTL32(rotater2, 5)) + rotater3) - 0x70e44324);
+        //    buffer[index] = 0;
+        //    rotater = ROTL32(rotater, 0x1e);
+        //}
 
-        static void Twitter(ref int rotater, int bitwise, int rotater2, int bitwise2, ref int rotater3, ref int result)
-        {
-            result = result + ((((bitwise2 | bitwise) & rotater) | (bitwise2 & bitwise)) + ((ROTL32(rotater2, 5)) + rotater3) - 0x70e44324);
-            rotater3 = 0;
-            rotater = ROTL32(rotater, 0x1e);
-        }
+        //static void Twitter(ref int rotater, int bitwise, int rotater2, int bitwise2, ref int rotater3, ref int result)
+        //{
+        //    result = result + ((((bitwise2 | bitwise) & rotater) | (bitwise2 & bitwise)) + ((ROTL32(rotater2, 5)) + rotater3) - 0x70e44324);
+        //    rotater3 = 0;
+        //    rotater = ROTL32(rotater, 0x1e);
+        //}
 
         static unsafe void Twitter(ref int rotater, int bitwise, int rotater2, int bitwise2, int* rotater3, ref int result)
         {
@@ -120,95 +120,95 @@ typedef struct
         }
         #endregion
         #region transform
-        static void Sha1Transform(int[] data, int index, int[] state)
-        {
-            int a, b, c, d, e, f, g, h, m, n;
-            int i;
+        //static void Sha1Transform(int[] data, int index, int[] state)
+        //{
+        //    int a, b, c, d, e, f, g, h, m, n;
+        //    int i;
 
-            int[] buf = new int[80];
-            Buffer.BlockCopy(data, index, buf, 0, 0x40);
+        //    int[] buf = new int[80];
+        //    Buffer.BlockCopy(data, index, buf, 0, 0x40);
 
-            for (i = 0; i < 0x40; i++)
-            {
-                buf[i + 16] = ROTL32(buf[i + 13] ^ buf[i + 8] ^ buf[i] ^ buf[i + 2], 1);
-            }
+        //    for (i = 0; i < 0x40; i++)
+        //    {
+        //        buf[i + 16] = ROTL32(buf[i + 13] ^ buf[i + 8] ^ buf[i] ^ buf[i + 2], 1);
+        //    }
 
-            m = state[0];
-            b = state[1];
-            c = state[2];
-            n = state[3];
-            e = state[4];
+        //    m = state[0];
+        //    b = state[1];
+        //    c = state[2];
+        //    n = state[3];
+        //    e = state[4];
 
-            for (i = 0; i < 20; i += 5)
-            {
-                Tweedle(ref b, c, n, m, buf, (0 + i), ref e);
-                Tweedle(ref m, b, c, e, buf, (1 + i), ref n);
-                Tweedle(ref e, m, b, n, buf, (2 + i), ref c);
-                Tweedle(ref n, e, m, c, buf, (3 + i), ref b);
-                Tweedle(ref c, n, e, b, buf, (4 + i), ref m);
-            }
+        //    for (i = 0; i < 20; i += 5)
+        //    {
+        //        Tweedle(ref b, c, n, m, buf, (0 + i), ref e);
+        //        Tweedle(ref m, b, c, e, buf, (1 + i), ref n);
+        //        Tweedle(ref e, m, b, n, buf, (2 + i), ref c);
+        //        Tweedle(ref n, e, m, c, buf, (3 + i), ref b);
+        //        Tweedle(ref c, n, e, b, buf, (4 + i), ref m);
+        //    }
 
-            f = m;
-            d = n;
+        //    f = m;
+        //    d = n;
 
-            for (i = 0x14; i < 0x28; i += 5)
-            {
-                g = buf[i] + ROTL32(f, 5) + (d ^ c ^ b);
-                d = d + ROTL32(g + e + 0x6ed9eba1, 5) + (c ^ ROTL32(b, 0x1e) ^ f) + buf[i + 1] + 0x6ed9ba1;
-                c = c + ROTL32(d, 5) + ((g + e + 0x6ed9eba1) ^ ROTL32(b, 0x1e) ^ ROTL32(f, 0x1e)) + buf[i + 2] + 0x6ed9eba1;
-                e = ROTL32(g + e + 0x6ed9eba1, 0x1e);
-                b = ROTL32(b, 0x1e) + ROTL32(c, 5) + (e ^ d ^ ROTL32(f, 0x1e)) + buf[i + 3] + 0x6ed9eba1;
-                d = ROTL32(d, 0x1e);
-                f = ROTL32(f, 0x1e) + ROTL32(b, 5) + (e ^ d ^ c) + buf[i + 4] + 0x6ed9eba1;
-                c = ROTL32(c, 0x1e);
+        //    for (i = 0x14; i < 0x28; i += 5)
+        //    {
+        //        g = buf[i] + ROTL32(f, 5) + (d ^ c ^ b);
+        //        d = d + ROTL32(g + e + 0x6ed9eba1, 5) + (c ^ ROTL32(b, 0x1e) ^ f) + buf[i + 1] + 0x6ed9ba1;
+        //        c = c + ROTL32(d, 5) + ((g + e + 0x6ed9eba1) ^ ROTL32(b, 0x1e) ^ ROTL32(f, 0x1e)) + buf[i + 2] + 0x6ed9eba1;
+        //        e = ROTL32(g + e + 0x6ed9eba1, 0x1e);
+        //        b = ROTL32(b, 0x1e) + ROTL32(c, 5) + (e ^ d ^ ROTL32(f, 0x1e)) + buf[i + 3] + 0x6ed9eba1;
+        //        d = ROTL32(d, 0x1e);
+        //        f = ROTL32(f, 0x1e) + ROTL32(b, 5) + (e ^ d ^ c) + buf[i + 4] + 0x6ed9eba1;
+        //        c = ROTL32(c, 0x1e);
 
-                Array.Clear(buf, 0, 20);
-            }
+        //        Array.Clear(buf, 0, 20);
+        //    }
 
-            m = f;
-            n = d;
+        //    m = f;
+        //    n = d;
 
-            for (i = 0x28; i < 0x3c; i += 5)
-            {
-                Twitter(ref b, n, m, c, buf, (i + 0), ref e);
-                Twitter(ref m, c, e, b, buf, (i + 1), ref n);
-                Twitter(ref e, b, n, m, buf, (i + 2), ref c);
-                Twitter(ref n, m, c, e, buf, (i + 3), ref b);
-                Twitter(ref c, e, b, n, buf, (i + 4), ref m);
-            }
+        //    for (i = 0x28; i < 0x3c; i += 5)
+        //    {
+        //        Twitter(ref b, n, m, c, buf, (i + 0), ref e);
+        //        Twitter(ref m, c, e, b, buf, (i + 1), ref n);
+        //        Twitter(ref e, b, n, m, buf, (i + 2), ref c);
+        //        Twitter(ref n, m, c, e, buf, (i + 3), ref b);
+        //        Twitter(ref c, e, b, n, buf, (i + 4), ref m);
+        //    }
 
-            f = m;
-            a = m;
-            d = n;
+        //    f = m;
+        //    a = m;
+        //    d = n;
 
-            for (i = 0x3c; i < 0x50; i += 5)
-            {
-                g = ROTL32(a, 5) + (d ^ c ^ b) + buf[i + 0] + e - 0x359d3e2a;
-                b = ROTL32(b, 0x1e);
-                e = g;
-                d = (c ^ b ^ a) + buf[i + 1] + d + ROTL32(g, 5) - 0x359d3e2a;
-                a = ROTL32(a, 0x1e);
-                g = ROTL32(d, 5);
-                g = (e ^ b & a) + buf[i + 2] + c + g - 0x359d3e2a;
-                e = ROTL32(e, 0x1e);
-                c = g;
-                g = ROTL32(g, 5) + (e ^ d ^ a) + buf[i + 3] + b - 0x359d3e2a;
-                d = ROTL32(d, 0x1e);
-                h = (e ^ d ^ c) + buf[i + 4];
-                b = g; 
-                g = ROTL32(g, 5);
-                c = ROTL32(c, 0x1e);
-                a = (h + a) + g - 0x359d3e2a;
+        //    for (i = 0x3c; i < 0x50; i += 5)
+        //    {
+        //        g = ROTL32(a, 5) + (d ^ c ^ b) + buf[i + 0] + e - 0x359d3e2a;
+        //        b = ROTL32(b, 0x1e);
+        //        e = g;
+        //        d = (c ^ b ^ a) + buf[i + 1] + d + ROTL32(g, 5) - 0x359d3e2a;
+        //        a = ROTL32(a, 0x1e);
+        //        g = ROTL32(d, 5);
+        //        g = (e ^ b & a) + buf[i + 2] + c + g - 0x359d3e2a;
+        //        e = ROTL32(e, 0x1e);
+        //        c = g;
+        //        g = ROTL32(g, 5) + (e ^ d ^ a) + buf[i + 3] + b - 0x359d3e2a;
+        //        d = ROTL32(d, 0x1e);
+        //        h = (e ^ d ^ c) + buf[i + 4];
+        //        b = g; 
+        //        g = ROTL32(g, 5);
+        //        c = ROTL32(c, 0x1e);
+        //        a = (h + a) + g - 0x359d3e2a;
 
-                Array.Clear(buf, i, 5);
-            }
+        //        Array.Clear(buf, i, 5);
+        //    }
 
-            state[0] = state[0] + a;
-            state[1] = state[1] + b;
-            state[2] = state[2] + c;
-            state[3] = state[3] + d;
-            state[4] = state[4] + e;
-        }
+        //    state[0] = state[0] + a;
+        //    state[1] = state[1] + b;
+        //    state[2] = state[2] + c;
+        //    state[3] = state[3] + d;
+        //    state[4] = state[4] + e;
+        //}
 
         static unsafe void Sha1Transform(int* data, int* state)
         {

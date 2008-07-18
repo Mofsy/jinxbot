@@ -39,7 +39,7 @@ namespace MBNCSUtil
     /// including file checksumming and EXE version information.
     /// </remarks>
     /// <threadsafety>This type is safe for multithreaded operations.</threadsafety>
-    [PermissionSet(SecurityAction.LinkDemand, Name = "FullTrust")]
+    [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
     public static class CheckRevision
     {
         /** These are the hashcodes for the various .mpq files. */
@@ -81,10 +81,11 @@ namespace MBNCSUtil
             if (mpqName.Length < 7)
                 throw new ArgumentException(Resources.crMpqNameArgShort);
 
+            string mpqNameUpper = mpqName.ToUpperInvariant();
             int num = -1;
 
             // ver-IX86-X.mpq
-            if (mpqName.StartsWith("ver", StringComparison.OrdinalIgnoreCase))
+            if (mpqNameUpper.StartsWith("VER", StringComparison.Ordinal))
             {
                 num = int.Parse(mpqName[9].ToString(CultureInfo.InvariantCulture), CultureInfo.InvariantCulture);
             }
@@ -447,17 +448,22 @@ namespace MBNCSUtil
         /// unsupported.</span></para>
         /// </remarks>
         /// <param name="productID">The four-character product ID for the product in question.</param>
+        /// <exception cref="NotSupportedException">Thrown in all cases.</exception>
         /// <returns>The version byte of the product.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "productID")]
+        [Obsolete("Use of the MBNCSUtil web service for retrieving version bytes is no longer possible.", true)]
         public static byte GetVersionByte(string productID)
         {
-            string val = productID.ToUpper(CultureInfo.InvariantCulture);
-            Uri uri = new Uri(string.Concat("http://www.jinxbot.net/mbncsutil/mbncsutil_bytes.aspx?Client=", val));
-            WebRequest req = HttpWebRequest.Create(uri);
+            throw new NotSupportedException();
+            /*
+            string val = productID.ToUpper();
+            WebRequest req = HttpWebRequest.Create("http://www.jinxbot.net/mbncsutil/mbncsutil_bytes.aspx?Client=" + val);
             WebResponse resp = req.GetResponse();
             Stream strm = resp.GetResponseStream();
             StreamReader sr = new StreamReader(strm);
-            int ver = int.Parse(sr.ReadLine(), CultureInfo.InvariantCulture);
+            int ver = int.Parse(sr.ReadLine());
             return (byte)ver;
+             * */
         }
     }
 }

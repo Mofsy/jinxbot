@@ -25,17 +25,19 @@ using System.Text;
 using System.IO;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Security.Permissions;
+using System.Globalization;
 
 namespace MBNCSUtil.Data
 {
-    internal class LateBoundStormDllApi
+    [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
+    internal static class LateBoundStormDllApi
     {
         #region MPQ exception throwing helper
         [DebuggerStepThrough]
         private static void ThrowMpqException(MpqErrorCodes status)
         {
-            int i = Marshal.GetLastWin32Error();
-            Console.WriteLine("Last win32 error: {0}", i);
+            //Console.WriteLine("Last win32 error: {0}", i);
             switch (status)
             {
                 case MpqErrorCodes.BadOpenMode:
@@ -45,41 +47,41 @@ namespace MBNCSUtil.Data
                 case MpqErrorCodes.MpqInvalid:
                     throw new MpqException(Resources.mpq_mpqArchiveCorrupt);
                 default:
-                    throw new MpqException(string.Format(Resources.mpq_UnknownErrorType, status));
+                    throw new MpqException(string.Format(CultureInfo.InvariantCulture, Resources.mpq_UnknownErrorType, status));
             }
         }
         #endregion
         public static void Initialize(IntPtr hModule)
         {
-            IntPtr openArch = Native.GetProcAddress(hModule, "SFileOpenArchive");
+            IntPtr openArch = NativeMethods.GetProcAddress(hModule, "SFileOpenArchive");
             callback_SFileOpenArchive = (SFileOpenArchiveCallback)Marshal.GetDelegateForFunctionPointer(
                 openArch, typeof(SFileOpenArchiveCallback));
 
-            IntPtr closeArch = Native.GetProcAddress(hModule, "SFileCloseArchive");
+            IntPtr closeArch = NativeMethods.GetProcAddress(hModule, "SFileCloseArchive");
             callback_SFileCloseArchive = (SFileCloseArchiveCallback)Marshal.GetDelegateForFunctionPointer(
                 closeArch, typeof(SFileCloseArchiveCallback));
 
-            IntPtr openFileEx = Native.GetProcAddress(hModule, "SFileOpenFileEx");
+            IntPtr openFileEx = NativeMethods.GetProcAddress(hModule, "SFileOpenFileEx");
             callback_SFileOpenFileEx = (SFileOpenFileExCallback)Marshal.GetDelegateForFunctionPointer(
                 openFileEx, typeof(SFileOpenFileExCallback));
 
-            IntPtr hasFile = Native.GetProcAddress(hModule, "SFileHasFile");
+            IntPtr hasFile = NativeMethods.GetProcAddress(hModule, "SFileHasFile");
             callback_SFileHasFile = (SFileHasFileCallback)Marshal.GetDelegateForFunctionPointer(
                 hasFile, typeof(SFileHasFileCallback));
 
-            IntPtr closeFile = Native.GetProcAddress(hModule, "SFileCloseFile");
+            IntPtr closeFile = NativeMethods.GetProcAddress(hModule, "SFileCloseFile");
             callback_SFileCloseFile = (SFileCloseFileCallback)Marshal.GetDelegateForFunctionPointer(
                 closeFile, typeof(SFileCloseFileCallback));
 
-            IntPtr getFileSize = Native.GetProcAddress(hModule, "SFileGetFileSize");
+            IntPtr getFileSize = NativeMethods.GetProcAddress(hModule, "SFileGetFileSize");
             callback_SFileGetFileSize = (SFileGetFileSizeCallback)Marshal.GetDelegateForFunctionPointer(
                 getFileSize, typeof(SFileGetFileSizeCallback));
 
-            IntPtr setFilePtr = Native.GetProcAddress(hModule, "SFileSetFilePointer");
+            IntPtr setFilePtr = NativeMethods.GetProcAddress(hModule, "SFileSetFilePointer");
             callback_SFileSetPointer = (SFileSetFilePointerCallback)Marshal.GetDelegateForFunctionPointer(
                 setFilePtr, typeof(SFileSetFilePointerCallback));
 
-            IntPtr readFile = Native.GetProcAddress(hModule, "SFileReadFile");
+            IntPtr readFile = NativeMethods.GetProcAddress(hModule, "SFileReadFile");
             callback_SFileReadFile = (SFileReadFileCallback)Marshal.GetDelegateForFunctionPointer(
                 readFile, typeof(SFileReadFileCallback));
         }

@@ -22,12 +22,14 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using System.Runtime.Serialization;
 
 namespace MBNCSUtil.Data
 {
     /// <summary>
     /// Wraps an I/O exception with MPQ-specific errors.
     /// </summary>
+    [Serializable]
     public class MpqException : IOException
     {
         /// <summary>
@@ -46,5 +48,14 @@ namespace MBNCSUtil.Data
         /// <param name="message">The error message related to the exception.</param>
         /// <param name="inner">A related exception that caused this exception.</param>
         public MpqException(string message, Exception inner) : base(message, inner) { }
+
+        /// <summary>
+        /// Creates an MPQ exception from serialized data.
+        /// </summary>
+        /// <param name="info">The serialization info.</param>
+        /// <param name="context">The serialization streaming context.</param>
+        protected MpqException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        { }
     }
 }
