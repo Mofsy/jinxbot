@@ -1,0 +1,14 @@
+﻿<summary>
+    <para>
+        The <b>MBNCSUtil.Data</b> namespace contains the classes necessary to access MPQ support in MBNCSUtil.
+        To open an MPQ archive, utilize the <see cref="MBNCSUtil.Data.MpqServices">MpqServices</see>
+        class:
+    </para>
+    <code language="C#">
+        MpqArchive archive = MpqServices.OpenArchive("data.mpq");
+    </code>
+    <para>
+        Please note that MPQ archives are <see cref="IDisposable">Disposable</see> and treat them accordingly.
+        Disposing an MpqArchive will automatically dispose any MpqFileStream objects that were created by it.
+    </para>
+</summary>

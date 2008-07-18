@@ -1,0 +1,322 @@
+﻿<project schemaVersion="1.5.2.0">
+    <assemblies>
+        <assembly assemblyPath="..\MBNCSUtil\bin\x64\Debug\MBNCSUtil.dll" xmlCommentsPath="..\MBNCSUtil\bin\x64\Debug\MBNCSUtil.xml" commentsOnly="False" />
+    </assemblies>
+    <namespaceSummaries>
+        <namespaceSummaryItem name="" isDocumented="False" />
+        <namespaceSummaryItem name="MBNCSUtil" isDocumented="True">&lt;summary&gt;
+    &lt;para&gt;
+        The MBNCSUtil namespace provides managed types
+        for the implementation of Battle.net logon authorization as well as a number
+        of other utilities to support Battle.net development.
+    &lt;/para&gt;
+    &lt;para&gt;
+        This library should run on an x86- or x64-based Windows system.
+        MBNCSUtil now includes Windows-specific API calls for the MPQ file 
+        handling (MBNCSUtil.Data) and Lockdown CheckRevision calls.  Other code should 
+        function normally on systems with the Common Language Infrastructure.
+    &lt;/para&gt;
+    &lt;para&gt;
+        This code was originally based upon Eric Naseth's (shadypalm88's) BNCSUtil 1.0.4, Ron Bowes' (iago's) 
+        various implementations in Java and C, and Robert ONeal's, from whose code most of the Lockdown implementation 
+        was based.  However, most code is original C#, unless otherwise noted, by Robert Paveza (MyndFyre).
+    &lt;/para&gt;
+    &lt;para&gt;
+        This library is licensed under a modified version of the BSD license as of version 1.2.0.4.
+        This license supercedes previous licenses of this library for versions 1.2.0.4 and newer.
+        Older libraries will continue to be licensed under their old license or, optionally, the 
+        new BSD license.  For more information, consult the 
+        &lt;a href="http://www.jinxbot.net/mbncsutil/license.txt" target="_blank"&gt;LICENSE.TXT&lt;/a&gt;   
+        file that should have 
+        accompanied this file.
+    &lt;/para&gt;
+    &lt;para&gt;
+        This library includes binary code under license from Ladislave Zezula.  Separation of this library from the 
+        binary code is not permitted, nor is distribution of the binary.  Please obtain your own license for 
+        StormLib by downloading it from &lt;a href="http://www.zezula.net/" target="_blank"&gt;www.zezula.net&lt;/a&gt;.
+    &lt;/para&gt;
+    &lt;para&gt;
+        &lt;b&gt;Versioning Information&lt;/b&gt;
+    &lt;/para&gt;
+    &lt;para&gt;
+        MBNCSUtil v2.0 is a relatively major departure from previous versions.  COM support is no longer included, 
+        and the library is offered only for .NET 2.0.  Furthermore, assemblies are versioned for a specific
+        processor architecture.  &lt;b&gt;If your application is going to support both x86 and x64, it is highly recommended
+        that you include MBNCSUtil as a project within your project solution, add it as a reference to your project, and
+        ensure that you have x86 and x64 builds.  For more information on how to do this, consult the Visual Studio 
+        documentation.&lt;/b&gt;
+    &lt;/para&gt;
+    &lt;para&gt;
+        &lt;b&gt;Changelog&lt;/b&gt;
+    &lt;/para&gt;
+    &lt;para&gt;
+        &lt;list type="table"&gt;
+            &lt;listheader&gt;
+                &lt;term&gt;Version&lt;/term&gt;
+                &lt;description&gt;Changes&lt;/description&gt;
+            &lt;/listheader&gt;
+            &lt;item&gt;
+                &lt;term&gt;Planned (Future) Updates&lt;/term&gt;
+                &lt;description&gt;
+                    &lt;list type="bullet"&gt;
+                        &lt;item&gt;
+                            &lt;description&gt;Installation (.msi) utility and integration with Visual Studio's help system.&lt;/description&gt;
+                        &lt;/item&gt;
+                        &lt;item&gt;
+                            &lt;description&gt;
+                                BNLS integration, due for version 2.2.
+                            &lt;/description&gt;
+                        &lt;/item&gt;
+                        &lt;item&gt;
+                            &lt;description&gt;BLP and BLP2 image processing, due for version 2.1.&lt;/description&gt;
+                        &lt;/item&gt;
+                    &lt;/list&gt;
+                &lt;/description&gt;
+            &lt;/item&gt;
+            &lt;item&gt;
+                &lt;term&gt;
+                    2.0.5.18 Final&lt;br /&gt; [&lt;a href="http://www.jinxbot.net/mbncsutil/mbncsutil-2.0.5.18-doc.zip"&gt;documentation&lt;/a&gt;]
+                    [&lt;a href="http://www.jinxbot.net/mbncsutil/mbncsutil-2.0.5.18-code.zip"&gt;code&lt;/a&gt;]
+                    &lt;br /&gt;&lt;span style="text-decoration: underline;"&gt;Binaries:&lt;/span&gt;&lt;br /&gt;
+                    &lt;a href="http://www.jinxbot.net/mbncsutil/mbncsutil-2.0.5.18-x86chk.zip"&gt;x86 Debug&lt;/a&gt;&lt;br /&gt;
+                    &lt;a href="http://www.jinxbot.net/mbncsutil/mbncsutil-2.0.5.18-x86fre.zip"&gt;x86 Release&lt;/a&gt;&lt;br /&gt;
+                    &lt;a href="http://www.jinxbot.net/mbncsutil/mbncsutil-2.0.5.18-x64chk.zip"&gt;x64 Debug&lt;/a&gt;&lt;br /&gt;
+                    &lt;a href="http://www.jinxbot.net/mbncsutil/mbncsutil-2.0.5.18-x64fre.zip"&gt;x64 Release&lt;/a&gt;&lt;br /&gt;
+                    Current SVN &lt;br /&gt;Revision: &lt;b&gt;21&lt;/b&gt;
+                &lt;/term&gt;
+                &lt;description&gt;
+                    &lt;list type="bullet"&gt;
+                        &lt;item&gt;
+                            &lt;description&gt;
+                                Subversion URL: &lt;b&gt;https://svn2.hosted-projects.com/robpaveza/mbncsutil&lt;/b&gt;&lt;br /&gt;
+                                Trac URL: &lt;a href="https://www2.hosted-projects.com/trac/robpaveza/mbncsutil/wiki/WikiStart" target="_blank"&gt;https://www2.hosted-projects.com/trac/robpaveza/mbncsutil/wiki/WikiStart&lt;/a&gt;
+                            &lt;/description&gt;
+                        &lt;/item&gt;
+                        &lt;item&gt;
+                            &lt;description&gt;
+                                Corrected a series of issues with the NLS class.
+                            &lt;/description&gt;
+                        &lt;/item&gt;
+                    &lt;/list&gt;
+                &lt;/description&gt;
+            &lt;/item&gt;
+            &lt;item&gt;
+                &lt;term&gt;
+                    2.0.4.17 BETA 2&lt;br /&gt; [&lt;a href="http://www.jinxbot.net/mbncsutil/mbncsutil-2.0.4.17-doc.zip"&gt;documentation&lt;/a&gt;]
+                    [&lt;a href="http://www.jinxbot.net/mbncsutil/mbncsutil-2.0.4.17-code.zip"&gt;code&lt;/a&gt;]
+                    &lt;br /&gt;&lt;span style="text-decoration: underline;"&gt;Binaries:&lt;/span&gt;&lt;br /&gt;
+                    &lt;a href="http://www.jinxbot.net/mbncsutil/mbncsutil-2.0.4.17-x86chk.zip"&gt;x86 Debug&lt;/a&gt;&lt;br /&gt;
+                    &lt;a href="http://www.jinxbot.net/mbncsutil/mbncsutil-2.0.4.17-x86fre.zip"&gt;x86 Release&lt;/a&gt;&lt;br /&gt;
+                    &lt;a href="http://www.jinxbot.net/mbncsutil/mbncsutil-2.0.4.17-x64chk.zip"&gt;x64 Debug&lt;/a&gt;&lt;br /&gt;
+                    &lt;a href="http://www.jinxbot.net/mbncsutil/mbncsutil-2.0.4.17-x64fre.zip"&gt;x64 Release&lt;/a&gt;&lt;br /&gt;
+                    Current SVN &lt;br /&gt;Revision: &lt;b&gt;15&lt;/b&gt;
+                &lt;/term&gt;
+                &lt;description&gt;
+                    &lt;list type="bullet"&gt;
+                        &lt;item&gt;
+                            &lt;description&gt;
+                                &lt;b&gt;Did you know&lt;/b&gt; that MBNCSUtil includes a number of additional tools used in the development and testing of MBNCSUtil?  These
+                                tools and utilities are sample code that indicate how to use some of MBNCSUtil's features, including a command-line tool
+                                for downloading files from BnFTP, extracting a file from an MPQ, and even a rudimentary client used to ensure the 
+                                Lockdown implementation works with class based on JinxBot's ConnectionBase class.  These files are all available through
+                                the Subversion repository at &lt;b&gt;https://svn2.hosted-projects.com/robpaveza/mbncsutil/&lt;/b&gt;.  You should log in with the 
+                                username &lt;b&gt;mbncsutil_anonymous&lt;/b&gt; with no password.  Need a Subversion client?  I use &lt;a href="http://tortoisesvn.tigris.org/" target="_blank"&gt;TortoiseSVN&lt;/a&gt;.
+                            &lt;/description&gt;
+                        &lt;/item&gt;
+                        &lt;item&gt;
+                            &lt;description&gt;
+                                Added event/status support to the Battle.net FTP downloading scheme.  To obtain status updates, listen to the 
+                                &lt;see cref="MBNCSUtil.Net.BnFtpRequestBase.FilePartDownloaded"&gt;BnFtpRequestBase.FilePartDownloaded&lt;/see&gt; event.
+                            &lt;/description&gt;
+                        &lt;/item&gt;
+                        &lt;item&gt;
+                            &lt;description&gt;
+                                Corrected an issue in which approximately 7.5% of lockdown calls would result in failure.  The bulk test tool 
+                                reports 100% success.  If you encounter a revision check failure, please e-mail 
+                                &lt;a href="mailto:myndfyre@valhallalegends.com"&gt;MyndFyre@valhallalegends.com&lt;/a&gt; with the value-string and lockdown MPQ
+                                file parameters (as well as the product).
+                            &lt;/description&gt;
+                        &lt;/item&gt;
+                        &lt;item&gt;
+                            &lt;description&gt;
+                                Corrected documentation that provided a sample for extracting files from MPQ archives.
+                            &lt;/description&gt;
+                        &lt;/item&gt;
+                        &lt;item&gt;
+                            &lt;description&gt;
+                                Corrected an issue reported by Homerlan and iNsaNe (at the vL forums) in which the NLS class was generating a 
+                                NullReferenceException because the &lt;c&gt;k&lt;/c&gt; field had not been initialized to a value.
+                            &lt;/description&gt;
+                        &lt;/item&gt;
+                        &lt;item&gt;
+                            &lt;description&gt;
+                                Corrected an issue reported by Chriso.de (at the vL forums) in which the NLS class was generating an 
+                                IOException because certain username values returned shorter names when using Encoding.ASCII.GetByteLength than the 
+                                actual length of the username.
+                            &lt;/description&gt;
+                        &lt;/item&gt;
+                        &lt;item&gt;
+                            &lt;description&gt;
+                                Explicitly added a NotSupportedException when CheckRevision.ExtractMPQNumber is called with a Lockdown MPQ filename.
+                            &lt;/description&gt;
+                        &lt;/item&gt;
+                        &lt;item&gt;
+                            &lt;description&gt;
+                                Corrected an issue reported by Joe[x86] in which the MPQ loader would mistakenly load the 64-bit MPQ support DLL 
+                                when operating within a 32-bit process on Win32 platforms not running 64-bit OSes.
+                            &lt;/description&gt;
+                        &lt;/item&gt;
+                    &lt;/list&gt;
+                &lt;/description&gt;
+            &lt;/item&gt;
+            &lt;item&gt;
+                &lt;term&gt;
+                    2.0.3.16 BETA 1 Service Release&lt;br /&gt; [&lt;a href="http://www.jinxbot.net/mbncsutil/mbncsutil-2.0.3.15-doc.zip"&gt;documentation&lt;/a&gt;]
+                    [&lt;a href="http://www.jinxbot.net/mbncsutil/mbncsutil-2.0.3.16-code.zip"&gt;code&lt;/a&gt;]
+                    &lt;br /&gt;&lt;span style="text-decoration: underline;"&gt;Binaries:&lt;/span&gt;&lt;br /&gt;
+                    &lt;a href="http://www.jinxbot.net/mbncsutil/mbncsutil-2.0.3.16-x86chk.zip"&gt;x86 Debug&lt;/a&gt;&lt;br /&gt;
+                    &lt;a href="http://www.jinxbot.net/mbncsutil/mbncsutil-2.0.3.16-x86fre.zip"&gt;x86 Release&lt;/a&gt;&lt;br /&gt;
+                    &lt;a href="http://www.jinxbot.net/mbncsutil/mbncsutil-2.0.3.16-x64chk.zip"&gt;x64 Debug&lt;/a&gt;&lt;br /&gt;
+                    &lt;a href="http://www.jinxbot.net/mbncsutil/mbncsutil-2.0.3.16-x64fre.zip"&gt;x64 Release&lt;/a&gt;&lt;br /&gt;
+                    Current SVN Revision: 9
+                &lt;/term&gt;
+                &lt;description&gt;
+                    &lt;list type="bullet"&gt;
+                        &lt;item&gt;
+                            &lt;description&gt;
+                                A bug was identified in the way the LockdownHeap class (part of the MBNCSUtil.Util namespace, which is not a public 
+                                namespace) was marshaling data to the unmanaged heap, which was cauing 100% failure rates on lockdown.  This issue 
+                                has been corrected.  Please note that the &lt;u&gt;downloadable&lt;/u&gt; documentation file has not been updated for this 
+                                service release, as the API has not changed.
+                            &lt;/description&gt;
+                        &lt;/item&gt;
+                    &lt;/list&gt;
+                &lt;/description&gt;
+            &lt;/item&gt;
+            &lt;item&gt;
+                &lt;term&gt;
+                    2.0.3.15 BETA 1 [&lt;a href="http://www.jinxbot.net/mbncsutil/mbncsutil-2.0.3.15-doc.zip"&gt;documentation&lt;/a&gt;]
+                    [&lt;a href="http://www.jinxbot.net/mbncsutil/mbncsutil-2.0.3.15-code.zip"&gt;code&lt;/a&gt;]
+                    &lt;br /&gt;&lt;span style="text-decoration: underline;"&gt;Binaries:&lt;/span&gt;&lt;br /&gt;
+                    &lt;a href="http://www.jinxbot.net/mbncsutil/mbncsutil-2.0.3.15-x86-debug.zip"&gt;x86 Debug&lt;/a&gt;&lt;br /&gt;
+                    &lt;a href="http://www.jinxbot.net/mbncsutil/mbncsutil-2.0.3.15-x86-release.zip"&gt;x86 Release&lt;/a&gt;&lt;br /&gt;
+                    &lt;a href="http://www.jinxbot.net/mbncsutil/mbncsutil-2.0.3.15-x64-debug.zip"&gt;x64 Debug&lt;/a&gt;&lt;br /&gt;
+                    &lt;a href="http://www.jinxbot.net/mbncsutil/mbncsutil-2.0.3.15-x64-release.zip"&gt;x64 Release&lt;/a&gt;&lt;br /&gt;
+                &lt;/term&gt;
+                &lt;description&gt;
+                    &lt;list type="bullet"&gt;
+                        &lt;item&gt;
+                            &lt;description&gt;
+                                Lockdown CheckRevision is now supported for Starcraft and Warcraft II: Battle.net Edition.
+                                &lt;span style="color: red;"&gt;
+                                    This is a pre-release version of MBNCSUtil 2.0 that previews the MPQ, BnFTP, and Lockdown Checkrevision functionality
+                                    of MBNCSUtil 2.0.  Tests indicate that Lockdown currently incorrectly calculates the revision check 7.4% of its uses.
+                                &lt;/span&gt;
+                            &lt;/description&gt;
+                        &lt;/item&gt;
+                        &lt;item&gt;
+                            &lt;description&gt;
+                                &lt;span style="font-weight: bold; color: red;"&gt;IMPORTANT&lt;/span&gt; -
+                                MBNCSUtil 2.0 does &lt;b&gt;not&lt;/b&gt; support the .NET Framework 1.x; clients that wish to use
+                                MBNCSUtil 2.0 should target the .NET Framework 2.0.
+                            &lt;/description&gt;
+                        &lt;/item&gt;
+                        &lt;item&gt;
+                            &lt;description&gt;
+                                MBNCSUtil is now hosted in a Subversion repository.  Point your favorite SVN client at &lt;b&gt;https://www2.hosted-projects.com/robpaveza/mbncsutil/trunk/&lt;/b&gt;
+                                to download the latest bits.  (Note that the SVN repository is updated much more frequently than the stable build list; for stable
+                                builds, be sure to download the software from
+                                &lt;a href="http://www.jinxbot.net/mbncsutil/" target="_blank"&gt;the official site&lt;/a&gt;).  Along with Subversion, there is now a Trac wiki
+                                and bug tracker.  Visit it at &lt;a href="https://www2.hosted-projects.com/trac/robpaveza/mbncsutil" target="_blank"&gt;https://www2.hosted-projects.com/trac/robpaveza/mbncsutil&lt;/a&gt;.
+                                Both Subversion and Trac require authentication; use the username &lt;b&gt;mbncsutil_anonymous&lt;/b&gt; with no password.
+                            &lt;/description&gt;
+                        &lt;/item&gt;
+                        &lt;item&gt;
+                            &lt;description&gt;
+                                MBNCSUtil 2.0 includes the ability to open MPQ archives!  See the
+                                &lt;see cref="MBNCSUtil.Data"&gt;MBNCSUtil.Data namespace&lt;/see&gt; for implementation details.  If you retrieve the solution from
+                                Subversion, you will find a project called &lt;b&gt;mmpq&lt;/b&gt; in the trunk; this project demonstrates opening an MPQ and retrieving its
+                                listfile.
+                            &lt;/description&gt;
+                        &lt;/item&gt;
+                        &lt;item&gt;
+                            &lt;description&gt;
+                                MBNCSUtil 2.0 includes an integrated ability to download files from Battle.net
+                                via the proprietary BnFTP protocol.  See the &lt;see cref="MBNCSUtil.BnFtp"&gt;MBNCSUtil.BnFtp namespace&lt;/see&gt;
+                                for implementation details.  If you retrieve the solution from Subversion, you will find a project called &lt;b&gt;mbnftp&lt;/b&gt;
+                                in the trunk; this project demonstrates downloading files from the BnFTP service.
+                            &lt;/description&gt;
+                        &lt;/item&gt;
+                    &lt;/list&gt;
+                &lt;/description&gt;
+            &lt;/item&gt;
+        &lt;/list&gt;
+    &lt;/para&gt;
+&lt;/summary&gt;</namespaceSummaryItem>
+        <namespaceSummaryItem name="MBNCSUtil.Data" isDocumented="True">&lt;summary&gt;
+    &lt;para&gt;
+        The &lt;b&gt;MBNCSUtil.Data&lt;/b&gt; namespace contains the classes necessary to access MPQ support in MBNCSUtil.
+        To open an MPQ archive, utilize the &lt;see cref="MBNCSUtil.Data.MpqServices"&gt;MpqServices&lt;/see&gt;
+        class:
+    &lt;/para&gt;
+    &lt;code language="C#"&gt;
+        MpqArchive archive = MpqServices.OpenArchive("data.mpq");
+    &lt;/code&gt;
+    &lt;para&gt;
+        Please note that MPQ archives are &lt;see cref="IDisposable"&gt;Disposable&lt;/see&gt; and treat them accordingly.
+        Disposing an MpqArchive will automatically dispose any MpqFileStream objects that were created by it.
+    &lt;/para&gt;
+&lt;/summary&gt;</namespaceSummaryItem>
+        <namespaceSummaryItem name="MBNCSUtil.Net" isDocumented="True">&lt;summary&gt;
+    &lt;para&gt;
+        The &lt;b&gt;MBNCSUtil.Net&lt;/b&gt; namespace contains the classes necessary to connect to the Battle.net
+        proprietary FTP service.
+    &lt;/para&gt;
+    &lt;para&gt;
+        For down-level products including Starcraft, Starcraft: Brood War, Diablo II, Diablo II: Lord of
+        Destruction, and Warcraft II: Battle.net Edition, use the &lt;see cref="MBNCSUtil.Net.BnFtpVersion1Request"&gt;BnFtpVersion1Request&lt;/see&gt;
+        class.  For Warcraft III (both products), use the &lt;see cref="MBNCSUtil.Net.BnFtpVersion2Request"&gt;BnFtpVersion2Request&lt;/see&gt;
+        class.
+    &lt;/para&gt;
+&lt;/summary&gt;</namespaceSummaryItem>
+        <namespaceSummaryItem name="MBNCSUtil.Util" isDocumented="False" />
+    </namespaceSummaries>
+    <componentConfigurations>
+        <component id="Code Block Component" configuration="&lt;component type=&quot;SandcastleBuilder.Components.CodeBlockComponent&quot; assembly=&quot;{@SHFBFolder}SandcastleBuilder.Components.dll&quot; id=&quot;Code Block Component&quot;&gt;&lt;!-- Base path for relative filenames in source attributes (optional) --&gt;&lt;basePath value=&quot;{@ProjectFolder}&quot; /&gt;&lt;!-- Connect to language filter (optional).  If omitted,&#xD;&#xA;                 language filtering is enabled by default. --&gt;&lt;languageFilter value=&quot;true&quot; /&gt;&lt;!-- Code colorizer options (required).&#xD;&#xA;                 Attributes:&#xD;&#xA;                    Language syntax configuration file (required)&#xD;&#xA;                    XSLT style file (required)&#xD;&#xA;                    &quot;Copy&quot; image file URL (required)&#xD;&#xA;                    Default language (optional)&#xD;&#xA;                    Enable line numbering (optional)&#xD;&#xA;                    Enable outlining (optional)&#xD;&#xA;                    Tab size override (optional, 0 = Use syntax file setting)&#xD;&#xA;                    Use language name as default title (optional) --&gt;&lt;colorizer syntaxFile=&quot;{@SHFBFolder}Colorizer\highlight.xml&quot; styleFile=&quot;{@SHFBFolder}Colorizer\highlight.xsl&quot; copyImageUrl=&quot;../icons/CopyCode.gif&quot; language=&quot;cs&quot; numberLines=&quot;true&quot; outlining=&quot;true&quot; tabSize=&quot;4&quot; defaultTitle=&quot;true&quot; /&gt;&lt;/component&gt;" />
+    </componentConfigurations>
+    <ProjectSummary />
+    <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors</MissingTags>
+    <VisibleItems>InheritedMembers, InheritedFrameworkMembers, Protected, SealedProtected</VisibleItems>
+    <HtmlHelp1xCompilerPath path="" />
+    <HtmlHelp2xCompilerPath path="" />
+    <OutputPath>.\Help\</OutputPath>
+    <SandcastlePath path="" />
+    <WorkingPath path="" />
+    <CleanIntermediates>True</CleanIntermediates>
+    <KeepLogFile>True</KeepLogFile>
+    <HelpFileFormat>Help1xAndWebsite</HelpFileFormat>
+    <PurgeDuplicateTopics>True</PurgeDuplicateTopics>
+    <CppCommentsFixup>False</CppCommentsFixup>
+    <FrameworkVersion>2.0.50727</FrameworkVersion>
+    <BinaryTOC>True</BinaryTOC>
+    <IncludeFavorites>False</IncludeFavorites>
+    <Preliminary>False</Preliminary>
+    <RootNamespaceContainer>False</RootNamespaceContainer>
+    <RootNamespaceTitle />
+    <HelpTitle>MBNCSUtil 2.0 - a Managed Battle.net Utility Library</HelpTitle>
+    <HtmlHelpName>mbncsutil</HtmlHelpName>
+    <Language>en-US</Language>
+    <CopyrightHref>http://www.jinxbot.net/mbncsutil/</CopyrightHref>
+    <CopyrightText>Copyright (c) 2005-2008, Robert Paveza.</CopyrightText>
+    <FeedbackEMailAddress>mbncsutil@jinxbot.net</FeedbackEMailAddress>
+    <HeaderText />
+    <FooterText>Licensed under a modified version of the BSD license; see accompanying &lt;a href="http://www.jinxbot.net/mbncsutil/license.txt" target="_blank"&gt;LICENSE.TXT&lt;/a&gt; for licensing terms.  Blizzard, Battle.net, Starcraft, Warcraft, Warcraft II: Battle.net Edition, The Tides of Darkness, Into the Dark Portal, Diablo, The Lord of Destruction, Brood War, Warcraft III: The Reign of Chaos, The Frozen Throne, World of Warcraft, and The Burning Crusade are trademarks or registered trademarks of Blizzard Entertainment Inc. in the United States and/or other countries. Other marks may be the trademarks or registered trademarks of their respective owners.</FooterText>
+    <ProjectLinkType>Local</ProjectLinkType>
+    <SdkLinkType>Msdn</SdkLinkType>
+    <PresentationStyle>vs2005</PresentationStyle>
+    <NamingMethod>MemberName</NamingMethod>
+    <SyntaxFilters>Standard</SyntaxFilters>
+    <ContentPlacement>AboveNamespaces</ContentPlacement>
+    <ContentSiteMap path="" />
+    <TopicFileTransform path="" />
+</project>
