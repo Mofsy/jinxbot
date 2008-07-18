@@ -296,7 +296,7 @@ namespace MBNCSUtil
         /// Gets the "Private" or "Value 2" value of the CD key.
         /// </summary>
         /// <remarks>
-        /// <para>This property returns <b>null</b> (<b>Nothing</b> in Visual Basic) if the CD key is not valid.  
+        /// <para>This method returns <b>null</b> (<b>Nothing</b> in Visual Basic) if the CD key is not valid.  
         /// To check validity, use the <b>IsValid</b> property.</para>
         /// <para>For Starcraft, Warcraft II: Battle.net Edition, Diablo II, or Lord of Destruction CD keys,
         /// this value is a 4-byte array.  It can be converted to an integer value with the 
@@ -567,7 +567,7 @@ namespace MBNCSUtil
             MemoryStream msval = new MemoryStream(srcData, true);
             do
             {
-                safemult(4, 5, msval, table[i - 1]);
+                safemult(5, msval, table[i - 1]);
             } while (--i != 0);
             Buffer.BlockCopy(srcData, 0, values, 0, 16);
 #endif
@@ -618,7 +618,7 @@ namespace MBNCSUtil
 			}
 		}
 #else
-        private void safemult(int r, int x, Stream a, uint dcByte)
+        private static void safemult(int x, Stream a, uint dcByte)
         {
             a.Seek(12, SeekOrigin.Begin);
 
@@ -764,10 +764,13 @@ namespace MBNCSUtil
             return (ushort)((((num) >> 8) & 0x00FF) | (((num) << 8) & 0xFF00));
         }
 
-        //private static ushort SWAP2(uint num)
-        //{
-        //    return (ushort)((((num) >> 8) & 0x00FF) | (((num) << 8) & 0xFF00));
-        //}
+        // removed: unused
+        /*
+        private static ushort SWAP2(uint num)
+        {
+            return (ushort)((((num) >> 8) & 0x00FF) | (((num) << 8) & 0xFF00));
+        }
+        */
         #endregion
         #region calculate hash
         private void calculateHash(uint clientToken, uint serverToken)

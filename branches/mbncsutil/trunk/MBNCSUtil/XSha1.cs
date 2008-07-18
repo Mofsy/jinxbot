@@ -52,7 +52,8 @@ namespace MBNCSUtil
 		/// </summary>
 		/// <param name="input"></param>
 		/// <returns></returns>
-		private static unsafe byte[] UnsafeHash(byte[] input) 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
+        private static unsafe byte[] UnsafeHash(byte[] input) 
 		{
 			if (input.Length > 1024) throw new ArgumentOutOfRangeException(Resources.xshaMaxHash1024);
 

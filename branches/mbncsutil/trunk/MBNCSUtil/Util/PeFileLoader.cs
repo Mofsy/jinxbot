@@ -39,7 +39,10 @@ namespace MBNCSUtil.Util
         private const int IMAGE_SIZEOF_BASE_RELOCATION = 8;
         private const int IMAGE_REL_BASED_HIGHLOW = 3;
 
-        private IntPtr m_ptr, m_baseAddrPtr;
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2006:UseSafeHandleToEncapsulateNativeResources")]
+        private IntPtr m_ptr;
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2006:UseSafeHandleToEncapsulateNativeResources")]
+        private IntPtr m_baseAddrPtr;
 
         public unsafe byte* BaseAddress
         {
@@ -88,32 +91,32 @@ namespace MBNCSUtil.Util
             }
         }
 
-        private unsafe PeFileReader.ImageSectionHeader* GetSection(byte* data, byte* name)
-        {
-            byte* baseaddr;
-            int i;
-            PeFileReader.DosImageHeader* dosheader;
-            PeFileReader.NtHeaders* ntheader;
-            PeFileReader.ImageSectionHeader* section;
+        //private unsafe PeFileReader.ImageSectionHeader* GetSection(byte* data, byte* name)
+        //{
+        //    byte* baseaddr;
+        //    int i;
+        //    PeFileReader.DosImageHeader* dosheader;
+        //    PeFileReader.NtHeaders* ntheader;
+        //    PeFileReader.ImageSectionHeader* section;
 
-            baseaddr = data;
-            dosheader = (PeFileReader.DosImageHeader*)baseaddr;
-            ntheader = (PeFileReader.NtHeaders*)(baseaddr + dosheader->e_lfanew);
-            // roughly, IMAGE_FIRST_SECTION macro.  0x18 is the offset of the optional header, plus size of optional header.
-            section = (PeFileReader.ImageSectionHeader*)(((byte*)ntheader) + 0x18 + ntheader->SizeOfOptionalHeader);
+        //    baseaddr = data;
+        //    dosheader = (PeFileReader.DosImageHeader*)baseaddr;
+        //    ntheader = (PeFileReader.NtHeaders*)(baseaddr + dosheader->e_lfanew);
+        //    // roughly, IMAGE_FIRST_SECTION macro.  0x18 is the offset of the optional header, plus size of optional header.
+        //    section = (PeFileReader.ImageSectionHeader*)(((byte*)ntheader) + 0x18 + ntheader->SizeOfOptionalHeader);
 
-            for (i = 0; i < ntheader->NumberOfSections; i++, section++)
-            {
-                if (!Native.Strcmp(&section->Name, name))
-                {
-                    return section;
-                }
-            }
+        //    for (i = 0; i < ntheader->NumberOfSections; i++, section++)
+        //    {
+        //        if (!Native.Strcmp(&section->Name, name))
+        //        {
+        //            return section;
+        //        }
+        //    }
 
-            return null;
-        }
+        //    return null;
+        //}
 
-        private unsafe void PerformBaseReloc(byte* baseaddr, PeFileReader.NtHeaders* ntheader, int relocOffset)
+        private static unsafe void PerformBaseReloc(byte* baseaddr, PeFileReader.NtHeaders* ntheader, int relocOffset)
         {
             int i;
             PeFileReader.NtHeaders.ImageDataDirectory* directory;
@@ -144,7 +147,7 @@ namespace MBNCSUtil.Util
             }
         }
 
-        private unsafe void CopySections(byte* data, PeFileReader.NtHeaders* header, byte* baseaddr)
+        private static unsafe void CopySections(byte* data, PeFileReader.NtHeaders* header, byte* baseaddr)
         {
             int i, size;
             byte* dest;
@@ -185,6 +188,7 @@ namespace MBNCSUtil.Util
         public void Dispose()
         {
             Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -199,6 +203,11 @@ namespace MBNCSUtil.Util
             {
                 Marshal.FreeHGlobal(m_baseAddrPtr);
                 m_baseAddrPtr = IntPtr.Zero;
+            }
+
+            if (disposing)
+            {
+
             }
         }
 

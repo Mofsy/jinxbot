@@ -39,9 +39,9 @@ namespace MBNCSUtil.Net
     /// </remarks>
     public class BnFtpVersion1Request : BnFtpRequestBase
     {
-        private bool m_ad = false;
         private string m_adExt;
         private int m_adId;
+        private bool m_ad;
 
         // 33 + fileName.Length
 
@@ -134,7 +134,7 @@ namespace MBNCSUtil.Net
             Socket sck = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             sck.Connect(Server, 6112);
             sck.Send(new byte[] { 2 });
-            sck.Send(buffer.GetData());
+            sck.Send(buffer.GetData(), 0, buffer.Count, SocketFlags.None);
 
             byte[] hdrLengthBytes = new byte[2];
             sck.Receive(hdrLengthBytes, 2, SocketFlags.None);
@@ -150,7 +150,7 @@ namespace MBNCSUtil.Net
             rdr.Seek(8);
             long fileTime = rdr.ReadInt64();
             string name = rdr.ReadCString();
-            if (string.Compare(name, FileName, true) != 0 || FileSize == 0)
+            if (string.Compare(name, FileName, StringComparison.OrdinalIgnoreCase) != 0 || FileSize == 0)
             {
                 throw new FileNotFoundException(Resources.bnftp_filenotfound);
             }

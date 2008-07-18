@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System;
+using System.Resources;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
@@ -36,8 +37,9 @@ using System;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("2.1.6.20")]
-[assembly: AssemblyFileVersion("2.1.6.20")]
+[assembly: AssemblyVersion("2.1.7.22")]
+[assembly: AssemblyFileVersion("2.1.7.22")]
 
 [assembly: CLSCompliant(true)]
 [assembly: ComVisibleAttribute(false)]
+[assembly: NeutralResourcesLanguageAttribute("en-US", UltimateResourceFallbackLocation.MainAssembly)]

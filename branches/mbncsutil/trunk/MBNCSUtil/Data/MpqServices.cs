@@ -25,21 +25,24 @@ using System.IO;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
+using System.Security.Permissions;
 
 namespace MBNCSUtil.Data
 {
     /// <summary>
     /// Provides access to the loading and unloading of MPQ archives.  This class cannot be instantiated or inherited.
     /// </summary>
+    [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
     public sealed class MpqServices
     {
         #region instance fields
         private string m_path;
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2006:UseSafeHandleToEncapsulateNativeResources")]
         private IntPtr m_hMod;
         private List<MpqArchive> m_archives;
         #endregion
         #region lazy singleton
-        private class SingletonHost
+        private static class SingletonHost
         {
             public static MpqServices Singleton = new MpqServices();
             static SingletonHost() { }
@@ -49,10 +52,10 @@ namespace MBNCSUtil.Data
         private MpqServices()
         {
             m_path = Path.GetTempFileName();
-            Console.WriteLine(m_path);
+            //Console.WriteLine(m_path);
             FileStream fs = new FileStream(m_path, FileMode.Open, FileAccess.Write, FileShare.None);
             byte[] storm_dll;
-            if (Native.Is64BitProcess)
+            if (NativeMethods.Is64BitProcess)
                 storm_dll = Resources.StormLib64;
             else
                 storm_dll = Resources.StormLib32;
@@ -60,11 +63,12 @@ namespace MBNCSUtil.Data
             fs.Write(storm_dll, 0, storm_dll.Length);
             fs.Close();
 
-            m_hMod = Native.LoadLibrary(m_path);
+            m_hMod = NativeMethods.LoadLibrary(m_path);
             if (m_hMod == IntPtr.Zero)
             {
+                int win32err = Marshal.GetLastWin32Error();
                 File.Delete(m_path);
-                throw new Win32Exception(Marshal.GetLastWin32Error());
+                throw new Win32Exception(win32err);
             }
 
             LateBoundStormDllApi.Initialize(m_hMod);
@@ -79,6 +83,7 @@ namespace MBNCSUtil.Data
         /// <param name="fullPath">The path to the MPQ archive.</param>
         /// <returns>An <see cref="MpqArchive">MpqArchive</see> instance representing the archive.</returns>
         /// <exception cref="MpqException">Thrown if there is an error with the MPQ archive.</exception>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "o")]
         public static MpqArchive OpenArchive(string fullPath)
         {
             object o = Instance;
@@ -99,6 +104,7 @@ namespace MBNCSUtil.Data
         /// Closes an MPQ archive.
         /// </summary>
         /// <param name="archive">The archive to close.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "o")]
         public static void CloseArchive(MpqArchive archive)
         {
             object o = Instance;

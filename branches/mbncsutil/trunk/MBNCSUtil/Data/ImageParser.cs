@@ -1,4 +1,24 @@
-﻿using System;
+﻿/*
+MBNCSUtil -- Managed Battle.net Authentication Library
+Copyright (C) 2005-2008 by Robert Paveza
+
+Redistribution and use in source and binary forms, with or without modification, 
+are permitted provided that the following conditions are met: 
+
+1.) Redistributions of source code must retain the above copyright notice, 
+this list of conditions and the following disclaimer. 
+2.) Redistributions in binary form must reproduce the above copyright notice, 
+this list of conditions and the following disclaimer in the documentation 
+and/or other materials provided with the distribution. 
+3.) The name of the author may not be used to endorse or promote products derived 
+from this software without specific prior written permission. 
+	
+See LICENSE.TXT that should have accompanied this software for full terms and 
+conditions.
+
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
@@ -7,9 +27,12 @@ using System.Drawing;
 namespace MBNCSUtil.Data
 {
     /// <summary>
-    /// When implemented in a derived class, allows a custom image format to be 
-    /// parsed into standard bitmaps.
+    /// When implemented in a derived class, allows a custom image codec to be parsed to retrieve a .NET <see>Image</see> object.
     /// </summary>
+    /// <remarks>
+    /// <para>Because of differences in file type and purpose, this class does not support working with images from .BNI files found in 
+    /// Starcraft or Warcraft II: Battle.net Edition.  To use those files, use the <see>BniFileParser</see> class instead.</para>
+    /// </remarks>
     public abstract class ImageParser : IDisposable
     {
         #region constants

@@ -102,9 +102,7 @@ namespace MBNCSUtil
             set { m_id = value; }
         }
 
-        /// <summary>
-        /// Gets the total number of bytes in this packet, including the four-byte header.
-        /// </summary>
+        /// <inheritdoc />
         public override int Count
         {
             get

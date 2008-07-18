@@ -28,6 +28,7 @@ namespace MBNCSUtil.Util
     internal sealed class HeapPtr : IDisposable
     {
         private int m_len;
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2006:UseSafeHandleToEncapsulateNativeResources")]
         private IntPtr m_ptr;
         private AllocMethod m_method;
 
@@ -75,15 +76,15 @@ namespace MBNCSUtil.Util
             Marshal.Copy(data, 0, m_ptr, data.Length);
         }
 
-        public void MarshalStringA(string s)
-        {
-            MarshalData(Encoding.ASCII.GetBytes(s));
-        }
+        //public void MarshalStringA(string s)
+        //{
+        //    MarshalData(Encoding.ASCII.GetBytes(s));
+        //}
 
-        public void MarshalStringW(string s)
-        {
-            MarshalData(Encoding.Unicode.GetBytes(s));
-        }
+        //public void MarshalStringW(string s)
+        //{
+        //    MarshalData(Encoding.Unicode.GetBytes(s));
+        //}
 
         public void Realloc(int newLength)
         {
@@ -121,6 +122,7 @@ namespace MBNCSUtil.Util
         public void Dispose()
         {
             Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         private void Dispose(bool disposing)
@@ -141,7 +143,9 @@ namespace MBNCSUtil.Util
             m_ptr = IntPtr.Zero;
 
             if (disposing)
-                GC.SuppressFinalize(this);
+            {
+
+            }
         }
 
         #endregion

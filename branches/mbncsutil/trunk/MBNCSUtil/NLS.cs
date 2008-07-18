@@ -70,8 +70,8 @@ namespace MBNCSUtil
         #endregion
         #region fields
         private string userName, password;
-        private byte[] salt, serverKey, k, userNameAscii;
-        private BigInteger verifier, x, a, A, m1, S, B;
+        private byte[] k, userNameAscii;
+        private BigInteger verifier, x, a, A, m1;
         #endregion
         #region ctor/dtor/static creator
         /// <summary>
@@ -147,9 +147,9 @@ namespace MBNCSUtil
         /// to the specified stream at the current location.
         /// </summary>
         /// <param name="stream">The stream to modify.</param>
-        /// <param name="salt">The salt value, sent from the server
+        /// <param name="serverSalt">The salt value, sent from the server
         /// in SID_AUTH_ACCOUNTLOGON.</param>
-        /// <param name="serverKey">The server key, sent from the server
+        /// <param name="serverRandomKey">The server key, sent from the server
         /// in SID_AUTH_ACCOUNTLOGON.</param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if 
         /// the salt or server key values are not exactly 32 bytes.</exception>
@@ -162,17 +162,17 @@ namespace MBNCSUtil
         /// <para>This method should be called after the <see cref="LoginAccount(byte[], int, int)">LoginAccount</see> method.</para>
         /// </remarks>
         /// <returns>The total number of bytes written to the buffer.</returns>
-        public int LoginProof(Stream stream, byte[] salt, byte[] serverKey)
+        public int LoginProof(Stream stream, byte[] serverSalt, byte[] serverRandomKey)
         {
-            if (salt.Length != 32)
-                throw new ArgumentOutOfRangeException(Resources.param_salt, salt, Resources.nlsSalt32);
-            if (serverKey.Length != 32)
-                throw new ArgumentOutOfRangeException(Resources.param_serverKey, serverKey, Resources.nlsServerKey32);
+            if (serverSalt.Length != 32)
+                throw new ArgumentOutOfRangeException(Resources.param_salt, serverSalt, Resources.nlsSalt32);
+            if (serverRandomKey.Length != 32)
+                throw new ArgumentOutOfRangeException(Resources.param_serverKey, serverRandomKey, Resources.nlsServerKey32);
 
             if (stream.Position + 20 > stream.Length)
                 throw new IOException(Resources.nlsLoginProofSpace);
 
-            CalculateM1(salt, serverKey);
+            CalculateM1(serverSalt, serverRandomKey);
 
             stream.Write(EnsureArrayLength(this.m1.GetBytes(), 20), 0, 20);
 
@@ -188,7 +188,7 @@ namespace MBNCSUtil
         /// modify the buffer.</param>
         /// <param name="totalLength">The total number of bytes from 
         /// the starting index of the buffer that may be modified.</param>
-        /// <param name="salt">The salt value, sent from the server
+        /// <param name="serverSalt">The salt value, sent from the server
         /// in SID_AUTH_ACCOUNTLOGON.</param>
         /// <param name="serverKey">The server key, sent from the server
         /// in SID_AUTH_ACCOUNTLOGON.</param>
@@ -203,10 +203,10 @@ namespace MBNCSUtil
         /// <para>This method should be called after the <see cref="LoginAccount(byte[], int, int)">LoginAccount</see> method.</para>
         /// </remarks>
         /// <returns>The total number of bytes written to the buffer.</returns>
-        public int LoginProof(byte[] buffer, int startIndex, int totalLength, byte[] salt, byte[] serverKey)
+        public int LoginProof(byte[] buffer, int startIndex, int totalLength, byte[] serverSalt, byte[] serverKey)
         {
             MemoryStream ms = new MemoryStream(buffer, startIndex, totalLength, true);
-            return LoginProof(ms, salt, serverKey);
+            return LoginProof(ms, serverSalt, serverKey);
         }
 
         /// <summary>
@@ -214,7 +214,7 @@ namespace MBNCSUtil
         /// to the specified packet.
         /// </summary>
         /// <param name="logonProofPacket">The BNCS packet to which to add the account logon data.</param>
-        /// <param name="salt">The salt value, sent from the server
+        /// <param name="serverSalt">The salt value, sent from the server
         /// in SID_AUTH_ACCOUNTLOGON.</param>
         /// <param name="serverKey">The server key, sent from the server
         /// in SID_AUTH_ACCOUNTLOGON.</param>
@@ -223,13 +223,13 @@ namespace MBNCSUtil
         /// <exception cref="InvalidOperationException">Thrown if the object has not 
         /// yet been initialized.</exception>
         /// <remarks>
-        /// <para>This method should be called after the <see cref="LoginAccount(BncsPacket)">LoginAccount</see> method.</para>
+        /// <para>This method should be called after the <see cref="LoginAccount(DataBuffer)">LoginAccount</see> method.</para>
         /// </remarks>
         /// <returns>The total number of bytes written to the buffer.</returns>
-        public int LoginProof(DataBuffer logonProofPacket, byte[] salt, byte[] serverKey)
+        public int LoginProof(DataBuffer logonProofPacket, byte[] serverSalt, byte[] serverKey)
         {
             byte[] temp = new byte[20];
-            int len = LoginProof(temp, 0, 20, salt, serverKey);
+            int len = LoginProof(temp, 0, 20, serverSalt, serverKey);
             logonProofPacket.Insert(temp);
             return len;
         }
@@ -272,7 +272,7 @@ namespace MBNCSUtil
         /// yet been initialized.</exception>
         /// <remarks>
         /// <para>This method may be called first after creating the instance, or after the 
-        /// <see cref="CreateAccount(BncsPacket)">CreateAccount</see> method.</para>		
+        /// <see cref="CreateAccount(DataBuffer)">CreateAccount</see> method.</para>		
         /// </remarks>
         /// <returns>The total number of bytes written to the buffer.</returns>
         // Suppressed CA1726: "LoginAccount" is the canonical name from Battle.net terminology.
@@ -331,12 +331,12 @@ namespace MBNCSUtil
             if ((stream.Position + 65 + userNameAscii.Length) > stream.Length)
                 throw new IOException(Resources.nlsAcctCreateSpace);
 
-            byte[] salt = new byte[32];
-            s_rand.GetNonZeroBytes(salt);
+            byte[] clientSalt = new byte[32];
+            s_rand.GetNonZeroBytes(clientSalt);
 
-            CalculateVerifier(salt);
+            CalculateVerifier(clientSalt);
 
-            stream.Write(EnsureArrayLength(salt, 32), 0, 32);
+            stream.Write(EnsureArrayLength(clientSalt, 32), 0, 32);
             stream.Write(ReverseArray(EnsureArrayLength(verifier.GetBytes(), 32)), 0, 32);
             stream.Write(userNameAscii, 0, userNameAscii.Length);
             stream.WriteByte(0);
@@ -424,32 +424,29 @@ namespace MBNCSUtil
 
             BigInteger cor_res = new BigInteger(ms_res.GetBuffer());
             ms_res.Close();
-#if DEBUG
-            DataFormatter.WriteToTrace(cor_res.GetBytes(), "cor_res");
-            DataFormatter.WriteToTrace(res.GetBytes(), "res");
-#endif
+
             return cor_res.Equals(res);
         }
         #endregion 
         #region private methods
-        private void CalculateVerifier(byte[] salt)
+        private void CalculateVerifier(byte[] serverSalt)
         {
             string unpwexpr = String.Concat(
-                userName.ToUpper(CultureInfo.CurrentCulture), ":", password.ToUpper(CultureInfo.CurrentCulture)
+                userName.ToUpper(CultureInfo.InvariantCulture), ":", password.ToUpper(CultureInfo.InvariantCulture)
                 );
 
             byte[] unpw_bytes = Encoding.ASCII.GetBytes(unpwexpr);
             byte[] hash1 = s_sha.ComputeHash(unpw_bytes);
 
-            byte[] unpw_salt_bytes = new byte[salt.Length + hash1.Length]; // should be 52
-            Array.Copy(salt, unpw_salt_bytes, salt.Length);
-            Array.Copy(hash1, 0, unpw_salt_bytes, salt.Length, hash1.Length);
+            byte[] unpw_salt_bytes = new byte[serverSalt.Length + hash1.Length]; // should be 52
+            Array.Copy(serverSalt, unpw_salt_bytes, serverSalt.Length);
+            Array.Copy(hash1, 0, unpw_salt_bytes, serverSalt.Length, hash1.Length);
 
             byte[] hash2 = s_sha.ComputeHash(unpw_salt_bytes);
 
             lock (this)
             {
-                this.salt = salt;
+                //this.salt = serverSalt;
                 x = new BigInteger(ReverseArray(hash2));
                 //x = new BigInteger(hash2);
                 verifier = s_generator.ModPow(x, s_modulus);
@@ -457,23 +454,22 @@ namespace MBNCSUtil
         }
 
 
-        private void CalculateM1(byte[] salt, byte[] serverKey)
+        private void CalculateM1(byte[] saltFromServer, byte[] issuedServerKey)
         {
-            BigInteger local_B = new BigInteger(ReverseArray(serverKey));
+            BigInteger local_B = new BigInteger(ReverseArray(issuedServerKey));
             //BigInteger local_B = new BigInteger(serverKey);
-            this.B = local_B;
 
             // first calculate u.
-            byte[] u_sha = s_sha.ComputeHash(serverKey);
+            byte[] u_sha = s_sha.ComputeHash(issuedServerKey);
             BigInteger u = new BigInteger(u_sha, 4);
 
             if (verifier == null)
-                CalculateVerifier(salt);
+                CalculateVerifier(saltFromServer);
 
             // then we need to calculate S.
             BigInteger local_S = ((s_modulus + local_B - verifier) % s_modulus);
             local_S = local_S.ModPow((a + (u * x)), s_modulus);
-            byte[] bytes_s = ReverseArray(local_S.GetBytes());
+            byte[] bytes_s = EnsureArrayLength(ReverseArray(local_S.GetBytes()), 32);
             //byte[] bytes_s = local_S.GetBytes();
 
             // now K.  yeah, this is weird.
@@ -502,21 +498,19 @@ namespace MBNCSUtil
             // finally, m1.
             BigInteger sha_g = new BigInteger(s_sha.ComputeHash(ReverseArray(s_generator.GetBytes())));
             BigInteger sha_n = new BigInteger(s_sha.ComputeHash(ReverseArray(s_modulus.GetBytes())));
-            //BigInteger sha_g = new BigInteger(s_sha.ComputeHash(s_generator.GetBytes()));
-            //BigInteger sha_n = new BigInteger(s_sha.ComputeHash(s_modulus.GetBytes()));
             BigInteger g_xor_n = sha_g ^ sha_n;
 
-            MemoryStream ms = new MemoryStream(40 + salt.Length + A.GetBytes().Length + serverKey.Length + local_k.Length);
+            MemoryStream ms = new MemoryStream(40 + saltFromServer.Length + A.GetBytes().Length + issuedServerKey.Length + local_k.Length);
             BinaryWriter bw = new BinaryWriter(ms);
             bw.Write(g_xor_n.GetBytes());
             bw.Write(s_sha.ComputeHash(Encoding.ASCII.GetBytes(userName.ToUpper(CultureInfo.InvariantCulture))));
-            bw.Write(salt);
+            bw.Write(saltFromServer);
             bw.Write(EnsureArrayLength(A.GetBytes(), 32));
 #if DEBUG
             if (A.GetBytes().Length < 32)
                 DataFormatter.WriteToTrace(A.GetBytes(), "A length less than 32 bytes");
 #endif
-            bw.Write(serverKey);
+            bw.Write(issuedServerKey);
             bw.Write(local_k);
 
             byte[] m1_data = ms.GetBuffer();
@@ -526,10 +520,9 @@ namespace MBNCSUtil
             lock (this)
             {
                 this.k = local_k;
-                this.salt = salt;
-                this.serverKey = serverKey;
-                this.B = local_B;
-                this.S = local_S;
+                //this.salt = saltFromServer;
+                //this.serverKey = issuedServerKey;
+                //this.S = local_S;
                 m1 = new BigInteger(m1_hash);
             }
         }

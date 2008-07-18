@@ -786,13 +786,13 @@ namespace MBNCSUtil
         /// <returns>A string representing this buffer's contents in hexadecimal notation.</returns>
         public override string ToString()
         {
-            return DataFormatter.Format(GetData());
+            return DataFormatter.Format(GetData(), 0, Count);
         }
 
         #region IDisposable Members
 
         /// <summary>
-        /// Disposes the data buffer, freeing managed and unmanaged resources.
+        /// Disposes the object, freeing any unmanaged and managed resources.
         /// </summary>
         public void Dispose()
         {
@@ -801,7 +801,7 @@ namespace MBNCSUtil
         }
 
         /// <summary>
-        /// Disposes the data buffer, freeing unmanaged and optionally managed resources.
+        /// Disposes the object, freeing any unmanaged and optionally managed resources.
         /// </summary>
         /// <param name="disposing"><see langword="true" /> to dispose managed resources; otherwise <see langword="false" /> to only
         /// dispose unmanaged resources.</param>
