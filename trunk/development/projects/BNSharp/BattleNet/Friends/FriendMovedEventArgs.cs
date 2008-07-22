@@ -14,11 +14,11 @@ namespace BNSharp.BattleNet.Friends
     public class FriendMovedEventArgs : BaseEventArgs
     {
 #if !NET_2_ONLY
-        [DataMember]
+        [DataMember(Name = "Friend")]
 #endif
         private FriendUser m_user;
 #if !NET_2_ONLY
-        [DataMember]
+        [DataMember(Name = "NewIndex")]
 #endif
         private int m_newIndex;
 
@@ -36,6 +36,10 @@ namespace BNSharp.BattleNet.Friends
         /// <summary>
         /// Gets a reference to the friend whose position changed.
         /// </summary>
+        /// <remarks>
+        /// <para>When this property's backing store is serialized as part of a WCF data contract,
+        /// it is given the name <c>Friend</c>.</para>
+        /// </remarks>
         public FriendUser Friend
         {
             get { return m_user; }
@@ -44,6 +48,10 @@ namespace BNSharp.BattleNet.Friends
         /// <summary>
         /// Gets the new position of the friend (0-based).
         /// </summary>
+        /// <remarks>
+        /// <para>When this property's backing store is serialized as part of a WCF data contract,
+        /// it is given the name <c>NewIndex</c>.</para>
+        /// </remarks>
         public int NewIndex
         {
             get { return m_newIndex; }

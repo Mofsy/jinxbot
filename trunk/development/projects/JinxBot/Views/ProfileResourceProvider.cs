@@ -6,6 +6,7 @@ using BNSharp.Net;
 using JinxBot.Plugins;
 using JinxBot.Configuration;
 using JinxBot.Views.Chat;
+using JinxBot.Plugins.UI;
 
 namespace JinxBot.Views
 {
@@ -55,7 +56,7 @@ namespace JinxBot.Views
         {
             if (s_providers.ContainsKey(client))
                 return s_providers[client];
-            return null;
+            return s_providers.First().Value;
         }
         #endregion
 

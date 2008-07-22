@@ -14,7 +14,7 @@ namespace BNSharp.BattleNet.Friends
     public class FriendAddedEventArgs : BaseEventArgs
     {
 #if !NET_2_ONLY
-        [DataMember]
+        [DataMember(Name = "NewFriend")]
 #endif
         private FriendUser m_newFriend;
 
@@ -30,6 +30,10 @@ namespace BNSharp.BattleNet.Friends
         /// <summary>
         /// Gets a reference to the friend that was added.
         /// </summary>
+        /// <remarks>
+        /// <para>When this property's backing store is serialized as part of a WCF data contract,
+        /// it is given the name <c>NewFriend</c>.</para>
+        /// </remarks>
         public FriendUser NewFriend
         {
             get { return m_newFriend; }

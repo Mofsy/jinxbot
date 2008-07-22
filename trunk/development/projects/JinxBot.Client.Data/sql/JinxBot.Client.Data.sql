@@ -2,8 +2,8 @@ SET  ARITHABORT, CONCAT_NULL_YIELDS_NULL, ANSI_NULLS, ANSI_PADDING, ANSI_WARNING
 SET  NUMERIC_ROUNDABORT OFF
 GO
 :setvar DatabaseName "JinxBot.Client.Data"
-:setvar PrimaryFilePhysicalName "C:\Program Files\Microsoft SQL Server\MSSQL.2\MSSQL\DATA\JinxBot.Client.Data.mdf"
-:setvar PrimaryLogFilePhysicalName "C:\Program Files\Microsoft SQL Server\MSSQL.2\MSSQL\DATA\JinxBot.Client.Data_log.ldf"
+:setvar PrimaryFilePhysicalName "c:\Program Files (x86)\Microsoft SQL Server\MSSQL.1\MSSQL\DATA\JinxBot.Client.Data.mdf"
+:setvar PrimaryLogFilePhysicalName "c:\Program Files (x86)\Microsoft SQL Server\MSSQL.1\MSSQL\DATA\JinxBot.Client.Data_log.ldf"
 
 USE [master]
 
@@ -24,7 +24,7 @@ BEGIN
     IF ((SELECT CAST(value AS nvarchar(128))
 	    FROM 
 		    [$(DatabaseName)]..fn_listextendedproperty('microsoft_database_tools_deploystamp', null, null, null, null, null, null )) 
-	    = CAST(N'011f24e6-d10c-47f5-988c-6102f5813eb2' AS nvarchar(128)))
+	    = CAST(N'c662b493-d8d8-4401-aab7-447835488a1f' AS nvarchar(128)))
     BEGIN
 	    RAISERROR(N'Deployment has been skipped because the script has already been deployed to the target server.', 16 ,100) WITH NOWAIT
 	    RETURN
@@ -195,6 +195,6 @@ IF ((SELECT COUNT(*)
 BEGIN
 	EXEC [dbo].sp_dropextendedproperty 'microsoft_database_tools_deploystamp'
 END
-EXEC [dbo].sp_addextendedproperty 'microsoft_database_tools_deploystamp', N'011f24e6-d10c-47f5-988c-6102f5813eb2'
+EXEC [dbo].sp_addextendedproperty 'microsoft_database_tools_deploystamp', N'c662b493-d8d8-4401-aab7-447835488a1f'
 GO
 

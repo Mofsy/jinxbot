@@ -20,34 +20,20 @@ namespace BNSharp.BattleNet.Stats
     public class StarcraftStats : UserStats
     {
         #region fields
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "Product")]
         private Product m_prod;
 
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "LadderRating")]
         private int m_ladderRating;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "LadderRank")]
         private int m_ladderRank;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "Wins")]
         private int m_wins;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "HighestLadderRating")]
         private int m_highestLadderRating;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "IconCode")]
         private string m_iconCode;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "IsSpawned")]
         private bool m_isSpawned;
         #endregion
 

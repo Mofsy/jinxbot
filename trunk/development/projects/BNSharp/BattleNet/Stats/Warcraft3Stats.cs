@@ -25,25 +25,15 @@ namespace BNSharp.BattleNet.Stats
             { 'N', Warcraft3IconRace.NightElf }
         };
 
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "Product")]
         private Product m_prod;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "IconRace")]
         private Warcraft3IconRace m_race;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "IconTier")]
         private int m_iconTier;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "Level")]
         private int m_level;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "ClanTag")]
         private string m_clanTag;
         #endregion
 

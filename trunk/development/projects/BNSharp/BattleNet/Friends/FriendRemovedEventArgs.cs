@@ -14,7 +14,7 @@ namespace BNSharp.BattleNet.Friends
     public class FriendRemovedEventArgs : BaseEventArgs
     {
 #if !NET_2_ONLY
-        [DataMember]
+        [DataMember(Name = "Friend")]
 #endif
         private FriendUser m_removed;
 
@@ -30,6 +30,10 @@ namespace BNSharp.BattleNet.Friends
         /// <summary>
         /// Gets a reference to the friend who was removed.
         /// </summary>
+        /// <remarks>
+        /// <para>When this property's backing store is serialized as part of a WCF data contract,
+        /// it is given the name <c>Friend</c>.</para>
+        /// </remarks>
         public FriendUser Friend
         {
             get { return m_removed; }

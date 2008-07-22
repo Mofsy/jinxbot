@@ -90,6 +90,7 @@
     <Compile Include="ChatMessageEventArgs.cs" />
     <Compile Include="ClientCheckFailedEventArgs.cs" />
     <Compile Include="ClientCheckFailureCause.cs" />
+    <Compile Include="Compatibility\WcfAttributes.cs" />
     <Compile Include="EnteredChatEventArgs.cs" />
     <Compile Include="ErrorEventArgs.cs" />
     <Compile Include="IBattleNetSettings.cs" />
