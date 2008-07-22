@@ -66,6 +66,9 @@ namespace JinxBot.Views
         {
             switch (JinxBotConfiguration.Instance.Globals.IconType)
             {
+                case IconType.BattleNetWebSite:
+                    m_iconProvider = new WebIconProvider();
+                    break;
                 case IconType.IconsBni:
                 default:
                     m_iconProvider = new BniIconProvider();

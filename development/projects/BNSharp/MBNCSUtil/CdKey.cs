@@ -279,9 +279,38 @@ namespace BNSharp.MBNCSUtil
         /// <para>For Warcraft III: The Reign of Chaos and The Frozen Throne CD keys, this value is a 10-byte
         /// array.</para>
         /// </remarks>
-        /// <exception cref="InvalidOperationException">Thrown if the object has not yet been
-        /// initialized.</exception>
-        public byte[] Value2 { get { return val2; } }
+        // Suppressed CA1819 - breaking change.
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1819:PropertiesShouldNotReturnArrays")]
+        [Obsolete("This property will be removed in a future version.  Consider changing to GetValue2().")]
+        public byte[] Value2
+        {
+            get
+            {
+                byte[] result = new byte[val2.Length];
+                Buffer.BlockCopy(val2, 0, result, 0, result.Length);
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Gets the "Private" or "Value 2" value of the CD key.
+        /// </summary>
+        /// <remarks>
+        /// <para>This method returns <b>null</b> (<b>Nothing</b> in Visual Basic) if the CD key is not valid.  
+        /// To check validity, use the <b>IsValid</b> property.</para>
+        /// <para>For Starcraft, Warcraft II: Battle.net Edition, Diablo II, or Lord of Destruction CD keys,
+        /// this value is a 4-byte array.  It can be converted to an integer value with the 
+        /// <see cref="System.BitConverter">BitConverter</see> class.</para>
+        /// <para>For Warcraft III: The Reign of Chaos and The Frozen Throne CD keys, this value is a 10-byte
+        /// array.</para>
+        /// </remarks>
+        public byte[] GetValue2()
+        {
+            byte[] result = new byte[val2.Length];
+            Buffer.BlockCopy(val2, 0, result, 0, result.Length);
+            return result;
+        }
+
         /// <summary>
         /// Gets whether or not the CD key is valid.
         /// </summary>
@@ -579,7 +608,7 @@ namespace BNSharp.MBNCSUtil
         }
 
 #if UNSAFE
-		private unsafe void mult(int r, int x, uint* a, uint dcByte) 
+		private static unsafe void mult(int r, int x, uint* a, uint dcByte) 
 		{
 			while (r-- != 0) 
 			{

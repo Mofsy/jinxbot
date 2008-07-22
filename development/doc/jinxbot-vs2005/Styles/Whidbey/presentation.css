@@ -1028,6 +1028,11 @@ td.nsrBottom
 
 /* end of syntax styles */
 
+.code
+{
+	color: #818895;
+}
+
 /* Glossary */
 SPAN.clsGlossary {cursor: default; color: #509950; font-weight: bold;}
 DIV.clsTooltip {border: 1px solid black; padding: 2px; position: absolute; top: 0; left: 0; display: none; background-color: #FFFFAA; color: black; font-size: 8pt; font-family: Arial;}

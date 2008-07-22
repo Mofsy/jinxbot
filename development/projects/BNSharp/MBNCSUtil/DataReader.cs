@@ -56,9 +56,9 @@ namespace BNSharp.MBNCSUtil
         }
 
         /// <summary>
-        /// Gets the underlying buffer.
+        /// Gets a reference to the underlying buffer.
         /// </summary>
-        internal byte[] UnderlyingBuffer
+        public byte[] UnderlyingBuffer
         {
             get { return m_data; }
         }
