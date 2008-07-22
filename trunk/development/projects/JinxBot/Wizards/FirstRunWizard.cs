@@ -13,79 +13,17 @@ using BNSharp.MBNCSUtil.Data;
 using JinxBot.Configuration;
 using System.Net;
 using WizardBase;
+using System.Xml;
+using System.Xml.Serialization;
+using System.Drawing.Imaging;
+using System.Diagnostics;
+using Icon = JinxBot.Configuration.WebIconList.Icon;
+using System.Runtime.Serialization;
 
 namespace JinxBot.Wizards
 {
     public partial class FirstRunWizard : Form
-    {
-        private static string[] IconsList = new string[] { 
-            "http://www.battle.net/war3/images/battle.net/icons/tier1-orc.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/tier2-human.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/tier3-human.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/tier4-human.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/tier5-human.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/tier2-orc.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/tier3-orc.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/tier4-orc.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/tier5-orc.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/tier2-nightelf.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/tier3-nightelf.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/tier4-nightelf.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/tier5-nightelf.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/tier2-undead.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/tier3-undead.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/tier4-undead.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/tier5-undead.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/tier2-random.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/tier3-random.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/tier4-random.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/tier5-random.gif",
-            "http://www.battle.net/war3/ladder/portraits/large/w3xp/W3H2.gif",
-            "http://www.battle.net/war3/ladder/portraits/large/w3xp/W3H3.gif",
-            "http://www.battle.net/war3/ladder/portraits/large/w3xp/W3H4.gif",
-            "http://www.battle.net/war3/ladder/portraits/large/w3xp/W3H5.gif",
-            "http://www.battle.net/war3/ladder/portraits/large/w3xp/W3H6.gif",
-            "http://www.battle.net/war3/ladder/portraits/large/w3xp/W3O2.gif",
-            "http://www.battle.net/war3/ladder/portraits/large/w3xp/W3O3.gif",
-            "http://www.battle.net/war3/ladder/portraits/large/w3xp/W3O4.gif",
-            "http://www.battle.net/war3/ladder/portraits/large/w3xp/W3O5.gif",
-            "http://www.battle.net/war3/ladder/portraits/large/w3xp/W3O6.gif",
-            "http://www.battle.net/war3/ladder/portraits/large/w3xp/W3N2.gif",
-            "http://www.battle.net/war3/ladder/portraits/large/w3xp/W3N3.gif",
-            "http://www.battle.net/war3/ladder/portraits/large/w3xp/W3N4.gif",
-            "http://www.battle.net/war3/ladder/portraits/large/w3xp/W3N5.gif",
-            "http://www.battle.net/war3/ladder/portraits/large/w3xp/W3N6.gif",
-            "http://www.battle.net/war3/ladder/portraits/large/w3xp/W3U2.gif",
-            "http://www.battle.net/war3/ladder/portraits/large/w3xp/W3U3.gif",
-            "http://www.battle.net/war3/ladder/portraits/large/w3xp/W3U4.gif",
-            "http://www.battle.net/war3/ladder/portraits/large/w3xp/W3U5.gif",
-            "http://www.battle.net/war3/ladder/portraits/large/w3xp/W3U6.gif",
-            "http://www.battle.net/war3/ladder/portraits/large/w3xp/W3R2.gif",
-            "http://www.battle.net/war3/ladder/portraits/large/w3xp/W3R3.gif",
-            "http://www.battle.net/war3/ladder/portraits/large/w3xp/W3R4.gif",
-            "http://www.battle.net/war3/ladder/portraits/large/w3xp/W3R5.gif",
-            "http://www.battle.net/war3/ladder/portraits/large/w3xp/W3R6.gif",
-            "http://www.battle.net/war3/ladder/portraits/large/w3xp/W3T2.gif",
-            "http://www.battle.net/war3/ladder/portraits/large/w3xp/W3T3.gif",
-            "http://www.battle.net/war3/ladder/portraits/large/w3xp/W3T4.gif",
-            "http://www.battle.net/war3/ladder/portraits/large/w3xp/W3T5.gif",
-            "http://www.battle.net/war3/ladder/portraits/large/w3xp/W3T6.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/bnet-blizzard.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/bnet-battlenet.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/bnet-speaker.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/bnet-squelch.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/bnet-channelops.gif",
-            "http://www.battle.net/war3/images/battle.net/war3x-icons/war3x.gif",
-            "http://www.battle.net/war3/images/battle.net/war3x-icons/war3.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/bnet-diablo.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/bnet-diablo2.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/bnet-diablo2exp.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/bnet-starcraft.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/bnet-starcraftexp.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/bnet-war2bne.gif",
-            "http://www.battle.net/war3/images/battle.net/icons/bnet-unknown.gif"
-        };
-            
+    {            
         public FirstRunWizard()
         {
             InitializeComponent();
@@ -146,10 +84,29 @@ namespace JinxBot.Wizards
         {
             if (rbUseBnetWebsiteIcons.Checked)
             {
-                for (int i = 0; i < IconsList.Length; i++)
+                WebIconList iconsList = null;
+
+                string xml = Resources.WebIconsList;
+                using (StringReader sr = new StringReader(xml))
+                using (XmlTextReader xtr = new XmlTextReader(sr))
                 {
-                    bwDownload.ReportProgress(i * 100 / IconsList.Length, IconsList[i]);
-                    DownloadFile(IconsList[i]);
+                    try
+                    {
+                        XmlSerializer ser = new XmlSerializer(typeof(WebIconList));
+                        iconsList = ser.Deserialize(xtr) as WebIconList;
+                    }
+                    catch (Exception)
+                    {
+                        // TODO: Log the exception.
+                        MessageBox.Show("There was an error loading the icons list.", "Error Downloading Icons", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        iconsList = new WebIconList() { Icons = new WebIconList.Icon[0] };
+                    }
+                }
+
+                for (int i = 0; i < iconsList.Icons.Length; i++)
+                {
+                    bwDownload.ReportProgress(i * 100 / iconsList.Icons.Length, iconsList.Icons[i].Uri);
+                    DownloadFile(iconsList.Icons[i]);
                 }
             }
             else
@@ -163,15 +120,68 @@ namespace JinxBot.Wizards
             }
         }
 
-        private void DownloadFile(string path)
+        private void DownloadFile(Icon icon)
         {
             string localPath = Path.Combine(JinxBotConfiguration.ApplicationDataPath, "Icons");
             if (!Directory.Exists(localPath))
                 Directory.CreateDirectory(localPath);
 
-            localPath = Path.Combine(localPath, path.Substring(path.LastIndexOf('/') + 1));
+            string temporaryPath = Path.GetTempFileName();
+            localPath = Path.Combine(localPath, icon.LocalName);
             WebClient client = new WebClient();
-            client.DownloadFile(path, localPath);
+            client.DownloadFile(icon.Uri, temporaryPath);
+
+            using (Image source = Image.FromFile(temporaryPath))
+            using (Image target = new Bitmap(64, 44, PixelFormat.Format32bppArgb))
+            using (Graphics g = Graphics.FromImage(target))
+            using (Brush back = new SolidBrush(Color.Black))
+            {
+                g.FillRectangle(back, new Rectangle(Point.Empty, target.Size));
+
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+
+                if (icon.Crop)
+                {
+                    Rectangle sourceRect = new Rectangle(0, icon.Top, 64, 64 - icon.Bottom - icon.Top);
+                    Rectangle destinationRectangle = new Rectangle(0, (44 - sourceRect.Height) / 2, 64, sourceRect.Height);
+                    g.DrawImage(source, destinationRectangle, sourceRect, GraphicsUnit.Pixel);
+                }
+                else
+                {
+                    int requestedWidth = 64 * source.Height / 44; // should be 55; if not, we'll need to do complex scaling
+                    Rectangle sourceRect = new Rectangle(Point.Empty, source.Size);
+                    Rectangle destRect;
+                    if (requestedWidth == source.Width)
+                    {
+                        // simple scaling
+                        destRect = new Rectangle(Point.Empty, target.Size);
+                    }
+                    else
+                    {
+                        // first try to scale at 64 pixels wide.
+                        int resultHeight = 64 * source.Height / source.Width;
+                        if (resultHeight <= 44)
+                        {
+                            destRect = new Rectangle(0, (44 - resultHeight) / 2, 64, resultHeight);
+                        }
+                        else
+                        {
+                            // image is taller than destination proportions allow; 
+                            // scale by 44 tall then
+                            int resultWidth = source.Width * 44 / source.Height;
+                            destRect = new Rectangle(0, 0, resultWidth, 44);
+                        }
+                    }
+
+                    g.DrawImage(source, destRect, sourceRect, GraphicsUnit.Pixel);
+                }
+
+                target.Save(localPath, ImageFormat.Png);
+            }
+
+            File.Delete(temporaryPath);
         }
 
         void req_FilePartDownloaded(object sender, DownloadStatusEventArgs e)

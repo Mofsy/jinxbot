@@ -206,5 +206,30 @@ namespace JinxBot.Views.Chat
             m_valid = false;
         }
         #endregion
+
+        #region IIconProvider Members
+
+
+        public Image GetImageFor(BNSharp.UserFlags flags, UserStats stats)
+        {
+            return GetImageFor(stats);
+        }
+
+        public Image GetImageFor(ClanRank rank)
+        {
+            return GetClanImageList().Images[GetImageIndexForClanRank(rank)];
+        }
+
+        #endregion
+
+        #region IIconProvider Members
+
+
+        public string GetImageIdFor(BNSharp.UserFlags userFlags, UserStats us)
+        {
+            return us.Product.ProductCode;
+        }
+
+        #endregion
     }
 }

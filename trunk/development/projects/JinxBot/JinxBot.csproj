@@ -35,6 +35,9 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Runtime.Serialization">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -54,6 +57,7 @@
   <ItemGroup>
     <Compile Include="ClientProfile.cs" />
     <Compile Include="Configuration\GlobalSettings.cs" />
+    <Compile Include="Configuration\WebIconList.cs" />
     <Compile Include="Configuration\IconType.cs" />
     <Compile Include="Configuration\JinxBotConfiguration.cs" />
     <Compile Include="Design\BattleNetServerTypeConverter.cs" />
@@ -78,6 +82,11 @@
     <Compile Include="Plugins\IPacketHandlerPlugin.cs" />
     <Compile Include="Plugins\ISingleClientPlugin.cs" />
     <Compile Include="Plugins\JinxBotPluginAttribute.cs" />
+    <Compile Include="Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Views\ChannelSelect.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -95,6 +104,7 @@
     <Compile Include="Views\Chat\ImageChatNode.cs" />
     <Compile Include="Views\Chat\ImageChatNodeProtocol.cs" />
     <Compile Include="Views\Chat\ImageChatNodeRenderer.cs" />
+    <Compile Include="Views\Chat\WebIconProvider.cs" />
     <Compile Include="Views\NewsList.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -112,6 +122,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\ChannelList.resx">
@@ -238,6 +253,9 @@
       <Project>{158210D7-9F67-4C81-85E3-240115A08685}</Project>
       <Name>JinxBot.Data.LinqToSqlClient</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\WebIconsList.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

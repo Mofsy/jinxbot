@@ -816,7 +816,8 @@ namespace BNSharp.MBNCSUtil
         /// <summary>
         /// Disposes the object, freeing any unmanaged and optionally managed resources.
         /// </summary>
-        /// <param name="disposing">Whether to free any managed resources.</param>
+        /// <param name="disposing"><see langword="true" /> to dispose managed resources; otherwise <see langword="false" /> to only
+        /// dispose unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)

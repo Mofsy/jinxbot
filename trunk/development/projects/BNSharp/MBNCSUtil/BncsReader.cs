@@ -77,14 +77,13 @@ namespace BNSharp.MBNCSUtil
         // constructor I get what I need done.
         private BncsReader(Stream str, BinaryReader br)
             : this(
-            str, br.ReadByte(), br.ReadByte(), br.ReadUInt16()
+            str, br.ReadBytes(2)[1], br.ReadUInt16()
             )
         {
 
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "b0xff")]
-        private BncsReader(Stream str, byte b0xff, byte id, ushort len)
+        private BncsReader(Stream str, byte id, ushort len)
             : base(str, (int)len - 4)
         {
             m_id = id;
@@ -101,7 +100,7 @@ namespace BNSharp.MBNCSUtil
         public BncsReader(byte[] data)
             : this(
             new MemoryStream(data, 4, data.Length - 4, false, false),
-            data[0], data[1], BitConverter.ToUInt16(data, 2))
+            data[1], BitConverter.ToUInt16(data, 2))
         {
 
         }

@@ -25,6 +25,7 @@ namespace JinxBot.Views
         private string m_userName;
         private bool m_inChat;
         private DateTime m_enteredChat;
+        private ProfileResourceProvider m_prp;
 
         private Tmr m_tmr;
 
@@ -49,6 +50,7 @@ namespace JinxBot.Views
             : this()
         {
             m_client = client;
+            m_prp = ProfileResourceProvider.GetForClient(client);
 
             SetupEventRegistration();
 
@@ -133,8 +135,9 @@ namespace JinxBot.Views
         private void AnnounceUser(UserEventArgs e)
         {
             UserStats us = UserStats.Parse(e.Username, e.StatsData);
-            ImageChatNode productNode = new ImageChatNode(string.Concat(us.Product.ProductCode, ".jpg"),
-                ProfileResourceProvider.GetForClient(m_client).Icons.GetImageFor(us), us.Product.Name);
+            string imgID = m_prp.Icons.GetImageIdFor(e.Flags, us);
+            ImageChatNode productNode = new ImageChatNode(string.Concat(imgID, ".jpg"),
+                m_prp.Icons.GetImageFor(e.Flags, us), m_prp.Icons.GetImageIdFor(e.Flags, us));
 
             switch (us.Product.ProductCode)
             {
@@ -295,10 +298,11 @@ namespace JinxBot.Views
         void m_client_EnteredChat(object sender, EnteredChatEventArgs e)
         {
             Product clientProduct = Product.GetByProductCode(m_client.Settings.Client.ToUpperInvariant());
-
+            string imgID = m_prp.Icons.GetImageIdFor(UserFlags.None, UserStats.CreateDefault(clientProduct));
+            Image userImg = ProfileResourceProvider.GetForClient(m_client).Icons.GetImageFor(UserFlags.None, UserStats.CreateDefault(clientProduct));
             chat.AddChat(new ChatNode("Entered chat as ", Color.Yellow),
-                new ImageChatNode(string.Concat(m_client.Settings.Client.ToUpperInvariant(), ".jpg"), 
-                    ProfileResourceProvider.GetForClient(m_client).Icons.GetImageFor(UserStats.CreateDefault(clientProduct)), clientProduct.Name),
+                new ImageChatNode(string.Concat(imgID, ".jpg"), 
+                    userImg, clientProduct.Name),
                 new ChatNode(e.UniqueUsername, Color.White));
             m_userName = e.UniqueUsername;
             m_inChat = true;
