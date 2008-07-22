@@ -25,66 +25,36 @@ namespace BNSharp.BattleNet.Stats
         #region fields
         private static readonly Regex RealmCharacterTest = new Regex(@"(?<Character>\S+@\w+)\*(?<Username>\S+)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "IsRealmCharacter")]
         private bool m_isRealm;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "Product")]
         private Product m_prod;
 
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "CharacterName")]
         private string m_charName;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "Realm")]
         private string m_realm;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "AccountName")]
         private string m_userName;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "IsExpansionCharacter")]
         private bool m_isExpCharacter;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "IsHardcoreCharacter")]
         private bool m_isHardcore;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "IsDead")]
         private bool m_isDead;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "IsLadder")]
         private bool m_isLadder;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "IsMale")]
         private bool m_isMale;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "HasCompletedGame")]
         private bool m_hasCompletedGame;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "Difficulty")]
         private Diablo2DifficultyLevel m_difficulty;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "Class")]
         private Diablo2CharacterClass m_class;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "Level")]
         private int m_level;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "ActsCompleted")]
         private int m_numActsCompleted;
         #endregion
 

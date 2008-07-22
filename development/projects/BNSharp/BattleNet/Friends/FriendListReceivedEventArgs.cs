@@ -14,7 +14,7 @@ namespace BNSharp.BattleNet.Friends
     public class FriendListReceivedEventArgs : BaseEventArgs
     {
 #if !NET_2_ONLY
-        [DataMember]
+        [DataMember(Name = "Friends")]
 #endif
         private FriendUser[] m_friends;
 
@@ -30,6 +30,10 @@ namespace BNSharp.BattleNet.Friends
         /// <summary>
         /// Gets a copy of the friends list received from Battle.net.
         /// </summary>
+        /// <remarks>
+        /// <para>When this property's backing store is serialized as part of a WCF data contract,
+        /// it is given the name <c>Friends</c>.</para>
+        /// </remarks>
         public FriendUser[] Friends
         {
             get

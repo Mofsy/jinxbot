@@ -12,6 +12,7 @@ using System.Drawing;
 using BNSharp.MBNCSUtil.Data;
 using BNSharp.BattleNet.Stats;
 using BNSharp.BattleNet.Clans;
+using JinxBot.Plugins.UI;
 
 namespace JinxBot.Views.Chat
 {

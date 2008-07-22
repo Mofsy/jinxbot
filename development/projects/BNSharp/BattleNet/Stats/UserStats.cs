@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Text;
 using System.Collections;
 using BNSharp.MBNCSUtil;
+using System.Runtime.Serialization;
 
 namespace BNSharp.BattleNet.Stats
 {
     /// <summary>
     /// When implemented in a derived class, provides statistical information about a user.
     /// </summary>
+    [DataContract]
     public abstract class UserStats
     {
         /// <summary>
@@ -66,6 +68,10 @@ namespace BNSharp.BattleNet.Stats
         /// <summary>
         /// When implemented in a derived class, gets the product with which the user is logged on.
         /// </summary>
+        /// <remarks>
+        /// <para>When exposed under a WCF data contract, this property's backing store is given 
+        /// the name <c>Product</c>.</para>
+        /// </remarks>
         public abstract Product Product
         {
             get;

@@ -14,9 +14,7 @@ namespace BNSharp.BattleNet.Stats
     public class DefaultStats : UserStats
     {
         #region fields
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "Product")]
         private Product m_prod; 
         #endregion
 

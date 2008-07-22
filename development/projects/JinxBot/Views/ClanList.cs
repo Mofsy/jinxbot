@@ -41,7 +41,7 @@ namespace JinxBot.Views
         {
             ThreadStart update = delegate
             {
-                lvClanMembers.Items.Clear();
+                lbClanMembers.Items.Clear();
                 this.TabText = string.Format(CultureInfo.CurrentCulture, "Clan List: {0}", e.Tag);
             };
             if (InvokeRequired)
@@ -56,14 +56,14 @@ namespace JinxBot.Views
 
             ThreadStart update = delegate
             {
-                ImageList il = m_prp.Icons.GetClanImageList();
-                this.lvClanMembers.SmallImageList = il;
+                this.lbClanMembers.BeginUpdate();
 
                 foreach (ClanMember member in m_members)
                 {
-                    ListViewItem lvi = new ListViewItem(member.Username, m_prp.Icons.GetImageIndexForClanRank(member.Rank));
-                    lvClanMembers.Items.Add(lvi);
+                    this.lbClanMembers.Items.Add(member);
                 }
+
+                this.lbClanMembers.EndUpdate();
             };
 
             if (InvokeRequired)

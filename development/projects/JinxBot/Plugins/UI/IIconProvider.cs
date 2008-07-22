@@ -7,7 +7,7 @@ using System.Drawing;
 using BNSharp.BattleNet.Stats;
 using BNSharp.BattleNet.Clans;
 
-namespace JinxBot.Plugins
+namespace JinxBot.Plugins.UI
 {
     /// <summary>
     /// Provides an icon list for use in the channel list.

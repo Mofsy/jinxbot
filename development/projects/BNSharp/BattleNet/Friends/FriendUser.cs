@@ -8,35 +8,21 @@ namespace BNSharp.BattleNet.Friends
     /// <summary>
     /// Represents a Battle.net friend user.
     /// </summary>
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public class FriendUser
     {
         #region fields
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "Index")]
         private int m_index;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "AccountName")]
         private string m_acctName;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "Status")]
         private FriendStatus m_status;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "LocationType")]
         private FriendLocation m_location;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "Product")]
         private Product m_product;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "Location")]
         private string m_locationName;
         #endregion
 
@@ -62,6 +48,10 @@ namespace BNSharp.BattleNet.Friends
         /// <summary>
         /// Gets, and in derived classes sets, the index (0-based) of the user on the client's friends list.
         /// </summary>
+        /// <remarks>
+        /// <para>When exposed under a WCF data contract, this property's backing store is given 
+        /// the name <c>Index</c>.</para>
+        /// </remarks>
         public int Index
         {
             get { return m_index; }
@@ -71,6 +61,10 @@ namespace BNSharp.BattleNet.Friends
         /// <summary>
         /// Gets, and in derived classes sets, the account name of the friend.
         /// </summary>
+        /// <remarks>
+        /// <para>When exposed under a WCF data contract, this property's backing store is given 
+        /// the name <c>AccountName</c>.</para>
+        /// </remarks>
         public string AccountName
         {
             get { return m_acctName; }
@@ -82,6 +76,8 @@ namespace BNSharp.BattleNet.Friends
         /// </summary>
         /// <remarks>
         /// <para>This property will return <see langword="null" /> if the user is currently offline.</para>
+        /// <para>When exposed under a WCF data contract, this property's backing store is given 
+        /// the name <c>Product</c>.</para>
         /// </remarks>
         public Product Product
         {
@@ -92,6 +88,11 @@ namespace BNSharp.BattleNet.Friends
         /// <summary>
         /// Gets, and in derived classes sets, contextual information about the user's status.
         /// </summary>
+        /// <remarks>
+        /// <para>This property will return <see langword="null" /> if the user is currently offline.</para>
+        /// <para>When exposed under a WCF data contract, this property's backing store is given 
+        /// the name <c>Product</c>.</para>
+        /// </remarks>
         public FriendStatus Status
         {
             get { return m_status; }
@@ -102,7 +103,8 @@ namespace BNSharp.BattleNet.Friends
         /// Gets, and in derived classes sets, the type of location information provided by Battle.net.
         /// </summary>
         /// <remarks>
-        /// <para>This property provides information indicating how the <see>Location</see> property should be interpreted.</para>
+        /// <para>When exposed under a WCF data contract, this property's backing store is given 
+        /// the name <c>LocationType</c>.</para>
         /// </remarks>
         public FriendLocation LocationType
         {
@@ -113,6 +115,10 @@ namespace BNSharp.BattleNet.Friends
         /// <summary>
         /// Gets, and in derived classes sets, the name of the location of the current user.
         /// </summary>
+        /// <remarks>
+        /// <para>When exposed under a WCF data contract, this property's backing store is given 
+        /// the name <c>Location</c>.</para>
+        /// </remarks>
         public string Location
         {
             get { return m_locationName; }

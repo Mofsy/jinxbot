@@ -70,7 +70,11 @@
     <Compile Include="MainWindow.Designer.cs">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="Plugins\IIconProvider.cs" />
+    <Compile Include="Plugins\UI\CustomItemDrawData.cs" />
+    <Compile Include="Plugins\UI\CustomListBoxRendererAttribute.cs" />
+    <Compile Include="Plugins\UI\CustomMeasurements.cs" />
+    <Compile Include="Plugins\UI\ICustomListBoxItemRenderer.cs" />
+    <Compile Include="Plugins\UI\IIconProvider.cs" />
     <Compile Include="Plugins\IPacketHandlerPlugin.cs" />
     <Compile Include="Plugins\ISingleClientPlugin.cs" />
     <Compile Include="Plugins\JinxBotPluginAttribute.cs" />
@@ -81,6 +85,13 @@
       <DependentUpon>ChannelSelect.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\Chat\BniIconProvider.cs" />
+    <Compile Include="Views\Chat\ClanListBoxItemRenderer.cs" />
+    <Compile Include="Views\Chat\CustomDrawnListBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Views\Chat\CustomDrawnListBox.Designer.cs">
+      <DependentUpon>CustomDrawnListBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\Chat\ImageChatNode.cs" />
     <Compile Include="Views\Chat\ImageChatNodeProtocol.cs" />
     <Compile Include="Views\Chat\ImageChatNodeRenderer.cs" />
