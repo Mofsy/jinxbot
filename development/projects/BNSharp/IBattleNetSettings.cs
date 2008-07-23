@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using BNSharp.BattleNet;
 
 namespace BNSharp
 {
@@ -242,6 +243,15 @@ namespace BNSharp
         /// <para>This name is the one that appears if you attempt to log in with the CD key while it is already logged in.</para>
         /// </remarks>
         string CdKeyOwner
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the type of ping that should be used for the connection.
+        /// </summary>
+        PingType PingMethod
         {
             get;
             set;

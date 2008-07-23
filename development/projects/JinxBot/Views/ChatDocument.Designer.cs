@@ -47,8 +47,8 @@
             this.ClientSize = new System.Drawing.Size(608, 393);
             this.Controls.Add(this.chat);
             this.Name = "ChatDocument";
-            this.TabText = "ChatDocument";
-            this.Text = "ChatDocument";
+            this.TabText = "Main Chat Window";
+            this.Text = "Main Chat Window";
             this.ResumeLayout(false);
 
         }

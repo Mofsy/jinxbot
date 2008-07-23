@@ -7,15 +7,53 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using JinxBot.Plugins.UI;
+using JinxBot.Views.Chat;
+using BNSharp.BattleNet.Clans;
+using BNSharp;
+using System.Reflection;
+using System.Diagnostics;
 
 namespace JinxBot.Views.Chat
 {
     public partial class CustomDrawnListBox : ListBox
     {
+        private Dictionary<Type, ICustomListBoxItemRenderer> m_renderers;
+
         public CustomDrawnListBox()
         {
             InitializeComponent();
             base.DrawMode = DrawMode.OwnerDrawVariable;
+
+            m_renderers = new Dictionary<Type, ICustomListBoxItemRenderer>();
+
+            List<CustomListBoxRendererAttribute> customRendererAttributes = new List<CustomListBoxRendererAttribute>();
+            Assembly[] allLoadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (Assembly asm in allLoadedAssemblies)
+            {
+                InspectAssemblyForCustomRenderers(customRendererAttributes, asm);
+            }
+        }
+
+        private void InspectAssemblyForCustomRenderers(List<CustomListBoxRendererAttribute> customRendererAttributes, Assembly asm)
+        {
+            if (!DesignMode)
+            {
+                CustomListBoxRendererAttribute[] attributes = asm.GetCustomAttributes(typeof(CustomListBoxRendererAttribute), false) as CustomListBoxRendererAttribute[];
+                foreach (CustomListBoxRendererAttribute att in attributes)
+                {
+                    if (!object.ReferenceEquals(att.RenderedType, null) &&
+                        !object.ReferenceEquals(att.RendererType, null) &&
+                        !m_renderers.ContainsKey(att.RenderedType))
+                    {
+                        ICustomListBoxItemRenderer renderer = Activator.CreateInstance(att.RendererType, true) as ICustomListBoxItemRenderer;
+                        m_renderers.Add(att.RenderedType, renderer);
+                    }
+                    else
+                    {
+                        Debug.WriteLine("A custom list box renderer was applied to the assembly but was configured incorrectly.");
+                    }
+                }
+            }
         }
 
         public override DrawMode DrawMode
@@ -68,10 +106,54 @@ namespace JinxBot.Views.Chat
             Invalidate();
         }
 
-        private ICustomListBoxItemRenderer m_renderer = new ChannelListBoxItemRenderer();
         private ICustomListBoxItemRenderer GetRenderer(int itemIndex)
         {
-            return m_renderer;
+            if (!DesignMode)
+            {
+                object item = Items[itemIndex];
+                Type renderedType = item.GetType();
+                if (m_renderers.ContainsKey(renderedType))
+                {
+                    return m_renderers[renderedType];
+                }
+                else
+                {
+                    InspectTypeForCustomRenderers(renderedType);
+                    return m_renderers[renderedType];
+                }
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private void InspectTypeForCustomRenderers(Type renderedType)
+        {
+            if (!DesignMode)
+            {
+                CustomListBoxRendererAttribute[] attributes = renderedType.GetCustomAttributes(typeof(CustomListBoxRendererAttribute), true) as CustomListBoxRendererAttribute[];
+                if (attributes.Length > 0)
+                {
+                    foreach (CustomListBoxRendererAttribute att in attributes)
+                    {
+                        if (!object.ReferenceEquals(att.RendererType, null))
+                        {
+                            ICustomListBoxItemRenderer renderer = Activator.CreateInstance(att.RendererType) as ICustomListBoxItemRenderer;
+                            m_renderers.Add(renderedType, renderer);
+                            break;
+                        }
+                        else
+                        {
+                            Debug.WriteLine("A custom list box renderer was applied to the assembly but was configured incorrectly.");
+                        }
+                    }
+                }
+                else
+                {
+                    m_renderers.Add(renderedType, null);
+                }
+            }
         }
     }
 }

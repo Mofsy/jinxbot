@@ -9,7 +9,10 @@ namespace JinxBot.Plugins.UI
     /// When applied to a class, indicates the class that can be used to render it into a <see>CustomDrawnListBox</see>; when 
     /// applied to an assembly, indicates additional rendering association.  This class cannot be inherited.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Assembly)]
+    /// <remarks>
+    /// <para>Only one of this type of attribute should be applied to a class.  Multiple attributes may be applied to an assembly.</para>
+    /// </remarks>
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Assembly, Inherited = true, AllowMultiple = true)]
     public sealed class CustomListBoxRendererAttribute : Attribute
     {
         /// <summary>
@@ -22,21 +25,40 @@ namespace JinxBot.Plugins.UI
         /// </remarks>
         public CustomListBoxRendererAttribute(Type rendererType)
         {
-
+            RendererType = rendererType;
         }
 
         /// <summary>
         /// This constructor is only valid when applied to assemblies.  Instantiates a new <see>CustomListBoxRendererAttribute</see>.
         /// </summary>
-        /// <param name="rendererType">The class that will perform the rendering.</param>
         /// <param name="renderedType">The class that will be rendered by the renderer.</param>
+        /// <param name="rendererType">The class that will perform the rendering.</param>
         /// <remarks>
         /// <para>This constructor should only be used when scoped to assemblies; if applied to a class, the 
         /// <paramref name="renderedType"/> parameter will be ignored.</para>
         /// </remarks>
-        public CustomListBoxRendererAttribute(Type rendererType, Type renderedType)
+        public CustomListBoxRendererAttribute(Type renderedType, Type rendererType)
         {
+            RendererType = rendererType;
+            RenderedType = renderedType;
+        }
 
+        /// <summary>
+        /// Gets or sets the <see>Type</see> that is responsible for rendering the specified target.
+        /// </summary>
+        public Type RendererType
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the <see>Type</see> that is rendered by the specified renderer.
+        /// </summary>
+        public Type RenderedType
+        {
+            get;
+            set;
         }
     }
 }

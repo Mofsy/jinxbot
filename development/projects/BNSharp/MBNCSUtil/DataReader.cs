@@ -22,6 +22,7 @@ conditions.
 using System;
 using System.IO;
 using System.Text;
+using System.Diagnostics;
 
 namespace BNSharp.MBNCSUtil
 {
@@ -344,17 +345,23 @@ namespace BNSharp.MBNCSUtil
         /// <returns>The next 4-byte string, reversed, from the stream.</returns>
         public string PeekDwordString(byte padding)
         {
-            byte[] b = new byte[4];
+            int length = m_data.Length - m_index;
+            if (length > 4)
+                length = 4;
+
+            byte[] b = new byte[length];
             int idx0 = -1;
-            for (int i = m_index, j = 3; i < (m_index + 4); i++, j--)
+            for (int i = m_index, j = length - 1; i < (m_index + length) && j >= 0; i++, j--)
             {
                 b[j] = m_data[i];
                 if (b[j] == padding)
                     idx0 = j;
             }
             if (idx0 == -1)
-                idx0 = 4;
-            return Encoding.ASCII.GetString(b, 0, idx0);
+                idx0 = length;
+
+            string result = Encoding.ASCII.GetString(b, 0, idx0);
+            return result;
         }
 
         /// <summary>
@@ -486,6 +493,14 @@ namespace BNSharp.MBNCSUtil
                 fOk = true;
             }
             return fOk;
+        }
+
+        /// <summary>
+        /// Gets the current position within the stream.
+        /// </summary>
+        public int Position
+        {
+            get { return m_index; }
         }
 
         /// <summary>

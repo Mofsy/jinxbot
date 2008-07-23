@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="ClientProfile.cs" />
     <Compile Include="Configuration\GlobalSettings.cs" />
+    <Compile Include="Configuration\PingStyle.cs" />
     <Compile Include="Configuration\WebIconList.cs" />
     <Compile Include="Configuration\IconType.cs" />
     <Compile Include="Configuration\JinxBotConfiguration.cs" />
@@ -94,6 +95,7 @@
       <DependentUpon>ChannelSelect.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\Chat\BniIconProvider.cs" />
+    <Compile Include="Views\Chat\BuiltInPlugins.cs" />
     <Compile Include="Views\Chat\ChannelListBoxItemRenderer.cs" />
     <Compile Include="Views\Chat\ClanListBoxItemRenderer.cs" />
     <Compile Include="Views\Chat\CustomDrawnListBox.cs">
@@ -102,6 +104,7 @@
     <Compile Include="Views\Chat\CustomDrawnListBox.Designer.cs">
       <DependentUpon>CustomDrawnListBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\Chat\FriendListBoxItemRenderer.cs" />
     <Compile Include="Views\Chat\ImageChatNode.cs" />
     <Compile Include="Views\Chat\ImageChatNodeProtocol.cs" />
     <Compile Include="Views\Chat\ImageChatNodeRenderer.cs" />

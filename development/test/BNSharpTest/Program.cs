@@ -293,5 +293,16 @@ namespace BNSharpTest
         }
 
         #endregion
+
+        #region IBattleNetSettings Members
+
+
+        public BNSharp.BattleNet.PingType PingMethod
+        {
+            get { return BNSharp.BattleNet.PingType.Normal; }
+            set { }
+        }
+
+        #endregion
     }
 }

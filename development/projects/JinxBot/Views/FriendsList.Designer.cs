@@ -28,18 +28,20 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.lbFriends = new System.Windows.Forms.ListBox();
+            this.lbFriends = new JinxBot.Views.Chat.CustomDrawnListBox();
             this.SuspendLayout();
             // 
             // lbFriends
             // 
-            this.lbFriends.DisplayMember = "AccountName";
+            this.lbFriends.BackColor = System.Drawing.Color.Black;
             this.lbFriends.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lbFriends.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
+            this.lbFriends.ForeColor = System.Drawing.Color.White;
             this.lbFriends.FormattingEnabled = true;
             this.lbFriends.Location = new System.Drawing.Point(0, 0);
             this.lbFriends.Name = "lbFriends";
-            this.lbFriends.Size = new System.Drawing.Size(292, 485);
-            this.lbFriends.TabIndex = 0;
+            this.lbFriends.Size = new System.Drawing.Size(292, 486);
+            this.lbFriends.TabIndex = 1;
             // 
             // FriendsList
             // 
@@ -56,6 +58,10 @@
 
         #endregion
 
-        private System.Windows.Forms.ListBox lbFriends;
+        private JinxBot.Views.Chat.CustomDrawnListBox lbFriends;
+
+
+
+
     }
 }

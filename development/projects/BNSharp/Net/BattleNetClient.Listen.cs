@@ -437,17 +437,13 @@ namespace BNSharp.Net
             DataReader dr = new DataReader(data.Data);
             BncsPacket pck0x25 = new BncsPacket((byte)BncsPacketId.Ping);
             pck0x25.Insert(dr.ReadUInt32());
-            // handles a special case that the 0x25 packet sometimes arrives before 0x50....
-            if (m_received0x50)
+
+            if (Settings.PingMethod == PingType.Normal)
             {
                 Send(pck0x25);
                 m_pingPck = null;
-                m_received0x50 = false;
             }
-            else
-            {
-                m_pingPck = pck0x25;
-            }
+            
             BattleNetClientResources.IncomingBufferPool.FreeBuffer(data.Data);
         }
 

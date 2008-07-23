@@ -62,7 +62,17 @@ namespace JinxBot.Views
         private void ShowUser(UserEventArgs args)
         {
             if (!listBox1.Items.Contains(args))
-                this.listBox1.Items.Add(args);
+            {
+                if ((args.Flags & UserFlags.ChannelOperator) == UserFlags.None)
+                {
+                    this.listBox1.Items.Add(args);
+                }
+                else
+                {
+                    int count = this.listBox1.Items.OfType<UserEventArgs>().Count(a => (a.Flags & UserFlags.ChannelOperator) == UserFlags.ChannelOperator);
+                    this.listBox1.Items.Insert(count, args);
+                }
+            }
         }
 
         void m_client_UserLeft(object sender, UserEventArgs e)

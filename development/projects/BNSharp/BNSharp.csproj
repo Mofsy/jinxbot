@@ -75,6 +75,7 @@
     <Compile Include="BattleNet\Friends\FriendUpdatedEventArgs.cs" />
     <Compile Include="BattleNet\Friends\FriendUser.cs" />
     <Compile Include="BattleNet\NewsEntry.cs" />
+    <Compile Include="BattleNet\PingType.cs" />
     <Compile Include="BattleNet\Product.cs" />
     <Compile Include="BattleNet\ServerNewsEventArgs.cs" />
     <Compile Include="BattleNet\Stats\DefaultStats.cs" />

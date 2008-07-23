@@ -4,6 +4,7 @@ using System.Text;
 using BNSharp.MBNCSUtil;
 using System.Globalization;
 using System.Net;
+using BNSharp.BattleNet;
 
 namespace BNSharp.Net
 {
@@ -94,6 +95,13 @@ namespace BNSharp.Net
                 pck.InsertCString(ri.DisplayName);
 
                 Send(pck);
+
+                if (Settings.PingMethod == PingType.ZeroMs)
+                {
+                    pck = new BncsPacket((byte)BncsPacketId.Ping);
+                    pck.InsertInt32(new Random().Next());
+                    Send(pck);
+                }
 
                 StartParsing();
 

@@ -106,6 +106,7 @@ namespace JinxBot.Views.Chat
             return result;
         }
 
+        #region loaders
         private void LoadTieredClientIcons(WebIconList iconsList, string localPath)
         {
             WebIcon defaultTierIcon = (from icon in iconsList.Icons
@@ -116,7 +117,7 @@ namespace JinxBot.Views.Chat
             {
                 try
                 {
-                    m_defaultImage = LoadImageFromFile(Path.Combine(localPath, defaultTierIcon.LocalName));
+                    m_defaultTierIcon = LoadImageFromFile(Path.Combine(localPath, defaultTierIcon.LocalName));
                 }
                 catch
                 {
@@ -252,22 +253,9 @@ namespace JinxBot.Views.Chat
                 }
             }
         }
+        #endregion
 
         #region IIconProvider Members
-        [Obsolete]
-        public ImageList GetImageList()
-        {
-            ImageList il = new ImageList();
-            il.Images.Add(m_defaultImage);
-            return il;
-        }
-
-        [Obsolete]
-        public int GetImageIndexFor(UserStats stats)
-        {
-            return 0;
-        }
-
         public Image GetImageFor(UserFlags flags, UserStats stats)
         {
             foreach (UserFlags flag in m_flagsToImages.Keys)
@@ -321,29 +309,69 @@ namespace JinxBot.Views.Chat
             return ((flags & userFlags) != UserFlags.None);
         }
 
-        [Obsolete]
-        public ImageList GetClanImageList()
-        {
-            ImageList il = new ImageList();
-            foreach (ClanRank rank in m_ranksToImages.Keys)
-            {
-                il.Images.Add(m_ranksToImages[rank]);
-            }
-            return il;
-        }
-
-        [Obsolete]
-        public int GetImageIndexForClanRank(ClanRank rank)
-        {
-            return 0;
-        }
-
         public Image GetImageFor(ClanRank rank)
         {
             if (m_ranksToImages.ContainsKey(rank))
             {
                 return m_ranksToImages[rank];
             }
+
+            return m_defaultImage;
+        }
+
+        public string GetImageIdFor(UserFlags flags, UserStats us)
+        {
+            foreach (UserFlags flag in m_flagsToImages.Keys)
+            {
+                if (TestFlag(flag, flags))
+                {
+                    return flag.ToString();
+                }
+            }
+
+            string clientBasedImage = us.Product.ProductCode;
+
+            Warcraft3Stats w3 = us as Warcraft3Stats;
+            if (!object.ReferenceEquals(w3, null))
+            {
+                if (w3.IconTier == 1)
+                {
+                    clientBasedImage = "W3O1";
+                }
+                else
+                {
+                    clientBasedImage = string.Format("{0}{1}{2}", w3.Product == Product.Warcraft3Retail ? "W3" : "FT", w3.IconRace.ToString(), w3.IconTier);
+                }
+            }
+
+            return clientBasedImage;
+        }
+
+        public Size IconSize
+        {
+            get { return new Size(32, 22); }
+        }
+
+        public string GetImageIdFor(ClanRank rank)
+        {
+            return rank.ToString();
+        }
+
+        public string GetImageIdFor(Product product)
+        {
+            if (object.ReferenceEquals(product, null))
+                return "(default)";
+
+            return product.ProductCode;
+        }
+
+        public Image GetImageFor(Product product)
+        {
+            if (object.ReferenceEquals(product, null))
+                return m_defaultImage;
+
+            if (m_nonTieredClientImages.ContainsKey(product.ProductCode))
+                return m_nonTieredClientImages[product.ProductCode];
 
             return m_defaultImage;
         }
@@ -422,46 +450,6 @@ namespace JinxBot.Views.Chat
                     m_tieredClientImages = null;
                 }
             }
-        }
-
-        #endregion
-
-        #region IIconProvider Members
-
-
-        public string GetImageIdFor(UserFlags flags, UserStats us)
-        {
-            foreach (UserFlags flag in m_flagsToImages.Keys)
-            {
-                if (TestFlag(flag, flags))
-                {
-                    return flag.ToString();
-                }
-            }
-
-            string clientBasedImage = us.Product.ProductCode;
-
-            Warcraft3Stats w3 = us as Warcraft3Stats;
-            if (!object.ReferenceEquals(w3, null))
-            {
-                if (w3.IconTier == 1)
-                {
-                    clientBasedImage = "W3O1";
-                }
-                else
-                {
-                    clientBasedImage = string.Format("{0}{1}{2}", w3.Product == Product.Warcraft3Retail ? "W3" : "FT", w3.IconRace.ToString(), w3.IconTier);
-                }
-            }
-
-            Trace.WriteLine(clientBasedImage, "Determined Image ID");
-
-            return clientBasedImage;
-        }
-
-        public Size IconSize
-        {
-            get { return new Size(32, 22); }
         }
 
         #endregion
