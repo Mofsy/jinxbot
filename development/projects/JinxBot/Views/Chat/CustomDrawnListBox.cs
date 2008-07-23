@@ -15,6 +15,7 @@ namespace JinxBot.Views.Chat
         public CustomDrawnListBox()
         {
             InitializeComponent();
+            base.DrawMode = DrawMode.OwnerDrawVariable;
         }
 
         public override DrawMode DrawMode
@@ -60,7 +61,14 @@ namespace JinxBot.Views.Chat
             }
         }
 
-        private ClanListBoxItemRenderer m_renderer = new ClanListBoxItemRenderer();
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+
+            Invalidate();
+        }
+
+        private ICustomListBoxItemRenderer m_renderer = new ChannelListBoxItemRenderer();
         private ICustomListBoxItemRenderer GetRenderer(int itemIndex)
         {
             return m_renderer;

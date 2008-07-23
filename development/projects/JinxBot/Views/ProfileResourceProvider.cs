@@ -54,9 +54,13 @@ namespace JinxBot.Views
         /// <returns>A <see>ProfileResourceProvider</see> instance if one was registered; otherwise <see langword="null" />.</returns>
         public static ProfileResourceProvider GetForClient(BattleNetClient client)
         {
+            if (object.ReferenceEquals(null, client))
+                return s_providers.First().Value;
+
             if (s_providers.ContainsKey(client))
                 return s_providers[client];
-            return s_providers.First().Value;
+
+            return null;
         }
         #endregion
 

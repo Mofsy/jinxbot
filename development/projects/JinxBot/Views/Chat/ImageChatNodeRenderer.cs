@@ -6,6 +6,7 @@ using JinxBot.Controls;
 using System.Windows.Forms;
 using System.Globalization;
 using System.Diagnostics;
+using JinxBot.Plugins.UI;
 
 namespace JinxBot.Views.Chat
 {
@@ -24,6 +25,8 @@ namespace JinxBot.Views.Chat
         /// </returns>
         public override HtmlElement Render(ChatNode node)
         {
+            IIconProvider provider = ProfileResourceProvider.GetForClient(null).Icons;
+
             ImageChatNode icn = node as ImageChatNode;
             if (icn != null)
             {
@@ -31,8 +34,8 @@ namespace JinxBot.Views.Chat
                 HtmlElement img = base.HtmlDomDocument.CreateElement("img");
                 img.SetAttribute("src", string.Concat(ImageChatNodeProtocol.Schema, ":", icn.ImageName));
                 img.SetAttribute("alt", icn.Text);
-                img.SetAttribute("width", "32");
-                img.SetAttribute("height", "22");
+                img.SetAttribute("width", provider.IconSize.Width.ToString(CultureInfo.InvariantCulture));
+                img.SetAttribute("height", provider.IconSize.Height.ToString(CultureInfo.InvariantCulture));
 
                 if (icn.LinkUri != null)
                 {

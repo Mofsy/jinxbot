@@ -28,18 +28,18 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.listBox1 = new System.Windows.Forms.ListBox();
+            this.listBox1 = new JinxBot.Views.Chat.CustomDrawnListBox();
             this.SuspendLayout();
             // 
             // listBox1
             // 
-            this.listBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.listBox1.FormattingEnabled = true;
+            this.listBox1.BackColor = System.Drawing.Color.Black;
+            this.listBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listBox1.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
+            this.listBox1.ForeColor = System.Drawing.Color.Snow;
             this.listBox1.Location = new System.Drawing.Point(0, 0);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(283, 537);
+            this.listBox1.Size = new System.Drawing.Size(282, 537);
             this.listBox1.TabIndex = 0;
             // 
             // ChannelList
@@ -57,6 +57,7 @@
 
         #endregion
 
-        private System.Windows.Forms.ListBox listBox1;
+        private JinxBot.Views.Chat.CustomDrawnListBox listBox1;
+
     }
 }

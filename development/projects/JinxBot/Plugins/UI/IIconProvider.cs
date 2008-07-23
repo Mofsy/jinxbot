@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using BNSharp.BattleNet.Stats;
 using BNSharp.BattleNet.Clans;
+using BNSharp;
 
 namespace JinxBot.Plugins.UI
 {
@@ -32,7 +33,7 @@ namespace JinxBot.Plugins.UI
         /// </summary>
         /// <param name="stats">The stats for which to retrieve the image.</param>
         /// <returns>An image corresponding to the user's product.</returns>
-        Image GetImageFor(UserStats stats);
+        Image GetImageFor(UserFlags flags, UserStats stats);
 
         /// <summary>
         /// Gets the clan image list.
@@ -46,5 +47,9 @@ namespace JinxBot.Plugins.UI
         /// <param name="rank">The rank for which to get the image index.</param>
         /// <returns>An index into the ImageList returned by <see>GetClanImageList</see>.</returns>
         int GetImageIndexForClanRank(ClanRank rank);
+
+        string GetImageIdFor(UserFlags flags, UserStats us);
+
+        Size IconSize { get; }
     }
 }

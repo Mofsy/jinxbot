@@ -94,6 +94,7 @@
       <DependentUpon>ChannelSelect.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\Chat\BniIconProvider.cs" />
+    <Compile Include="Views\Chat\ChannelListBoxItemRenderer.cs" />
     <Compile Include="Views\Chat\ClanListBoxItemRenderer.cs" />
     <Compile Include="Views\Chat\CustomDrawnListBox.cs">
       <SubType>Component</SubType>

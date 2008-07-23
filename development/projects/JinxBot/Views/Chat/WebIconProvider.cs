@@ -16,6 +16,7 @@ using JinxBot.Configuration;
 using System.Diagnostics;
 using System.Drawing.Imaging;
 using BNSharp.BattleNet;
+using JinxBot.Plugins.UI;
 
 namespace JinxBot.Views.Chat
 {
@@ -90,6 +91,21 @@ namespace JinxBot.Views.Chat
             }
         }
 
+        private Image LoadImageFromFile(string filePath)
+        {
+            Image result = new Bitmap(32, 22);
+            using (Image src = Image.FromFile(filePath))
+            using (Graphics g = Graphics.FromImage(result))
+            {
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+
+                g.DrawImage(src, new Rectangle(Point.Empty, IconSize));
+            }
+            return result;
+        }
+
         private void LoadTieredClientIcons(WebIconList iconsList, string localPath)
         {
             WebIcon defaultTierIcon = (from icon in iconsList.Icons
@@ -100,7 +116,7 @@ namespace JinxBot.Views.Chat
             {
                 try
                 {
-                    m_defaultImage = Image.FromFile(Path.Combine(localPath, defaultTierIcon.LocalName));
+                    m_defaultImage = LoadImageFromFile(Path.Combine(localPath, defaultTierIcon.LocalName));
                 }
                 catch
                 {
@@ -117,7 +133,7 @@ namespace JinxBot.Views.Chat
                 Image currentImage = null;
                 try
                 {
-                    currentImage = Image.FromFile(Path.Combine(localPath, tcIcon.LocalName));
+                    currentImage = LoadImageFromFile(Path.Combine(localPath, tcIcon.LocalName));
                 }
                 catch
                 {
@@ -150,7 +166,7 @@ namespace JinxBot.Views.Chat
                 Image currentImage = null;
                 try
                 {
-                    currentImage = Image.FromFile(Path.Combine(localPath, ntcIcon.LocalName));
+                    currentImage = LoadImageFromFile(Path.Combine(localPath, ntcIcon.LocalName));
                 }
                 catch
                 {
@@ -177,7 +193,7 @@ namespace JinxBot.Views.Chat
                 Image currentImage = null;
                 try
                 {
-                    currentImage = Image.FromFile(Path.Combine(localPath, flagsIconEntry.LocalName));
+                    currentImage = LoadImageFromFile(Path.Combine(localPath, flagsIconEntry.LocalName));
                 }
                 catch
                 {
@@ -213,7 +229,7 @@ namespace JinxBot.Views.Chat
                 Image currentImage = null;
                 try
                 {
-                    currentImage = Image.FromFile(Path.Combine(localPath, clanIconEntry.LocalName));
+                    currentImage = LoadImageFromFile(Path.Combine(localPath, clanIconEntry.LocalName));
                 }
                 catch
                 {
@@ -441,6 +457,11 @@ namespace JinxBot.Views.Chat
             Trace.WriteLine(clientBasedImage, "Determined Image ID");
 
             return clientBasedImage;
+        }
+
+        public Size IconSize
+        {
+            get { return new Size(32, 22); }
         }
 
         #endregion

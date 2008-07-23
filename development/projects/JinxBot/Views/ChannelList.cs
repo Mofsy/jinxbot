@@ -61,8 +61,8 @@ namespace JinxBot.Views
 
         private void ShowUser(UserEventArgs args)
         {
-            if (!listBox1.Items.Contains(args.Username))
-                this.listBox1.Items.Add(args.Username);
+            if (!listBox1.Items.Contains(args))
+                this.listBox1.Items.Add(args);
         }
 
         void m_client_UserLeft(object sender, UserEventArgs e)
