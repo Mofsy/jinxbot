@@ -19,7 +19,7 @@ namespace BniTest
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            BniFileParser bni = new BniFileParser(@"C:\Projects\mbncsutil\trunk\mbnftp\bin\x64\Debug\icons.bni");
+            BniFileParser bni = new BniFileParser(@"C:\Projects\jinxbot\branches\mbncsutil\trunk\mbnftp\bin\Debug\icons.bni");
             this.pictureBox1.Image = bni.FullImage;
 
             foreach (BniIcon icon in bni.AllIcons)

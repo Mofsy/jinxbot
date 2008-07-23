@@ -13,6 +13,7 @@ using BNSharp.MBNCSUtil.Data;
 using BNSharp.BattleNet.Stats;
 using BNSharp.BattleNet.Clans;
 using JinxBot.Plugins.UI;
+using BNSharp;
 
 namespace JinxBot.Views.Chat
 {
@@ -212,7 +213,33 @@ namespace JinxBot.Views.Chat
 
         public Image GetImageFor(BNSharp.UserFlags flags, UserStats stats)
         {
-            return GetImageFor(stats);
+            UserFlags[] allFlags = new UserFlags[] { UserFlags.BlizzardRepresentative, UserFlags.BattleNetAdministrator, UserFlags.ChannelOperator, UserFlags.Speaker, UserFlags.SpecialGuest, UserFlags.Squelched, UserFlags.GFOfficial, UserFlags.GFPlayer };
+
+            foreach (UserFlags flag in allFlags)
+            {
+                if (TestFlag(flags, flag))
+                {
+                    BniIcon ico = (from icon in m_bni.AllIcons
+                                    where (icon.UserFlags & flag) == flag
+                                    select icon).FirstOrDefault();
+                    if (!object.ReferenceEquals(null, ico))
+                        return ico.Image;
+                }
+            }
+
+            BniIcon img = (from icon in m_bni.AllIcons
+                            where icon.SoftwareProductCodes.Contains(stats.Product.ProductCode)
+                            select icon).FirstOrDefault();
+
+            if (!object.ReferenceEquals(null, img))
+                return img.Image;
+
+            return m_fail;
+        }
+
+        private bool TestFlag(UserFlags flags, UserFlags flag)
+        {
+            return ((flags & flag) == flag);
         }
 
         public Image GetImageFor(ClanRank rank)
@@ -228,6 +255,14 @@ namespace JinxBot.Views.Chat
         public string GetImageIdFor(BNSharp.UserFlags userFlags, UserStats us)
         {
             return us.Product.ProductCode;
+        }
+
+        public Size IconSize
+        {
+            get
+            {
+                return new Size(28, 14);
+            }
         }
 
         #endregion
