@@ -3,17 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using JinxBot.Plugins.UI;
-using BNSharp;
+using BNSharp.BattleNet.Friends;
 using System.Drawing;
-using BNSharp.BattleNet.Stats;
-using System.Globalization;
 
 namespace JinxBot.Views.Chat
 {
-    public class ChannelListBoxItemRenderer : ICustomListBoxItemRenderer
+    public class FriendListBoxItemRenderer : ICustomListBoxItemRenderer
     {
         private IIconProvider m_provider;
-        internal ChannelListBoxItemRenderer()
+        internal FriendListBoxItemRenderer()
         {
             ProfileResourceProvider prp = ProfileResourceProvider.GetForClient(null);
             if (!object.ReferenceEquals(prp, null))
@@ -35,25 +33,19 @@ namespace JinxBot.Views.Chat
                 e.DrawFocusRectangle();
             }
 
-            UserEventArgs user = e.Item as UserEventArgs;
-            using (SolidBrush textBrush = new SolidBrush(e.ForeColor))
+            FriendUser friend = e.Item as FriendUser;
+            using (SolidBrush textBrush = new SolidBrush(friend.LocationType == FriendLocation.Offline ? Color.SteelBlue : e.ForeColor))
             using (StringFormat nameFormat = new StringFormat() { Trimming = StringTrimming.EllipsisCharacter })
             {
-                UserStats stats = UserStats.Parse(user.Username, user.StatsData);
-                PointF iconPosition = new PointF((float)e.Bounds.Left + 1.0f, (float)e.Bounds.Top + 1.0f);
-                e.Graphics.DrawImage(m_provider.GetImageFor(user.Flags, stats), iconPosition);
+                PointF iconPosition = new PointF((float)e.Bounds.Location.X + 1.0f, (float)e.Bounds.Location.Y + 1.0f);
+                e.Graphics.DrawImage(m_provider.GetImageFor(friend.Product), (PointF)iconPosition);
 
-                SizeF pingSize = e.Graphics.MeasureString(user.Ping.ToString(CultureInfo.CurrentCulture), e.Font);
-                RectangleF pingArea = new RectangleF((float)e.Bounds.Right - 1.0f - pingSize.Width, (float)e.Bounds.Y + 1.0f,
-                    pingSize.Width, pingSize.Height);
-                e.Graphics.DrawString(user.Ping.ToString(CultureInfo.CurrentCulture), e.Font, textBrush, pingArea);
-
-                SizeF nameSize = e.Graphics.MeasureString(user.Username, e.Font);
+                SizeF nameSize = e.Graphics.MeasureString(friend.AccountName, e.Font);
                 RectangleF nameArea = new RectangleF((float)e.Bounds.X + (float)m_provider.IconSize.Width + 1.0f + 4.0f,
                     (float)e.Bounds.Y + (((float)e.Bounds.Height - nameSize.Height) / 2.0f),
-                    (float)e.Bounds.Width - 10.0f - pingArea.Width - (float)m_provider.IconSize.Width,
+                    (float)e.Bounds.Width - (float)m_provider.IconSize.Width - 2.0f - 4.0f,
                     (float)nameSize.Height);
-                e.Graphics.DrawString(user.Username, e.Font, textBrush, nameArea, nameFormat);
+                e.Graphics.DrawString(friend.AccountName, e.Font, textBrush, nameArea, nameFormat);
             }
         }
 

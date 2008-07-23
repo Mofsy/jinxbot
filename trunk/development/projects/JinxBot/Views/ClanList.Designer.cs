@@ -36,7 +36,7 @@
             this.lbClanMembers.BackColor = System.Drawing.Color.Black;
             this.lbClanMembers.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lbClanMembers.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
-            this.lbClanMembers.ForeColor = System.Drawing.Color.LightSteelBlue;
+            this.lbClanMembers.ForeColor = System.Drawing.Color.White;
             this.lbClanMembers.FormattingEnabled = true;
             this.lbClanMembers.Location = new System.Drawing.Point(0, 0);
             this.lbClanMembers.Name = "lbClanMembers";

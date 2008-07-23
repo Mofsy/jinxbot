@@ -278,7 +278,8 @@ namespace JinxBot.Views
 
         void m_client_InformationReceived(object sender, ServerChatEventArgs e)
         {
-            chat.AddChat(new ChatNode("[Server]: ", Color.Gray), new ChatNode(e.Text, Color.Gray));
+            if (!string.IsNullOrEmpty(e.Text))
+                chat.AddChat(new ChatNode("[Server]: ", Color.Gray), new ChatNode(e.Text, Color.Gray));
         }
 
         void m_client_Information(object sender, InformationEventArgs e)

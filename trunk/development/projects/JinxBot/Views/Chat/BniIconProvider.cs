@@ -28,6 +28,8 @@ namespace JinxBot.Views.Chat
 
         public BniIconProvider()
         {
+            CreateFailedBitmap();
+
             string basePath = Path.Combine(JinxBotConfiguration.ApplicationDataPath, "icons.bni");
             if (!File.Exists(basePath))
             {
@@ -40,10 +42,7 @@ namespace JinxBot.Views.Chat
                     m_bni = new BniFileParser(basePath);
                     m_valid = true;
                 }
-                catch
-                {
-                    CreateFailedBitmap();
-                }
+                catch { }
             }
             else
             {
@@ -52,10 +51,7 @@ namespace JinxBot.Views.Chat
                     m_bni = new BniFileParser(basePath);
                     m_valid = true;
                 }
-                catch
-                {
-                    CreateFailedBitmap();
-                }
+                catch { }
             }
         }
 
@@ -70,113 +66,6 @@ namespace JinxBot.Views.Chat
 
             m_fail = bmp;
         }
-
-        #region IIconProvider Members
-
-        /// <summary>
-        /// Gets an image list containing all icons supported by this icon provider.
-        /// </summary>
-        /// <returns>An <see>ImageList</see> for use in the channel list.</returns>
-        public ImageList GetImageList()
-        {
-            ImageList list = new ImageList();
-            list.ColorDepth = ColorDepth.Depth32Bit;
-            list.ImageSize = new System.Drawing.Size(28, 14);
-
-            if (m_valid)
-            {
-                foreach (BniIcon icon in m_bni.AllIcons)
-                {
-                    list.Images.Add(icon.Image);
-                }
-            }
-            else
-            {
-                list.Images.Add(m_fail);
-            }
-
-            return list;
-        }
-
-        /// <summary>
-        /// Gets the image index into the image list for the user with the specified stats.
-        /// </summary>
-        /// <param name="stats">The stats for which to calculate the image index.</param>
-        /// <returns>An index valid within the <see>ImageList</see> returned from <see>GetImageList</see>.</returns>
-        public int GetImageIndexFor(UserStats stats)
-        {
-            if (m_valid)
-            {
-                BniIcon defaultIcon = (from icon in m_bni.AllIcons
-                                       where icon.SoftwareProductCodes.Length > 0 && icon.SoftwareProductCodes[0] == stats.Product.ProductCode
-                                       select icon).FirstOrDefault();
-                int defaultIndex = 0;
-                for (int i = 0; i < m_bni.AllIcons.Length; i++)
-                {
-                    if (m_bni.AllIcons[i] == defaultIcon)
-                    {
-                        defaultIndex = i;
-                        break;
-                    }
-                }
-
-                // TO DO:
-                // More advanced image index lookup.
-
-                return defaultIndex;
-            }
-            else
-            {
-                return 0;
-            }
-        }
-
-        public Image GetImageFor(UserStats stats)
-        {
-            if (m_valid)
-                return m_bni.AllIcons[GetImageIndexFor(stats)].Image;
-            else
-                return m_fail;
-        }
-
-        public ImageList GetClanImageList()
-        {
-            ImageList list = new ImageList();
-            list.ImageSize = new Size(28, 14);
-            list.ColorDepth = ColorDepth.Depth32Bit;
-
-            if (m_valid)
-            {
-                list.Images.Add(m_bni.AllIcons[2].Image);
-                list.Images.Add(m_bni.AllIcons[3].Image);
-                list.Images.Add(m_bni.AllIcons[4].Image);
-                list.Images.Add(m_bni.AllIcons[19].Image);
-                list.Images.Add(m_bni.AllIcons[18].Image);
-            }
-            else
-            {
-                list.Images.Add(m_fail);
-            }
-
-            return list;
-        }
-
-        public int GetImageIndexForClanRank(ClanRank rank)
-        {
-            if (rank < ClanRank.Initiate || rank > ClanRank.Chieftan)
-                rank = ClanRank.Initiate;
-
-            if (m_valid)
-            {
-                return ((int)ClanRank.Chieftan - (int)rank);
-            }
-            else
-            {
-                return 0;
-            }
-        }
-
-        #endregion
 
         #region IDisposable Members
 
@@ -209,9 +98,7 @@ namespace JinxBot.Views.Chat
         #endregion
 
         #region IIconProvider Members
-
-
-        public Image GetImageFor(BNSharp.UserFlags flags, UserStats stats)
+        public Image GetImageFor(UserFlags flags, UserStats stats)
         {
             UserFlags[] allFlags = new UserFlags[] { UserFlags.BlizzardRepresentative, UserFlags.BattleNetAdministrator, UserFlags.ChannelOperator, UserFlags.Speaker, UserFlags.SpecialGuest, UserFlags.Squelched, UserFlags.GFOfficial, UserFlags.GFPlayer };
 
@@ -237,23 +124,45 @@ namespace JinxBot.Views.Chat
             return m_fail;
         }
 
-        private bool TestFlag(UserFlags flags, UserFlags flag)
+        private static bool TestFlag(UserFlags flags, UserFlags flag)
         {
             return ((flags & flag) == flag);
         }
 
         public Image GetImageFor(ClanRank rank)
         {
-            return GetClanImageList().Images[GetImageIndexForClanRank(rank)];
+            switch (rank)
+            {
+                case ClanRank.Chieftan:
+                    return GetImageFor(UserFlags.ChannelOperator, null);
+                case ClanRank.Shaman:
+                    return GetImageFor(UserFlags.Speaker, null);
+                case ClanRank.Grunt:
+                    return GetImageFor(UserFlags.None, UserStats.CreateDefault(Product.Warcraft3Expansion));
+                case ClanRank.Peon:
+                case ClanRank.Initiate:
+                    return GetImageFor(UserFlags.None, UserStats.CreateDefault(Product.Warcraft3Retail));
+                default:
+                    return GetImageFor(UserFlags.BattleNetAdministrator, null);
+            }
         }
 
-        #endregion
-
-        #region IIconProvider Members
-
-
-        public string GetImageIdFor(BNSharp.UserFlags userFlags, UserStats us)
+        public string GetImageIdFor(UserFlags flags, UserStats us)
         {
+            UserFlags[] allFlags = new UserFlags[] { UserFlags.BlizzardRepresentative, UserFlags.BattleNetAdministrator, UserFlags.ChannelOperator, UserFlags.Speaker, UserFlags.SpecialGuest, UserFlags.Squelched, UserFlags.GFOfficial, UserFlags.GFPlayer };
+
+            foreach (UserFlags flag in allFlags)
+            {
+                if (TestFlag(flags, flag))
+                {
+                    BniIcon ico = (from icon in m_bni.AllIcons
+                                   where (icon.UserFlags & flag) == flag
+                                   select icon).FirstOrDefault();
+                    if (!object.ReferenceEquals(null, ico))
+                        return flag.ToString();
+                }
+            }
+
             return us.Product.ProductCode;
         }
 
@@ -263,6 +172,38 @@ namespace JinxBot.Views.Chat
             {
                 return new Size(28, 14);
             }
+        }
+
+        public string GetImageIdFor(ClanRank rank)
+        {
+            return rank.ToString();
+        }
+
+        public string GetImageIdFor(Product product)
+        {
+            BniIcon img = (from icon in m_bni.AllIcons
+                           where icon.SoftwareProductCodes.Contains(product.ProductCode)
+                           select icon).FirstOrDefault();
+
+            if (!object.ReferenceEquals(null, img))
+                return product.ProductCode;
+
+            return string.Empty;
+        }
+
+        public Image GetImageFor(Product product)
+        {
+            if (object.ReferenceEquals(product, null))
+                return m_fail;
+
+            BniIcon img = (from icon in m_bni.AllIcons
+                           where icon.SoftwareProductCodes.Contains(product.ProductCode)
+                           select icon).FirstOrDefault();
+
+            if (!object.ReferenceEquals(null, img))
+                return img.Image;
+
+            return m_fail;
         }
 
         #endregion

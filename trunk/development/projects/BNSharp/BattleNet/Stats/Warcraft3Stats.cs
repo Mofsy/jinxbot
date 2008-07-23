@@ -66,7 +66,8 @@ namespace BNSharp.BattleNet.Stats
 
             try
             {
-                m_clanTag = dr.ReadDwordString((byte)' ');
+                if (dr.Position < dr.Length)
+                    m_clanTag = dr.ReadDwordString((byte)' ');
             }
             catch { }
 

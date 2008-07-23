@@ -11,11 +11,19 @@ namespace JinxBot.Views.Chat
 {
     public class ClanListBoxItemRenderer : ICustomListBoxItemRenderer
     {
+        private IIconProvider m_provider;
+        public ClanListBoxItemRenderer()
+        {
+            ProfileResourceProvider prp = ProfileResourceProvider.GetForClient(null);
+            if (!object.ReferenceEquals(prp, null))
+                m_provider = prp.Icons;
+        }
+
         #region ICustomListBoxItemRenderer Members
 
         public void MeasureItem(CustomMeasurements e)
         {
-            e.ItemHeight = 48;
+            e.ItemHeight = m_provider.IconSize.Height + 2;
         }
 
         public void DrawItem(CustomItemDrawData e)
@@ -27,13 +35,18 @@ namespace JinxBot.Views.Chat
             }
 
             ClanMember clanMember = e.Item as ClanMember;
-            using (SolidBrush textBrush = new SolidBrush(e.ForeColor))
+            using (SolidBrush textBrush = new SolidBrush(clanMember.CurrentStatus == ClanMemberStatus.Offline ? Color.SteelBlue : e.ForeColor))
+            using (StringFormat nameFormat = new StringFormat() { Trimming = StringTrimming.EllipsisCharacter })
             {
-                IIconProvider prov = ProfileResourceProvider.GetForClient(null).Icons;
-                e.Graphics.DrawImage(prov.GetClanImageList().Images[prov.GetImageIndexForClanRank(clanMember.Rank)], (PointF)e.Bounds.Location);
+                PointF iconPosition = new PointF((float)e.Bounds.Location.X + 1.0f, (float)e.Bounds.Location.Y + 1.0f);
+                e.Graphics.DrawImage(m_provider.GetImageFor(clanMember.Rank), (PointF)iconPosition);
 
-                RectangleF nameArea = new RectangleF((float)e.Bounds.X + 64f, (float)e.Bounds.Y, (float)e.Bounds.Width - 64f, (float)e.Bounds.Height);
-                e.Graphics.DrawString(clanMember.Username, new Font("Calibri", 12, GraphicsUnit.Point), textBrush, nameArea);
+                SizeF nameSize = e.Graphics.MeasureString(clanMember.Username, e.Font);
+                RectangleF nameArea = new RectangleF((float)e.Bounds.X + (float)m_provider.IconSize.Width + 1.0f + 4.0f,
+                    (float)e.Bounds.Y + (((float)e.Bounds.Height - nameSize.Height) / 2.0f),
+                    (float)e.Bounds.Width - (float)m_provider.IconSize.Width - 2.0f - 4.0f,
+                    (float)nameSize.Height);
+                e.Graphics.DrawString(clanMember.Username, e.Font, textBrush, nameArea, nameFormat);
             }
         }
 

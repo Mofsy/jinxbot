@@ -8,6 +8,8 @@ using JinxBot.Design;
 using JinxBot.Controls.Design;
 using System.Drawing.Design;
 using System.Xml.Serialization;
+using BNSharp.BattleNet;
+using JinxBot.Configuration;
 
 namespace JinxBot
 {
@@ -188,6 +190,23 @@ namespace JinxBot
         [Name("CD Key Owner")]
         [XmlElement("CdKeyOwnerName")]
         public string CdKeyOwner
+        {
+            get;
+            set;
+        }
+
+        PingType IBattleNetSettings.PingMethod
+        {
+            get { return (PingType)PingStyle; }
+            set { PingStyle = (PingStyle)((int)value); }
+        }
+
+        [Browsable(true)]
+        [Category("Emulation")]
+        [Description("The style of ping used by the client.  This affects the value of your client's latency as it appears to Battle.net.")]
+        [Name("Client Ping")]
+        [XmlElement("Ping")]
+        public PingStyle PingStyle
         {
             get;
             set;

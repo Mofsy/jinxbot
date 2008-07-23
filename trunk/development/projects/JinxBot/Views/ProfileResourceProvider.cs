@@ -55,7 +55,12 @@ namespace JinxBot.Views
         public static ProfileResourceProvider GetForClient(BattleNetClient client)
         {
             if (object.ReferenceEquals(null, client))
-                return s_providers.First().Value;
+            {
+                KeyValuePair<BattleNetClient, ProfileResourceProvider> prp = s_providers.FirstOrDefault();
+                if (object.ReferenceEquals(prp, null))
+                    return null;
+                return prp.Value;
+            }
 
             if (s_providers.ContainsKey(client))
                 return s_providers[client];

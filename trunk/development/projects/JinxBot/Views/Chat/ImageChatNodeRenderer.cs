@@ -30,7 +30,6 @@ namespace JinxBot.Views.Chat
             ImageChatNode icn = node as ImageChatNode;
             if (icn != null)
             {
-                Trace.WriteLine(icn.ImageName, "Rendering image name");
                 HtmlElement img = base.HtmlDomDocument.CreateElement("img");
                 img.SetAttribute("src", string.Concat(ImageChatNodeProtocol.Schema, ":", icn.ImageName));
                 img.SetAttribute("alt", icn.Text);

@@ -71,6 +71,7 @@ namespace JinxBot.Configuration
             /// <para>This property supports the 
             /// JinxBot icon infrastructure and is not intended to be used from your code.</para>
             /// </remarks>
+            [XmlAttribute("UserFlags")]
             public string UserFlags { get; set; }
 
             /// <summary>

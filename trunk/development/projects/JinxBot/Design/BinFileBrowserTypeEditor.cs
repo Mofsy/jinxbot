@@ -14,7 +14,7 @@ namespace JinxBot.Design
         public BinFileBrowserTypeEditor()
         {
             m_fileDlg = new OpenFileDialog();
-            m_fileDlg.Filter = "Dynamically-linked libraries (*.dll; *.snp)|*.dll;*.snp|All files (*.*)|*.*";
+            m_fileDlg.Filter = "Screen dump images (*.bin)|*.bin|All files (*.*)|*.*";
             m_fileDlg.Multiselect = false;
         }
 
