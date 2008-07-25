@@ -14,14 +14,14 @@ namespace BNSharp.BattleNet.Stats
     /// <para>This class cannot be instantiated directly.  To obtain an instance of this class, use 
     /// <see cref="UserStats.Parse">UserStats.Parse</see>, and cast the result to this class.</para>
     /// </remarks>
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public class StarcraftStats : UserStats
     {
         #region fields
         [DataMember(Name = "Product")]
         private Product m_prod;
+        [DataMember(Name = "LiteralText")]
+        private string m_literal;
 
         [DataMember(Name = "LadderRating")]
         private int m_ladderRating;
@@ -40,6 +40,8 @@ namespace BNSharp.BattleNet.Stats
         #region Constructor
         internal StarcraftStats(byte[] stats)
         {
+            m_literal = Encoding.ASCII.GetString(stats);
+
             // RATS 0 0 200 0 0 0 0 0 RATS
             // pcode rating rank wins spawn unknown hirating unkn unkn icon
             DataReader dr = new DataReader(stats);
@@ -123,6 +125,14 @@ namespace BNSharp.BattleNet.Stats
         public override Product Product
         {
             get { return m_prod; }
+        }
+
+        /// <summary>
+        /// Gets the literal text of the user's statstring.
+        /// </summary>
+        public override string LiteralText
+        {
+            get { return m_literal; }
         }
         #endregion
     }

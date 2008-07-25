@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Runtime.Serialization;
+using System.Collections.ObjectModel;
 
 namespace BNSharp.BattleNet.Clans
 {
@@ -9,15 +10,11 @@ namespace BNSharp.BattleNet.Clans
     /// The event arguments for the clan member list notification.
     /// </summary>
     [Serializable]
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public class ClanMemberListEventArgs : BaseEventArgs
     {
         #region fields
-#if !NET_2_ONLY
         [DataMember(Name = "Members")]
-#endif
         private ClanMember[] m_members;
         #endregion
 
@@ -36,9 +33,9 @@ namespace BNSharp.BattleNet.Clans
         /// <remarks>
         /// <para>When exposed under a WCF data contract, this property's backing store is given the name <c>Members</c>.</para>
         /// </remarks>
-        public ClanMember[] Members
+        public ReadOnlyCollection<ClanMember> Members
         {
-            get { return m_members; }
+            get { return new ReadOnlyCollection<ClanMember>(m_members); }
         }
     }
 

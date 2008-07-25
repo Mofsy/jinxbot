@@ -8242,5 +8242,184 @@ namespace BNSharp.Net
         #endregion
 		
         #endregion
+
+        #region UserProfileReceived event
+        [NonSerialized]
+        private Dictionary<Priority, List<UserProfileEventHandler>> __UserProfileReceived = new Dictionary<Priority, List<UserProfileEventHandler>>(3)
+        {
+            { Priority.High, new List<UserProfileEventHandler>() },
+            { Priority.Normal, new List<UserProfileEventHandler>() },
+            { Priority.Low, new List<UserProfileEventHandler>() }
+        };
+        /// <summary>
+        /// Informs listeners that a user profile has been received.
+        /// </summary>
+        /// <remarks>
+        /// <para>Registering for this event with this member will register with <see cref="Priority">Normal priority</see>.  To register for 
+        /// <see cref="Priority">High</see> or <see cref="Priority">Low</see> priority, use the <see>RegisterUserProfileReceivedNotification</see> and
+        /// <see>UnregisterUserProfileReceivedNotification</see> methods.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        /// </remarks>
+        public event UserProfileEventHandler UserProfileReceived
+        {
+            add
+            {
+                lock (__UserProfileReceived)
+                {
+                    if (!__UserProfileReceived.ContainsKey(Priority.Normal))
+                    {
+                        __UserProfileReceived.Add(Priority.Normal, new List<UserProfileEventHandler>());
+                    }
+                }
+                __UserProfileReceived[Priority.Normal].Add(value);
+            }
+            remove
+            {
+                if (__UserProfileReceived.ContainsKey(Priority.Normal))
+                {
+                    __UserProfileReceived[Priority.Normal].Remove(value);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Registers for notification of the <see>UserProfileReceived</see> event at the specified priority.
+        /// </summary>
+        /// <remarks>
+        /// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
+        /// normal syntax to register for events at <see cref="Priority">Normal priority</see>, so no special registration is needed; this is 
+        /// accessed through normal event handling syntax (the += syntax in C#, or the <see langword="Handles" lang="VB" /> in Visual Basic.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        ///	<para>To be well-behaved within JinxBot, plugins should always unregister themselves when they are being unloaded or when they 
+        /// otherwise need to do so.  Plugins may opt-in to a Reflection-based event handling registration system which uses attributes to 
+        /// mark methods that should be used as event handlers.</para>
+        /// </remarks>
+        /// <param name="p">The priority at which to register.</param>
+        /// <param name="callback">The event handler that should be registered for this event.</param>
+        /// <seealso cref="UserProfileReceived" />
+        /// <seealso cref="UnregisterUserProfileReceivedNotification" />
+        public void RegisterUserProfileReceivedNotification(Priority p, UserProfileEventHandler callback)
+        {
+            lock (__UserProfileReceived)
+            {
+                if (!__UserProfileReceived.ContainsKey(p))
+                {
+                    __UserProfileReceived.Add(p, new List<UserProfileEventHandler>());
+                }
+            }
+            __UserProfileReceived[p].Add(callback);
+        }
+
+        /// <summary>
+        /// Unregisters for notification of the <see>UserProfileReceived</see> event at the specified priority.
+        /// </summary>
+        /// <remarks>
+        /// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
+        /// normal syntax to register for events at <see cref="Priority">Normal priority</see>, so no special registration is needed; this is 
+        /// accessed through normal event handling syntax (the += syntax in C#, or the <see langword="Handles" lang="VB" /> in Visual Basic.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        ///	<para>To be well-behaved within JinxBot, plugins should always unregister themselves when they are being unloaded or when they 
+        /// otherwise need to do so.  Plugins may opt-in to a Reflection-based event handling registration system which uses attributes to 
+        /// mark methods that should be used as event handlers.</para>
+        /// </remarks>
+        /// <param name="p">The priority from which to unregister.</param>
+        /// <param name="callback">The event handler that should be unregistered for this event.</param>
+        /// <seealso cref="UserProfileReceived" />
+        /// <seealso cref="RegisterUserProfileReceivedNotification" />
+        public void UnregisterUserProfileReceivedNotification(Priority p, UserProfileEventHandler callback)
+        {
+            if (__UserProfileReceived.ContainsKey(p))
+            {
+                __UserProfileReceived[p].Remove(callback);
+            }
+        }
+
+        /// <summary>
+        /// Raises the UserProfileReceived event.
+        /// </summary>
+        /// <remarks>
+        /// <para>Only high-priority events are invoked immediately; others are deferred.  For more information, see <see>UserProfileReceived</see>.</para>
+        /// </remarks>
+        /// <param name="e">The event arguments.</param>
+        /// <seealso cref="UserProfileReceived" />
+        protected virtual void OnUserProfileReceived(UserProfileEventArgs e)
+        {
+            foreach (UserProfileEventHandler eh in __UserProfileReceived[Priority.High])
+            {
+                try
+                {
+                    eh(this, e);
+                }
+                catch (Exception ex)
+                {
+                    ReportException(
+                        ex,
+                        new KeyValuePair<string, object>("delegate", eh),
+                        new KeyValuePair<string, object>("Event", "UserProfileReceived"),
+                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: this", this),
+                        new KeyValuePair<string, object>("param: e", e)
+                        );
+                }
+            }
+
+            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            {
+                foreach (UserProfileEventHandler eh in __UserProfileReceived[Priority.Normal])
+                {
+                    try
+                    {
+                        eh(this, e);
+                    }
+                    catch (Exception ex)
+                    {
+                        ReportException(
+                            ex,
+                            new KeyValuePair<string, object>("delegate", eh),
+                            new KeyValuePair<string, object>("Event", "UserProfileReceived"),
+                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
+                            new KeyValuePair<string, object>("param: this", this),
+                            new KeyValuePair<string, object>("param: e", e)
+                            );
+                    }
+                }
+                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+                {
+                    foreach (UserProfileEventHandler eh in __UserProfileReceived[Priority.Low])
+                    {
+                        try
+                        {
+                            eh(this, e);
+                        }
+                        catch (Exception ex)
+                        {
+                            ReportException(
+                                ex,
+                                new KeyValuePair<string, object>("delegate", eh),
+                                new KeyValuePair<string, object>("Event", "UserProfileReceived"),
+                                new KeyValuePair<string, object>("param: priority", Priority.Low),
+                                new KeyValuePair<string, object>("param: this", this),
+                                new KeyValuePair<string, object>("param: e", e)
+                                );
+                        }
+                    }
+                    FreeArgumentResources(e as BaseEventArgs);
+                });
+            });
+        }
+        #endregion
+		
     }
 }

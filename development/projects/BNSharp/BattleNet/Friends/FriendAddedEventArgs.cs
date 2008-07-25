@@ -8,14 +8,10 @@ namespace BNSharp.BattleNet.Friends
     /// <summary>
     /// Specifies that a new friend was added to the list of friends.
     /// </summary>
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public class FriendAddedEventArgs : BaseEventArgs
     {
-#if !NET_2_ONLY
         [DataMember(Name = "NewFriend")]
-#endif
         private FriendUser m_newFriend;
 
         /// <summary>

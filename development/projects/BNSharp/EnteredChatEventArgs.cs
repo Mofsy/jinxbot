@@ -15,25 +15,15 @@ namespace BNSharp
     /// <summary>
     /// Specifies the event arguments for when the client entered chat.
     /// </summary>
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public class EnteredChatEventArgs : BaseEventArgs
     {
         #region fields
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "UniqueUsername")]
         private string m_uun;
-
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "Statstring")]
         private string m_ss;
-
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "AccountName")]
         private string m_an;
         #endregion
 

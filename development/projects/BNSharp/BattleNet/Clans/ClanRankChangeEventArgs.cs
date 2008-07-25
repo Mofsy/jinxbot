@@ -8,23 +8,15 @@ namespace BNSharp.BattleNet.Clans
     /// <summary>
     /// Contains information about when the client's user's clan rank has changed.
     /// </summary>
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public class ClanRankChangeEventArgs : BaseEventArgs
     {
         #region fields
-#if !NET_2_ONLY
         [DataMember(Name = "PreviousRank")]
-#endif
         private ClanRank m_old;
-#if !NET_2_ONLY
         [DataMember(Name = "NewRank")]
-#endif
         private ClanRank m_new;
-#if !NET_2_ONLY
         [DataMember(Name = "MemberResponsible")]
-#endif
         private ClanMember m_changer; 
         #endregion
 

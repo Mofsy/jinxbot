@@ -8,14 +8,10 @@ namespace BNSharp.BattleNet.Friends
     /// <summary>
     /// Specifies that a friend has been removed from the client's friends list.
     /// </summary>
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public class FriendRemovedEventArgs : BaseEventArgs
     {
-#if !NET_2_ONLY
         [DataMember(Name = "Friend")]
-#endif
         private FriendUser m_removed;
 
         /// <summary>

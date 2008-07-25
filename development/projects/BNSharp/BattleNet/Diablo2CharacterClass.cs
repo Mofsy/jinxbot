@@ -8,15 +8,13 @@ namespace BNSharp.BattleNet
     /// <summary>
     /// Specifies the character classes supported by Diablo 2 characters.
     /// </summary>
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public enum Diablo2CharacterClass
     {
         /// <summary>
         /// Specifies that the class is unknown or invalid.
         /// </summary>
-        Unknown,
+        Unknown = 0,
         /// <summary>
         /// Specifies the Amazon class (female).
         /// </summary>

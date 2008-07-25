@@ -8,19 +8,13 @@ namespace BNSharp.BattleNet.Clans
     /// <summary>
     /// Provides information about the client's user's current clan during login.
     /// </summary>
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public class ClanMembershipEventArgs : BaseEventArgs
     {
         #region fields
-#if !NET_2_ONLY
         [DataMember(Name = "Rank")]
-#endif
         private ClanRank m_rank;
-#if !NET_2_ONLY
         [DataMember(Name = "Tag")]
-#endif
         private string m_tag;
         #endregion
 

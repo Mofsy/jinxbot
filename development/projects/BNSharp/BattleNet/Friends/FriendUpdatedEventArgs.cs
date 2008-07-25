@@ -8,14 +8,10 @@ namespace BNSharp.BattleNet.Friends
     /// <summary>
     /// Specifies that a friend's status has been updated.
     /// </summary>
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public class FriendUpdatedEventArgs : BaseEventArgs
     {
-#if !NET_2_ONLY
         [DataMember(Name = "Friend")]
-#endif
         private FriendUser m_updated;
 
         /// <summary>

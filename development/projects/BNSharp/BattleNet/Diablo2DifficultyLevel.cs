@@ -8,9 +8,7 @@ namespace BNSharp.BattleNet
     /// <summary>
     /// Specifies the difficulty level for Diablo II games and characters.
     /// </summary>
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public enum Diablo2DifficultyLevel
     {
         /// <summary>

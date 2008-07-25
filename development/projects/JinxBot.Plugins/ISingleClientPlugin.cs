@@ -7,5 +7,6 @@ namespace JinxBot.Plugins
 {
     public interface ISingleClientPlugin
     {
+        
     }
 }

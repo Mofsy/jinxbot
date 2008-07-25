@@ -15,23 +15,15 @@ namespace BNSharp
     /// <summary>
     /// Represents the event information associated with a chat event with a given user and communication.
     /// </summary>
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public class ChatMessageEventArgs : ChatEventArgs
     {
         #region fields
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "Flags")]
         private UserFlags m_flags;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "Username")]
         private string m_un;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "Text")]
         private string m_txt;
         #endregion
 

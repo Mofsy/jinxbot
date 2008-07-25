@@ -6,6 +6,7 @@ using JinxBot.Plugins;
 using JinxBot.Plugins.UI;
 using BNSharp.BattleNet.Clans;
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace JinxBot.Views.Chat
 {
@@ -29,13 +30,25 @@ namespace JinxBot.Views.Chat
         public void DrawItem(CustomItemDrawData e)
         {
             e.DrawBackground();
-            if (e.State == System.Windows.Forms.DrawItemState.Selected)
+            if ((e.State & DrawItemState.Focus) == System.Windows.Forms.DrawItemState.Focus)
             {
                 e.DrawFocusRectangle();
             }
 
             ClanMember clanMember = e.Item as ClanMember;
-            using (SolidBrush textBrush = new SolidBrush(clanMember.CurrentStatus == ClanMemberStatus.Offline ? Color.SteelBlue : e.ForeColor))
+            Color textColor = e.ForeColor;
+            if (clanMember.CurrentStatus == ClanMemberStatus.Offline)
+            {
+                if ((e.State & DrawItemState.Selected) == System.Windows.Forms.DrawItemState.Selected)
+                {
+                    textColor = Color.Black;
+                }
+                else
+                {
+                    textColor = Color.SlateGray;
+                }
+            }
+            using (SolidBrush textBrush = new SolidBrush(textColor))
             using (StringFormat nameFormat = new StringFormat() { Trimming = StringTrimming.EllipsisCharacter })
             {
                 PointF iconPosition = new PointF((float)e.Bounds.Location.X + 1.0f, (float)e.Bounds.Location.Y + 1.0f);

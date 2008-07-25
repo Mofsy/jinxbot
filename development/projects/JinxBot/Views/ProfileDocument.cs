@@ -31,7 +31,7 @@ namespace JinxBot.Views
             : this()
         {
             m_client = client;
-            this.Text = (client.Settings as ClientProfile).ProfileName;
+            this.Text = this.TabText = (client.Settings as ClientProfile).ProfileName;
 
             m_chat = new ChatDocument(client);
             m_chat.Text = "Main chat window (Disconnected)";

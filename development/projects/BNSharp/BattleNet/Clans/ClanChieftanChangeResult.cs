@@ -8,9 +8,7 @@ namespace BNSharp.BattleNet.Clans
     /// <summary>
     /// Specifies result codes for an attempt to change the clan chieftan (leader).
     /// </summary>
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public enum ClanChieftanChangeResult
     {
         /// <summary>

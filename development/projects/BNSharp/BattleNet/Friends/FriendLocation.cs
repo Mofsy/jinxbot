@@ -8,9 +8,7 @@ namespace BNSharp.BattleNet.Friends
     /// <summary>
     /// Specifies the level of information available about a Battle.net user who is on the client's friend list.
     /// </summary>
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public enum FriendLocation
     {
         /// <summary>

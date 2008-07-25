@@ -16,15 +16,11 @@ namespace BNSharp
     /// Specifies informational event arguments.
     /// </summary>
     [Serializable]
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public class InformationEventArgs : BaseEventArgs
     {
         #region fields
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "Information")]
         private string m_info;
         #endregion
 

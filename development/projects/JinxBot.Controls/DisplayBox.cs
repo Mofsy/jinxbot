@@ -184,6 +184,8 @@ p
             m_enterTextElement.AppendChild(element);
 
             ScrollIntoView();
+
+            UpdateParagraphs();
         }
 
         private void ScrollIntoView()
@@ -198,12 +200,16 @@ p
         {
             ThreadStart ts = delegate
             {
-                int maxChildrenToRemove = m_parasToKeep / 8;
-                int currentChildrenRemoved = 0;
-                while (currentChildrenRemoved <= maxChildrenToRemove && m_enterTextElement.Children.Count > 1)
+                if (m_enterTextElement.Children.Count > m_parasToKeep)
                 {
-                    IHTMLDOMNode node = (IHTMLDOMNode)m_enterTextElement.DomElement;
-                    node.removeChild((IHTMLDOMNode)m_enterTextElement.FirstChild.DomElement);
+                    int maxChildrenToRemove = m_parasToKeep / 8;
+                    int currentChildrenRemoved = 0;
+                    while (currentChildrenRemoved <= maxChildrenToRemove && m_enterTextElement != null && m_enterTextElement.Children.Count > 1)
+                    {
+                        IHTMLDOMNode node = (IHTMLDOMNode)m_enterTextElement.DomElement;
+                        node.removeChild((IHTMLDOMNode)m_enterTextElement.FirstChild.DomElement);
+                        currentChildrenRemoved++;
+                    }
                 }
             };
 

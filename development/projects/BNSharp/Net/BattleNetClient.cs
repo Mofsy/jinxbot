@@ -5,6 +5,8 @@ using BNSharp.MBNCSUtil;
 using System.Globalization;
 using System.Net;
 using BNSharp.BattleNet;
+using System.Collections.ObjectModel;
+using System.Threading;
 
 namespace BNSharp.Net
 {
@@ -27,6 +29,10 @@ namespace BNSharp.Net
         #region fields
         private IBattleNetSettings m_settings;
         private bool m_closing;
+        private Dictionary<string, ChatUser> m_namesToUsers = new Dictionary<string, ChatUser>();
+        private Dictionary<int, UserProfileRequest> m_profileRequests = new Dictionary<int, UserProfileRequest>();
+        private int m_currentProfileRequestID;
+        private string m_channelName;
         #endregion
 
         #region .ctor
@@ -35,6 +41,7 @@ namespace BNSharp.Net
         /// </summary>
         /// <param name="settings">An object containing the settings for a Battle.net connection.</param>
         /// <exception cref="NullReferenceException">Thrown if <paramref name="settings"/> is <see langword="null" />.</exception>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
         public BattleNetClient(IBattleNetSettings settings)
             : base(settings.Server, settings.Port)
         {
@@ -182,6 +189,49 @@ namespace BNSharp.Net
         public IBattleNetSettings Settings
         {
             get { return m_settings; }
+        }
+
+        /// <summary>
+        /// Gets a read-only list of all of the users in the current channel.
+        /// </summary>
+        public ReadOnlyCollection<ChatUser> Channel
+        {
+            get
+            {
+                List<ChatUser> users = new List<ChatUser>(m_namesToUsers.Values);
+                return new ReadOnlyCollection<ChatUser>(users);
+            }
+        }
+
+        /// <summary>
+        /// Requests a user's profile.
+        /// </summary>
+        /// <param name="accountName">The name of the user for whom to request information.</param>
+        /// <param name="profile">The profile request, which should contain the keys to request.</param>
+        public void RequestUserProfile(string accountName, UserProfileRequest profile)
+        {
+            BncsPacket pck = new BncsPacket((byte)BncsPacketId.ReadUserData);
+            pck.InsertInt32(1);
+            pck.InsertInt32(profile.Count);
+            int currentRequest = Interlocked.Increment(ref m_currentProfileRequestID);
+            pck.InsertInt32(currentRequest);
+            pck.InsertCString(accountName);
+            foreach (UserProfileKey key in profile)
+            {
+                pck.InsertCString(key.Key);
+            }
+
+            m_profileRequests.Add(currentRequest, profile);
+
+            Send(pck);
+        }
+
+        /// <summary>
+        /// Gets the name of the current channel.
+        /// </summary>
+        public string ChannelName
+        {
+            get { return m_channelName; }
         }
         #endregion
     }

@@ -75,14 +75,6 @@
     <Compile Include="MainWindow.Designer.cs">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="Plugins\UI\CustomItemDrawData.cs" />
-    <Compile Include="Plugins\UI\CustomListBoxRendererAttribute.cs" />
-    <Compile Include="Plugins\UI\CustomMeasurements.cs" />
-    <Compile Include="Plugins\UI\ICustomListBoxItemRenderer.cs" />
-    <Compile Include="Plugins\UI\IIconProvider.cs" />
-    <Compile Include="Plugins\IPacketHandlerPlugin.cs" />
-    <Compile Include="Plugins\ISingleClientPlugin.cs" />
-    <Compile Include="Plugins\JinxBotPluginAttribute.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -256,6 +248,10 @@
     <ProjectReference Include="..\JinxBot.Data.LinqToSqlClient\JinxBot.Data.LinqToSqlClient.csproj">
       <Project>{158210D7-9F67-4C81-85E3-240115A08685}</Project>
       <Name>JinxBot.Data.LinqToSqlClient</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\JinxBot.Plugins\JinxBot.Plugins.csproj">
+      <Project>{9C13A2E5-2A06-4BD9-BED0-F93E9BB03D31}</Project>
+      <Name>JinxBot.Plugins</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

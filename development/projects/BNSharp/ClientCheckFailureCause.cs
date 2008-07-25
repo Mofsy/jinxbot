@@ -8,9 +8,7 @@ namespace BNSharp
     /// <summary>
     /// Specifies the causes of client versioning failure reported by Battle.net.
     /// </summary>
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public enum ClientCheckFailureCause
     {
         /// <summary>

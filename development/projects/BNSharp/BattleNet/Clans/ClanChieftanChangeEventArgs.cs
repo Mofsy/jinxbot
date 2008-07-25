@@ -8,15 +8,11 @@ namespace BNSharp.BattleNet.Clans
     /// <summary>
     /// Specifies the status of an attempt to designate a new clan leader.
     /// </summary>
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public class ClanChieftanChangeEventArgs : BaseEventArgs
     {
         #region fields
-#if !NET_2_ONLY
         [DataMember(Name = "Result")]
-#endif
         private ClanChieftanChangeResult m_result;
         #endregion
 

@@ -35,11 +35,15 @@ namespace BNSharp.BattleNet.Stats
         private int m_level;
         [DataMember(Name = "ClanTag")]
         private string m_clanTag;
+        [DataMember(Name = "LiteralText")]
+        private string m_literal;
         #endregion
 
         #region constructor
         internal Warcraft3Stats(byte[] stats)
         {
+            m_literal = Encoding.ASCII.GetString(stats);
+
             DataReader dr = new DataReader(stats);
             string productCode = dr.ReadDwordString(0);
             m_prod = Product.GetByProductCode(productCode);
@@ -113,6 +117,14 @@ namespace BNSharp.BattleNet.Stats
         public override Product Product
         {
             get { return m_prod; }
+        }
+
+        /// <summary>
+        /// Gets the user's literal statstring text.
+        /// </summary>
+        public override string LiteralText
+        {
+            get { return m_literal; }
         }
         #endregion
     }

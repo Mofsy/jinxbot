@@ -11,19 +11,13 @@ namespace BNSharp.BattleNet
     /// Represents a news entry.
     /// </summary>
     [Serializable]
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public sealed class NewsEntry
     {
         #region fields
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "DatePosted")]
         private DateTime m_ts;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "News")]
         private string m_news; 
         #endregion
 

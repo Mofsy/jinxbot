@@ -4,6 +4,7 @@ using System.Text;
 using BNSharp.BattleNet.Friends;
 using BNSharp.MBNCSUtil;
 using BNSharp.BattleNet;
+using System.Diagnostics;
 
 namespace BNSharp.Net
 {
@@ -28,6 +29,8 @@ namespace BNSharp.Net
             }
 
             m_friendsList.AddRange(list);
+
+            Debug.WriteLine("Received friends list; " + list.Length + " user on it.");
 
             FriendListReceivedEventArgs args = new FriendListReceivedEventArgs(list) { EventData = pd };
             OnFriendListReceived(args);

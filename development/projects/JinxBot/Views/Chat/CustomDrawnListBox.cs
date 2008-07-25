@@ -72,6 +72,12 @@ namespace JinxBot.Views.Chat
 
         protected override void OnDrawItem(DrawItemEventArgs e)
         {
+            if (e.Index < 0 || e.Index >= Items.Count)
+            {
+                base.OnDrawItem(e);
+                return;
+            }
+
             ICustomListBoxItemRenderer renderer = GetRenderer(e.Index);
             if (object.ReferenceEquals(null, renderer))
             {
@@ -86,6 +92,12 @@ namespace JinxBot.Views.Chat
 
         protected override void OnMeasureItem(MeasureItemEventArgs e)
         {
+            if (e.Index < 0 || e.Index >= Items.Count)
+            {
+                base.OnMeasureItem(e);
+                return;
+            }
+
             ICustomListBoxItemRenderer renderer = GetRenderer(e.Index);
             if (object.ReferenceEquals(null, renderer))
             {

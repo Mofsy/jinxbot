@@ -8,9 +8,7 @@ namespace BNSharp.BattleNet.Clans
     /// <summary>
     /// Specifies the status of a clan candidates search.
     /// </summary>
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public enum ClanCandidatesSearchStatus
     {
         /// <summary>

@@ -112,17 +112,17 @@ namespace BNSharpTest
 
         static void client_UserLeft(object sender, UserEventArgs e)
         {
-            Console.WriteLine("USER LEFT: {0}", e.Username);
+            Console.WriteLine("USER LEFT: {0}", e.User.Username);
         }
 
         static void client_UserJoined(object sender, UserEventArgs e)
         {
-            Console.WriteLine("USER JOIN: {0} ({1})", e.Username, e.Statstring);
+            Console.WriteLine("USER JOIN: {0} ({1})", e.User.Username, e.User.Stats.LiteralText);
         }
 
         static void client_UserShown(object sender, UserEventArgs e)
         {
-            Console.WriteLine("USER: {0} ({1})", e.Username, e.Statstring);
+            Console.WriteLine("USER: {0} ({1})", e.User.Username, e.User.Stats.LiteralText);
         }
 
         static void client_ServerErrorReceived(object sender, ServerChatEventArgs e)

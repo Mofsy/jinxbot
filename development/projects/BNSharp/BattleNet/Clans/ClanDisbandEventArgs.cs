@@ -8,15 +8,11 @@ namespace BNSharp.BattleNet.Clans
     /// <summary>
     /// Contains information about an attempt to disband the client's clan.
     /// </summary>
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public class ClanDisbandEventArgs : BaseEventArgs
     {
         #region fields
-#if !NET_2_ONLY
         [DataMember(Name = "Succeeded")]
-#endif
         private bool m_succeeded;
         #endregion
 

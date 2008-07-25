@@ -17,11 +17,13 @@ namespace JinxBot
 {
     public partial class MainWindow : Form
     {
-        private BattleNetClient m_bnc;
+        private Dictionary<ClientProfile, ProfileDocument> m_activeProfiles;
 
         public MainWindow()
         {
             InitializeComponent();
+
+            m_activeProfiles = new Dictionary<ClientProfile, ProfileDocument>();
 
             JinxBotConfiguration.Instance.ProfileAdded += new EventHandler(Instance_ProfileAdded);
             JinxBotConfiguration.Instance.ProfileRemoved += new EventHandler(Instance_ProfileRemoved);
@@ -34,7 +36,7 @@ namespace JinxBot
 
         private void RebindProfiles()
         {
-            this.profilesToolStripMenuItem.DropDownItems.Clear();
+            ClearProfilesList();
             foreach (ClientProfile p in JinxBotConfiguration.Instance.Profiles)
             {
                 ToolStripMenuItem tsmi = new ToolStripMenuItem(p.ProfileName);
@@ -44,15 +46,31 @@ namespace JinxBot
             }
         }
 
+        private void ClearProfilesList()
+        {
+            while (profilesToolStripMenuItem.DropDownItems.Count > 2)
+            {
+                profilesToolStripMenuItem.DropDownItems.RemoveAt(2);
+            }
+        }
+
         void tsmi_Click(object sender, EventArgs e)
         {
             ClientProfile cp = (sender as ToolStripMenuItem).Tag as ClientProfile;
             if (cp != null)
             {
-                BattleNetClient bnc = new BattleNetClient(cp);
-                ProfileResourceProvider.RegisterProvider(bnc);
-                ProfileDocument profile = new ProfileDocument(bnc);
-                profile.Show(this.dock);
+                if (m_activeProfiles.ContainsKey(cp))
+                {
+                    m_activeProfiles[cp].Show();
+                }
+                else
+                {
+                    BattleNetClient bnc = new BattleNetClient(cp);
+                    ProfileResourceProvider.RegisterProvider(bnc);
+                    ProfileDocument profile = new ProfileDocument(bnc);
+                    m_activeProfiles.Add(cp, profile);
+                    profile.Show(this.dock);
+                }
             }
         }
 
@@ -97,6 +115,44 @@ namespace JinxBot
         {
             CreateProfileWizard cpw = new CreateProfileWizard();
             cpw.ShowDialog(this);
+        }
+
+        private void dock_ActiveDocumentChanged(object sender, EventArgs e)
+        {
+            ProfileDocument profileDoc = this.dock.ActiveDocument as ProfileDocument;
+            if (profileDoc != null)
+            {
+                this.currentProfileNoneToolStripMenuItem.Enabled = true;
+            }
+            else
+            {
+                this.currentProfileNoneToolStripMenuItem.Enabled = false;
+            }
+        }
+
+        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ProfileDocument pd = this.dock.ActiveDocument as ProfileDocument;
+            if (pd != null)
+            {
+                if (pd.Client.IsConnected)
+                    pd.Client.Close();
+
+                ClientProfile profile = pd.Client.Settings as ClientProfile;
+                pd.Close();
+
+                m_activeProfiles.Remove(profile);
+            }
+        }
+
+        private void disconnectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ProfileDocument pd = this.dock.ActiveDocument as ProfileDocument;
+            if (pd != null)
+            {
+                BattleNetClient bnc = pd.Client;
+                bnc.Close();
+            }
         }
     }
 }

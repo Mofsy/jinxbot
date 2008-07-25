@@ -13,8 +13,9 @@ using System.ServiceModel.Activation;
 [AspNetCompatibilityRequirements(RequirementsMode = AspNetCompatibilityRequirementsMode.Allowed)]
 public class JinxBotWebApplication : IJinxBotWebApplication
 {
-    public void PostEvent(BaseEventArgs args)
+    public void PostEvent(Guid client, BaseEventArgs args)
     {
         Trace.WriteLine(args.ToString());
+
     }
 }
