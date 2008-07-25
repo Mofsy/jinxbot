@@ -2,25 +2,20 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Runtime.Serialization;
+using System.Collections.ObjectModel;
 
 namespace BNSharp.BattleNet.Clans
 {
     /// <summary>
     /// Specifies the result of a search for clan candidates.
     /// </summary>
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public class ClanCandidatesSearchEventArgs : BaseEventArgs
     {
         #region fields
-#if !NET_2_ONLY
         [DataMember(Name = "Status")]
-#endif
         private ClanCandidatesSearchStatus m_status;
-#if !NET_2_ONLY
         [DataMember(Name = "CandidateNames")]
-#endif
         private string[] m_candidateNames;
         #endregion
 
@@ -48,18 +43,16 @@ namespace BNSharp.BattleNet.Clans
         #endregion
 
         /// <summary>
-        /// Gets a copy of the list of candidates found in the channel.
+        /// Gets a read-only list of the candidate names returned as a result of the search.
         /// </summary>
         /// <remarks>
         /// <para>When exposed under a WCF data contract, this property's backing store is given the name <c>CandidateNames</c>.</para>
         /// </remarks>
-        public string[] Candidates
+        public ReadOnlyCollection<string> Candidates
         {
             get
             {
-                string[] copy = new string[m_candidateNames.Length];
-                Array.Copy(m_candidateNames, copy, copy.Length);
-                return copy;
+                return new ReadOnlyCollection<string>(m_candidateNames);
             }
         }
 

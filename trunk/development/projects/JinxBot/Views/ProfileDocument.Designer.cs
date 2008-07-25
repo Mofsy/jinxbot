@@ -46,8 +46,10 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(609, 381);
+            this.CloseButton = false;
             this.Controls.Add(this.dock);
             this.Name = "ProfileDocument";
+            this.TabText = "ProfileDocument";
             this.Text = "ProfileDocument";
             this.ResumeLayout(false);
 

@@ -12,38 +12,41 @@ namespace BNSharp.BattleNet.Clans
     /// <para>This class cannot be directly instantiated.  Rather, it is provided when you log on via the <see>TODO</see> event.</para>
     /// </remarks>
     [Serializable]
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public class ClanMember
     {
         #region fields
-#if !NET_2_ONLY
         [DataMember(Name = "Username")]
-#endif
         private string m_userName;
-#if !NET_2_ONLY
         [DataMember(Name = "Rank")]
-#endif
         private ClanRank m_rank;
-#if !NET_2_ONLY
         [DataMember(Name = "OnlineStatus")]
-#endif
         private ClanMemberStatus m_online;
-#if !NET_2_ONLY
         [DataMember(Name = "Location")]
-#endif
         private string m_location;
         #endregion
 
         #region constructors
-        internal ClanMember(string userName, ClanRank rank)
+        /// <summary>
+        /// Creates a new <see>ClanMember</see> for a user who is currently offline.
+        /// </summary>
+        /// <param name="userName">The clan member's user name.</param>
+        /// <param name="rank">The clan member's rank.</param>
+        public ClanMember(string userName, ClanRank rank)
         {
             m_userName = userName;
             m_rank = rank;
+            m_location = string.Empty;
         }
 
-        internal ClanMember(string userName, ClanRank rank, ClanMemberStatus status, string location)
+        /// <summary>
+        /// Creates a new <see>ClanMember</see> for a user who is online or offline.
+        /// </summary>
+        /// <param name="userName">The clan member's user name.</param>
+        /// <param name="rank">The clan member's rank.</param>
+        /// <param name="status">The clan member's current status.</param>
+        /// <param name="location">The name of the member's current location (such as a channel or game name).</param>
+        public ClanMember(string userName, ClanRank rank, ClanMemberStatus status, string location)
             : this(userName, rank)
         {
             m_online = status;

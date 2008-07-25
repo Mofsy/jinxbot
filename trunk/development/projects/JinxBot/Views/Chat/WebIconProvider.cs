@@ -45,7 +45,7 @@ namespace JinxBot.Views.Chat
         {
             WebIconList iconsList = null;
 
-            Image target = new Bitmap(64, 44, PixelFormat.Format32bppArgb);
+            Image target = new Bitmap(32, 22, PixelFormat.Format32bppArgb);
 
             using (Graphics g = Graphics.FromImage(target))
             using (Brush back = new SolidBrush(Color.Black))

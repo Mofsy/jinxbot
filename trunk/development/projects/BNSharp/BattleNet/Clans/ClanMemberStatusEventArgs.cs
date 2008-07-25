@@ -8,14 +8,10 @@ namespace BNSharp.BattleNet.Clans
     /// <summary>
     /// Specifies the event arguments for a clan member's status change event.
     /// </summary>
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public class ClanMemberStatusEventArgs : BaseEventArgs
     {
-#if !NET_2_ONLY
         [DataMember(Name = "Member")]
-#endif
         private ClanMember m_member;
 
         /// <summary>

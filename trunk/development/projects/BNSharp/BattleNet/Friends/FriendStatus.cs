@@ -9,9 +9,7 @@ namespace BNSharp.BattleNet.Friends
     /// Specifies additional information about a person on your friend list.
     /// </summary>
     [Flags]
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public enum FriendStatus
     {
         /// <summary>

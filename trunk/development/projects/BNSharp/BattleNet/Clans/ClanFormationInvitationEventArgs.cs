@@ -2,37 +2,27 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Runtime.Serialization;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace BNSharp.BattleNet.Clans
 {
     /// <summary>
     /// Specifies the event arguments provided from Battle.net when the client is invited to join a new clan.
     /// </summary>
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public class ClanFormationInvitationEventArgs : BaseEventArgs
     {
         #region fields
-        #if !NET_2_ONLY
         [DataMember(Name = "RequestID")]
-#endif
         private int m_cookie;
-#if !NET_2_ONLY
         [DataMember(Name = "Tag")]
-#endif
         private string m_tag;
-#if !NET_2_ONLY
         [DataMember(Name = "Name")]
-#endif
         private string m_clanName;
-#if !NET_2_ONLY
         [DataMember(Name = "Inviter")]
-#endif
         private string m_inviterName;
-#if !NET_2_ONLY
         [DataMember(Name = "InvitedUsers")]
-#endif
         private string[] m_invitedUsers;
         #endregion
 
@@ -46,6 +36,8 @@ namespace BNSharp.BattleNet.Clans
         /// <param name="invitees">The users being invited.</param>
         public ClanFormationInvitationEventArgs(int requestNumber, string tag, string clanName, string inviter, string[] invitees)
         {
+            Debug.Assert(invitees != null);
+
             m_cookie = requestNumber;
             m_tag = tag;
             m_clanName = clanName;
@@ -104,13 +96,11 @@ namespace BNSharp.BattleNet.Clans
         /// <remarks>
         /// <para>When exposed under a WCF data contract, this property's backing store is given the name <c>InvitedUsers</c>.</para>
         /// </remarks>
-        public string[] InvitedUsers
+        public ReadOnlyCollection<string> InvitedUsers
         {
             get
             {
-                string[] copy = new string[m_invitedUsers.Length];
-                Array.Copy(m_invitedUsers, copy, copy.Length);
-                return copy;
+                return new ReadOnlyCollection<string>(m_invitedUsers);
             }
         }
     }

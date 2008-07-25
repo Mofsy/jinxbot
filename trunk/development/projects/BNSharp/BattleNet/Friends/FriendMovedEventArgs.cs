@@ -8,18 +8,12 @@ namespace BNSharp.BattleNet.Friends
     /// <summary>
     /// Specifies that a friend has moved position in the client's list of friends (for example, by being promoted or demoted).
     /// </summary>
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public class FriendMovedEventArgs : BaseEventArgs
     {
-#if !NET_2_ONLY
         [DataMember(Name = "Friend")]
-#endif
         private FriendUser m_user;
-#if !NET_2_ONLY
         [DataMember(Name = "NewIndex")]
-#endif
         private int m_newIndex;
 
         /// <summary>

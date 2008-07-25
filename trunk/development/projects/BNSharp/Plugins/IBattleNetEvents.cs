@@ -161,6 +161,11 @@ namespace BNSharp.Plugins
         /// <param name="e">The event arguments.</param>
         void OnUserLeft(UserEventArgs e);
         /// <summary>
+        /// Fires the <see cref="BattleNetClient.UserProfileReceived">UserProfileReceived</see> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        void OnUserProfileReceived(UserProfileEventArgs e);
+        /// <summary>
         /// Fires the <see cref="BattleNetClient.UserShown">UserShown</see> event.
         /// </summary>
         /// <param name="e">The event arguments.</param>

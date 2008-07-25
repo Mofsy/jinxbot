@@ -27,7 +27,6 @@ function callService()
 
 function serviceSuccess(result)
 {
-    debugger;
     alert(result);
     
 }

@@ -19,7 +19,7 @@ namespace JinxBot.Views
         private BattleNetClient m_client;
         private ProfileResourceProvider m_prp;
 
-        private ClanMember[] m_members;
+        private ICollection<ClanMember> m_members;
 
         protected ClanList()
         {

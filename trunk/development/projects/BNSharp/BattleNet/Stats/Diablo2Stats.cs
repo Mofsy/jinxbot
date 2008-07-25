@@ -17,9 +17,7 @@ namespace BNSharp.BattleNet.Stats
     /// <para>This class is only meaningful if the user is logged on as a realm character.  To determine 
     /// whether the user is logged on with a Realm character, check the <see>IsRealmCharacter</see> property.</para>
     /// </remarks>
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public class Diablo2Stats : UserStats
     {
         #region fields
@@ -29,6 +27,8 @@ namespace BNSharp.BattleNet.Stats
         private bool m_isRealm;
         [DataMember(Name = "Product")]
         private Product m_prod;
+        [DataMember(Name = "LiteralText")]
+        private string m_literal;
 
         [DataMember(Name = "CharacterName")]
         private string m_charName;
@@ -61,6 +61,8 @@ namespace BNSharp.BattleNet.Stats
         #region constructor
         internal Diablo2Stats(string userName, byte[] statstring)
         {
+            m_literal = Encoding.ASCII.GetString(statstring);
+
             DataReader dr = new DataReader(statstring);
             string productCode = dr.ReadDwordString(0);
             m_prod = Product.GetByProductCode(productCode);
@@ -253,6 +255,14 @@ namespace BNSharp.BattleNet.Stats
         public override Product Product
         {
             get { return m_prod; }
+        }
+
+        /// <summary>
+        /// Gets the literal text of the statstring.
+        /// </summary>
+        public override string LiteralText
+        {
+            get { return m_literal; }
         }
         #endregion
     }

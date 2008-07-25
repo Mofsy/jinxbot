@@ -77,6 +77,8 @@
     <Compile Include="BattleNet\NewsEntry.cs" />
     <Compile Include="BattleNet\PingType.cs" />
     <Compile Include="BattleNet\Product.cs" />
+    <Compile Include="BattleNet\ProfileRecordKeyType.cs" />
+    <Compile Include="BattleNet\RecordKeyType.cs" />
     <Compile Include="BattleNet\ServerNewsEventArgs.cs" />
     <Compile Include="BattleNet\Stats\DefaultStats.cs" />
     <Compile Include="BattleNet\Stats\Diablo2Stats.cs" />
@@ -84,6 +86,9 @@
     <Compile Include="BattleNet\Stats\UserStats.cs" />
     <Compile Include="BattleNet\Stats\Warcraft3IconRace.cs" />
     <Compile Include="BattleNet\Stats\Warcraft3Stats.cs" />
+    <Compile Include="BattleNet\UserProfileEventArgs.cs" />
+    <Compile Include="BattleNet\UserProfileRequest.cs" />
+    <Compile Include="BattleNet\UserProfileKeys.cs" />
     <Compile Include="ChannelFlags.cs" />
     <Compile Include="ChannelListEventArgs.cs" />
     <Compile Include="ChatEventArgs.cs" />

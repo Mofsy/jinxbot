@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Runtime.Serialization;
+using BNSharp.BattleNet;
 
 namespace BNSharp
 {
     /// <summary>
-    /// Specifies the flags that can be related to user-specific <see cref="UserEventArgs.Flags">chat events</see>.
+    /// Specifies the flags that can be related to user-specific <see cref="ChatUser.Flags">chat events</see>.
     /// </summary>
     [Flags]
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public enum UserFlags
     {
         /// <summary>

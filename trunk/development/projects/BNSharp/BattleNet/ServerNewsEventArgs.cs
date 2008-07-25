@@ -16,15 +16,11 @@ namespace BNSharp.BattleNet
     /// <summary>
     /// Represents a single news entry.
     /// </summary>
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public class ServerNewsEventArgs : BaseEventArgs
     {
         #region fields
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "Entry")]
         private NewsEntry m_entry; 
         #endregion
 

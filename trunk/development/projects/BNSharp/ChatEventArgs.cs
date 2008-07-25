@@ -8,12 +8,10 @@ namespace BNSharp
     /// <summary>
     /// Provides the base information about a chat event.
     /// </summary>
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public abstract class ChatEventArgs : BaseEventArgs
     {
-        [DataMember]
+        [DataMember(Name = "EventType")]
         private ChatEventType m_evType;
         /// <summary>
         /// Initializes a new <see>ChatEventArgs</see>.

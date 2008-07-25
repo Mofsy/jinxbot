@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Runtime.Serialization;
+using System.Collections.ObjectModel;
 
 namespace BNSharp
 {
@@ -15,15 +16,11 @@ namespace BNSharp
     /// <summary>
     /// Specifies the channel list event arguments.
     /// </summary>
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public class ChannelListEventArgs : BaseEventArgs
     {
         #region fields
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "Channels")]
         private string[] m_list;
         #endregion
         /// <summary>
@@ -38,13 +35,11 @@ namespace BNSharp
         /// <summary>
         /// Gets the copy of the list of channels sent by the server.
         /// </summary>
-        public string[] Channels
+        public ReadOnlyCollection<string> Channels
         {
             get
             {
-                string[] channels = new string[m_list.Length];
-                Array.Copy(m_list, channels, channels.Length);
-                return channels;
+                return new ReadOnlyCollection<string>(m_list);
             }
         }
     }

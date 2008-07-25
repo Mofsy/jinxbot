@@ -13,6 +13,7 @@ using System.Globalization;
 using System.Diagnostics;
 using Tmr = System.Timers.Timer;
 using BNSharp.BattleNet;
+using BNSharp.BattleNet.Stats;
 
 namespace BNSharp.Net
 {
@@ -35,6 +36,7 @@ namespace BNSharp.Net
                 { BncsPacketId.GetChannelList, new ParseCallback(HandleGetChannelList) },
                 { BncsPacketId.ChatEvent, new ParseCallback(HandleChatEvent) },
                 { BncsPacketId.Ping, new ParseCallback(HandlePing) },
+                { BncsPacketId.ReadUserData, new ParseCallback(HandleUserProfileRequest) },
                 { BncsPacketId.LogonResponse, new ParseCallback(HandleLogonResponse) },
                 { BncsPacketId.LogonResponse2, new ParseCallback(HandleLogonResponse2) },
                 { BncsPacketId.WarcraftGeneral, new ParseCallback(HandleWarcraftGeneral) },
@@ -219,6 +221,8 @@ namespace BNSharp.Net
 
             m_news.Clear();
 
+            m_channelName = null;
+
             m_firstChannelList = false;
             m_received0x50 = false;
             if (m_pingPck != null)
@@ -322,7 +326,48 @@ namespace BNSharp.Net
             }
         }
 
+        private void HandleUserProfileRequest(ParseData data)
+        {
+            DataReader dr = new DataReader(data.Data);
+            int numAccounts = dr.ReadInt32(); // should always be 1; number of accounts
+            if (numAccounts != 1)
+            {
+                Trace.WriteLine("BN# cannot handle more than one account per user profile request; quitting.");
+                BattleNetClientResources.IncomingBufferPool.FreeBuffer(data.Data);
+                return;
+            }
+
+            int numKeys = dr.ReadInt32();
+            int requestID = dr.ReadInt32(); // request ID
+            string[] keyValues = new string[numKeys];
+            for (int i = 0; i < numKeys; i++)
+            {
+                keyValues[i] = dr.ReadCString();
+            }
+
+            if (m_profileRequests.ContainsKey(requestID))
+            {
+                UserProfileRequest req = m_profileRequests[requestID];
+                int value = 0;
+                foreach (UserProfileKey key in req.Keys)
+                {
+                    req[key] = keyValues[value++];
+                }
+                m_profileRequests.Remove(requestID);
+
+                UserProfileEventArgs args = new UserProfileEventArgs(req) { EventData = data };
+                OnUserProfileReceived(args);
+            }
+            else
+            {
+                Trace.WriteLine(requestID, "Unknown profile request response.");
+                BattleNetClientResources.IncomingBufferPool.FreeBuffer(data.Data);
+                return;
+            }
+        }
+
         #region chat events
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
         private void HandleChatEvent(ParseData data)
         {
             DataReader dr = new DataReader(data.Data);
@@ -336,12 +381,40 @@ namespace BNSharp.Net
 
             switch (type)
             {
-                case ChatEventType.UserFlagsChanged:
                 case ChatEventType.UserInChannel:
                 case ChatEventType.UserJoinedChannel:
-                case ChatEventType.UserLeftChannel:
-                    UserEventArgs uArgs = new UserEventArgs(type, (UserFlags)flags, ping, user, userInfo);
+                    ChatUser newUser = new ChatUser(user, ping, (UserFlags)flags, UserStats.Parse(user, userInfo));
+                    if (m_namesToUsers.ContainsKey(user))
+                    {
+                        m_namesToUsers.Remove(user);
+                    }
+                    m_namesToUsers.Add(user, newUser);
+                    UserEventArgs uArgs = new UserEventArgs(type, newUser);
                     HandleUserChatEvent(uArgs);
+                    break;
+                case ChatEventType.UserFlagsChanged:
+                    if (m_namesToUsers.ContainsKey(user))
+                    {
+                        ChatUser changedUser = m_namesToUsers[user];
+                        changedUser.Flags = (UserFlags)flags;
+                        UserEventArgs updatedArgs = new UserEventArgs(type, changedUser);
+                        HandleUserChatEvent(updatedArgs);
+                    }
+                    else if (m_channelName.Equals("The Void", StringComparison.OrdinalIgnoreCase))
+                    {
+                        ChatUser voidUser = new ChatUser(user, ping, (UserFlags)flags, UserStats.Parse(user, userInfo));
+                        m_namesToUsers.Add(user, voidUser);
+                        UserEventArgs voidArgs = new UserEventArgs(type, voidUser);
+                        HandleUserChatEvent(voidArgs);
+                    }
+                    break;
+                case ChatEventType.UserLeftChannel:
+                    if (m_namesToUsers.ContainsKey(user))
+                    {
+                        ChatUser goneUser = m_namesToUsers[user];
+                        UserEventArgs leftArgs = new UserEventArgs(type, goneUser);
+                        HandleUserChatEvent(leftArgs);
+                    }
                     break;
                 case ChatEventType.Emote:
                 case ChatEventType.Talk:
@@ -352,6 +425,7 @@ namespace BNSharp.Net
                     break;
                 case ChatEventType.NewChannelJoined:
                     ServerChatEventArgs joinArgs = new ServerChatEventArgs(type, flags, text);
+                    m_channelName = text;
                     OnJoinedChannel(joinArgs);
                     break;
                 case ChatEventType.Broadcast:
@@ -969,6 +1043,9 @@ namespace BNSharp.Net
         #region utility methods
         partial void InitializeListenState()
         {
+            m_namesToUsers.Clear();
+            m_profileRequests.Clear();
+
             m_packetQueue = new PriorityQueue<ParseData>();
 
             m_listener = new Thread(new ThreadStart(Listen));

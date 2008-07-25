@@ -2,33 +2,25 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Runtime.Serialization;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace BNSharp.BattleNet.Clans
 {
     /// <summary>
     /// Specifies information provided by Battle.net when the client attempts to form a clan.
     /// </summary>
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public class ClanFormationEventArgs : BaseEventArgs
     {
         #region fields
-#if !NET_2_ONLY
         [DataMember(Name="Succeeded")]
-#endif
         private bool m_success;
-#if !NET_2_ONLY
         [DataMember(Name="Declined")]
-#endif
         private bool m_declined;
-#if !NET_2_ONLY
         [DataMember(Name = "Unavailable")]
-#endif
         private bool m_unavailable;
-#if !NET_2_ONLY
         [DataMember(Name = "FailedAccounts")]
-#endif
         private string[] m_failedAccounts;
         #endregion
 
@@ -49,6 +41,8 @@ namespace BNSharp.BattleNet.Clans
         /// <param name="failedAccounts">The accounts that failed.</param>
         public ClanFormationEventArgs(bool declined, bool unavailable, string[] failedAccounts)
         {
+            Debug.Assert(failedAccounts != null);
+
             m_declined = declined;
             m_unavailable = unavailable;
             m_failedAccounts = failedAccounts;
@@ -94,13 +88,11 @@ namespace BNSharp.BattleNet.Clans
         /// <remarks>
         /// <para>When exposed under a WCF data contract, this property's backing store is given the name <c>FailedAccounts</c>.</para>
         /// </remarks>
-        public string[] FailureAccountNames
+        public ReadOnlyCollection<string> FailureAccountNames
         {
             get
             {
-                string[] copy = new string[m_failedAccounts.Length];
-                Array.Copy(m_failedAccounts, copy, copy.Length);
-                return copy;
+                return new ReadOnlyCollection<string>(m_failedAccounts);
             }
         }
     }

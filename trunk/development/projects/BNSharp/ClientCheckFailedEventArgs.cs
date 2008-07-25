@@ -15,19 +15,13 @@ namespace BNSharp
     /// <summary>
     /// Specifies the arguments for a client versioning check failure event.
     /// </summary>
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public class ClientCheckFailedEventArgs : BaseEventArgs
     {
         #region fields
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "Reason")]
         private ClientCheckFailureCause m_reason;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "AdditionalInformation")]
         private string m_info; 
         #endregion
 

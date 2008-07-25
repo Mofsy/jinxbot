@@ -10,6 +10,35 @@ namespace BNSharp.BattleNet.Stats
     /// <summary>
     /// When implemented in a derived class, provides statistical information about a user.
     /// </summary>
+    /// <remarks>
+    /// <para>More specific information is available from most users by casting an object of this class to one of the 
+    /// derived classes.  Products and their relevant classes are provided in the following table:</para>
+    /// <list type="table">
+    ///     <listheader>
+    ///         <item>
+    ///             <term>Product</term>
+    ///             <description>Stats subclass type</description>
+    ///         </item>
+    ///     </listheader>
+    ///     <item>
+    ///         <term>Starcraft Retail, Starcraft: Brood War, Starcraft Shareware, Japan Starcraft,
+    ///         Warcraft II: Battle.net Edition, Diablo Retail, Diablo Shareware</term>
+    ///         <description><see>StarcraftStats</see></description>
+    ///     </item>
+    ///     <item>
+    ///         <term>Diablo II Retail, Diablo II: Lord of Destruction</term>
+    ///         <description><see>Diablo2Stats</see></description>
+    ///     </item>
+    ///     <item>
+    ///         <term>Warcraft III: The Reign of Chaos, Warcraft III: The Frozen Throne</term>
+    ///         <description><see>Warcraft3Stats</see></description>
+    ///     </item>
+    ///     <item>
+    ///         <term>Others (unknown clients)</term>
+    ///         <description><see>DefaultStats</see></description>
+    ///     </item>
+    /// </list>
+    /// </remarks>
     [DataContract]
     public abstract class UserStats
     {
@@ -23,6 +52,35 @@ namespace BNSharp.BattleNet.Stats
         /// <see cref="UserStats.Product">Product property</see>.</returns>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="userName"/> or <paramref name="statsData"/>
         /// are <see langword="null" />.</exception>
+        /// <remarks>
+        /// <para>More specific information is available from most users by casting an object of this class to one of the 
+        /// derived classes.  Products and their relevant classes are provided in the following table:</para>
+        /// <list type="table">
+        ///     <listheader>
+        ///         <item>
+        ///             <term>Product</term>
+        ///             <description>Stats subclass type</description>
+        ///         </item>
+        ///     </listheader>
+        ///     <item>
+        ///         <term>Starcraft Retail, Starcraft: Brood War, Starcraft Shareware, Japan Starcraft,
+        ///         Warcraft II: Battle.net Edition, Diablo Retail, Diablo Shareware</term>
+        ///         <description><see>StarcraftStats</see></description>
+        ///     </item>
+        ///     <item>
+        ///         <term>Diablo II Retail, Diablo II: Lord of Destruction</term>
+        ///         <description><see>Diablo2Stats</see></description>
+        ///     </item>
+        ///     <item>
+        ///         <term>Warcraft III: The Reign of Chaos, Warcraft III: The Frozen Throne</term>
+        ///         <description><see>Warcraft3Stats</see></description>
+        ///     </item>
+        ///     <item>
+        ///         <term>Others (unknown clients)</term>
+        ///         <description><see>DefaultStats</see></description>
+        ///     </item>
+        /// </list>
+        /// </remarks>
         public static UserStats Parse(string userName, byte[] statsData)
         {
             DataReader dr = new DataReader(statsData);
@@ -48,7 +106,7 @@ namespace BNSharp.BattleNet.Stats
                     result = new Warcraft3Stats(statsData);
                     break;
                 default:
-                    result = new DefaultStats(productCode);
+                    result = new DefaultStats(productCode, statsData);
                     break;
             }
 
@@ -62,7 +120,7 @@ namespace BNSharp.BattleNet.Stats
         /// <returns>An instance of <see>UserStats</see> with only product information.</returns>
         public static UserStats CreateDefault(Product product)
         {
-            return new DefaultStats(product.ProductCode);
+            return new DefaultStats(product.ProductCode, Encoding.ASCII.GetBytes(product.ProductCode));
         }
 
         /// <summary>
@@ -73,6 +131,14 @@ namespace BNSharp.BattleNet.Stats
         /// the name <c>Product</c>.</para>
         /// </remarks>
         public abstract Product Product
+        {
+            get;
+        }
+
+        /// <summary>
+        /// When implemented in a derived class, gets the literal text of the stat string.
+        /// </summary>
+        public abstract string LiteralText
         {
             get;
         }

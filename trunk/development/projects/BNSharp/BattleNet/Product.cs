@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Runtime.Serialization;
+using System.Collections.ObjectModel;
 
 namespace BNSharp.BattleNet
 {
@@ -13,21 +14,15 @@ namespace BNSharp.BattleNet
     /// access one of the static fields.  Equality can also be tested by comparing a user's product to an instance retrieved from the fields exposed
     /// by this class.</para>
     /// </remarks>
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public sealed class Product
     {
         private static Dictionary<string, Product> s_products;
 
         #region fields
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "ProductCode")]
         private string m_prodCode;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "Name")]
         private string m_descriptiveTitle;
         #endregion
 
@@ -141,11 +136,10 @@ namespace BNSharp.BattleNet
         /// Gets an array of all supported products.
         /// </summary>
         /// <returns>An array of recognized products.</returns>
-        public static Product[] GetAllProducts()
+        public static ReadOnlyCollection<Product> GetAllProducts()
         {
-            Product[] result = new Product[s_products.Count];
-            s_products.Values.CopyTo(result, 0);
-            return result;
+            List<Product> products = new List<Product>(s_products.Values);
+            return new ReadOnlyCollection<Product>(products);
         }
     }
 }

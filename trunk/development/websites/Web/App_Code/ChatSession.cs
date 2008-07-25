@@ -24,4 +24,6 @@ public class ChatSession
     {
         m_events = new List<ChatEvent>();
     }
+
+
 }

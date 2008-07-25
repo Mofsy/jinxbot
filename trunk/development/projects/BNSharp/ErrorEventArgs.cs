@@ -15,19 +15,13 @@ namespace BNSharp
     /// <summary>
     /// Specifies error event information.
     /// </summary>
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public class ErrorEventArgs : BaseEventArgs
     {
         #region fields
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "Error")]
         private string m_err;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "IsDisconnecting")]
         private bool m_disc; 
         #endregion
 

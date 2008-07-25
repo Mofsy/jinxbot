@@ -16,19 +16,13 @@ namespace BNSharp
     /// Specifies event information for chat events that do not involve another user.
     /// </summary>
     /// <para>An example of when this class would be used is for a server broadcast, server information, or an error.</para>
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public class ServerChatEventArgs : ChatEventArgs
     {
         #region fields
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "Flags")]
         private int m_flags;
-#if !NET_2_ONLY
-        [DataMember]
-#endif
+        [DataMember(Name = "Text")]
         private string m_txt;
         #endregion
 

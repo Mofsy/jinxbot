@@ -17,11 +17,7 @@ public class JinxBotWebClient
     [WebGet(ResponseFormat = WebMessageFormat.Json)]
     public BaseEventArgs[] GetArgs()
     {
-        List<BaseEventArgs> args = new List<BaseEventArgs> {
-            new ServerChatEventArgs(ChatEventType.NewChannelJoined, (int)ChannelFlags.PublicChannel, "Starcraft USA-1"),
-            new UserEventArgs(ChatEventType.UserJoinedChannel, UserFlags.None, 110, "DarkTemplar~AoA", new byte[0]),
-            new ClanCandidatesSearchEventArgs(ClanCandidatesSearchStatus.Success, new string[] { "DarkTemplar~AoA", "iPayBack!~AoA", "AoA" })
-        };
+        List<BaseEventArgs> args = new List<BaseEventArgs>();
         return args.ToArray();
     }
 }

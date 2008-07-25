@@ -4,6 +4,7 @@ using System.Text;
 using BNSharp.Plugins;
 using System.Diagnostics;
 using BNSharp.BattleNet.Clans;
+using BNSharp.BattleNet;
 
 namespace BNSharp.Net
 {
@@ -186,6 +187,10 @@ namespace BNSharp.Net
                 m_host.OnWhisperSent(e);
             }
 
+            public void OnUserProfileReceived(UserProfileEventArgs e)
+            {
+                m_host.OnUserProfileReceived(e);
+            }
             #endregion
         }
     }
