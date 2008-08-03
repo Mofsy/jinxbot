@@ -4,6 +4,7 @@ using System.Text;
 using BNSharp.Net;
 using BNSharp.BattleNet.Clans;
 using BNSharp.BattleNet;
+using BNSharp.BattleNet.Friends;
 
 namespace BNSharp.Plugins
 {
@@ -35,6 +36,31 @@ namespace BNSharp.Plugins
         /// </summary>
         /// <param name="e">The event arguments.</param>
         void OnChannelWasRestricted(ServerChatEventArgs e);
+        /// <summary>
+        /// Fires the <see cref="BattleNetClient.ClanCandidatesSearchCompleted">ClanCandidatesSearchCompleted</see> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        void OnClanCandidatesSearchCompleted(ClanCandidatesSearchEventArgs e);
+        /// <summary>
+        /// Fires the <see cref="BattleNetClient.ClanChangeChieftanCompleted">ClanChangeChieftanCompleted</see> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        void OnClanChangeChieftanCompleted(ClanChieftanChangeEventArgs e);
+        /// <summary>
+        /// Fires the <see cref="BattleNetClient.ClanDisbandCompleted">ClanDisbandCompleted</see> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        void OnClanDisbandCompleted(ClanDisbandEventArgs e);
+        /// <summary>
+        /// Fires the <see cref="BattleNetClient.ClanFormationCompleted">ClanFormationCompleted</see> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        void OnClanFormationCompleted(ClanFormationEventArgs e);
+        /// <summary>
+        /// Fires the <see cref="BattleNetClient.ClanFormationInvitationReceived">ClanFormationInvitationReceived</see> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        void OnClanFormationInvitationReceived(ClanFormationInvitationEventArgs e);
         /// <summary>
         /// Fires the <see cref="BattleNetClient.ClanMemberListReceived">ClanMemberListReceived</see> event.
         /// </summary>
@@ -90,6 +116,31 @@ namespace BNSharp.Plugins
         /// </summary>
         /// <param name="e">The event arguments.</param>
         void OnEnteredChat(EnteredChatEventArgs e);
+        /// <summary>
+        /// Fires the <see cref="BattleNetClient.FriendAdded">FriendAdded</see> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        void OnFriendAdded(FriendAddedEventArgs e);
+        /// <summary>
+        /// Fires the <see cref="BattleNetClient.FriendListReceived">FriendListReceived</see> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        void OnFriendListReceived(FriendListReceivedEventArgs e);
+        /// <summary>
+        /// Fires the <see cref="BattleNetClient.FriendMoved">FriendMoved</see> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        void OnFriendMoved(FriendMovedEventArgs e);
+        /// <summary>
+        /// Fires the <see cref="BattleNetClient.FriendRemoved">FriendRemoved</see> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        void OnFriendRemoved(FriendRemovedEventArgs e);
+        /// <summary>
+        /// Fires the <see cref="BattleNetClient.FriendUpdated">FriendUpdated</see> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        void OnFriendUpdated(FriendUpdatedEventArgs e);
         /// <summary>
         /// Fires the <see cref="BattleNetClient.Error">Error</see> event.
         /// </summary>

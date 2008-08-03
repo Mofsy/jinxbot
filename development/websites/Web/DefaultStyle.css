@@ -1,0 +1,147 @@
+﻿*
+{
+	margin: 0px 0px 0px 0px;
+	padding: 0px 0px 0px 0px;
+}
+
+body
+{
+    background-color: black;
+    font-size: 12px;
+    color: #dddddd;
+    font-family: Tahoma, Verdana, Sans-serif;
+    overflow: hidden;
+}
+
+p
+{
+    text-indent: -3em;
+    margin-left: 3em;
+    margin-top: 4px;
+    margin-bottom: 0px;
+}
+
+/* Used to describe the div that holds the channel and clan lists */
+#listArea
+{
+	position: relative;
+	float: right;
+	width: 240px;
+    height: 100%;
+}
+
+/* Used to describe the sizer bar */
+#listSizer
+{
+	clear: none;
+	float: left;
+	width: 10px;
+    height: 100%;
+    background-color: #6699CC;
+    background-image: url("Splitter.gif");
+    background-position:center center;
+	background-repeat:no-repeat;
+	position: relative;
+	cursor: w-resize;
+}
+
+#channelContent
+{
+	position: relative;
+	float: right;
+    background-color: white;
+    height: 100%;
+}
+
+/* global links */
+a:link, a:visited, a:active
+{
+	color: #a5a5ec;
+}
+
+/* size of scrolling element padding on the bottom */
+#scrollTo
+{
+    height: 10px;
+}
+
+/* Chat node styles */
+.timestamp
+{
+	color: #999999;
+}
+
+.information
+{
+	color: Yellow;
+}
+
+.error
+{
+	color: Orange;
+}
+
+.userName
+{
+	color: Lime;
+}
+
+.text
+{
+	color: White;
+}
+
+.channelName
+{
+	color: #B0C4DE;
+}
+
+.whisper
+{
+	color: #ff00ff;
+}
+
+.whisperReceivedName
+{
+	color: White;
+}
+
+.whisperReceivedText
+{
+	color: #ff00ff;
+}
+
+.whisperSentName
+{
+	color: White;
+}
+
+.whisperSentText
+{
+	color: #ff00ff;
+}
+
+.talkUsername
+{
+	color: #B0C4DE;
+}
+
+.emoteUsername
+{
+	color: #ADFF2F;
+}
+
+.emote
+{
+	color: Yellow;
+}
+
+.channelStart
+{
+	color: #B0C4DE;
+}
+
+.channelName
+{
+	color: #ADFF2F;
+}

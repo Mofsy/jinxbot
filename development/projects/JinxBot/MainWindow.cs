@@ -12,6 +12,9 @@ using BNSharp.Net;
 using JinxBot.Views;
 using JinxBot.Wizards;
 using JinxBot.Configuration;
+using System.Reflection;
+using JinxBot.Plugins;
+using JinxBot.Reliability;
 
 namespace JinxBot
 {
@@ -27,6 +30,10 @@ namespace JinxBot
 
             JinxBotConfiguration.Instance.ProfileAdded += new EventHandler(Instance_ProfileAdded);
             JinxBotConfiguration.Instance.ProfileRemoved += new EventHandler(Instance_ProfileRemoved);
+
+            // show and hide again to ensure that web browser catches up
+            GlobalErrorHandler.ErrorLog.Show(dock);
+            GlobalErrorHandler.ErrorLog.Hide();
         }
 
         void Instance_ProfileRemoved(object sender, EventArgs e)
@@ -70,6 +77,17 @@ namespace JinxBot
                     ProfileDocument profile = new ProfileDocument(bnc);
                     m_activeProfiles.Add(cp, profile);
                     profile.Show(this.dock);
+
+                    if (cp.ProfileName == "DT on East - D2DV")
+                    {
+                        Assembly asm = Assembly.LoadFile(Path.Combine(Application.StartupPath, "JinxBot.Plugins.JinxBotWeb.dll"));
+                        Type t = asm.GetType("JinxBot.Plugins.JinxBotWeb.JinxBotWebPlugin", false, false);
+                        IEventListener listener = Activator.CreateInstance(t) as IEventListener;
+                        if (listener != null)
+                        {
+                            listener.HandleClientStartup(bnc);
+                        }
+                    }
                 }
             }
         }
@@ -152,6 +170,20 @@ namespace JinxBot
             {
                 BattleNetClient bnc = pd.Client;
                 bnc.Close();
+            }
+        }
+
+        private void displayErrorLogToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (displayErrorLogToolStripMenuItem.Checked)
+            {
+                GlobalErrorHandler.ErrorLog.Hide();
+                displayErrorLogToolStripMenuItem.Checked = false;
+            }
+            else
+            {
+                GlobalErrorHandler.ErrorLog.Show(this.dock);
+                displayErrorLogToolStripMenuItem.Checked = true;
             }
         }
     }

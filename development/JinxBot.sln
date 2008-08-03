@@ -22,7 +22,7 @@ EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Web", "websites\Web\", "{E0D5337B-F753-4D8E-9EF0-368DA0631078}"
 	ProjectSection(WebsiteProperties) = preProject
 		TargetFramework = "3.5"
-		ProjectReferences = "{2D02D43C-BC3B-41D2-9226-4E215939107F}|BNSharp.dll;"
+		ProjectReferences = "{2D02D43C-BC3B-41D2-9226-4E215939107F}|BNSharp.dll;{CD06EB30-2533-40E5-9361-51B4C7A2451C}|JinxBot.Plugins.JinxBotWeb.Shared.dll;"
 		Debug.AspNetCompiler.VirtualPath = "/Web"
 		Debug.AspNetCompiler.PhysicalPath = "websites\Web\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\Web\"
@@ -42,8 +42,34 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Web", "websites\Web\", "{E0
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JinxBot.Plugins.JinxBotWeb", "projects\JinxBot.Plugins.JinxBotWeb\JinxBot.Plugins.JinxBotWeb.csproj", "{639E9236-88E5-4E9B-B559-CA7CB2598200}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E0D5337B-F753-4D8E-9EF0-368DA0631078} = {E0D5337B-F753-4D8E-9EF0-368DA0631078}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JinxBot.Plugins.McpHandler", "projects\JinxBot.Plugins.McpHandler\JinxBot.Plugins.McpHandler.csproj", "{3F72F2CF-3003-4831-82A6-EAD137409162}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JinxBot.Plugins.JinxBotWeb.Shared", "projects\JinxBot.Plugins.JinxBotWeb.Shared\JinxBot.Plugins.JinxBotWeb.Shared.csproj", "{CD06EB30-2533-40E5-9361-51B4C7A2451C}"
+EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "jinxbot.net", "websites\jinxbot.net\", "{DF2F2AB2-07F1-4BB5-96E4-09AE456FC77E}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFramework = "3.5"
+		Debug.AspNetCompiler.VirtualPath = "/jinxbot.net"
+		Debug.AspNetCompiler.PhysicalPath = "websites\jinxbot.net\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\jinxbot.net\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/jinxbot.net"
+		Release.AspNetCompiler.PhysicalPath = "websites\jinxbot.net\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\jinxbot.net\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "8395"
+		DefaultWebSiteLanguage = "Visual C#"
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -244,6 +270,36 @@ Global
 		{3F72F2CF-3003-4831-82A6-EAD137409162}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3F72F2CF-3003-4831-82A6-EAD137409162}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{3F72F2CF-3003-4831-82A6-EAD137409162}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{CD06EB30-2533-40E5-9361-51B4C7A2451C}.Debug|.NET.ActiveCfg = Debug|Any CPU
+		{CD06EB30-2533-40E5-9361-51B4C7A2451C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD06EB30-2533-40E5-9361-51B4C7A2451C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD06EB30-2533-40E5-9361-51B4C7A2451C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{CD06EB30-2533-40E5-9361-51B4C7A2451C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{CD06EB30-2533-40E5-9361-51B4C7A2451C}.Default|.NET.ActiveCfg = Debug|Any CPU
+		{CD06EB30-2533-40E5-9361-51B4C7A2451C}.Default|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD06EB30-2533-40E5-9361-51B4C7A2451C}.Default|Any CPU.Build.0 = Debug|Any CPU
+		{CD06EB30-2533-40E5-9361-51B4C7A2451C}.Default|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{CD06EB30-2533-40E5-9361-51B4C7A2451C}.Default|Mixed Platforms.Build.0 = Debug|Any CPU
+		{CD06EB30-2533-40E5-9361-51B4C7A2451C}.Release|.NET.ActiveCfg = Release|Any CPU
+		{CD06EB30-2533-40E5-9361-51B4C7A2451C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD06EB30-2533-40E5-9361-51B4C7A2451C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD06EB30-2533-40E5-9361-51B4C7A2451C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{CD06EB30-2533-40E5-9361-51B4C7A2451C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{DF2F2AB2-07F1-4BB5-96E4-09AE456FC77E}.Debug|.NET.ActiveCfg = Debug|.NET
+		{DF2F2AB2-07F1-4BB5-96E4-09AE456FC77E}.Debug|.NET.Build.0 = Debug|.NET
+		{DF2F2AB2-07F1-4BB5-96E4-09AE456FC77E}.Debug|Any CPU.ActiveCfg = Debug|.NET
+		{DF2F2AB2-07F1-4BB5-96E4-09AE456FC77E}.Debug|Mixed Platforms.ActiveCfg = Debug|.NET
+		{DF2F2AB2-07F1-4BB5-96E4-09AE456FC77E}.Debug|Mixed Platforms.Build.0 = Debug|.NET
+		{DF2F2AB2-07F1-4BB5-96E4-09AE456FC77E}.Default|.NET.ActiveCfg = Debug|.NET
+		{DF2F2AB2-07F1-4BB5-96E4-09AE456FC77E}.Default|.NET.Build.0 = Debug|.NET
+		{DF2F2AB2-07F1-4BB5-96E4-09AE456FC77E}.Default|Any CPU.ActiveCfg = Debug|.NET
+		{DF2F2AB2-07F1-4BB5-96E4-09AE456FC77E}.Default|Mixed Platforms.ActiveCfg = Debug|.NET
+		{DF2F2AB2-07F1-4BB5-96E4-09AE456FC77E}.Default|Mixed Platforms.Build.0 = Debug|.NET
+		{DF2F2AB2-07F1-4BB5-96E4-09AE456FC77E}.Release|.NET.ActiveCfg = Debug|.NET
+		{DF2F2AB2-07F1-4BB5-96E4-09AE456FC77E}.Release|.NET.Build.0 = Debug|.NET
+		{DF2F2AB2-07F1-4BB5-96E4-09AE456FC77E}.Release|Any CPU.ActiveCfg = Debug|.NET
+		{DF2F2AB2-07F1-4BB5-96E4-09AE456FC77E}.Release|Mixed Platforms.ActiveCfg = Debug|.NET
+		{DF2F2AB2-07F1-4BB5-96E4-09AE456FC77E}.Release|Mixed Platforms.Build.0 = Debug|.NET
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -40,6 +40,10 @@ namespace BNSharp.BattleNet.Stats
     /// </list>
     /// </remarks>
     [DataContract]
+    [KnownType(typeof(Diablo2Stats))]
+    [KnownType(typeof(Warcraft3Stats))]
+    [KnownType(typeof(StarcraftStats))]
+    [KnownType(typeof(DefaultStats))]
     public abstract class UserStats
     {
         /// <summary>

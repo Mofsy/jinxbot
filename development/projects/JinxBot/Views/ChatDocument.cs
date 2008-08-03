@@ -114,6 +114,13 @@ namespace JinxBot.Views
             m_client.RegisterWardentUnhandledNotification(Priority.Low, __WardenUnhandled);
             m_client.RegisterWhisperReceivedNotification(Priority.Low, __WhisperReceived);
             m_client.RegisterWhisperSentNotification(Priority.Low, __WhisperSent);
+
+            m_client.UserShown += new UserEventHandler(m_client_UserShown);
+        }
+
+        void m_client_UserShown(object sender, UserEventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         private UserProfileEventHandler __UserProfileReceived;
@@ -164,7 +171,9 @@ namespace JinxBot.Views
         private ChatMessageEventHandler __WhisperReceived;
         void WhisperReceived(object sender, ChatMessageEventArgs e)
         {
-            chat.AddChat(new ChatNode(e.Username, Color.Magenta), new ChatNode(" whispers: ", Color.Magenta), new ChatNode(e.Text, Color.Magenta));
+            chat.AddChat(new ChatNode(e.Username, Color.Magenta), 
+                new ChatNode(" whispers: ", Color.Magenta), 
+                new ChatNode(e.Text, Color.Magenta));
         }
 
         private EventHandler __WardenUnhandled;
@@ -176,7 +185,10 @@ namespace JinxBot.Views
         private ChatMessageEventHandler __UserSpoke;
         void UserSpoke(object sender, ChatMessageEventArgs e)
         {
-            chat.AddChat(new ChatNode("[", Color.LightBlue), new ChatNode(e.Username, Color.White), new ChatNode("]: ", Color.LightBlue), new ChatNode(e.Text, Color.White));
+            chat.AddChat(new ChatNode("[", Color.LightBlue), 
+                new ChatNode(e.Username, Color.White), 
+                new ChatNode("]: ", Color.LightBlue), 
+                new ChatNode(e.Text, Color.White));
         }
 
         private UserEventHandler __UserLeft;

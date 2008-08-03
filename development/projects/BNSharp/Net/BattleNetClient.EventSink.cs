@@ -191,6 +191,57 @@ namespace BNSharp.Net
             {
                 m_host.OnUserProfileReceived(e);
             }
+
+            public void OnClanCandidatesSearchCompleted(ClanCandidatesSearchEventArgs e)
+            {
+                m_host.OnClanCandidatesSearchCompleted(e);
+            }
+
+            public void OnClanChangeChieftanCompleted(ClanChieftanChangeEventArgs e)
+            {
+                m_host.OnClanChangeChieftanCompleted(e);
+            }
+
+            public void OnClanDisbandCompleted(ClanDisbandEventArgs e)
+            {
+                m_host.OnClanDisbandCompleted(e);
+            }
+
+            public void OnClanFormationCompleted(ClanFormationEventArgs e)
+            {
+                m_host.OnClanFormationCompleted(e);
+            }
+
+            public void OnClanFormationInvitationReceived(ClanFormationInvitationEventArgs e)
+            {
+                m_host.OnClanFormationInvitationReceived(e);
+            }
+
+            public void OnFriendAdded(BNSharp.BattleNet.Friends.FriendAddedEventArgs e)
+            {
+                m_host.OnFriendAdded(e);
+            }
+
+            public void OnFriendListReceived(BNSharp.BattleNet.Friends.FriendListReceivedEventArgs e)
+            {
+                m_host.OnFriendListReceived(e);
+            }
+
+            public void OnFriendMoved(BNSharp.BattleNet.Friends.FriendMovedEventArgs e)
+            {
+                m_host.OnFriendMoved(e);
+            }
+
+            public void OnFriendRemoved(BNSharp.BattleNet.Friends.FriendRemovedEventArgs e)
+            {
+                m_host.OnFriendRemoved(e);
+            }
+
+            public void OnFriendUpdated(BNSharp.BattleNet.Friends.FriendUpdatedEventArgs e)
+            {
+                m_host.OnFriendUpdated(e);
+            }
+
             #endregion
         }
     }

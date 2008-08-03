@@ -35,6 +35,13 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Runtime.Serialization">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.ServiceModel">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -47,6 +54,11 @@
   <ItemGroup>
     <Compile Include="JinxBotWebPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service References\JinxBotWeb\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
@@ -56,10 +68,47 @@
       <Project>{2D02D43C-BC3B-41D2-9226-4E215939107F}</Project>
       <Name>BNSharp</Name>
     </ProjectReference>
+    <ProjectReference Include="..\JinxBot.Plugins.JinxBotWeb.Shared\JinxBot.Plugins.JinxBotWeb.Shared.csproj">
+      <Project>{CD06EB30-2533-40E5-9361-51B4C7A2451C}</Project>
+      <Name>JinxBot.Plugins.JinxBotWeb.Shared</Name>
+    </ProjectReference>
     <ProjectReference Include="..\JinxBot.Plugins\JinxBot.Plugins.csproj">
       <Project>{9C13A2E5-2A06-4BD9-BED0-F93E9BB03D31}</Project>
       <Name>JinxBot.Plugins</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Service References\JinxBotWeb\JinxBotWebApplication.wsdl" />
+    <None Include="Service References\JinxBotWeb\JinxBotWebApplication.xsd" />
+    <None Include="Service References\JinxBotWeb\JinxBotWebApplication1.wsdl" />
+    <None Include="Service References\JinxBotWeb\JinxBotWebApplication1.xsd" />
+    <None Include="Service References\JinxBotWeb\JinxBotWebApplication2.xsd" />
+    <None Include="Service References\JinxBotWeb\JinxBotWebApplication3.xsd" />
+    <None Include="Service References\JinxBotWeb\JinxBotWebApplication4.xsd" />
+    <None Include="Service References\JinxBotWeb\JinxBotWebApplication5.xsd" />
+    <None Include="Service References\JinxBotWeb\JinxBotWebApplication6.xsd" />
+    <None Include="Service References\JinxBotWeb\JinxBotWebApplication7.xsd" />
+    <None Include="Service References\JinxBotWeb\JinxBotWebApplication8.xsd" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\JinxBotWeb\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\JinxBotWeb\JinxBotWebApplication.disco" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\JinxBotWeb\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\JinxBotWeb\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\JinxBotWeb\JinxBotWebApplication9.xsd" />
+    <None Include="Service References\JinxBotWeb\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

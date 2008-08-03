@@ -9,20 +9,58 @@ namespace BNSharp.Net
     {
         partial void ReportException(Exception ex, params KeyValuePair<string, object>[] notes)
         {
-            Trace.WriteLine(ex, "Unhandles Exception");
-            foreach (KeyValuePair<string, object> item in notes)
-            {
-                Delegate del = item.Value as Delegate;
-                if (del != null)
-                {
-                    Trace.WriteLine(item.Value, "(delegate type)");
-                    Trace.WriteLine(del.Target, "-(delegate target)");
-                    Trace.WriteLine(del.Method.Name, "-(delegate method name)");
-                    continue;
-                }
+            //Exception ex, Delegate callee, object invokee, EventArgs arguments, Priority priority, string eventName
+            /*
+             *          new KeyValuePair<string, object>("delegate", eh),
+                        new KeyValuePair<string, object>("Event", "ClanMemberListReceived"),
+                        new KeyValuePair<string, object>("param: priority", p),
+                        new KeyValuePair<string, object>("param: this", this),
+                        new KeyValuePair<string, object>("param: e", e)
+             */
+            Delegate callee = null;
+            object invokee = null;
+            EventArgs args = null;
+            Priority p = default(Priority);
+            string name = null;
 
-                Trace.WriteLine(item.Value, item.Key);
+            foreach (KeyValuePair<string, object> kvp in notes)
+            {
+                switch (kvp.Key)
+                {
+                    case "delegate":
+                        callee = kvp.Value as Delegate;
+                        break;
+                    case "Event":
+                        name = kvp.Value as string;
+                        break;
+                    case "param: priority":
+                        p = (Priority)kvp.Value;
+                        break;
+                    case "param: this":
+                        invokee = kvp.Value;
+                        break;
+                    case "param: e":
+                        args = kvp.Value as EventArgs;
+                        break;
+                }
             }
+
+            EventExceptionEventArgs e3args = new EventExceptionEventArgs(ex, callee, invokee, args, p, name);
+            OnEventExceptionThrown(e3args);
+        }
+
+        /// <summary>
+        /// Informs listeners that a client-oriented event handler has thrown an exception.
+        /// </summary>
+        public event EventExceptionEventHandler EventExceptionThrown;
+        /// <summary>
+        /// Raises the <see>EventExceptionThrown</see> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        protected virtual void OnEventExceptionThrown(EventExceptionEventArgs e)
+        {
+            if (EventExceptionThrown != null)
+                EventExceptionThrown(this, e);
         }
     }
 }

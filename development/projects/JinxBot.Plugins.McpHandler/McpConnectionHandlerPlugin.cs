@@ -40,5 +40,28 @@ namespace JinxBot.Plugins.McpHandler
         }
 
         #endregion
+
+        #region IJinxBotPlugin Members
+
+        public void Startup(IDictionary<string, string> settings)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Shutdown(IDictionary<string, string> settings)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region IDisposable Members
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
     }
 }

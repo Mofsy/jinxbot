@@ -14,10 +14,130 @@ namespace BNSharp.Net
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
         partial void FreeArgumentResources(BaseEventArgs e);
 
+        #region Invokehelper
+        private delegate void Invokee<T>(Priority p, T args) where T : EventArgs;
+        private class InvokeHelperBase
+        {
+            public virtual void Invoke(Priority p) { }
+        }
+        private class InvokeHelper<T> : InvokeHelperBase where T : EventArgs
+        { 
+            public Invokee<T> Target;
+            public T Arguments;
+
+            public override void Invoke(Priority p)
+            {
+                Target(p, Arguments);
+            }
+        }
+        #endregion
         /* 
          * This part of the class contains the implementation and registration parts of all of the events.  It is implemented
          * rapidly by using code snippets and then using the #region directive to hide the code.
          */
+
+        private Queue<InvokeHelperBase> e_medPriorityEvents = new Queue<InvokeHelperBase>();
+        private Queue<InvokeHelperBase> e_lowPriorityEvents = new Queue<InvokeHelperBase>();
+
+        #region Threads
+        private Thread e_medPriorityTd;
+        private Thread e_lowPriorityTd;
+        private EventWaitHandle e_medBlocker = new EventWaitHandle(false, EventResetMode.AutoReset);
+        private EventWaitHandle e_lowBlocker = new EventWaitHandle(false, EventResetMode.AutoReset);
+
+        private void CreateEventThreads()
+        {
+            e_medPriorityTd = new Thread(new ThreadStart(__MedPriorityEventWatcher));
+            e_medPriorityTd.Priority = ThreadPriority.BelowNormal;
+            e_medPriorityTd.IsBackground = true;
+            e_medPriorityTd.Start();
+
+            e_lowPriorityTd = new Thread(new ThreadStart(__LowPriorityEventWatcher));
+            e_lowPriorityTd.Priority = ThreadPriority.Lowest;
+            e_lowPriorityTd.IsBackground = true;
+            e_lowPriorityTd.Start();
+        }
+
+        private void __MedPriorityEventWatcher()
+        {
+            try
+            {
+                while (true)
+                {
+                    e_medBlocker.Reset();
+
+                    while (e_medPriorityEvents.Count == 0)
+                    {
+                        e_lowBlocker.Set();
+                        e_medBlocker.WaitOne();
+                    }
+
+                    if (e_medPriorityEvents.Count > 0)
+                    {
+                        InvokeHelperBase helper = e_medPriorityEvents.Dequeue();
+                        if (helper != null) 
+                            helper.Invoke(Priority.Normal);
+                    }
+                }
+            }
+            catch (ThreadAbortException)
+            {
+                // exit gracefully
+            }
+        }
+
+        private void __LowPriorityEventWatcher()
+        {
+            try
+            {
+                while (true)
+                {
+                    e_lowBlocker.Reset();
+
+                    while (e_lowPriorityEvents.Count == 0 || e_medPriorityEvents.Count > 0)
+                        e_lowBlocker.WaitOne();
+
+                    if (e_lowPriorityEvents.Count > 0)
+                    {
+                        InvokeHelperBase helper = e_lowPriorityEvents.Dequeue();
+                        if (helper != null)
+                            helper.Invoke(Priority.Low);
+                    }
+                }
+            }
+            catch (ThreadAbortException)
+            {
+                // exit gracefully
+            }
+        }
+
+        private void CloseEventThreads()
+        {
+            if (e_medPriorityTd != null)
+            {
+                e_medPriorityTd.Abort();
+                e_medPriorityTd = null;
+            }
+
+            if (e_lowPriorityTd != null)
+            {
+                e_lowPriorityTd.Abort();
+                e_lowPriorityTd = null;
+            }
+
+            if (e_medBlocker != null)
+            {
+                e_medBlocker.Close();
+                e_medBlocker = null;
+            }
+
+            if (e_lowBlocker != null)
+            {
+                e_lowBlocker.Close();
+                e_lowBlocker = null;
+            }
+        }
+        #endregion
 
         #region chat events (0x0f)
         #region user events
@@ -134,7 +254,12 @@ namespace BNSharp.Net
         /// <seealso cref="UserJoined" />
         protected virtual void OnUserJoined(UserEventArgs e)
         {
-            foreach (UserEventHandler eh in __UserJoined[Priority.High])
+            __InvokeUserJoined(Priority.High, e);
+        }
+
+        private void __InvokeUserJoined(Priority p, UserEventArgs e)
+        {
+            foreach (UserEventHandler eh in __UserJoined[p])
             {
                 try
                 {
@@ -146,56 +271,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "UserJoined"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (UserEventHandler eh in __UserJoined[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "UserJoined"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (UserEventHandler eh in __UserJoined[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "UserJoined"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<UserEventArgs> { Arguments = e, Target = new Invokee<UserEventArgs>(__InvokeUserJoined) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<UserEventArgs> { Arguments = e, Target = new Invokee<UserEventArgs>(__InvokeUserJoined) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -312,7 +407,12 @@ namespace BNSharp.Net
         /// <seealso cref="UserLeft" />
         protected virtual void OnUserLeft(UserEventArgs e)
         {
-            foreach (UserEventHandler eh in __UserLeft[Priority.High])
+            __InvokeUserLeft(Priority.High, e);
+        }
+
+        private void __InvokeUserLeft(Priority p, UserEventArgs e)
+        {
+            foreach (UserEventHandler eh in __UserLeft[p])
             {
                 try
                 {
@@ -324,56 +424,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "UserLeft"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (UserEventHandler eh in __UserLeft[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "UserLeft"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (UserEventHandler eh in __UserLeft[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "UserLeft"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<UserEventArgs> { Arguments = e, Target = new Invokee<UserEventArgs>(__InvokeUserLeft) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<UserEventArgs> { Arguments = e, Target = new Invokee<UserEventArgs>(__InvokeUserLeft) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -490,7 +560,12 @@ namespace BNSharp.Net
         /// <seealso cref="UserShown" />
         protected virtual void OnUserShown(UserEventArgs e)
         {
-            foreach (UserEventHandler eh in __UserShown[Priority.High])
+            __InvokeUserShown(Priority.High, e);
+        }
+
+        private void __InvokeUserShown(Priority p, UserEventArgs e)
+        {
+            foreach (UserEventHandler eh in __UserShown[p])
             {
                 try
                 {
@@ -502,56 +577,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "UserShown"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (UserEventHandler eh in __UserShown[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "UserShown"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (UserEventHandler eh in __UserShown[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "UserShown"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<UserEventArgs> { Arguments = e, Target = new Invokee<UserEventArgs>(__InvokeUserShown) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<UserEventArgs> { Arguments = e, Target = new Invokee<UserEventArgs>(__InvokeUserShown) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -668,7 +713,12 @@ namespace BNSharp.Net
         /// <seealso cref="UserFlagsChanged" />
         protected virtual void OnUserFlagsChanged(UserEventArgs e)
         {
-            foreach (UserEventHandler eh in __UserFlagsChanged[Priority.High])
+            __InvokeUserFlagsChanged(Priority.High, e);
+        }
+
+        private void __InvokeUserFlagsChanged(Priority p, UserEventArgs e)
+        {
+            foreach (UserEventHandler eh in __UserFlagsChanged[p])
             {
                 try
                 {
@@ -680,56 +730,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "UserFlagsChanged"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (UserEventHandler eh in __UserFlagsChanged[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "UserFlagsChanged"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (UserEventHandler eh in __UserFlagsChanged[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "UserFlagsChanged"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<UserEventArgs> { Arguments = e, Target = new Invokee<UserEventArgs>(__InvokeUserFlagsChanged) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<UserEventArgs> { Arguments = e, Target = new Invokee<UserEventArgs>(__InvokeUserFlagsChanged) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
         #endregion
@@ -848,7 +868,12 @@ namespace BNSharp.Net
         /// <seealso cref="ServerBroadcast" />
         protected virtual void OnServerBroadcast(ServerChatEventArgs e)
         {
-            foreach (ServerChatEventHandler eh in __ServerBroadcast[Priority.High])
+            __InvokeServerBroadcast(Priority.High, e);
+        }
+
+        private void __InvokeServerBroadcast(Priority p, ServerChatEventArgs e)
+        {
+            foreach (ServerChatEventHandler eh in __ServerBroadcast[p])
             {
                 try
                 {
@@ -860,56 +885,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "ServerBroadcast"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (ServerChatEventHandler eh in __ServerBroadcast[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "ServerBroadcast"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (ServerChatEventHandler eh in __ServerBroadcast[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "ServerBroadcast"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<ServerChatEventArgs> { Arguments = e, Target = new Invokee<ServerChatEventArgs>(__InvokeServerBroadcast) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<ServerChatEventArgs> { Arguments = e, Target = new Invokee<ServerChatEventArgs>(__InvokeServerBroadcast) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -1026,7 +1021,12 @@ namespace BNSharp.Net
         /// <seealso cref="JoinedChannel" />
         protected virtual void OnJoinedChannel(ServerChatEventArgs e)
         {
-            foreach (ServerChatEventHandler eh in __JoinedChannel[Priority.High])
+            __InvokeJoinedChannel(Priority.High, e);
+        }
+
+        private void __InvokeJoinedChannel(Priority p, ServerChatEventArgs e)
+        {
+            foreach (ServerChatEventHandler eh in __JoinedChannel[p])
             {
                 try
                 {
@@ -1038,56 +1038,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "JoinedChannel"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (ServerChatEventHandler eh in __JoinedChannel[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "JoinedChannel"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (ServerChatEventHandler eh in __JoinedChannel[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "JoinedChannel"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<ServerChatEventArgs> { Arguments = e, Target = new Invokee<ServerChatEventArgs>(__InvokeJoinedChannel) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<ServerChatEventArgs> { Arguments = e, Target = new Invokee<ServerChatEventArgs>(__InvokeJoinedChannel) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -1204,7 +1174,12 @@ namespace BNSharp.Net
         /// <seealso cref="ChannelWasFull" />
         protected virtual void OnChannelWasFull(ServerChatEventArgs e)
         {
-            foreach (ServerChatEventHandler eh in __ChannelWasFull[Priority.High])
+            __InvokeChannelWasFull(Priority.High, e);
+        }
+
+        private void __InvokeChannelWasFull(Priority p, ServerChatEventArgs e)
+        {
+            foreach (ServerChatEventHandler eh in __ChannelWasFull[p])
             {
                 try
                 {
@@ -1216,56 +1191,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "ChannelWasFull"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (ServerChatEventHandler eh in __ChannelWasFull[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "ChannelWasFull"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (ServerChatEventHandler eh in __ChannelWasFull[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "ChannelWasFull"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<ServerChatEventArgs> { Arguments = e, Target = new Invokee<ServerChatEventArgs>(__InvokeChannelWasFull) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<ServerChatEventArgs> { Arguments = e, Target = new Invokee<ServerChatEventArgs>(__InvokeChannelWasFull) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -1382,7 +1327,12 @@ namespace BNSharp.Net
         /// <seealso cref="ChannelDidNotExist" />
         protected virtual void OnChannelDidNotExist(ServerChatEventArgs e)
         {
-            foreach (ServerChatEventHandler eh in __ChannelDidNotExist[Priority.High])
+            __InvokeChannelDidNotExist(Priority.High, e);
+        }
+
+        private void __InvokeChannelDidNotExist(Priority p, ServerChatEventArgs e)
+        {
+            foreach (ServerChatEventHandler eh in __ChannelDidNotExist[p])
             {
                 try
                 {
@@ -1394,56 +1344,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "ChannelDidNotExist"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (ServerChatEventHandler eh in __ChannelDidNotExist[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "ChannelDidNotExist"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (ServerChatEventHandler eh in __ChannelDidNotExist[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "ChannelDidNotExist"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<ServerChatEventArgs> { Arguments = e, Target = new Invokee<ServerChatEventArgs>(__InvokeChannelDidNotExist) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<ServerChatEventArgs> { Arguments = e, Target = new Invokee<ServerChatEventArgs>(__InvokeChannelDidNotExist) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -1560,7 +1480,12 @@ namespace BNSharp.Net
         /// <seealso cref="ChannelWasRestricted" />
         protected virtual void OnChannelWasRestricted(ServerChatEventArgs e)
         {
-            foreach (ServerChatEventHandler eh in __ChannelWasRestricted[Priority.High])
+            __InvokeChannelWasRestricted(Priority.High, e);
+        }
+
+        private void __InvokeChannelWasRestricted(Priority p, ServerChatEventArgs e)
+        {
+            foreach (ServerChatEventHandler eh in __ChannelWasRestricted[p])
             {
                 try
                 {
@@ -1572,56 +1497,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "ChannelWasRestricted"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (ServerChatEventHandler eh in __ChannelWasRestricted[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "ChannelWasRestricted"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (ServerChatEventHandler eh in __ChannelWasRestricted[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "ChannelWasRestricted"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<ServerChatEventArgs> { Arguments = e, Target = new Invokee<ServerChatEventArgs>(__InvokeChannelWasRestricted) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<ServerChatEventArgs> { Arguments = e, Target = new Invokee<ServerChatEventArgs>(__InvokeChannelWasRestricted) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -1738,7 +1633,12 @@ namespace BNSharp.Net
         /// <seealso cref="InformationReceived" />
         protected virtual void OnInformationReceived(ServerChatEventArgs e)
         {
-            foreach (ServerChatEventHandler eh in __InformationReceived[Priority.High])
+            __InvokeInformationReceived(Priority.High, e);
+        }
+
+        private void __InvokeInformationReceived(Priority p, ServerChatEventArgs e)
+        {
+            foreach (ServerChatEventHandler eh in __InformationReceived[p])
             {
                 try
                 {
@@ -1750,56 +1650,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "InformationReceived"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (ServerChatEventHandler eh in __InformationReceived[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "InformationReceived"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (ServerChatEventHandler eh in __InformationReceived[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "InformationReceived"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<ServerChatEventArgs> { Arguments = e, Target = new Invokee<ServerChatEventArgs>(__InvokeInformationReceived) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<ServerChatEventArgs> { Arguments = e, Target = new Invokee<ServerChatEventArgs>(__InvokeInformationReceived) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -1916,7 +1786,12 @@ namespace BNSharp.Net
         /// <seealso cref="ServerErrorReceived" />
         protected virtual void OnServerErrorReceived(ServerChatEventArgs e)
         {
-            foreach (ServerChatEventHandler eh in __ServerErrorReceived[Priority.High])
+            __InvokeServerErrorReceived(Priority.High, e);
+        }
+
+        private void __InvokeServerErrorReceived(Priority p, ServerChatEventArgs e)
+        {
+            foreach (ServerChatEventHandler eh in __ServerErrorReceived[p])
             {
                 try
                 {
@@ -1928,56 +1803,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "ServerErrorReceived"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (ServerChatEventHandler eh in __ServerErrorReceived[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "ServerErrorReceived"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (ServerChatEventHandler eh in __ServerErrorReceived[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "ServerErrorReceived"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<ServerChatEventArgs> { Arguments = e, Target = new Invokee<ServerChatEventArgs>(__InvokeServerErrorReceived) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<ServerChatEventArgs> { Arguments = e, Target = new Invokee<ServerChatEventArgs>(__InvokeServerErrorReceived) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 		
@@ -2097,7 +1942,12 @@ namespace BNSharp.Net
         /// <seealso cref="WhisperSent" />
         protected virtual void OnWhisperSent(ChatMessageEventArgs e)
         {
-            foreach (ChatMessageEventHandler eh in __WhisperSent[Priority.High])
+            __InvokeWhisperSent(Priority.High, e);
+        }
+
+        private void __InvokeWhisperSent(Priority p, ChatMessageEventArgs e)
+        {
+            foreach (ChatMessageEventHandler eh in __WhisperSent[p])
             {
                 try
                 {
@@ -2109,56 +1959,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "WhisperSent"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (ChatMessageEventHandler eh in __WhisperSent[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "WhisperSent"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (ChatMessageEventHandler eh in __WhisperSent[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "WhisperSent"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<ChatMessageEventArgs> { Arguments = e, Target = new Invokee<ChatMessageEventArgs>(__InvokeWhisperSent) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<ChatMessageEventArgs> { Arguments = e, Target = new Invokee<ChatMessageEventArgs>(__InvokeWhisperSent) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -2275,7 +2095,12 @@ namespace BNSharp.Net
         /// <seealso cref="WhisperReceived" />
         protected virtual void OnWhisperReceived(ChatMessageEventArgs e)
         {
-            foreach (ChatMessageEventHandler eh in __WhisperReceived[Priority.High])
+            __InvokeWhisperReceived(Priority.High, e);
+        }
+
+        private void __InvokeWhisperReceived(Priority p, ChatMessageEventArgs e)
+        {
+            foreach (ChatMessageEventHandler eh in __WhisperReceived[p])
             {
                 try
                 {
@@ -2287,56 +2112,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "WhisperReceived"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (ChatMessageEventHandler eh in __WhisperReceived[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "WhisperReceived"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (ChatMessageEventHandler eh in __WhisperReceived[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "WhisperReceived"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<ChatMessageEventArgs> { Arguments = e, Target = new Invokee<ChatMessageEventArgs>(__InvokeWhisperReceived) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<ChatMessageEventArgs> { Arguments = e, Target = new Invokee<ChatMessageEventArgs>(__InvokeWhisperReceived) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -2453,7 +2248,12 @@ namespace BNSharp.Net
         /// <seealso cref="UserSpoke" />
         protected virtual void OnUserSpoke(ChatMessageEventArgs e)
         {
-            foreach (ChatMessageEventHandler eh in __UserSpoke[Priority.High])
+            __InvokeUserSpoke(Priority.High, e);
+        }
+
+        private void __InvokeUserSpoke(Priority p, ChatMessageEventArgs e)
+        {
+            foreach (ChatMessageEventHandler eh in __UserSpoke[p])
             {
                 try
                 {
@@ -2465,56 +2265,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "UserSpoke"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (ChatMessageEventHandler eh in __UserSpoke[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "UserSpoke"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (ChatMessageEventHandler eh in __UserSpoke[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "UserSpoke"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<ChatMessageEventArgs> { Arguments = e, Target = new Invokee<ChatMessageEventArgs>(__InvokeUserSpoke) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<ChatMessageEventArgs> { Arguments = e, Target = new Invokee<ChatMessageEventArgs>(__InvokeUserSpoke) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -2631,7 +2401,12 @@ namespace BNSharp.Net
         /// <seealso cref="UserEmoted" />
         protected virtual void OnUserEmoted(ChatMessageEventArgs e)
         {
-            foreach (ChatMessageEventHandler eh in __UserEmoted[Priority.High])
+            __InvokeUserEmoted(Priority.High, e);
+        }
+
+        private void __InvokeUserEmoted(Priority p, ChatMessageEventArgs e)
+        {
+            foreach (ChatMessageEventHandler eh in __UserEmoted[p])
             {
                 try
                 {
@@ -2643,56 +2418,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "UserEmoted"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (ChatMessageEventHandler eh in __UserEmoted[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "UserEmoted"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (ChatMessageEventHandler eh in __UserEmoted[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "UserEmoted"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<ChatMessageEventArgs> { Arguments = e, Target = new Invokee<ChatMessageEventArgs>(__InvokeUserEmoted) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<ChatMessageEventArgs> { Arguments = e, Target = new Invokee<ChatMessageEventArgs>(__InvokeUserEmoted) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 		
@@ -2813,7 +2558,12 @@ namespace BNSharp.Net
         /// <seealso cref="MessageSent" />
         protected virtual void OnMessageSent(ChatMessageEventArgs e)
         {
-            foreach (ChatMessageEventHandler eh in __MessageSent[Priority.High])
+            __InvokeMessageSent(Priority.High, e);
+        }
+
+        private void __InvokeMessageSent(Priority p, ChatMessageEventArgs e)
+        {
+            foreach (ChatMessageEventHandler eh in __MessageSent[p])
             {
                 try
                 {
@@ -2825,56 +2575,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "MessageSent"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (ChatMessageEventHandler eh in __MessageSent[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "MessageSent"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (ChatMessageEventHandler eh in __MessageSent[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "MessageSent"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e as BaseEventArgs);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<ChatMessageEventArgs> { Arguments = e, Target = new Invokee<ChatMessageEventArgs>(__InvokeMessageSent) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<ChatMessageEventArgs> { Arguments = e, Target = new Invokee<ChatMessageEventArgs>(__InvokeMessageSent) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -2993,7 +2713,12 @@ namespace BNSharp.Net
         /// <seealso cref="CommandSent" />
         protected virtual void OnCommandSent(InformationEventArgs e)
         {
-            foreach (InformationEventHandler eh in __CommandSent[Priority.High])
+            __InvokeCommandSent(Priority.High, e);
+        }
+
+        private void __InvokeCommandSent(Priority p, InformationEventArgs e)
+        {
+            foreach (InformationEventHandler eh in __CommandSent[p])
             {
                 try
                 {
@@ -3005,56 +2730,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "CommandSent"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (InformationEventHandler eh in __CommandSent[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "CommandSent"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (InformationEventHandler eh in __CommandSent[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "CommandSent"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e as BaseEventArgs);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<InformationEventArgs> { Arguments = e, Target = new Invokee<InformationEventArgs>(__InvokeCommandSent) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<InformationEventArgs> { Arguments = e, Target = new Invokee<InformationEventArgs>(__InvokeCommandSent) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 		
@@ -3174,7 +2869,12 @@ namespace BNSharp.Net
         /// <seealso cref="ClientCheckPassed" />
         protected virtual void OnClientCheckPassed(BaseEventArgs e)
         {
-            foreach (EventHandler eh in __ClientCheckPassed[Priority.High])
+            __InvokeClientCheckPassed(Priority.High, e);
+        }
+
+        private void __InvokeClientCheckPassed(Priority p, BaseEventArgs e)
+        {
+            foreach (EventHandler eh in __ClientCheckPassed[p])
             {
                 try
                 {
@@ -3186,56 +2886,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "ClientCheckPassed"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (EventHandler eh in __ClientCheckPassed[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "ClientCheckPassed"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (EventHandler eh in __ClientCheckPassed[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "ClientCheckPassed"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<BaseEventArgs> { Arguments = e, Target = new Invokee<BaseEventArgs>(__InvokeClientCheckPassed) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<BaseEventArgs> { Arguments = e, Target = new Invokee<BaseEventArgs>(__InvokeClientCheckPassed) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -3352,7 +3022,12 @@ namespace BNSharp.Net
         /// <seealso cref="ClientCheckFailed" />
         protected virtual void OnClientCheckFailed(ClientCheckFailedEventArgs e)
         {
-            foreach (ClientCheckFailedEventHandler eh in __ClientCheckFailed[Priority.High])
+            __InvokeClientCheckFailed(Priority.High, e);
+        }
+
+        private void __InvokeClientCheckFailed(Priority p, ClientCheckFailedEventArgs e)
+        {
+            foreach (ClientCheckFailedEventHandler eh in __ClientCheckFailed[p])
             {
                 try
                 {
@@ -3364,56 +3039,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "ClientCheckFailed"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (ClientCheckFailedEventHandler eh in __ClientCheckFailed[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "ClientCheckFailed"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (ClientCheckFailedEventHandler eh in __ClientCheckFailed[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "ClientCheckFailed"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e as BaseEventArgs);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<ClientCheckFailedEventArgs> { Arguments = e, Target = new Invokee<ClientCheckFailedEventArgs>(__InvokeClientCheckFailed) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<ClientCheckFailedEventArgs> { Arguments = e, Target = new Invokee<ClientCheckFailedEventArgs>(__InvokeClientCheckFailed) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 		
@@ -3534,7 +3179,12 @@ namespace BNSharp.Net
         /// <seealso cref="LoginSucceeded" />
         protected virtual void OnLoginSucceeded(EventArgs e)
         {
-            foreach (EventHandler eh in __LoginSucceeded[Priority.High])
+            __InvokeLoginSucceeded(Priority.High, e);
+        }
+
+        private void __InvokeLoginSucceeded(Priority p, EventArgs e)
+        {
+            foreach (EventHandler eh in __LoginSucceeded[p])
             {
                 try
                 {
@@ -3546,56 +3196,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "LoginSucceeded"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (EventHandler eh in __LoginSucceeded[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "LoginSucceeded"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (EventHandler eh in __LoginSucceeded[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "LoginSucceeded"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e as BaseEventArgs);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<EventArgs> { Arguments = e, Target = new Invokee<EventArgs>(__InvokeLoginSucceeded) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<EventArgs> { Arguments = e, Target = new Invokee<EventArgs>(__InvokeLoginSucceeded) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -3712,7 +3332,12 @@ namespace BNSharp.Net
         /// <seealso cref="LoginFailed" />
         protected virtual void OnLoginFailed(EventArgs e)
         {
-            foreach (EventHandler eh in __LoginFailed[Priority.High])
+            __InvokeLoginFailed(Priority.High, e);
+        }
+
+        private void __InvokeLoginFailed(Priority p, EventArgs e)
+        {
+            foreach (EventHandler eh in __LoginFailed[p])
             {
                 try
                 {
@@ -3724,56 +3349,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "LoginFailed"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (EventHandler eh in __LoginFailed[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "LoginFailed"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (EventHandler eh in __LoginFailed[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "LoginFailed"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e as BaseEventArgs);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<EventArgs> { Arguments = e, Target = new Invokee<EventArgs>(__InvokeLoginFailed) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<EventArgs> { Arguments = e, Target = new Invokee<EventArgs>(__InvokeLoginFailed) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -3890,7 +3485,12 @@ namespace BNSharp.Net
         /// <seealso cref="EnteredChat" />
         protected virtual void OnEnteredChat(EnteredChatEventArgs e)
         {
-            foreach (EnteredChatEventHandler eh in __EnteredChat[Priority.High])
+            __InvokeEnteredChat(Priority.High, e);
+        }
+
+        private void __InvokeEnteredChat(Priority p, EnteredChatEventArgs e)
+        {
+            foreach (EnteredChatEventHandler eh in __EnteredChat[p])
             {
                 try
                 {
@@ -3902,56 +3502,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "EnteredChat"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (EnteredChatEventHandler eh in __EnteredChat[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "EnteredChat"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (EnteredChatEventHandler eh in __EnteredChat[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "EnteredChat"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e as BaseEventArgs);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<EnteredChatEventArgs> { Arguments = e, Target = new Invokee<EnteredChatEventArgs>(__InvokeEnteredChat) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<EnteredChatEventArgs> { Arguments = e, Target = new Invokee<EnteredChatEventArgs>(__InvokeEnteredChat) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
         #endregion
@@ -4070,7 +3640,12 @@ namespace BNSharp.Net
         /// <seealso cref="ChannelListReceived" />
         protected virtual void OnChannelListReceived(ChannelListEventArgs e)
         {
-            foreach (ChannelListEventHandler eh in __ChannelListReceived[Priority.High])
+            __InvokeChannelListReceived(Priority.High, e);
+        }
+
+        private void __InvokeChannelListReceived(Priority p, ChannelListEventArgs e)
+        {
+            foreach (ChannelListEventHandler eh in __ChannelListReceived[p])
             {
                 try
                 {
@@ -4082,56 +3657,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "ChannelListReceived"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (ChannelListEventHandler eh in __ChannelListReceived[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "ChannelListReceived"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (ChannelListEventHandler eh in __ChannelListReceived[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "ChannelListReceived"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e as BaseEventArgs);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<ChannelListEventArgs> { Arguments = e, Target = new Invokee<ChannelListEventArgs>(__InvokeChannelListReceived) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<ChannelListEventArgs> { Arguments = e, Target = new Invokee<ChannelListEventArgs>(__InvokeChannelListReceived) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -4248,7 +3793,12 @@ namespace BNSharp.Net
         /// <seealso cref="Error" />
         protected virtual void OnError(ErrorEventArgs e)
         {
-            foreach (ErrorEventHandler eh in __Error[Priority.High])
+            __InvokeError(Priority.High, e);
+        }
+
+        private void __InvokeError(Priority p, ErrorEventArgs e)
+        {
+            foreach (ErrorEventHandler eh in __Error[p])
             {
                 try
                 {
@@ -4260,56 +3810,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "Error"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (ErrorEventHandler eh in __Error[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "Error"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (ErrorEventHandler eh in __Error[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "Error"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e as BaseEventArgs);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<ErrorEventArgs> { Arguments = e, Target = new Invokee<ErrorEventArgs>(__InvokeError) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<ErrorEventArgs> { Arguments = e, Target = new Invokee<ErrorEventArgs>(__InvokeError) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -4426,7 +3946,12 @@ namespace BNSharp.Net
         /// <seealso cref="Information" />
         protected virtual void OnInformation(InformationEventArgs e)
         {
-            foreach (InformationEventHandler eh in __Information[Priority.High])
+            __InvokeInformation(Priority.High, e);
+        }
+
+        private void __InvokeInformation(Priority p, InformationEventArgs e)
+        {
+            foreach (InformationEventHandler eh in __Information[p])
             {
                 try
                 {
@@ -4438,56 +3963,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "Information"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (InformationEventHandler eh in __Information[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "Information"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (InformationEventHandler eh in __Information[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "Information"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e as BaseEventArgs);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<InformationEventArgs> { Arguments = e, Target = new Invokee<InformationEventArgs>(__InvokeInformation) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<InformationEventArgs> { Arguments = e, Target = new Invokee<InformationEventArgs>(__InvokeInformation) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 		
@@ -4607,7 +4102,12 @@ namespace BNSharp.Net
         /// <seealso cref="Connected" />
         protected virtual void OnConnected(EventArgs e)
         {
-            foreach (EventHandler eh in __Connected[Priority.High])
+            __InvokeConnected(Priority.High, e);
+        }
+
+        private void __InvokeConnected(Priority p, EventArgs e)
+        {
+            foreach (EventHandler eh in __Connected[p])
             {
                 try
                 {
@@ -4619,57 +4119,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "Connected"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (EventHandler eh in __Connected[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "Connected"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (EventHandler eh in __Connected[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "Connected"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e as BaseEventArgs);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<EventArgs> { Arguments = e, Target = new Invokee<EventArgs>(__InvokeConnected) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<EventArgs> { Arguments = e, Target = new Invokee<EventArgs>(__InvokeConnected) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -4786,7 +4255,12 @@ namespace BNSharp.Net
         /// <seealso cref="Disconnected" />
         protected virtual void OnDisconnected(EventArgs e)
         {
-            foreach (EventHandler eh in __Disconnected[Priority.High])
+            __InvokeDisconnected(Priority.High, e);
+        }
+
+        private void __InvokeDisconnected(Priority p, EventArgs e)
+        {
+            foreach (EventHandler eh in __Disconnected[p])
             {
                 try
                 {
@@ -4798,56 +4272,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "Disconnected"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (EventHandler eh in __Disconnected[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "Disconnected"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (EventHandler eh in __Disconnected[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "Disconnected"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e as BaseEventArgs);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<EventArgs> { Arguments = e, Target = new Invokee<EventArgs>(__InvokeDisconnected) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<EventArgs> { Arguments = e, Target = new Invokee<EventArgs>(__InvokeDisconnected) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -5146,7 +4590,12 @@ namespace BNSharp.Net
         /// <seealso cref="ServerNews" />
         protected virtual void OnServerNews(ServerNewsEventArgs e)
         {
-            foreach (ServerNewsEventHandler eh in __ServerNews[Priority.High])
+            __InvokeServerNews(Priority.High, e);
+        }
+
+        private void __InvokeServerNews(Priority p, ServerNewsEventArgs e)
+        {
+            foreach (ServerNewsEventHandler eh in __ServerNews[p])
             {
                 try
                 {
@@ -5158,56 +4607,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "ServerNews"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (ServerNewsEventHandler eh in __ServerNews[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "ServerNews"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (ServerNewsEventHandler eh in __ServerNews[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "ServerNews"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e as BaseEventArgs);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<ServerNewsEventArgs> { Arguments = e, Target = new Invokee<ServerNewsEventArgs>(__InvokeServerNews) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<ServerNewsEventArgs> { Arguments = e, Target = new Invokee<ServerNewsEventArgs>(__InvokeServerNews) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -5325,7 +4744,12 @@ namespace BNSharp.Net
         /// <seealso cref="ClanMemberListReceived" />
         protected virtual void OnClanMemberListReceived(ClanMemberListEventArgs e)
         {
-            foreach (ClanMemberListEventHandler eh in __ClanMemberListReceived[Priority.High])
+            __InvokeClanMemberListReceived(Priority.High, e);
+        }
+
+        private void __InvokeClanMemberListReceived(Priority p, ClanMemberListEventArgs e)
+        {
+            foreach (ClanMemberListEventHandler eh in __ClanMemberListReceived[p])
             {
                 try
                 {
@@ -5337,56 +4761,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "ClanMemberListReceived"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (ClanMemberListEventHandler eh in __ClanMemberListReceived[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "ClanMemberListReceived"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (ClanMemberListEventHandler eh in __ClanMemberListReceived[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "ClanMemberListReceived"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e as BaseEventArgs);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<ClanMemberListEventArgs> { Arguments = e, Target = new Invokee<ClanMemberListEventArgs>(__InvokeClanMemberListReceived) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<ClanMemberListEventArgs> { Arguments = e, Target = new Invokee<ClanMemberListEventArgs>(__InvokeClanMemberListReceived) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -5503,7 +4897,12 @@ namespace BNSharp.Net
         /// <seealso cref="ClanMemberStatusChanged" />
         protected virtual void OnClanMemberStatusChanged(ClanMemberStatusEventArgs e)
         {
-            foreach (ClanMemberStatusEventHandler eh in __ClanMemberStatusChanged[Priority.High])
+            __InvokeClanMemberStatusChanged(Priority.High, e);
+        }
+
+        private void __InvokeClanMemberStatusChanged(Priority p, ClanMemberStatusEventArgs e)
+        {
+            foreach (ClanMemberStatusEventHandler eh in __ClanMemberStatusChanged[p])
             {
                 try
                 {
@@ -5515,56 +4914,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "ClanMemberStatusChanged"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (ClanMemberStatusEventHandler eh in __ClanMemberStatusChanged[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "ClanMemberStatusChanged"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (ClanMemberStatusEventHandler eh in __ClanMemberStatusChanged[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "ClanMemberStatusChanged"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e as BaseEventArgs);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<ClanMemberStatusEventArgs> { Arguments = e, Target = new Invokee<ClanMemberStatusEventArgs>(__InvokeClanMemberStatusChanged) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<ClanMemberStatusEventArgs> { Arguments = e, Target = new Invokee<ClanMemberStatusEventArgs>(__InvokeClanMemberStatusChanged) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -5681,7 +5050,12 @@ namespace BNSharp.Net
         /// <seealso cref="ClanMemberQuit" />
         protected virtual void OnClanMemberQuit(ClanMemberStatusEventArgs e)
         {
-            foreach (ClanMemberStatusEventHandler eh in __ClanMemberQuit[Priority.High])
+            __InvokeClanMemberQuit(Priority.High, e);
+        }
+
+        private void __InvokeClanMemberQuit(Priority p, ClanMemberStatusEventArgs e)
+        {
+            foreach (ClanMemberStatusEventHandler eh in __ClanMemberQuit[p])
             {
                 try
                 {
@@ -5693,56 +5067,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "ClanMemberQuit"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (ClanMemberStatusEventHandler eh in __ClanMemberQuit[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "ClanMemberQuit"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (ClanMemberStatusEventHandler eh in __ClanMemberQuit[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "ClanMemberQuit"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e as BaseEventArgs);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<ClanMemberStatusEventArgs> { Arguments = e, Target = new Invokee<ClanMemberStatusEventArgs>(__InvokeClanMemberQuit) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<ClanMemberStatusEventArgs> { Arguments = e, Target = new Invokee<ClanMemberStatusEventArgs>(__InvokeClanMemberQuit) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -5859,7 +5203,12 @@ namespace BNSharp.Net
         /// <seealso cref="ClanMemberRemoved" />
         protected virtual void OnClanMemberRemoved(ClanMemberStatusEventArgs e)
         {
-            foreach (ClanMemberStatusEventHandler eh in __ClanMemberRemoved[Priority.High])
+            __InvokeClanMemberRemoved(Priority.High, e);
+        }
+
+        private void __InvokeClanMemberRemoved(Priority p, ClanMemberStatusEventArgs e)
+        {
+            foreach (ClanMemberStatusEventHandler eh in __ClanMemberRemoved[p])
             {
                 try
                 {
@@ -5871,56 +5220,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "ClanMemberRemoved"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (ClanMemberStatusEventHandler eh in __ClanMemberRemoved[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "ClanMemberRemoved"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (ClanMemberStatusEventHandler eh in __ClanMemberRemoved[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "ClanMemberRemoved"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e as BaseEventArgs);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<ClanMemberStatusEventArgs> { Arguments = e, Target = new Invokee<ClanMemberStatusEventArgs>(__InvokeClanMemberRemoved) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<ClanMemberStatusEventArgs> { Arguments = e, Target = new Invokee<ClanMemberStatusEventArgs>(__InvokeClanMemberRemoved) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -6037,7 +5356,12 @@ namespace BNSharp.Net
         /// <seealso cref="ClanMessageOfTheDay" />
         protected virtual void OnClanMessageOfTheDay(InformationEventArgs e)
         {
-            foreach (InformationEventHandler eh in __ClanMessageOfTheDay[Priority.High])
+            __InvokeClanMessageOfTheDay(Priority.High, e);
+        }
+
+        private void __InvokeClanMessageOfTheDay(Priority p, InformationEventArgs e)
+        {
+            foreach (InformationEventHandler eh in __ClanMessageOfTheDay[p])
             {
                 try
                 {
@@ -6049,56 +5373,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "ClanMessageOfTheDay"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (InformationEventHandler eh in __ClanMessageOfTheDay[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "ClanMessageOfTheDay"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (InformationEventHandler eh in __ClanMessageOfTheDay[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "ClanMessageOfTheDay"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e as BaseEventArgs);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<InformationEventArgs> { Arguments = e, Target = new Invokee<InformationEventArgs>(__InvokeClanMessageOfTheDay) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<InformationEventArgs> { Arguments = e, Target = new Invokee<InformationEventArgs>(__InvokeClanMessageOfTheDay) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -6215,7 +5509,12 @@ namespace BNSharp.Net
         /// <seealso cref="ClanRankChanged" />
         protected virtual void OnClanRankChanged(ClanRankChangeEventArgs e)
         {
-            foreach (ClanRankChangeEventHandler eh in __ClanRankChanged[Priority.High])
+            __InvokeClanRankChanged(Priority.High, e);
+        }
+
+        private void __InvokeClanRankChanged(Priority p, ClanRankChangeEventArgs e)
+        {
+            foreach (ClanRankChangeEventHandler eh in __ClanRankChanged[p])
             {
                 try
                 {
@@ -6227,56 +5526,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "ClanRankChanged"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (ClanRankChangeEventHandler eh in __ClanRankChanged[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "ClanRankChanged"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (ClanRankChangeEventHandler eh in __ClanRankChanged[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "ClanRankChanged"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e as BaseEventArgs);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<ClanRankChangeEventArgs> { Arguments = e, Target = new Invokee<ClanRankChangeEventArgs>(__InvokeClanRankChanged) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<ClanRankChangeEventArgs> { Arguments = e, Target = new Invokee<ClanRankChangeEventArgs>(__InvokeClanRankChanged) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -6393,7 +5662,12 @@ namespace BNSharp.Net
         /// <seealso cref="ClanMembershipReceived" />
         protected virtual void OnClanMembershipReceived(ClanMembershipEventArgs e)
         {
-            foreach (ClanMembershipEventHandler eh in __ClanMembershipReceived[Priority.High])
+            __InvokeClanMembershipReceived(Priority.High, e);
+        }
+
+        private void __InvokeClanMembershipReceived(Priority p, ClanMembershipEventArgs e)
+        {
+            foreach (ClanMembershipEventHandler eh in __ClanMembershipReceived[p])
             {
                 try
                 {
@@ -6405,56 +5679,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "ClanMembershipReceived"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (ClanMembershipEventHandler eh in __ClanMembershipReceived[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "ClanMembershipReceived"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (ClanMembershipEventHandler eh in __ClanMembershipReceived[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "ClanMembershipReceived"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e as BaseEventArgs);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<ClanMembershipEventArgs> { Arguments = e, Target = new Invokee<ClanMembershipEventArgs>(__InvokeClanMembershipReceived) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<ClanMembershipEventArgs> { Arguments = e, Target = new Invokee<ClanMembershipEventArgs>(__InvokeClanMembershipReceived) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -6571,7 +5815,12 @@ namespace BNSharp.Net
         /// <seealso cref="ClanCandidatesSearchCompleted" />
         protected virtual void OnClanCandidatesSearchCompleted(ClanCandidatesSearchEventArgs e)
         {
-            foreach (ClanCandidatesSearchEventHandler eh in __ClanCandidatesSearchCompleted[Priority.High])
+            __InvokeClanCandidatesSearchCompleted(Priority.High, e);
+        }
+
+        private void __InvokeClanCandidatesSearchCompleted(Priority p, ClanCandidatesSearchEventArgs e)
+        {
+            foreach (ClanCandidatesSearchEventHandler eh in __ClanCandidatesSearchCompleted[p])
             {
                 try
                 {
@@ -6583,56 +5832,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "ClanCandidatesSearchCompleted"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (ClanCandidatesSearchEventHandler eh in __ClanCandidatesSearchCompleted[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "ClanCandidatesSearchCompleted"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (ClanCandidatesSearchEventHandler eh in __ClanCandidatesSearchCompleted[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "ClanCandidatesSearchCompleted"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e as BaseEventArgs);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<ClanCandidatesSearchEventArgs> { Arguments = e, Target = new Invokee<ClanCandidatesSearchEventArgs>(__InvokeClanCandidatesSearchCompleted) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<ClanCandidatesSearchEventArgs> { Arguments = e, Target = new Invokee<ClanCandidatesSearchEventArgs>(__InvokeClanCandidatesSearchCompleted) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -6749,7 +5968,12 @@ namespace BNSharp.Net
         /// <seealso cref="ClanFormationCompleted" />
         protected virtual void OnClanFormationCompleted(ClanFormationEventArgs e)
         {
-            foreach (ClanFormationEventHandler eh in __ClanFormationCompleted[Priority.High])
+            __InvokeClanFormationCompleted(Priority.High, e);
+        }
+
+        private void __InvokeClanFormationCompleted(Priority p, ClanFormationEventArgs e)
+        {
+            foreach (ClanFormationEventHandler eh in __ClanFormationCompleted[p])
             {
                 try
                 {
@@ -6761,56 +5985,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "ClanFormationCompleted"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (ClanFormationEventHandler eh in __ClanFormationCompleted[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "ClanFormationCompleted"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (ClanFormationEventHandler eh in __ClanFormationCompleted[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "ClanFormationCompleted"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e as BaseEventArgs);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<ClanFormationEventArgs> { Arguments = e, Target = new Invokee<ClanFormationEventArgs>(__InvokeClanFormationCompleted) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<ClanFormationEventArgs> { Arguments = e, Target = new Invokee<ClanFormationEventArgs>(__InvokeClanFormationCompleted) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -6927,7 +6121,12 @@ namespace BNSharp.Net
         /// <seealso cref="ClanFormationInvitationReceived" />
         protected virtual void OnClanFormationInvitationReceived(ClanFormationInvitationEventArgs e)
         {
-            foreach (ClanFormationInvitationEventHandler eh in __ClanFormationInvitationReceived[Priority.High])
+            __InvokeClanFormationInvitationReceived(Priority.High, e);
+        }
+
+        private void __InvokeClanFormationInvitationReceived(Priority p, ClanFormationInvitationEventArgs e)
+        {
+            foreach (ClanFormationInvitationEventHandler eh in __ClanFormationInvitationReceived[p])
             {
                 try
                 {
@@ -6939,56 +6138,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "ClanFormationInvitationReceived"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (ClanFormationInvitationEventHandler eh in __ClanFormationInvitationReceived[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "ClanFormationInvitationReceived"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (ClanFormationInvitationEventHandler eh in __ClanFormationInvitationReceived[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "ClanFormationInvitationReceived"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e as BaseEventArgs);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<ClanFormationInvitationEventArgs> { Arguments = e, Target = new Invokee<ClanFormationInvitationEventArgs>(__InvokeClanFormationInvitationReceived) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<ClanFormationInvitationEventArgs> { Arguments = e, Target = new Invokee<ClanFormationInvitationEventArgs>(__InvokeClanFormationInvitationReceived) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -7105,7 +6274,12 @@ namespace BNSharp.Net
         /// <seealso cref="ClanDisbandCompleted" />
         protected virtual void OnClanDisbandCompleted(ClanDisbandEventArgs e)
         {
-            foreach (ClanDisbandEventHandler eh in __ClanDisbandCompleted[Priority.High])
+            __InvokeClanDisbandCompleted(Priority.High, e);
+        }
+
+        private void __InvokeClanDisbandCompleted(Priority p, ClanDisbandEventArgs e)
+        {
+            foreach (ClanDisbandEventHandler eh in __ClanDisbandCompleted[p])
             {
                 try
                 {
@@ -7117,56 +6291,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "ClanDisbandCompleted"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (ClanDisbandEventHandler eh in __ClanDisbandCompleted[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "ClanDisbandCompleted"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (ClanDisbandEventHandler eh in __ClanDisbandCompleted[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "ClanDisbandCompleted"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e as BaseEventArgs);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<ClanDisbandEventArgs> { Arguments = e, Target = new Invokee<ClanDisbandEventArgs>(__InvokeClanDisbandCompleted) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<ClanDisbandEventArgs> { Arguments = e, Target = new Invokee<ClanDisbandEventArgs>(__InvokeClanDisbandCompleted) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -7283,7 +6427,12 @@ namespace BNSharp.Net
         /// <seealso cref="ClanChangeChieftanCompleted" />
         protected virtual void OnClanChangeChieftanCompleted(ClanChieftanChangeEventArgs e)
         {
-            foreach (ClanChieftanChangeEventHandler eh in __ClanChangeChieftanCompleted[Priority.High])
+            __InvokeClanChangeChieftanCompleted(Priority.High, e);
+        }
+
+        private void __InvokeClanChangeChieftanCompleted(Priority p, ClanChieftanChangeEventArgs e)
+        {
+            foreach (ClanChieftanChangeEventHandler eh in __ClanChangeChieftanCompleted[p])
             {
                 try
                 {
@@ -7295,56 +6444,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "ClanChangeChieftanCompleted"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (ClanChieftanChangeEventHandler eh in __ClanChangeChieftanCompleted[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "ClanChangeChieftanCompleted"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (ClanChieftanChangeEventHandler eh in __ClanChangeChieftanCompleted[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "ClanChangeChieftanCompleted"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e as BaseEventArgs);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<ClanChieftanChangeEventArgs> { Arguments = e, Target = new Invokee<ClanChieftanChangeEventArgs>(__InvokeClanChangeChieftanCompleted) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<ClanChieftanChangeEventArgs> { Arguments = e, Target = new Invokee<ClanChieftanChangeEventArgs>(__InvokeClanChangeChieftanCompleted) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 		
@@ -7642,7 +6761,12 @@ namespace BNSharp.Net
         /// <seealso cref="FriendUpdated" />
         protected virtual void OnFriendUpdated(FriendUpdatedEventArgs e)
         {
-            foreach (FriendUpdatedEventHandler eh in __FriendUpdated[Priority.High])
+            __InvokeFriendUpdated(Priority.High, e);
+        }
+
+        private void __InvokeFriendUpdated(Priority p, FriendUpdatedEventArgs e)
+        {
+            foreach (FriendUpdatedEventHandler eh in __FriendUpdated[p])
             {
                 try
                 {
@@ -7654,56 +6778,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "FriendUpdated"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (FriendUpdatedEventHandler eh in __FriendUpdated[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "FriendUpdated"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (FriendUpdatedEventHandler eh in __FriendUpdated[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "FriendUpdated"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e as BaseEventArgs);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<FriendUpdatedEventArgs> { Arguments = e, Target = new Invokee<FriendUpdatedEventArgs>(__InvokeFriendUpdated) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<FriendUpdatedEventArgs> { Arguments = e, Target = new Invokee<FriendUpdatedEventArgs>(__InvokeFriendUpdated) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -7820,7 +6914,12 @@ namespace BNSharp.Net
         /// <seealso cref="FriendAdded" />
         protected virtual void OnFriendAdded(FriendAddedEventArgs e)
         {
-            foreach (FriendAddedEventHandler eh in __FriendAdded[Priority.High])
+            __InvokeFriendAdded(Priority.High, e);
+        }
+
+        private void __InvokeFriendAdded(Priority p, FriendAddedEventArgs e)
+        {
+            foreach (FriendAddedEventHandler eh in __FriendAdded[p])
             {
                 try
                 {
@@ -7832,56 +6931,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "FriendAdded"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (FriendAddedEventHandler eh in __FriendAdded[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "FriendAdded"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (FriendAddedEventHandler eh in __FriendAdded[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "FriendAdded"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e as BaseEventArgs);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<FriendAddedEventArgs> { Arguments = e, Target = new Invokee<FriendAddedEventArgs>(__InvokeFriendAdded) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<FriendAddedEventArgs> { Arguments = e, Target = new Invokee<FriendAddedEventArgs>(__InvokeFriendAdded) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -7998,7 +7067,12 @@ namespace BNSharp.Net
         /// <seealso cref="FriendRemoved" />
         protected virtual void OnFriendRemoved(FriendRemovedEventArgs e)
         {
-            foreach (FriendRemovedEventHandler eh in __FriendRemoved[Priority.High])
+            __InvokeFriendRemoved(Priority.High, e);
+        }
+
+        private void __InvokeFriendRemoved(Priority p, FriendRemovedEventArgs e)
+        {
+            foreach (FriendRemovedEventHandler eh in __FriendRemoved[p])
             {
                 try
                 {
@@ -8010,56 +7084,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "FriendRemoved"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (FriendRemovedEventHandler eh in __FriendRemoved[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "FriendRemoved"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (FriendRemovedEventHandler eh in __FriendRemoved[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "FriendRemoved"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e as BaseEventArgs);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<FriendRemovedEventArgs> { Arguments = e, Target = new Invokee<FriendRemovedEventArgs>(__InvokeFriendRemoved) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<FriendRemovedEventArgs> { Arguments = e, Target = new Invokee<FriendRemovedEventArgs>(__InvokeFriendRemoved) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 
@@ -8176,7 +7220,12 @@ namespace BNSharp.Net
         /// <seealso cref="FriendMoved" />
         protected virtual void OnFriendMoved(FriendMovedEventArgs e)
         {
-            foreach (FriendMovedEventHandler eh in __FriendMoved[Priority.High])
+            __InvokeFriendMoved(Priority.High, e);
+        }
+
+        private void __InvokeFriendMoved(Priority p, FriendMovedEventArgs e)
+        {
+            foreach (FriendMovedEventHandler eh in __FriendMoved[p])
             {
                 try
                 {
@@ -8188,56 +7237,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "FriendMoved"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (FriendMovedEventHandler eh in __FriendMoved[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "FriendMoved"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (FriendMovedEventHandler eh in __FriendMoved[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "FriendMoved"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e as BaseEventArgs);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<FriendMovedEventArgs> { Arguments = e, Target = new Invokee<FriendMovedEventArgs>(__InvokeFriendMoved) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<FriendMovedEventArgs> { Arguments = e, Target = new Invokee<FriendMovedEventArgs>(__InvokeFriendMoved) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 		
@@ -8356,7 +7375,12 @@ namespace BNSharp.Net
         /// <seealso cref="UserProfileReceived" />
         protected virtual void OnUserProfileReceived(UserProfileEventArgs e)
         {
-            foreach (UserProfileEventHandler eh in __UserProfileReceived[Priority.High])
+            __InvokeUserProfileReceived(Priority.High, e);
+        }
+
+        private void __InvokeUserProfileReceived(Priority p, UserProfileEventArgs e)
+        {
+            foreach (UserProfileEventHandler eh in __UserProfileReceived[p])
             {
                 try
                 {
@@ -8368,56 +7392,26 @@ namespace BNSharp.Net
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "UserProfileReceived"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (UserProfileEventHandler eh in __UserProfileReceived[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "UserProfileReceived"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (UserProfileEventHandler eh in __UserProfileReceived[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "UserProfileReceived"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e as BaseEventArgs);
-                });
-            });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<UserProfileEventArgs> { Arguments = e, Target = new Invokee<UserProfileEventArgs>(__InvokeUserProfileReceived) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<UserProfileEventArgs> { Arguments = e, Target = new Invokee<UserProfileEventArgs>(__InvokeUserProfileReceived) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
         }
         #endregion
 		

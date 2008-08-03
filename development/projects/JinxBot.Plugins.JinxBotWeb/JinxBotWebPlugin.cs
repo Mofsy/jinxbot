@@ -4,17 +4,37 @@ using System.Linq;
 using System.Text;
 using BNSharp.Net;
 using BNSharp;
+using JinxBot.Plugins.JinxBotWeb.JinxBotWeb;
+using System.Windows.Forms;
+using System.Security.Cryptography;
+using BNSharp.BattleNet;
+using System.Threading;
+using System.Diagnostics;
 
 namespace JinxBot.Plugins.JinxBotWeb
 {
     [JinxBotPlugin(Name = "JinxBot[Web]", Version = "0.08.07.25", Author = "MyndFyre", Description = "Enables the broadcast of your current channel to the web.")]
-    public class JinxBotWebPlugin : IEventListener
+    public class JinxBotWebPlugin : IEventListener, IDisposable
     {
         private BattleNetClient m_client;
+        private JinxBotWebApplicationClient m_svc;
+        private Guid m_channelID;
+        private byte[] m_pwHash = Hash("test");
 
         public JinxBotWebPlugin()
         {
             SetupEvents();
+
+            m_svc = new JinxBotWebApplicationClient();
+            m_channelID = new Guid("539be340-302f-442c-ae1c-f9db9b40fc75");
+
+            SetupPosting();
+        }
+
+        private static byte[] Hash(string p)
+        {
+            SHA1 sha = new SHA1Managed();
+            return sha.ComputeHash(Encoding.Unicode.GetBytes(p));
         }
 
         private void SetupEvents()
@@ -47,7 +67,6 @@ namespace JinxBot.Plugins.JinxBotWeb
             __WardenUnhandled = new EventHandler(WardentUnhandled);
             __WhisperReceived = new ChatMessageEventHandler(WhisperReceived);
             __WhisperSent = new ChatMessageEventHandler(WhisperSent);
-            __UserProfileReceived = new UserProfileEventHandler(UserProfileReceived);
         }
 
         #region IEventListener Members
@@ -56,7 +75,6 @@ namespace JinxBot.Plugins.JinxBotWeb
         {
             m_client = client;
 
-            m_client.RegisterUserProfileReceivedNotification(Priority.Low, __UserProfileReceived);
             m_client.RegisterChannelDidNotExistNotification(Priority.Low, __ChannelDidNotExist);
             m_client.RegisterChannelListReceivedNotification(Priority.Low, __ChannelListReceived);
             m_client.RegisterChannelWasFullNotification(Priority.Low, __ChannelWasFull);
@@ -85,11 +103,15 @@ namespace JinxBot.Plugins.JinxBotWeb
             m_client.RegisterWardentUnhandledNotification(Priority.Low, __WardenUnhandled);
             m_client.RegisterWhisperReceivedNotification(Priority.Low, __WhisperReceived);
             m_client.RegisterWhisperSentNotification(Priority.Low, __WhisperSent);
+
+            if (!m_svc.LoginChannel(m_channelID, m_pwHash, client.Settings.Server))
+            {
+                MessageBox.Show("Unable to login channel.");
+            }
         }
 
         public void HandleClientShutdown(BattleNetClient client)
         {
-            m_client.UnregisterUserProfileReceivedNotification(Priority.Low, __UserProfileReceived);
             m_client.UnregisterChannelDidNotExistNotification(Priority.Low, __ChannelDidNotExist);
             m_client.UnregisterChannelListReceivedNotification(Priority.Low, __ChannelListReceived);
             m_client.UnregisterChannelWasFullNotification(Priority.Low, __ChannelWasFull);
@@ -126,214 +148,282 @@ namespace JinxBot.Plugins.JinxBotWeb
         private UserEventHandler __UserShown;
         void UserShown(object sender, UserEventArgs e)
         {
-            AnnounceUser(e);
+            PostEvent(new ClientEvent { EventData = e, EventType = ClientEventType.UserShown });
         }
 
         private ChatMessageEventHandler __WhisperSent;
         void WhisperSent(object sender, ChatMessageEventArgs e)
         {
-            chat.AddChat(new ChatNode("You whisper to ", Color.Magenta), new ChatNode(e.Username, Color.Magenta), new ChatNode(": ", Color.Magenta), new ChatNode(e.Text, Color.Magenta));
+            PostEvent(new ClientEvent { EventData = e, EventType = ClientEventType.WhisperSent });
         }
 
         private ChatMessageEventHandler __WhisperReceived;
         void WhisperReceived(object sender, ChatMessageEventArgs e)
         {
-            chat.AddChat(new ChatNode(e.Username, Color.Magenta), new ChatNode(" whispers: ", Color.Magenta), new ChatNode(e.Text, Color.Magenta));
+            PostEvent(new ClientEvent { EventType = ClientEventType.WhisperReceived, EventData = e });
         }
 
         private EventHandler __WardenUnhandled;
         void WardentUnhandled(object sender, EventArgs e)
         {
-            chat.AddChat(new ChatNode("WARNING: Warden was requested but unhandled.  You may be disconnected.", Color.IndianRed));
+            PostEvent(new ClientEvent { EventData = new InformationEventArgs("Warden was unhandled; the client may be disconnected."), EventType = ClientEventType.WardenUnhandled });
         }
 
         private ChatMessageEventHandler __UserSpoke;
         void UserSpoke(object sender, ChatMessageEventArgs e)
         {
-            chat.AddChat(new ChatNode("[", Color.LightBlue), new ChatNode(e.Username, Color.White), new ChatNode("]: ", Color.LightBlue), new ChatNode(e.Text, Color.White));
+            PostEvent(new ClientEvent { EventData = e, EventType = ClientEventType.UserSpoke });
         }
 
         private UserEventHandler __UserLeft;
         void UserLeft(object sender, UserEventArgs e)
         {
-            chat.AddChat(new ChatNode(e.User.Username, Color.Lime), new ChatNode(" left the channel.", Color.Yellow));
+            PostEvent(new ClientEvent { EventType = ClientEventType.UserLeft, EventData = e });
         }
 
         private UserEventHandler __UserJoined;
         void UserJoined(object sender, UserEventArgs e)
         {
-            AnnounceUser(e);
+            PostEvent(new ClientEvent { EventData = e, EventType = ClientEventType.UserJoined });
         }
 
         private UserEventHandler __UserFlagsChanged;
         void UserFlagsChanged(object sender, UserEventArgs e)
         {
-            if (m_client.ChannelName.Equals("The Void", StringComparison.Ordinal)) /* void view */
-            {
-                AnnounceUser(e);
-            }
+            PostEvent(new ClientEvent { EventData = e, EventType = ClientEventType.UserFlags });
         }
 
         private ChatMessageEventHandler __UserEmoted;
         void UserEmoted(object sender, ChatMessageEventArgs e)
         {
-            chat.AddChat(new ChatNode("<", Color.Yellow), new ChatNode(e.Username, Color.White), new ChatNode(string.Concat(" ", e.Text, ">"), Color.Yellow));
+            PostEvent(new ClientEvent { EventType = ClientEventType.UserEmoted, EventData = e });
         }
 
         private ServerChatEventHandler __ServerErrorReceived;
         void m_client_ServerErrorReceived(object sender, ServerChatEventArgs e)
         {
-            chat.AddChat(new ChatNode("[Error]: ", Color.Gray), new ChatNode(e.Text, Color.Orange));
+            PostEvent(new ClientEvent { EventData = e, EventType = ClientEventType.ServerError });
         }
 
         private ServerChatEventHandler __ServerBroadcast;
         void ServerBroadcast(object sender, ServerChatEventArgs e)
         {
-            chat.AddChat(new ChatNode("[Server]: ", Color.Gray), new ChatNode(e.Text, Color.Gray));
+            PostEvent(new ClientEvent { EventType = ClientEventType.ServerBroadcast, EventData = e });
         }
 
         private ChatMessageEventHandler __MessageSent;
         void MessageSent(object sender, ChatMessageEventArgs e)
         {
-            if (m_inChat)
-            {
-                chat.AddChat(new ChatNode("[", Color.LightBlue), new ChatNode(m_userName, Color.White), new ChatNode("]: ", Color.LightBlue), new ChatNode(e.Text, Color.White));
-            }
+            PostEvent(new ClientEvent { EventData = e, EventType = ClientEventType.MessageSent });
         }
 
         private EventHandler __LoginSucceeded;
         void LoginSucceeded(object sender, EventArgs e)
         {
-            chat.AddChat(new ChatNode("Login succeeded!", Color.LimeGreen));
+            PostEvent(new ClientEvent { EventType = ClientEventType.LoginSucceeded, EventData = new InformationEventArgs("Login succeeded!") });
         }
 
         private EventHandler __LoginFailed;
         void LoginFailed(object sender, EventArgs e)
         {
-            chat.AddChat(new ChatNode("Login failed.", Color.Red));
+            PostEvent(new ClientEvent { EventData = new InformationEventArgs("Login failed!"), EventType = ClientEventType.LoginFailed });
         }
 
         private ServerChatEventHandler __JoinedChannel;
         void JoinedChannel(object sender, ServerChatEventArgs e)
         {
-            chat.AddChat(new ChatNode("Joined Channel: ", Color.Yellow), new ChatNode(e.Text, Color.White));
-            ChannelFlags flags = (ChannelFlags)e.Flags;
-            if ((flags & ChannelFlags.SilentChannel) == ChannelFlags.SilentChannel)
-                chat.AddChat(new ChatNode("This is a silent channel.", Color.LightBlue));
-
-            ThreadStart ts = delegate
-            {
-                this.Text = string.Format(CultureInfo.CurrentCulture, "Chat Channel: {0}", e.Text);
-                this.TabText = this.Text;
-            };
-
-            if (InvokeRequired)
-                BeginInvoke(ts);
-            else
-                ts();
+            m_svc.SetChannelName(m_channelID, Hash("test"), e.Text);
+            PostEvent(new ClientEvent { EventData = e, EventType = ClientEventType.JoinedChannel });
         }
 
         private ServerChatEventHandler __InformationReceived;
         void InformationReceived(object sender, ServerChatEventArgs e)
         {
             if (!string.IsNullOrEmpty(e.Text))
-                chat.AddChat(new ChatNode("[Server]: ", Color.Gray), new ChatNode(e.Text, Color.Gray));
+                PostEvent(new ClientEvent { EventType = ClientEventType.InformationReceived, EventData = e });
         }
 
         private InformationEventHandler __Information;
         void Information(object sender, InformationEventArgs e)
         {
-            chat.AddChat(new ChatNode(e.Information, Color.LightSteelBlue));
+            PostEvent(new ClientEvent { EventData = e, EventType = ClientEventType.Information });
         }
 
         private ErrorEventHandler __Error;
         void Error(object sender, ErrorEventArgs e)
         {
-            chat.AddChat(new ChatNode(e.Error, Color.Orange));
-            if (e.IsDisconnecting)
-            {
-                chat.AddChat(new ChatNode("This error is causing you to disconnect.", Color.OrangeRed));
-            }
+            PostEvent(new ClientEvent { EventType = ClientEventType.Error, EventData = e });
         }
 
         private EnteredChatEventHandler __EnteredChat;
         void EnteredChat(object sender, EnteredChatEventArgs e)
         {
-            Product clientProduct = Product.GetByProductCode(m_client.Settings.Client.ToUpperInvariant());
-            string imgID = m_prp.Icons.GetImageIdFor(UserFlags.None, UserStats.CreateDefault(clientProduct));
-            Image userImg = ProfileResourceProvider.GetForClient(m_client).Icons.GetImageFor(UserFlags.None, UserStats.CreateDefault(clientProduct));
-            chat.AddChat(new ChatNode("Entered chat as ", Color.Yellow),
-                new ImageChatNode(string.Concat(imgID, ".jpg"),
-                    userImg, clientProduct.Name),
-                new ChatNode(e.UniqueUsername, Color.White));
-            m_userName = e.UniqueUsername;
-            m_inChat = true;
-            m_enteredChat = DateTime.Now;
+            PostEvent(new ClientEvent { EventType = ClientEventType.EnteredChat, EventData = e });
         }
 
         private EventHandler __Disconnected;
         void Disconnected(object sender, EventArgs e)
         {
-            chat.AddChat(new ChatNode("Disconnected.", Color.Yellow));
-            m_inChat = false;
-            m_userName = null;
+            PostEvent(new ClientEvent { EventData = new InformationEventArgs("Disconnected."), EventType = ClientEventType.Disconnected });
         }
 
         private EventHandler __Connected;
         void Connected(object sender, EventArgs e)
         {
-            chat.AddChat(new ChatNode("Connected!", Color.Yellow));
+            PostEvent(new ClientEvent { EventData = new InformationEventArgs("Connected."), EventType = ClientEventType.Connected });
         }
 
         private InformationEventHandler __CommandSent;
         void CommandSent(object sender, InformationEventArgs e)
         {
-            chat.AddChat(new ChatNode(e.Information, Color.Teal));
+            PostEvent(new ClientEvent { EventType = ClientEventType.CommandSent, EventData = e });
         }
 
         private EventHandler __ClientCheckPassed;
         void ClientCheckPassed(object sender, EventArgs e)
         {
-            chat.AddChat(new ChatNode("Versioning passed!", Color.LimeGreen));
+            PostEvent(new ClientEvent { EventData = new InformationEventArgs("Versioning passed!"), EventType = ClientEventType.ClientCheckPassed });
         }
 
         private ClientCheckFailedEventHandler __ClientCheckFailed;
         void ClientCheckFailed(object sender, ClientCheckFailedEventArgs e)
         {
-            chat.AddChat(new ChatNode(string.Format(CultureInfo.CurrentCulture, "Versioning check failed; {0}", e.Reason), Color.OrangeRed));
+            PostEvent(new ClientEvent { EventType = ClientEventType.ClientCheckFailed, EventData = e });
         }
 
         private ServerChatEventHandler __ChannelWasRestricted;
         void ChannelWasRestricted(object sender, ServerChatEventArgs e)
         {
-            chat.AddChat(new ChatNode(e.Text, Color.Red));
+            PostEvent(new ClientEvent { EventData = e, EventType = ClientEventType.ChannelRestricted });
         }
 
         private ServerChatEventHandler __ChannelWasFull;
         void ChannelWasFull(object sender, ServerChatEventArgs e)
         {
-            chat.AddChat(new ChatNode(e.Text, Color.Red));
+            PostEvent(new ClientEvent { EventType = ClientEventType.ChannelFull, EventData = e });
         }
 
         private ChannelListEventHandler __ChannelListReceived;
         void ChannelListReceived(object sender, ChannelListEventArgs e)
         {
-            List<ChatNode> nodesToAdd = new List<ChatNode>();
-            nodesToAdd.Add(new ChatNode("Available Channels:", Color.LightSteelBlue));
-            foreach (string s in e.Channels)
-            {
-                nodesToAdd.Add(ChatNode.NewLine);
-                nodesToAdd.Add(new ChatNode(" - ", Color.Yellow));
-                nodesToAdd.Add(new ChatNode(s, Color.White));
-            }
-            chat.AddChat(nodesToAdd);
+            PostEvent(new ClientEvent { EventData = e, EventType = ClientEventType.ChannelListReceived });
         }
 
         private ServerChatEventHandler __ChannelDidNotExist;
         void ChannelDidNotExist(object sender, ServerChatEventArgs e)
         {
-            chat.AddChat(new ChatNode(e.Text, Color.Red));
+            PostEvent(new ClientEvent { EventType = ClientEventType.ChannelDidNotExist, EventData = e });
         }
+        #endregion
+
+        #region IDisposable Members
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (m_svc != null)
+                {
+                    m_svc.Close();
+                    m_svc = null;
+                }
+
+                if (m_submitLoop != null)
+                {
+                    m_submitLoop.Abort();
+                    m_submitLoop = null;
+                }
+
+                if (m_submitWait != null)
+                {
+                    m_submitWait.Close();
+                    m_submitWait = null;
+                }
+            }
+        }
+
+        #endregion
+
+        #region queued uploader
+        private EventWaitHandle m_submitWait = new EventWaitHandle(false, EventResetMode.AutoReset);
+        private Queue<ClientEvent> m_events = new Queue<ClientEvent>();
+        private object m_queueLock = new object();
+
+        private Thread m_submitLoop;
+        private void SetupPosting()
+        {
+            m_submitLoop = new Thread(new ThreadStart(SubmitLoop));
+            m_submitLoop.IsBackground = true;
+            m_submitLoop.Priority = ThreadPriority.BelowNormal;
+
+            m_submitLoop.Start();
+        }
+
+        private void PostEvent(ClientEvent ev)
+        {
+            lock (m_queueLock)
+            {
+                m_events.Enqueue(ev);
+            }
+            m_submitWait.Set();
+        }
+
+        private void SubmitLoop()
+        {
+            try
+            {
+                while (true)
+                {
+                    m_submitWait.Reset();
+
+                    while (m_events.Count == 0)
+                        m_submitWait.WaitOne();
+
+                    try
+                    {
+                        lock (m_queueLock)
+                        {
+                            List<ClientEvent> eventsToSend = new List<ClientEvent>();
+                            while (m_events.Count > 0)
+                            {
+                                ClientEvent ev = m_events.Dequeue();
+                                eventsToSend.Add(ev);
+                            }
+
+                            m_svc.PostEvents(m_channelID, m_pwHash, eventsToSend.ToArray());
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Trace.WriteLine(ex, "Service submission error (JinxBotWeb)");
+                    }
+                }
+            }
+            catch (ThreadAbortException)
+            {
+                // exit gracefully
+            }
+        }
+        #endregion
+
+        #region IJinxBotPlugin Members
+
+        public void Startup(IDictionary<string, string> settings)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Shutdown(IDictionary<string, string> settings)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
     }
 }

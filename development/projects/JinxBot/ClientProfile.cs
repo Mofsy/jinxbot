@@ -225,5 +225,12 @@ namespace JinxBot
             get;
             set;
         }
+
+        [Browsable(false)]
+        public PluginsConfiguration PluginsConfiguration
+        {
+            get;
+            set;
+        }
     }
 }

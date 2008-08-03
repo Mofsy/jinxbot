@@ -1,35 +1,45 @@
 ﻿/// <reference name="MicrosoftAjax.js"/>
-var $EnumVal = function(name, value) { this._name = name; this._value = value; };
-
-var Diablo2CharacterClass = 
+function $ArgsTypes() { }
+$ArgsTypes.prototype = 
 {
-    Unknown : $EnumVal('Unknown', 0),
-    Amazon : $EnumVal('Amazon', 1),
-    Sorceress : $EnumVal('Sorceress', 2),
-    Necromancer : $EnumVal('Necromancer', 3),
-    Paladin : $EnumVal('Paladin', 4),
-    Barbarian : $EnumVal('Barbarian', 5),
-    Druid : $EnumVal('Druid', 6),
-    Assassin : $EnumVal('Assassin', 7)
+    User : "UserEventArgs:#BNSharp",
+    ServerChat : "ServerChatEventArgs:#BNSharp",
+    Information : "InformationEventArgs:#BNSharp",
+    EnteredChat : "EnteredChatEventArgs:#BNSharp",
+    Chat : "ChatMessageEventArgs:#BNSharp", 
+    ChannelList : "ChannelListEventArgs:#BNSharp"
 };
+var ArgsTypes = new $ArgsTypes();
 
-var Diablo2DifficultyLevel = 
+function startServicePolling()
 {
-    Unknown : $EnumVal('Unknown', 0),
-    Normal : $EnumVal('Normal', 1),
-    Nightmare : $EnumVal('Nightmare', 2),
-    Hell : $EnumVal('Hell', 3),
-    getByValue : function(val)
-        {
-            for (var i in this)
-            {
-                if (this[i].value)
-                {
-                    if (this[i].value == val)
-                        return this[i];
-                }
-            }
-            return false;
-        }
+    setTimeout('callService();', 500);
 }
 
+function callService()
+{
+    var client = new JinxBotWebClient();
+    client.GetEvents(channelID, mostRecentEvent, serviceSuccess, serviceFailure);
+}
+
+function serviceSuccess(result)
+{
+    for (var i = 0; i < result.length; i++)
+    {
+        addChat(result[i]);
+        chatEvents.push(result[i]);
+        mostRecentEvent = result[i].EventID;
+    }
+    
+    startServicePolling();
+}
+
+function serviceFailure(error)
+{
+    chatWindow.addChat(
+        generateTimestamp( { Time : new Date() } ), 
+        new JinxBotWeb.ChatNode(error.get_message(), 'error')
+        );
+        
+    startServicePolling();
+}

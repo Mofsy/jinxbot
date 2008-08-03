@@ -33,6 +33,7 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.findPluginsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.checkForUpdatesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.displayErrorLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.profilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -48,11 +49,11 @@
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripSeparator();
             this.automaticallyStartThisProfileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.automaticallyReconnectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.enableVoidViewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gettingStartedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.enableVoidViewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dock = new JinxBot.Controls.Docking.DockPanel();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -83,6 +84,7 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.findPluginsToolStripMenuItem,
             this.checkForUpdatesToolStripMenuItem,
+            this.displayErrorLogToolStripMenuItem,
             this.toolStripMenuItem1,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
@@ -102,6 +104,13 @@
             this.checkForUpdatesToolStripMenuItem.Name = "checkForUpdatesToolStripMenuItem";
             this.checkForUpdatesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.checkForUpdatesToolStripMenuItem.Text = "Check for &Updates...";
+            // 
+            // displayErrorLogToolStripMenuItem
+            // 
+            this.displayErrorLogToolStripMenuItem.Name = "displayErrorLogToolStripMenuItem";
+            this.displayErrorLogToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.displayErrorLogToolStripMenuItem.Text = "Display Error &Log";
+            this.displayErrorLogToolStripMenuItem.Click += new System.EventHandler(this.displayErrorLogToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
@@ -219,6 +228,15 @@
             this.automaticallyReconnectToolStripMenuItem.Size = new System.Drawing.Size(234, 22);
             this.automaticallyReconnectToolStripMenuItem.Text = "Automatically &Reconnect";
             // 
+            // enableVoidViewToolStripMenuItem
+            // 
+            this.enableVoidViewToolStripMenuItem.Checked = true;
+            this.enableVoidViewToolStripMenuItem.CheckOnClick = true;
+            this.enableVoidViewToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.enableVoidViewToolStripMenuItem.Name = "enableVoidViewToolStripMenuItem";
+            this.enableVoidViewToolStripMenuItem.Size = new System.Drawing.Size(234, 22);
+            this.enableVoidViewToolStripMenuItem.Text = "Enable &Void View";
+            // 
             // helpToolStripMenuItem
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -247,15 +265,6 @@
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
             this.aboutToolStripMenuItem.Text = "&About...";
-            // 
-            // enableVoidViewToolStripMenuItem
-            // 
-            this.enableVoidViewToolStripMenuItem.Checked = true;
-            this.enableVoidViewToolStripMenuItem.CheckOnClick = true;
-            this.enableVoidViewToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.enableVoidViewToolStripMenuItem.Name = "enableVoidViewToolStripMenuItem";
-            this.enableVoidViewToolStripMenuItem.Size = new System.Drawing.Size(234, 22);
-            this.enableVoidViewToolStripMenuItem.Text = "Enable &Void View";
             // 
             // dock
             // 
@@ -317,6 +326,7 @@
         private System.Windows.Forms.ToolStripMenuItem automaticallyReconnectToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem enableVoidViewToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem displayErrorLogToolStripMenuItem;
 
     }
 }

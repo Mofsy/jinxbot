@@ -14,30 +14,37 @@ namespace BNSharp.BattleNet.Stats
         /// <summary>
         /// Specifies that the icon race sent from Battle.net was unrecognized.
         /// </summary>
+        [EnumMember]
         Unknown,
         /// <summary>
         /// Specifies that a user's icon is based on the random list.
         /// </summary>
+        [EnumMember]
         Random,
         /// <summary>
         /// Specifies that a user's icon is based on the tournament list.
         /// </summary>
+        [EnumMember]
         Tournament,
         /// <summary>
         /// Specifies that a user's icon is based on the human list.
         /// </summary>
+        [EnumMember]
         Human,
         /// <summary>
         /// Specifies that a user's icon is based on the orc list.
         /// </summary>
+        [EnumMember]
         Orc,
         /// <summary>
         /// Specifies that a user's icon is based on the night elf list.
         /// </summary>
+        [EnumMember]
         NightElf,
         /// <summary>
         /// Specifies that a user's icon is based on the undead list.
         /// </summary>
+        [EnumMember]
         Undead,
     }
 }

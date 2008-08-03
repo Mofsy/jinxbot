@@ -11,7 +11,7 @@ namespace BNSharp.BattleNet
     /// <summary>
     /// Represents a user profile request key.  This class cannot be inherited.
     /// </summary>
-    [DataContract]
+    //[DataContract]
     public sealed class UserProfileKey
     {
         #region predefined strings

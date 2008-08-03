@@ -10,6 +10,10 @@ using JinxBot.Controls.Docking;
 using BNSharp.Net;
 using BNSharp;
 using BNSharp.BattleNet;
+using JinxBot.Reliability;
+using System.Reflection;
+using System.Globalization;
+using System.Threading;
 
 namespace JinxBot.Views
 {
@@ -21,10 +25,13 @@ namespace JinxBot.Views
         private ClanList m_clan;
         private NewsList m_news;
         private BattleNetClient m_client;
+        private Dictionary<string, int> m_assemblyNamesToErrors;
 
         public ProfileDocument()
         {
             InitializeComponent();
+            m_assemblyNamesToErrors = new Dictionary<string, int>();
+
         }
 
         public ProfileDocument(BattleNetClient client)
@@ -32,6 +39,8 @@ namespace JinxBot.Views
         {
             m_client = client;
             this.Text = this.TabText = (client.Settings as ClientProfile).ProfileName;
+
+            client.EventExceptionThrown += new EventExceptionEventHandler(client_EventExceptionThrown);
 
             m_chat = new ChatDocument(client);
             m_chat.Text = "Main chat window (Disconnected)";
@@ -63,6 +72,20 @@ namespace JinxBot.Views
             }
 
             m_channel.Show();
+        }
+
+        void client_EventExceptionThrown(object sender, EventExceptionEventArgs e)
+        {
+            GlobalErrorHandler.ReportEventException(this.Text, e);
+            string assemblyFullName = e.FaultingMethod.Method.DeclaringType.Assembly.FullName;
+            if (m_assemblyNamesToErrors.ContainsKey(assemblyFullName))
+            {
+                m_assemblyNamesToErrors[assemblyFullName]++;
+            }
+            else
+            {
+                m_assemblyNamesToErrors.Add(assemblyFullName, 1);
+            }
         }
 
         /// <summary>

@@ -36,8 +36,6 @@ namespace JinxBot.Views.Chat
 
                 g.FillRectangle(b, bounds);
             }
-
-            m_pingImg.Save(@"c:\Projects\test.png", ImageFormat.Png);
         }
 
         #region ICustomListBoxItemRenderer Members
