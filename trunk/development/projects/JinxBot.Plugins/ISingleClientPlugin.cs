@@ -5,7 +5,8 @@ using System.Text;
 
 namespace JinxBot.Plugins
 {
-    public interface ISingleClientPlugin
+    
+    public interface ISingleClientPlugin : IJinxBotPlugin
     {
         
     }

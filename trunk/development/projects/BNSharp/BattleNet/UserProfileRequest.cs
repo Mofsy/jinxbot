@@ -8,7 +8,7 @@ namespace BNSharp.BattleNet
     /// <summary>
     /// Specifies a key-value-based user profile.  This class cannot be inherited.
     /// </summary>
-    [DataContract]
+    //[DataContract]
     public sealed class UserProfileRequest : IEnumerable<UserProfileKey>
     {
         [DataMember(Name = "ValuePairs")]
@@ -102,6 +102,7 @@ namespace BNSharp.BattleNet
 
         #region IEnumerable<UserProfileKey> Members
 
+        /// <inheritdoc />
         public IEnumerator<UserProfileKey> GetEnumerator()
         {
             return m_profileValues.Keys.GetEnumerator();

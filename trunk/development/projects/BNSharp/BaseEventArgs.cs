@@ -61,13 +61,11 @@ namespace BNSharp
         {
             List<Type> types = new List<Type>();
             Assembly asm = Assembly.GetExecutingAssembly();
-            Type baseEventArgsType = typeof(BaseEventArgs);
             foreach (Type t in asm.GetTypes())
             {
-                if (baseEventArgsType.IsAssignableFrom(t))
-                {
+                DataContractAttribute[] atts = t.GetCustomAttributes(typeof(DataContractAttribute), true) as DataContractAttribute[];
+                if (atts.Length > 0)
                     types.Add(t);
-                }
             }
 
             return types.ToArray();

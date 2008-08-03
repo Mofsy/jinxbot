@@ -99,6 +99,7 @@
     <Compile Include="Compatibility\WcfAttributes.cs" />
     <Compile Include="EnteredChatEventArgs.cs" />
     <Compile Include="ErrorEventArgs.cs" />
+    <Compile Include="EventExceptionEventArgs.cs" />
     <Compile Include="IBattleNetSettings.cs" />
     <Compile Include="InformationEventArgs.cs" />
     <Compile Include="MBNCSUtil\Data\BniFileParser.cs" />

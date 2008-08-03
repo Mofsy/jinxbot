@@ -48,6 +48,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IEventListener.cs" />
+    <Compile Include="IJinxBotPlugin.cs" />
+    <Compile Include="IMultiClientPlugin.cs" />
     <Compile Include="IPacketHandlerPlugin.cs" />
     <Compile Include="ISingleClientPlugin.cs" />
     <Compile Include="JinxBotPluginAttribute.cs" />

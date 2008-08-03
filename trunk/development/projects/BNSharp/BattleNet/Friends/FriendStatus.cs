@@ -15,18 +15,22 @@ namespace BNSharp.BattleNet.Friends
         /// <summary>
         /// No additional information is provided.
         /// </summary>
+        [EnumMember]
         None = 0,
         /// <summary>
         /// The user also listed you as a friend.
         /// </summary>
+        [EnumMember]
         Mutual = 1,
         /// <summary>
         /// The user has flagged themselves as do-not-disturb.
         /// </summary>
+        [EnumMember]
         DoNotDisturb = 2,
         /// <summary>
         /// The user is away.
         /// </summary>
+        [EnumMember]
         Away = 4,
     }
 }

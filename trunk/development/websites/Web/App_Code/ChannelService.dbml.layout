@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ordesignerObjectsDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 11, 8.5" name="ChannelService">
+  <DataContextMoniker Name="/ChannelServiceDataContext" />
+  <nestedChildShapes>
+    <classShape Id="82b584be-d9cc-494d-86b0-bd58525c5844" absoluteBounds="1.125, 1.125, 2, 2.3478011067708335">
+      <DataClassMoniker Name="/ChannelServiceDataContext/Channel" />
+      <nestedChildShapes>
+        <elementListCompartment Id="e7577c39-d6a6-4a25-bc35-ad675a238cbc" absoluteBounds="1.1400000000000001, 1.585, 1.9700000000000002, 1.7878011067708335" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="2637621f-c5e8-4dec-8690-db51b0110097" absoluteBounds="5.75, 2, 2, 1.7708968098958331">
+      <DataClassMoniker Name="/ChannelServiceDataContext/ChatEvent" />
+      <nestedChildShapes>
+        <elementListCompartment Id="bd661db5-7b48-4fbd-931e-fd076b08f844" absoluteBounds="5.765, 2.46, 1.9700000000000002, 1.2108968098958333" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <associationConnector edgePoints="[(3.125 : 2.73640055338542); (5.75 : 2.73640055338542)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+      <AssociationMoniker Name="/ChannelServiceDataContext/Channel/Channel_ChatEvent" />
+      <nodes>
+        <classShapeMoniker Id="82b584be-d9cc-494d-86b0-bd58525c5844" />
+        <classShapeMoniker Id="2637621f-c5e8-4dec-8690-db51b0110097" />
+      </nodes>
+    </associationConnector>
+  </nestedChildShapes>
+</ordesignerObjectsDiagram>

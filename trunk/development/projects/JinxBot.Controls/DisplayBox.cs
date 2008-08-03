@@ -200,6 +200,8 @@ p
         {
             ThreadStart ts = delegate
             {
+                if (m_enterTextElement == null) return;
+
                 if (m_enterTextElement.Children.Count > m_parasToKeep)
                 {
                     int maxChildrenToRemove = m_parasToKeep / 8;

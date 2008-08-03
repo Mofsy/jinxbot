@@ -14,18 +14,22 @@ namespace BNSharp.BattleNet
         /// <summary>
         /// Specifies that the difficulty level is unrecognized.
         /// </summary>
+        [EnumMember]
         Unknown = 0,
         /// <summary>
         /// Specifies the Normal difficulty level.
         /// </summary>
+        [EnumMember]
         Normal = 1,
         /// <summary>
         /// Specifies the Nightmare difficulty level.
         /// </summary>
+        [EnumMember]
         Nightmare = 2,
         /// <summary>
         /// Specifies the Hell difficulty level.
         /// </summary>
+        [EnumMember]
         Hell = 3,
     }
 }

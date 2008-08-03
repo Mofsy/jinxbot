@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<JinxBotConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <Globals>
+        <Icons>BattleNetWebSite</Icons>
+        <AllowDataCollection>true</AllowDataCollection>
+        <KnownPlugins>
+            <Plugin>
+                <Assembly>JinxBot.Plugins.JinxBotWeb.dll</Assembly>
+                <Dependencies>
+                    <Dependency>JinxBot.Plugins.JinxBotWeb.Shared.dll</Dependency>
+                </Dependencies>
+            </Plugin>
+            <Plugin>
+                <Assembly>JinxBot.Plugins.McpHandler.dll</Assembly>
+            </Plugin>
+        </KnownPlugins>
+    </Globals>
+    <Profiles>
+        <ClientProfile ProfileName="DarkTemplar~AoA on useast.battle.net (Starcraft: Brood War)">
+            <Client>SEXP</Client>
+            <VersionByte>209</VersionByte>
+            <PrimaryCdKey>1111111111111</PrimaryCdKey>
+            <GameExePath>C:\Gamefiles\STAR\Starcraft.exe</GameExePath>
+            <StormDllPath>C:\Gamefiles\STAR\Storm.dll</StormDllPath>
+            <BattleSnpPath>C:\Gamefiles\STAR\Battle.snp</BattleSnpPath>
+            <Username>DarkTemplar~AoA</Username>
+            <LockdownImagePath>C:\Gamefiles\STAR\STAR.bin</LockdownImagePath>
+            <Password>password</Password>
+            <ServerUri>useast.battle.net</ServerUri>
+            <ServerPort>6112</ServerPort>
+            <CdKeyOwnerName>Robert Paveza</CdKeyOwnerName>
+            <Ping>Normal</Ping>
+        </ClientProfile>
+        <ClientProfile ProfileName="DT on East, War3">
+            <Client>WAR3</Client>
+            <VersionByte>22</VersionByte>
+            <PrimaryCdKey>11111111111111111111111111</PrimaryCdKey>
+            <GameExePath>C:\Gamefiles\WAR3\war3.exe</GameExePath>
+            <StormDllPath>C:\Gamefiles\WAR3\Storm.dll</StormDllPath>
+            <BattleSnpPath>C:\Gamefiles\WAR3\game.dll</BattleSnpPath>
+            <Username>DarkTemplar-AoA</Username>
+            <Password>password</Password>
+            <ServerUri>useast.battle.net</ServerUri>
+            <ServerPort>6112</ServerPort>
+            <CdKeyOwnerName>Robert Paveza</CdKeyOwnerName>
+            <Ping>MinusOneMs</Ping>
+        </ClientProfile>
+        <ClientProfile ProfileName="DT on East - D2DV">
+            <Client>D2DV</Client>
+            <VersionByte>12</VersionByte>
+            <PrimaryCdKey>1111111111111111</PrimaryCdKey>
+            <GameExePath>C:\Gamefiles\D2DV\Game.exe</GameExePath>
+            <StormDllPath>C:\Gamefiles\D2DV\Bnclient.dll</StormDllPath>
+            <BattleSnpPath>C:\Gamefiles\D2DV\D2Client.dll</BattleSnpPath>
+            <Username>DarkTemplar~AoA</Username>
+            <Password>password</Password>
+            <ServerUri>useast.battle.net</ServerUri>
+            <ServerPort>6112</ServerPort>
+            <CdKeyOwnerName>Robert Paveza</CdKeyOwnerName>
+            <Ping>MinusOneMs</Ping>
+            <PluginSettings>
+                <Plugin>
+                    <Name>JinxBot[Web]</Name>
+                    <Type>JinxBot.Plugins.JinxBotWeb.JinxBotWebPlugin, JinxBot.Plugins.JinxBotWeb</Type>
+                    <PluginAssembly>JinxBot.Plugins.JinxBotWeb.dll</PluginAssembly>
+                    <Settings>
+                        <Setting Name="BindingUri" Value="http://www.jinxbot.net/web/JinxBotWebApplication.svc" />
+                    </Settings>
+                </Plugin>
+                <Plugin>
+                    <Name>JinxBot MCP Handler Extension</Name>
+                    <Type>JinxBot.Plugins.McpHandler.McpConnectionHandlerPlugin, JinxBot.Plugins.McpHandler</Type>
+                    <PluginAssembly>JinxBot.Plugins.McpHandler.dll</PluginAssembly>
+                    <Settings>
+                        <Setting Name="CharacterName" Value="Martok" />
+                    </Settings>
+                </Plugin>
+            </PluginSettings>
+        </ClientProfile>
+    </Profiles>
+</JinxBotConfiguration>

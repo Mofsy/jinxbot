@@ -28,7 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.dock = new JinxBot.Controls.Docking.DockPanel();
+            this.pluginErrorsTip = new System.Windows.Forms.ToolTip(this.components);
             this.SuspendLayout();
             // 
             // dock
@@ -40,6 +42,15 @@
             this.dock.Name = "dock";
             this.dock.Size = new System.Drawing.Size(609, 381);
             this.dock.TabIndex = 0;
+            // 
+            // pluginErrorsTip
+            // 
+            this.pluginErrorsTip.AutoPopDelay = 7500;
+            this.pluginErrorsTip.InitialDelay = 500;
+            this.pluginErrorsTip.IsBalloon = true;
+            this.pluginErrorsTip.ReshowDelay = 100;
+            this.pluginErrorsTip.ToolTipIcon = System.Windows.Forms.ToolTipIcon.Warning;
+            this.pluginErrorsTip.ToolTipTitle = "JinxBot Detected Plugin Errors [NYI]";
             // 
             // ProfileDocument
             // 
@@ -58,5 +69,6 @@
         #endregion
 
         private JinxBot.Controls.Docking.DockPanel dock;
+        private System.Windows.Forms.ToolTip pluginErrorsTip;
     }
 }

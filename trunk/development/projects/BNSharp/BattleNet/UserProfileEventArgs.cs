@@ -9,7 +9,7 @@ namespace BNSharp.BattleNet
     /// <summary>
     /// Specifies a user profile that has been populated by Battle.net.
     /// </summary>
-    [DataContract]
+    //[DataContract]
     public class UserProfileEventArgs : BaseEventArgs
     {
         [DataMember(Name = "Profile")]

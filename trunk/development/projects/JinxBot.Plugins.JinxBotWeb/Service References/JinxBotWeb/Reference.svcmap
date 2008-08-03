@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="0af5e450-8633-4ff8-bc72-bdbdc9a93e80" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://localhost:28432/Web/JinxBotWebApplication.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="JinxBotWebApplication9.xsd" MetadataType="Schema" ID="65e7c0c1-3fe1-4348-9b3c-c9245ca069ce" SourceId="1" SourceUrl="http://localhost:28432/Web/JinxBotWebApplication.svc?xsd=xsd9" />
+    <MetadataFile FileName="JinxBotWebApplication.xsd" MetadataType="Schema" ID="7afcf26b-557d-4036-bbb4-9b90fe94bc3e" SourceId="1" SourceUrl="http://localhost:28432/Web/JinxBotWebApplication.svc?xsd=xsd8" />
+    <MetadataFile FileName="JinxBotWebApplication1.xsd" MetadataType="Schema" ID="5a7fb8bc-6fba-4b55-b436-aaa43fa009a2" SourceId="1" SourceUrl="http://localhost:28432/Web/JinxBotWebApplication.svc?xsd=xsd1" />
+    <MetadataFile FileName="JinxBotWebApplication2.xsd" MetadataType="Schema" ID="2584f036-d0e3-40db-b4e1-26e82a6e1968" SourceId="1" SourceUrl="http://localhost:28432/Web/JinxBotWebApplication.svc?xsd=xsd0" />
+    <MetadataFile FileName="JinxBotWebApplication3.xsd" MetadataType="Schema" ID="94838ac3-c042-4e18-8542-994358820d1a" SourceId="1" SourceUrl="http://localhost:28432/Web/JinxBotWebApplication.svc?xsd=xsd3" />
+    <MetadataFile FileName="JinxBotWebApplication4.xsd" MetadataType="Schema" ID="8bbe9820-fea5-497d-b1e1-085cf13df982" SourceId="1" SourceUrl="http://localhost:28432/Web/JinxBotWebApplication.svc?xsd=xsd2" />
+    <MetadataFile FileName="JinxBotWebApplication5.xsd" MetadataType="Schema" ID="9813920e-662d-4af0-ad6e-3d89c7700cf9" SourceId="1" SourceUrl="http://localhost:28432/Web/JinxBotWebApplication.svc?xsd=xsd5" />
+    <MetadataFile FileName="JinxBotWebApplication6.xsd" MetadataType="Schema" ID="6c883feb-533d-4956-93e8-85965fb2c60c" SourceId="1" SourceUrl="http://localhost:28432/Web/JinxBotWebApplication.svc?xsd=xsd4" />
+    <MetadataFile FileName="JinxBotWebApplication7.xsd" MetadataType="Schema" ID="1745952f-7d41-402c-9bfb-e36bc3e17282" SourceId="1" SourceUrl="http://localhost:28432/Web/JinxBotWebApplication.svc?xsd=xsd7" />
+    <MetadataFile FileName="JinxBotWebApplication8.xsd" MetadataType="Schema" ID="56fab403-fe15-4d4a-9923-ef22a964b7a4" SourceId="1" SourceUrl="http://localhost:28432/Web/JinxBotWebApplication.svc?xsd=xsd6" />
+    <MetadataFile FileName="JinxBotWebApplication.wsdl" MetadataType="Wsdl" ID="465fd1a7-1cf1-4dda-97cd-481298fc57ec" SourceId="1" SourceUrl="http://localhost:28432/Web/JinxBotWebApplication.svc?wsdl" />
+    <MetadataFile FileName="JinxBotWebApplication1.wsdl" MetadataType="Wsdl" ID="c758fa29-c5fe-4316-b90b-c7ba000aeba0" SourceId="1" SourceUrl="http://localhost:28432/Web/JinxBotWebApplication.svc?wsdl=wsdl0" />
+    <MetadataFile FileName="JinxBotWebApplication.disco" MetadataType="Disco" ID="718d0edb-b940-4bd9-baf3-ffea1d1a5b01" SourceId="1" SourceUrl="http://localhost:28432/Web/JinxBotWebApplication.svc?disco" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

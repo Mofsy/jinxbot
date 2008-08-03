@@ -50,6 +50,8 @@ namespace BNSharp.Net
             InitializeListenState();
 
             InitializeParseDictionaries();
+
+            CreateEventThreads();
         }
         #endregion
 
@@ -138,6 +140,20 @@ namespace BNSharp.Net
             }
             else 
                 m_closing = false;
+        }
+
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                if (IsConnected)
+                    Close();
+
+                CloseEventThreads();
+            }
         }
 
         /// <summary>

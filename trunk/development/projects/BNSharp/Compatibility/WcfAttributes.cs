@@ -27,5 +27,12 @@ namespace System.Runtime.Serialization
 
         public string Name { get; set; }
     }
+
+    [AttributeUsage(AttributeTargets.Field)]
+    internal sealed class EnumMemberAttribute : Attribute
+    {
+        public EnumMemberAttribute() { }
+        public string Name { get; set; }
+    }
 }
 #endif

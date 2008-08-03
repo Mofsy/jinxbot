@@ -9,9 +9,7 @@ namespace BNSharp.BattleNet.Stats
     /// <summary>
     /// Contains information about a user who is logged on with a Warcraft III client.
     /// </summary>
-#if !NET_2_ONLY
     [DataContract]
-#endif
     public class Warcraft3Stats : UserStats
     {
         #region fields
@@ -49,32 +47,34 @@ namespace BNSharp.BattleNet.Stats
             m_prod = Product.GetByProductCode(productCode);
             if (m_prod == null)
                 m_prod = Product.UnknownProduct;
-            
-            dr.Seek(1);
-            string iconInfo = dr.ReadDwordString((byte)' ');
-            char raceID = iconInfo[2];
-            if (RaceMap.ContainsKey(raceID))
+
+            if (stats.Length > 4)
             {
-                m_race = RaceMap[raceID];
+                dr.Seek(1);
+                string iconInfo = dr.ReadDwordString((byte)' ');
+                char raceID = iconInfo[2];
+                if (RaceMap.ContainsKey(raceID))
+                {
+                    m_race = RaceMap[raceID];
+                }
+                else
+                    m_race = Warcraft3IconRace.Unknown;
+
+                m_iconTier = (int)(iconInfo[3] - '0');
+
+                dr.Seek(1);
+                string sLevel = dr.ReadTerminatedString(' ', Encoding.ASCII);
+                int.TryParse(sLevel, out m_level);
+                if (m_level == 0)
+                    m_level = 1;
+
+                try
+                {
+                    if (dr.Position < dr.Length)
+                        m_clanTag = dr.ReadDwordString((byte)' ');
+                }
+                catch { }
             }
-            else
-                m_race = Warcraft3IconRace.Unknown;
-
-            m_iconTier = (int)(iconInfo[3] - '0');
-
-            dr.Seek(1);
-            string sLevel = dr.ReadTerminatedString(' ', Encoding.ASCII);
-            int.TryParse(sLevel, out m_level);
-            if (m_level == 0)
-                m_level = 1;
-
-            try
-            {
-                if (dr.Position < dr.Length)
-                    m_clanTag = dr.ReadDwordString((byte)' ');
-            }
-            catch { }
-
         }
         #endregion
 

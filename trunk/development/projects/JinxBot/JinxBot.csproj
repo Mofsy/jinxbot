@@ -57,7 +57,9 @@
   <ItemGroup>
     <Compile Include="ClientProfile.cs" />
     <Compile Include="Configuration\GlobalSettings.cs" />
+    <Compile Include="Configuration\KnownPlugins.cs" />
     <Compile Include="Configuration\PingStyle.cs" />
+    <Compile Include="Configuration\PluginsConfiguration.cs" />
     <Compile Include="Configuration\WebIconList.cs" />
     <Compile Include="Configuration\IconType.cs" />
     <Compile Include="Configuration\JinxBotConfiguration.cs" />
@@ -75,6 +77,9 @@
     <Compile Include="MainWindow.Designer.cs">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="Plugins\PluginFactory.cs" />
+    <Compile Include="Plugins\PluginInfo.cs" />
+    <Compile Include="Reliability\GlobalErrorHandler.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -101,6 +106,12 @@
     <Compile Include="Views\Chat\ImageChatNodeProtocol.cs" />
     <Compile Include="Views\Chat\ImageChatNodeRenderer.cs" />
     <Compile Include="Views\Chat\WebIconProvider.cs" />
+    <Compile Include="Views\ErrorLogDocument.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\ErrorLogDocument.Designer.cs">
+      <DependentUpon>ErrorLogDocument.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\NewsList.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -135,6 +146,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Views\ClanList.resx">
       <DependentUpon>ClanList.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\ErrorLogDocument.resx">
+      <DependentUpon>ErrorLogDocument.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\NewsList.resx">
@@ -174,6 +189,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="App.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -255,6 +271,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Configuration\SampleConfig.xml" />
     <Content Include="Resources\WebIconsList.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

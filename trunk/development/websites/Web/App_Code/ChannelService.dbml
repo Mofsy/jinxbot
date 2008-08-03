@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Database Name="ClientSessions" Class="ChannelServiceDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="WebSettings" ConnectionString="Data Source=.\SQLEXPRESS;AttachDbFilename=|DataDirectory|\ClientSessions.mdf;Integrated Security=True;User Instance=True" SettingsObjectName="System.Configuration.ConfigurationManager.ConnectionStrings" SettingsPropertyName="ClientSessionsConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.Channels" Member="Channels">
+    <Type Name="Channel">
+      <Column Name="ChannelID" AutoSync="Never" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="ClientName" Type="System.String" DbType="NVarChar(20) NOT NULL" CanBeNull="false" />
+      <Column Name="MainPasswordHash" Type="System.Data.Linq.Binary" DbType="Binary(20) NOT NULL" CanBeNull="false" UpdateCheck="Never" />
+      <Column Name="StylesheetUri" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="AllowPasswordedChatAccess" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="ChatAccessPasswordHash" Type="System.Data.Linq.Binary" DbType="Binary(20) NOT NULL" CanBeNull="false" UpdateCheck="Never" />
+      <Column Name="Gateway" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="CurrentChannel" Type="System.String" DbType="VarChar(75) NOT NULL" CanBeNull="false" />
+      <Association Name="Channel_ChatEvent" Member="ChatEvents" OtherKey="ChannelID" Type="ChatEvent" />
+    </Type>
+  </Table>
+  <Table Name="dbo.ChatEvents" Member="ChatEvents">
+    <Type Name="ChatEvent">
+      <Column Name="ChannelID" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" CanBeNull="false" />
+      <Column Name="EventID" Type="System.Int64" DbType="BigInt NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Time" AutoSync="Never" Type="System.DateTime" DbType="DateTime NOT NULL" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="EventData" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="Type" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Association Name="Channel_ChatEvent" Member="Channel" ThisKey="ChannelID" Type="Channel" IsForeignKey="true" />
+    </Type>
+  </Table>
+</Database>
