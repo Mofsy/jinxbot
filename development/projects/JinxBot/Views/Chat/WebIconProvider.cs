@@ -55,7 +55,7 @@ namespace JinxBot.Views.Chat
 
             m_defaultImage = target;
 
-            string xml = Resources.WebIconsList;
+            string xml = DataResources.WebIconsList;
             using (StringReader sr = new StringReader(xml))
             using (XmlTextReader xtr = new XmlTextReader(sr))
             {

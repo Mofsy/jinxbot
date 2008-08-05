@@ -8,6 +8,7 @@ namespace BNSharp.Net
     partial class BattleNetClient
     {
         private EventSink m_customEventSink;
+        private CombinedPacketPriorityProvider m_priorityProvider;
 
         /// <summary>
         /// Registers a custom handler for a specific packet ID.  This method is not CLS-compliant.
@@ -87,6 +88,27 @@ namespace BNSharp.Net
         {
             get { return m_warden; }
             set { m_warden = value; }
+        }
+
+        /// <summary>
+        /// Registers a custom packet priority list for consideration during packet parsing.
+        /// </summary>
+        /// <param name="newProvider">The new priority provider to use for priority lookups.</param>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="newProvider"/> is <see langword="null" />.</exception>
+        public void RegisterCustomPacketPriorities(IPacketPriorityProvider newProvider)
+        {
+            m_priorityProvider.RegisterNewProvider(newProvider);
+        }
+
+        /// <summary>
+        /// Unregisters a custom packet priority list from consideration during packet parsing.
+        /// </summary>
+        /// <param name="providerToRemove">The priority provider to remove from consideration.</param>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="providerToRemove"/> is 
+        /// <see langword="null" />.</exception>
+        public void UnregisterCustomPacketPriorities(IPacketPriorityProvider providerToRemove)
+        {
+            m_priorityProvider.UnregisterProvider(providerToRemove);
         }
     }
 }

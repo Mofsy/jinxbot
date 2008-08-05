@@ -121,6 +121,7 @@
     <Compile Include="Net\BattleNetClient.ParseData.cs" />
     <Compile Include="Net\BufferPool.cs" />
     <Compile Include="Net\ChannelJoinFlags.cs" />
+    <Compile Include="Net\CombinedPacketPriorityProvider.cs" />
     <Compile Include="Net\ConnectionBase.cs" />
     <Compile Include="BncsPacketId.cs" />
     <Compile Include="GlobalSuppressions.cs" />
@@ -159,8 +160,10 @@
     <Compile Include="MBNCSUtil\Util\PeFileLoader.cs" />
     <Compile Include="MBNCSUtil\Util\PeFileReader.cs" />
     <Compile Include="MBNCSUtil\XSha1.cs" />
+    <Compile Include="Net\DefaultPacketPriorityProvider.cs" />
     <Compile Include="Net\WarcraftCommands.cs" />
     <Compile Include="Plugins\IBattleNetEvents.cs" />
+    <Compile Include="Plugins\IPacketPriorityProvider.cs" />
     <Compile Include="Plugins\IWardenModule.cs" />
     <Compile Include="Plugins\ParseCallback.cs" />
     <Compile Include="Priority.cs" />
