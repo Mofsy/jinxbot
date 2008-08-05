@@ -223,7 +223,7 @@ namespace BNSharp.Net
 
         private void HandleClanInvitation(ParseData pd)
         {
-
+            
         }
 
         private void HandleClanRemoveMember(ParseData pd)

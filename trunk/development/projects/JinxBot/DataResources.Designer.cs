@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace JinxBot.Properties {
+namespace JinxBot {
     using System;
     
     
@@ -22,14 +22,14 @@ namespace JinxBot.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "2.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    internal class DataResources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
         private static global::System.Globalization.CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        internal Resources() {
+        internal DataResources() {
         }
         
         /// <summary>
@@ -39,7 +39,7 @@ namespace JinxBot.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("JinxBot.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("JinxBot.DataResources", typeof(DataResources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -60,10 +60,17 @@ namespace JinxBot.Properties {
             }
         }
         
-        internal static System.Drawing.Bitmap UAC_shield {
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;
+        ///&lt;WebIcons&gt;
+        ///    &lt;IconList&gt;
+        ///        &lt;Icon Client=&quot;WAR3&quot; Tier=&quot;1&quot; Url=&quot;http://www.battle.net/war3/images/battle.net/icons/tier1-orc.gif&quot; Local=&quot;tier1-orc.png&quot; Crop=&quot;false&quot; /&gt;
+        ///        &lt;Icon Client=&quot;WAR3&quot; Tier=&quot;2&quot; Race=&quot;H&quot; Url=&quot;http://www.battle.net/war3/images/battle.net/icons/tier2-human.gif&quot; Local=&quot;tier2-human.png&quot; Crop=&quot;false&quot; /&gt;
+        ///        &lt;Icon Client=&quot;WAR3&quot; Tier=&quot;3&quot; Race=&quot;H&quot; Url=&quot;http://www.battle.net/war3/images/battle.net/icons/tier3-human.gif&quot; Local=&quot;tier3-huma [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string WebIconsList {
             get {
-                object obj = ResourceManager.GetObject("UAC_shield", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                return ResourceManager.GetString("WebIconsList", resourceCulture);
             }
         }
     }

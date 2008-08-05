@@ -86,7 +86,7 @@ namespace JinxBot.Wizards
             {
                 WebIconList iconsList = null;
 
-                string xml = Resources.WebIconsList;
+                string xml = DataResources.WebIconsList;
                 using (StringReader sr = new StringReader(xml))
                 using (XmlTextReader xtr = new XmlTextReader(sr))
                 {
