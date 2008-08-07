@@ -47,6 +47,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccountCreationEventArgs.cs" />
+    <Compile Include="AccountCreationFailedEventArgs.cs" />
     <Compile Include="BaseEventArgs.cs" />
     <Compile Include="BattleNet\ChatUser.cs" />
     <Compile Include="BattleNet\Clans\ClanCandidatesSearchEventArgs.cs" />
@@ -56,14 +58,20 @@
     <Compile Include="BattleNet\Clans\ClanDisbandEventArgs.cs" />
     <Compile Include="BattleNet\Clans\ClanFormationEventArgs.cs" />
     <Compile Include="BattleNet\Clans\ClanFormationInvitationEventArgs.cs" />
+    <Compile Include="BattleNet\Clans\ClanInvitationEventArgs.cs" />
+    <Compile Include="BattleNet\Clans\ClanInvitationResponse.cs" />
+    <Compile Include="BattleNet\Clans\ClanInvitationResponseEventArgs.cs" />
     <Compile Include="BattleNet\Clans\ClanMember.cs" />
     <Compile Include="BattleNet\Clans\ClanMemberListEventArgs.cs" />
+    <Compile Include="BattleNet\Clans\ClanMemberRemovalResponse.cs" />
     <Compile Include="BattleNet\Clans\ClanMembershipEventArgs.cs" />
     <Compile Include="BattleNet\Clans\ClanMemberStatus.cs" />
     <Compile Include="BattleNet\Clans\ClanMemberStatusEventArgs.cs" />
     <Compile Include="BattleNet\Clans\ClanRank.cs" />
     <Compile Include="BattleNet\Clans\ClanRankChangeEventArgs.cs" />
+    <Compile Include="BattleNet\Clans\ClanRemovalResponseEventArgs.cs" />
     <Compile Include="BattleNet\Clans\ClanResponseCode.cs" />
+    <Compile Include="BattleNet\Clans\LeftClanEventArgs.cs" />
     <Compile Include="BattleNet\Diablo2CharacterClass.cs" />
     <Compile Include="BattleNet\Diablo2DifficultyLevel.cs" />
     <Compile Include="BattleNet\Friends\FriendAddedEventArgs.cs" />
@@ -97,11 +105,14 @@
     <Compile Include="ClientCheckFailedEventArgs.cs" />
     <Compile Include="ClientCheckFailureCause.cs" />
     <Compile Include="Compatibility\WcfAttributes.cs" />
+    <Compile Include="CreationFailureReason.cs" />
     <Compile Include="EnteredChatEventArgs.cs" />
     <Compile Include="ErrorEventArgs.cs" />
     <Compile Include="EventExceptionEventArgs.cs" />
     <Compile Include="IBattleNetSettings.cs" />
     <Compile Include="InformationEventArgs.cs" />
+    <Compile Include="LoginFailedEventArgs.cs" />
+    <Compile Include="LoginFailureReason.cs" />
     <Compile Include="MBNCSUtil\Data\BniFileParser.cs" />
     <Compile Include="MBNCSUtil\Data\BniIcon.cs" />
     <Compile Include="MBNCSUtil\Resources1.Designer.cs">
@@ -199,6 +210,8 @@
     <Content Include="MBNCSUtil\Net\NamespaceComments.xml" />
     <Content Include="MBNCSUtil\Resources\StormLib.dll" />
     <Content Include="MBNCSUtil\Resources\StormLib64.dll" />
+    <Content Include="NamespaceComments.xml" />
+    <Content Include="Plugins\NamespaceComments.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

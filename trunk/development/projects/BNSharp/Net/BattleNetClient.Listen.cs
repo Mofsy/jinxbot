@@ -39,6 +39,7 @@ namespace BNSharp.Net
                 { BncsPacketId.ReadUserData, new ParseCallback(HandleUserProfileRequest) },
                 { BncsPacketId.LogonResponse, new ParseCallback(HandleLogonResponse) },
                 { BncsPacketId.LogonResponse2, new ParseCallback(HandleLogonResponse2) },
+                { BncsPacketId.CreateAccount2, new ParseCallback(HandleCreateAccount2) },
                 { BncsPacketId.WarcraftGeneral, new ParseCallback(HandleWarcraftGeneral) },
                 { BncsPacketId.NewsInfo, new ParseCallback(HandleNewsInfo) },
                 { BncsPacketId.AuthInfo, new ParseCallback(HandleAuthInfo) },
@@ -525,16 +526,16 @@ namespace BNSharp.Net
         private void HandleLogonResponse(ParseData data)
         {
             DataReader dr = new DataReader(data.Data);
-            bool success = dr.ReadBoolean();
-            if (success)
+            int status = dr.ReadInt32();
+            if (status == 1)
             {
                 OnLoginSucceeded(BaseEventArgs.GetEmpty(data));
                 EnterChat();
             }
             else
             {
-                OnLoginFailed(BaseEventArgs.GetEmpty(data));
-                Close();
+                LoginFailedEventArgs args = new LoginFailedEventArgs(LoginFailureReason.InvalidAccountOrPassword, status) { EventData = data };
+                OnLoginFailed(args);
             }
         }
 
@@ -549,7 +550,18 @@ namespace BNSharp.Net
             }
             else
             {
-                OnLoginFailed(BaseEventArgs.GetEmpty(data));
+                LoginFailureReason reason = LoginFailureReason.Unknown;
+                switch (success)
+                {
+                    case 1: // account DNE
+                        reason = LoginFailureReason.AccountDoesNotExist; break;
+                    case 2: // invalid password
+                        reason = LoginFailureReason.InvalidAccountOrPassword; break;
+                    case 6: // account closed
+                        reason = LoginFailureReason.AccountClosed; break;
+                }
+                LoginFailedEventArgs args = new LoginFailedEventArgs(reason, success, dr.ReadCString()) { EventData = data };
+                OnLoginFailed(args);
             }
         }
         #endregion
@@ -729,80 +741,83 @@ namespace BNSharp.Net
                 return;
             }
 
-            switch (m_settings.Client)
-            {
-                case "W2BN":
-                    BncsPacket pck0x29 = new BncsPacket((byte)BncsPacketId.LogonResponse);
-                    pck0x29.Insert(m_clientToken);
-                    pck0x29.Insert(m_srvToken);
-                    pck0x29.InsertByteArray(OldAuth.DoubleHashPassword(m_settings.Password, m_clientToken, m_srvToken));
-                    pck0x29.InsertCString(m_settings.Username);
-
-                    Send(pck0x29);
-                    break;
-                case "STAR":
-                case "SEXP":
-                case "D2DV":
-                case "D2XP":
-                    BncsPacket pck0x3a = new BncsPacket((byte)BncsPacketId.LogonResponse2);
-                    pck0x3a.Insert(m_clientToken);
-                    pck0x3a.Insert(m_srvToken);
-                    pck0x3a.InsertByteArray(OldAuth.DoubleHashPassword(
-                        m_settings.Password,
-                        m_clientToken, m_srvToken));
-                    pck0x3a.InsertCString(m_settings.Username);
-
-                    Send(pck0x3a);
-                    break;
-
-                case "WAR3":
-                case "W3XP":
-                    m_nls = new NLS(m_settings.Username, m_settings.Password);
-                    BncsPacket pck0x53 = new BncsPacket((byte)BncsPacketId.AuthAccountLogon);
-                    m_nls.LoginAccount(pck0x53);
-                    Send(pck0x53);
-                    break;
-            }
+            ContinueLogin();
         }
 
         private void HandleAuthAccountCreate(ParseData data)
         {
             DataReader dr = new DataReader(data.Data);
             int status = dr.ReadInt32();
+            CreationFailureReason reason = CreationFailureReason.Unknown;
             switch (status)
             {
                 case 0:
-                    OnInformation(new InformationEventArgs(
-                        string.Format(CultureInfo.CurrentCulture, Strings.NameCreateSuccess, m_settings.Username)));
+                    AccountCreationEventArgs created = new AccountCreationEventArgs(m_settings.Username) { EventData = data };
+                    OnAccountCreated(created);
 
-                    BncsPacket pck0x53 = new BncsPacket((byte)BncsPacketId.AuthAccountLogon);
-                    m_nls.LoginAccount(pck0x53);
-                    Send(pck0x53);
+                    LoginAccountNLS();
                     break;
                 case 7:
-                    CloseWithError(Strings.NameCreateFail7);
+                    reason = CreationFailureReason.NameTooShort;
                     break;
                 case 8:
-                    CloseWithError(Strings.NameCreateFail8);
+                    reason = CreationFailureReason.InvalidCharacters;
                     break;
                 case 9:
-                    CloseWithError(Strings.NameCreateFail9);
+                    reason = CreationFailureReason.InvalidWord;
                     break;
                 case 10:
-                    CloseWithError(Strings.NameCreateFail10);
+                    reason = CreationFailureReason.NotEnoughAlphanumerics;
                     break;
                 case 11:
-                    CloseWithError(Strings.NameCreateFail11);
+                    reason = CreationFailureReason.AdjacentPunctuation;
                     break;
                 case 12:
-                    CloseWithError(Strings.NameCreateFail12);
+                    reason = CreationFailureReason.TooMuchPunctuation;
                     break;
                 case 4:
                 default:
-                    CloseWithError(Strings.NameCreateFailOther);
+                    reason = CreationFailureReason.AccountAlreadyExists;
                     break;
             }
-            BattleNetClientResources.IncomingBufferPool.FreeBuffer(data.Data);
+
+            if (status != 0)
+            {
+                AccountCreationFailedEventArgs failed = new AccountCreationFailedEventArgs(m_settings.Username, reason) { EventData = data };
+                OnAccountCreationFailed(failed);
+            }
+        }
+
+        private void HandleCreateAccount2(ParseData data)
+        {
+            DataReader dr = new DataReader(data.Data);
+            int status = dr.ReadInt32();
+            CreationFailureReason reason = CreationFailureReason.Unknown;
+            switch (status)
+            {
+                case 2:
+                    reason = CreationFailureReason.InvalidCharacters; break;
+                case 3:
+                    reason = CreationFailureReason.InvalidWord; break;
+                case 6:
+                    reason = CreationFailureReason.NotEnoughAlphanumerics; break;
+                case 4:
+                default:
+                    reason = CreationFailureReason.AccountAlreadyExists; break;
+            }
+
+            if (status == 0)
+            {
+                AccountCreationEventArgs created = new AccountCreationEventArgs(m_settings.Username) { EventData = data };
+                OnAccountCreated(created);
+
+                LoginAccountOld();
+            }
+            else
+            {
+                AccountCreationFailedEventArgs failed = new AccountCreationFailedEventArgs(m_settings.Username, reason) { EventData = data };
+                OnAccountCreationFailed(failed);
+            }
         }
 
         private void HandleAuthAccountLogon(ParseData data)
@@ -815,11 +830,6 @@ namespace BNSharp.Net
             // 5: upgrade account
             // else: unknown failure
             int status = dr.ReadInt32();
-            //if (ApplicationEnvironment.IsDebugMode)
-            //{
-            //    m_owner.EventHost.OnError(m_owner, new ErrorEventArgs(
-            //        string.Format("SID_AUTHACCOUNTLOGON response: 0x{0:x8}", status), null));
-            //}
 
             if (status == 0)
             {

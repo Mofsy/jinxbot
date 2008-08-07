@@ -46,6 +46,7 @@ namespace BNSharp.Net
             : base(settings.Server, settings.Port)
         {
             m_settings = settings;
+            m_priorityProvider = new CombinedPacketPriorityProvider();
 
             InitializeListenState();
 
@@ -152,6 +153,18 @@ namespace BNSharp.Net
                 if (IsConnected)
                     Close();
 
+                if (m_parseWait != null)
+                {
+                    m_parseWait.Close();
+                    m_parseWait = null;
+                }
+
+                if (m_tmr != null)
+                {
+                    m_tmr.Dispose();
+                    m_tmr = null;
+                }
+
                 CloseEventThreads();
             }
         }
@@ -196,6 +209,108 @@ namespace BNSharp.Net
                 throw new InvalidOperationException("The client must be connected in order to send a message.");
             }
         }
+
+        /// <summary>
+        /// Creates a new account, attempting to use the login information provided in the settings.
+        /// </summary>
+        public virtual void CreateAccount()
+        {
+            bool isClientWar3 = (m_settings.Client.Equals(Product.Warcraft3Retail.ProductCode, StringComparison.Ordinal) || m_settings.Client.Equals(Product.Warcraft3Expansion.ProductCode, StringComparison.Ordinal));
+            if (isClientWar3)
+            {
+                CreateAccountNLS();
+            }
+            else
+            {
+                CreateAccountOld();
+            }
+        }
+
+        /// <summary>
+        /// Allows the client to continue logging in if the login has stopped due to a non-existent username or password.
+        /// </summary>
+        /// <remarks>
+        /// <para>If a <see>LoginFailed</see> event occurs, the client is not automatically disconnected.  The UI can then present an interface
+        /// by which the user may modify the client's <see>Settings</see> instance with proper login information.  Once this has been done, the 
+        /// user may then call this method to attempt to log in again.</para>
+        /// <para>This method does not need to be called after the <see>AccountCreated</see> event.</para>
+        /// </remarks>
+        public virtual void ContinueLogin()
+        {
+            bool isClientWar3 = (m_settings.Client.Equals(Product.Warcraft3Retail.ProductCode, StringComparison.Ordinal) || m_settings.Client.Equals(Product.Warcraft3Expansion.ProductCode, StringComparison.Ordinal));
+            if (isClientWar3)
+            {
+                LoginAccountNLS();
+            }
+            else
+            {
+                LoginAccountOld();
+            }
+        }
+
+        #region helpers
+        private void LoginAccountOld()
+        {
+            switch (m_settings.Client)
+            {
+                case "W2BN":
+                    BncsPacket pck0x29 = new BncsPacket((byte)BncsPacketId.LogonResponse);
+                    pck0x29.Insert(m_clientToken);
+                    pck0x29.Insert(m_srvToken);
+                    pck0x29.InsertByteArray(OldAuth.DoubleHashPassword(m_settings.Password, m_clientToken, m_srvToken));
+                    pck0x29.InsertCString(m_settings.Username);
+
+                    Send(pck0x29);
+                    break;
+                case "STAR":
+                case "SEXP":
+                case "D2DV":
+                case "D2XP":
+                    BncsPacket pck0x3a = new BncsPacket((byte)BncsPacketId.LogonResponse2);
+                    pck0x3a.Insert(m_clientToken);
+                    pck0x3a.Insert(m_srvToken);
+                    pck0x3a.InsertByteArray(OldAuth.DoubleHashPassword(
+                        m_settings.Password,
+                        m_clientToken, m_srvToken));
+                    pck0x3a.InsertCString(m_settings.Username);
+
+                    Send(pck0x3a);
+                    break;
+
+                default:
+                    throw new NotSupportedException(string.Format(CultureInfo.InvariantCulture, "Client '{0}' is not supported with old-style account login.", m_settings.Client));
+            }
+        }
+
+        private void LoginAccountNLS()
+        {
+            m_nls = new NLS(m_settings.Username, m_settings.Password);
+
+            BncsPacket pck0x53 = new BncsPacket((byte)BncsPacketId.AuthAccountLogon);
+            m_nls.LoginAccount(pck0x53);
+            Send(pck0x53);
+        }
+
+
+        private void CreateAccountOld()
+        {
+            byte[] passwordHash = OldAuth.HashPassword(m_settings.Password);
+            BncsPacket pck = new BncsPacket((byte)BncsPacketId.CreateAccount2);
+            pck.InsertByteArray(passwordHash);
+            pck.InsertCString(m_settings.Username);
+
+            Send(pck);
+        }
+
+        private void CreateAccountNLS()
+        {
+            BncsPacket pck = new BncsPacket((byte)BncsPacketId.AuthAccountCreate);
+            m_nls = new NLS(m_settings.Username, m_settings.Password);
+            m_nls.CreateAccount(pck);
+
+            Send(pck);
+        }
+        #endregion
         #endregion
 
         #region properties

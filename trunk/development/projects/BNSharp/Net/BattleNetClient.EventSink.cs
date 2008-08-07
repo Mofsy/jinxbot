@@ -22,6 +22,17 @@ namespace BNSharp.Net
 
             #region IBattleNetEvents Members
 
+
+            public void OnAccountCreated(AccountCreationEventArgs e)
+            {
+                m_host.OnAccountCreated(e);
+            }
+
+            public void OnAccountCreationFailed(AccountCreationFailedEventArgs e)
+            {
+                m_host.OnAccountCreationFailed(e);
+            }
+
             public void OnChannelDidNotExist(ServerChatEventArgs e)
             {
                 m_host.OnChannelDidNotExist(e);
@@ -117,7 +128,7 @@ namespace BNSharp.Net
                 m_host.OnJoinedChannel(e);
             }
 
-            public void OnLoginFailed(EventArgs e)
+            public void OnLoginFailed(LoginFailedEventArgs e)
             {
                 m_host.OnLoginFailed(e);
             }
@@ -240,6 +251,26 @@ namespace BNSharp.Net
             public void OnFriendUpdated(BNSharp.BattleNet.Friends.FriendUpdatedEventArgs e)
             {
                 m_host.OnFriendUpdated(e);
+            }
+
+            public void OnClanInvitationReceived(ClanInvitationEventArgs e)
+            {
+                m_host.OnClanInvitationReceived(e);
+            }
+
+            public void OnClanInvitationResponseReceived(ClanInvitationResponseEventArgs e)
+            {
+                m_host.OnClanInvitationResponseReceived(e);
+            }
+
+            public void OnClanRemovalResponse(ClanRemovalResponseEventArgs e)
+            {
+                m_host.OnClanRemovalResponse(e);
+            }
+
+            public void OnLeftClan(LeftClanEventArgs e)
+            {
+                m_host.OnLeftClan(e);
             }
 
             #endregion
