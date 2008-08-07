@@ -17,6 +17,17 @@ namespace BNSharp.Plugins
     public interface IBattleNetEvents
     {
         /// <summary>
+        /// Fires the <see cref="BattleNetClient.AccountCreated">AccountCreated</see> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        void OnAccountCreated(AccountCreationEventArgs e);
+        /// <summary>
+        /// Fires the <see cref="BattleNetClient.AccountCreationFailed">AccountCreationFailed</see> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        void OnAccountCreationFailed(AccountCreationFailedEventArgs e);
+
+        /// <summary>
         /// Fires the <see cref="BattleNetClient.ChannelDidNotExist">ChannelDidNotExist</see> event.
         /// </summary>
         /// <param name="e">The event arguments.</param>
@@ -62,6 +73,16 @@ namespace BNSharp.Plugins
         /// <param name="e">The event arguments.</param>
         void OnClanFormationInvitationReceived(ClanFormationInvitationEventArgs e);
         /// <summary>
+        /// Fires the <see cref="BattleNetClient.ClanInvitationReceived">ClanInvitationReceived</see> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        void OnClanInvitationReceived(ClanInvitationEventArgs e);
+        /// <summary>
+        /// Fires the <see cref="BattleNetClient.ClanInvitationResponseReceived">ClanInvitationResponseReceived</see> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        void OnClanInvitationResponseReceived(ClanInvitationResponseEventArgs e);
+        /// <summary>
         /// Fires the <see cref="BattleNetClient.ClanMemberListReceived">ClanMemberListReceived</see> event.
         /// </summary>
         /// <param name="e">The event arguments.</param>
@@ -96,6 +117,16 @@ namespace BNSharp.Plugins
         /// </summary>
         /// <param name="e">The event arguments.</param>
         void OnClanRankChanged(ClanRankChangeEventArgs e);
+        /// <summary>
+        /// Fires the <see cref="BattleNetClient.ClanRemovalResponse">ClanRemovalResponse</see> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        void OnClanRemovalResponse(ClanRemovalResponseEventArgs e);
+        /// <summary>
+        /// Fires the <see cref="BattleNetClient.LeftClan">LeftClan</see> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        void OnLeftClan(LeftClanEventArgs e);
         /// <summary>
         /// Fires the <see cref="BattleNetClient.ClientCheckFailed">ClientCheckFailed</see> event.
         /// </summary>
@@ -165,7 +196,7 @@ namespace BNSharp.Plugins
         /// Fires the <see cref="BattleNetClient.LoginFailed">LoginFailed</see> event.
         /// </summary>
         /// <param name="e">The event arguments.</param>
-        void OnLoginFailed(EventArgs e);
+        void OnLoginFailed(LoginFailedEventArgs e);
         /// <summary>
         /// Fires the <see cref="BattleNetClient.LoginSucceeded">LoginSucceeded</see> event.
         /// </summary>
