@@ -4,9 +4,77 @@
     </assemblies>
     <namespaceSummaries>
         <namespaceSummaryItem name="" isDocumented="False" />
-        <namespaceSummaryItem name="BNSharp" isDocumented="True" />
+        <namespaceSummaryItem name="BNSharp" isDocumented="True">&lt;summary&gt;
+    &lt;para&gt;BN# is a utility library designed to simplify the creation of Battle.net client applications by 
+    abstracting away the underlying connection protocols and allowing the user to worry about implementing 
+    client functionality.  BN# can be as simple as you need, by dropping it into your project and creating 
+    settings for it to use, or it can be incredibly flexible, allowing custom packet handling, parsing 
+    priorities, and assigning priorities to event handlers.  It uses a sophisticated threading model
+    under the hood to allow peak performance without forcing the user to handle that directly.&lt;/para&gt;
+    &lt;para&gt;BN# has a series of optimizations in place.  To prevent heap fragmentation, data buffers are
+    preallocated at fixed sizes and are reused over the lifetime of the application, allowing these buffers to 
+    not be garbage-collected until the the clients using them are closed.&lt;/para&gt;
+    &lt;para&gt;For more information about getting started with BN#, take a look at the 
+    &lt;a href="http://www.jinxbot.net/wiki/" target="_blank"&gt;JinxBot Wiki&lt;/a&gt;, including the article
+    &lt;a href="http://www.jinxbot.net/wiki/index.php?title=How_to_develop_a_Battle.net_client_in_10_minutes" target="_blank"&gt;How to develop a Battle.net client in 10 minutes&lt;/a&gt;.
+    &lt;/para&gt;
+    &lt;para&gt;
+        &lt;b style="font-size: larger;"&gt;Release Notes - BN# Beta 1&lt;/b&gt;
+    &lt;/para&gt;
+    &lt;para&gt;
+        &lt;b&gt;New Features&lt;/b&gt;
+    &lt;/para&gt;
+    &lt;list type="bullet"&gt;
+        &lt;item&gt;Most appropriate classes has have WCF attributes applied to them and can be serialized with a DataContractSerializer. &lt;/item&gt;
+        &lt;item&gt;Added the ability to request user profiles.&lt;/item&gt;
+        &lt;item&gt;Friends support was added in this release&lt;/item&gt;
+        &lt;item&gt;BN# exposes a new event called EventExceptionThrown. The purpose of this event is to allow a host application to know when a specific plugin or feature set is causing an error and handle it gracefully. JinxBot will handle this condition, for example, by allowing the user to unload plugins on-demand if they are causing many exceptions. &lt;/item&gt;
+        &lt;item&gt;Additional clan support was added; BN# now understands and supports events for clan functions such as formation, chieftan change, new formation searching, and disband. Corresponding new functions include BeginClanCandidateSearch, InviteUsersToNewClan, RespondToNewClanInvitation, DisbandClan, and DesignateClanChieftan. Corresponding new events include ClanCandidatesSearchCompleted, ClanFormationCompleted, ClanFormationInvitationReceived, ClanDisbandCompleted, ClanInvitationReceived, ClanInvitationResponseReceived, ClanRemovalResponse, LeftClan, and ClanChangeChieftanCompleted. &lt;/item&gt;
+        &lt;item&gt;
+            A new interface is supported for the ordering of packet parsing priority. This would allow, for example, a moderation plugin to require that ChatEvent packets are processed first (to receive UserJoined events). To support this functionality, implement the IPacketPriorityProvider interface in the BNSharp.Plugins namespace, and call BattleNetClient.RegisterCustomPacketPriorities/UnregisterCustomPacketPriorities.
+        &lt;/item&gt;
+        &lt;item&gt;A demonstration project of a JinxBot plugin for adding MCP (Realm Server) support to BN# is available in the repository. It obeys some JinxBot contracts, but extends BN# to include handling for realm servers. &lt;/item&gt;
+        &lt;item&gt;A new method was added to BattleNetClient called CreateAccount.  If the login process fails, you can attempt to create the account by calling CreateAccount; it will use the information provided in the Settings object (this information can be changed dynamically at run-time). CreateAccount will result in the AccountCreated or AccountCreationFailed events to be raised; if AccountCreated is raised, the client will automatically log in.&lt;/item&gt;
+        &lt;item&gt;The client no longer automatically disconnects because of an account login failure. (CD key or versioning failure still results in an automatic disconnect). &lt;/item&gt;
+        &lt;item&gt;To support the no auto-disconnect policy, a new method was added to BattleNetClient called ContinueLogin(). This method allows the user to change the Settings object to modify the username and password of the desired login and then begin logging in again. &lt;/item&gt;
+    &lt;/list&gt;
+    &lt;para&gt;
+        &lt;b&gt;Breaking Changes&lt;/b&gt;
+    &lt;/para&gt;
+    &lt;list type="bullet"&gt;
+        &lt;item&gt;By default, BNSharp requires support for .NET 3.0 because it references System.Runtime.Serialization version 3.0.0.0. For details on compiling without support for WCF data contract serialization, see the article &lt;a href="http://www.jinxbot.net/wiki/index.php?title=Compiling_BNSharp_for_.NET_2.0" target="_blank"&gt;Compiling BN# for .NET 2.0.&lt;/a&gt;&lt;/item&gt;
+        &lt;item&gt;IBattleNetSettings now requires a new property, PingType, which allows the connection to attempt to drive a 0ms, -1ms, or standard ping type. Old code will need to add this property to the IBattleNetSettings implementation class. &lt;/item&gt;
+        &lt;item&gt;Users now automatically have a Stats property that contains a reference to a class derived from UserStats. This change is breaking and will impact code written for an older CTP release. If using the latest code, this will be compatible with handling code from r15 or newer. &lt;/item&gt;
+        &lt;item&gt;The LoginFailed event is no longer prototyped as EventHandler but LoginFailedEventHandler. The LoginFailedEventArgs class contains contextual information about the reason for login failure. &lt;/item&gt;
+    &lt;/list&gt;
+    &lt;para&gt;
+        &lt;b&gt;Non-Breaking Changes&lt;/b&gt;
+    &lt;/para&gt;
+    &lt;list type="bullet"&gt;
+        &lt;item&gt;BN# includes the attributes used for data contract serialization as internal, stub attributes that will enable cross-versioning compatbility. For more information, see the article on compiling for .NET 2.0. This also removes the #if !NET_2_0 conditionals wrapping the attribute declarations throughout the data code. &lt;/item&gt;
+        &lt;item&gt;BN# now guarantees events are fired in the correct order by creating additional threads and event queues. This should increase the reliability of the order of events when joining a channel, for example. (Previously, joining a channel could cause a user to be listed as joined before the ChannelJoined event fired due to a race condition, which could cause the user to be added to the user list and then removed). &lt;/item&gt;
+        &lt;item&gt;Events on a BattleNetClient now have dedicated threads for Normal- and Low-priority event handlers. High-priority events are still executed on the Parse() loop. All Normal-priority event handlers are executed before outstanding Low-priority event handlers are executed. &lt;/item&gt;
+        &lt;item&gt;Added a new Position property to the MBNCSUtil DataReader class.&lt;/item&gt;
+        &lt;item&gt;Modified the non-Lockdown version of CheckRevision to use approximately 25mb less of memory allocations and reallocations, saving 3-4 gen-0 garbage collections.  The Lockdown version of CheckRevision uses significantly less memory and will be updated in a future version of BN#.&lt;/item&gt;
+        &lt;item&gt;Began adding namespace documentation.&lt;/item&gt;
+    &lt;/list&gt;
+    &lt;para&gt;
+        &lt;b&gt;Bug Fixes&lt;/b&gt;
+    &lt;/para&gt;
+    &lt;list type="bullet"&gt;
+        &lt;item&gt;Corrected a defect in which a Warcraft 3 statstring would be incorrectly parsed due to a server defect.&lt;/item&gt;
+        &lt;item&gt;Corrected the IBattleNetEvents interface and the EventSink interface to expose all events.&lt;/item&gt;
+        &lt;item&gt;Comments had been made that the Disconnected event did not always fire correctly.  I believe I have corrected this defect.  If you see it happen, please report it in the &lt;a href="http://www.jinxbot.net/forum/" target="_blank"&gt;JinxBot Forums&lt;/a&gt;.&lt;/item&gt;
+    &lt;/list&gt;
+&lt;/summary&gt;</namespaceSummaryItem>
         <namespaceSummaryItem name="BNSharp.BattleNet" isDocumented="True">&lt;summary&gt;
         The BNSharp.BattleNet namespace contains types that have a high degree of domain specificity to Battle.net.
+    &lt;/summary&gt;</namespaceSummaryItem>
+        <namespaceSummaryItem name="BNSharp.BattleNet.Clans" isDocumented="True">&lt;summary&gt;
+        The BNSharp.BattleNet.Clans namespace contains types that have a high degree of domain specificity to Battle.net clans.
+    &lt;/summary&gt;</namespaceSummaryItem>
+        <namespaceSummaryItem name="BNSharp.BattleNet.Friends" isDocumented="True">&lt;summary&gt;
+        The BNSharp.BattleNet.Friends namespace contains types that have a high degree of domain specificity to Battle.net friends lists and activites.
     &lt;/summary&gt;</namespaceSummaryItem>
         <namespaceSummaryItem name="BNSharp.BattleNet.Stats" isDocumented="True">&lt;summary&gt;
         The BNSharp.BattleNet.Stats namespace contains types to facilitate the parsing of user data regarding their statistics such as 
@@ -296,8 +364,33 @@
     &lt;/para&gt;
 &lt;/summary&gt;</namespaceSummaryItem>
         <namespaceSummaryItem name="BNSharp.MBNCSUtil.Util" isDocumented="False" />
-        <namespaceSummaryItem name="BNSharp.Net" isDocumented="True" />
-        <namespaceSummaryItem name="BNSharp.Plugins" isDocumented="True" />
+        <namespaceSummaryItem name="BNSharp.Net" isDocumented="True">&lt;summary&gt;
+        The BNSharp.Net namespace contains types that facilitate client connections.  Specifically, the &lt;see&gt;BattleNetClient&lt;/see&gt;
+        class may be used as a highly-contained client connection to Battle.net, whereas a &lt;see&gt;ConnectionBase&lt;/see&gt; may be more appropriate for someone
+        interested in implementing a new client protocol.
+    &lt;/summary&gt;</namespaceSummaryItem>
+        <namespaceSummaryItem name="BNSharp.Plugins" isDocumented="True">&lt;summary&gt;
+    &lt;para&gt;
+        The BNSharp.Plugins namespace contains interfaces that can be implemented to extend intrinsic BN# functionality.
+        By implementing these interfaces and then registering the appropriate objects with BN#, many changes to the 
+        core functionality could be made, such as adding support for realm server connections, changing the login
+        sequence, or implementing Warden.
+    &lt;/para&gt;
+    &lt;para&gt;
+        BN# can be instructed to parse packets at different priorities.  For example, supposing a moderation client 
+        wants to handle User Joined events immediately.  By implementing &lt;see cref="BNSharp.Plugins.IPacketPriorityProvider"&gt;IPacketPriorityProvider&lt;/see&gt;, 
+        your client can register custom priorities for ChatEvent packets, which permit them to be handled sooner when multiple 
+        packets are in the parsing queue.  They can also be parsed manually by registering a custom 
+        &lt;see cref="BNSharp.Plugins.ParseCallback"&gt;ParseCallback&lt;/see&gt;.  Custom parsers are expected to behave by 
+        maintaining their references in the chain and calling handlers higher up the chain when appropriate.
+    &lt;/para&gt;
+    &lt;para&gt;
+        For more information augmenting BN#'s functionality with extensions, take a look at the
+        &lt;a href="http://www.jinxbot.net/wiki/" target="_blank"&gt;JinxBot Wiki&lt;/a&gt;, including the article
+        &lt;a href="http://www.jinxbot.net/wiki/index.php?title=Custom_packet_handling_with_BNSharp" target="_blank"&gt;Custom packet handling with BN#&lt;/a&gt;.
+    &lt;/para&gt;
+    &lt;seealso cref="BNSharp.Net.BattleNetClient" /&gt;
+&lt;/summary&gt;</namespaceSummaryItem>
     </namespaceSummaries>
     <componentConfigurations>
         <component id="Cached MSDN URL References" enabled="True" configuration="&lt;component id=&quot;Cached MSDN URL References&quot; type=&quot;SandcastleBuilder.Components.CachedResolveReferenceLinksComponent&quot; assembly=&quot;{@SHFBFolder}SandcastleBuilder.Components.dll&quot;&gt;&#xD;&#xA;&lt;cache filename=&quot;{@AppDataFolder}Cache\MsdnUrl.cache&quot; /&gt;&#xD;&#xA;&lt;targets base=&quot;{@SandcastlePath}Data\Reflection&quot; recurse=&quot;true&quot; files=&quot;*.xml&quot; type=&quot;{@SDKLinks}&quot; /&gt;&#xD;&#xA;&lt;targets files=&quot;reflection.xml&quot; type=&quot;{@ProjectLinks}&quot; /&gt;&#xD;&#xA;&lt;/component&gt;" />
@@ -323,7 +416,7 @@
     <Preliminary>True</Preliminary>
     <RootNamespaceContainer>False</RootNamespaceContainer>
     <RootNamespaceTitle />
-    <HelpTitle>BN# - The Managed Battle.net Client Library</HelpTitle>
+    <HelpTitle>BN# - The Managed Battle.net Client Library [ Beta 1 ]</HelpTitle>
     <HtmlHelpName>BNSharp</HtmlHelpName>
     <Language>en-US</Language>
     <CopyrightHref>http://www.jinxbot.net/</CopyrightHref>
