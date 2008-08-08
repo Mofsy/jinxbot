@@ -33,6 +33,7 @@
     <DefineConstants>TRACE;JINXBOT;BNSHARP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -202,6 +203,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="BattleNet\Clans\NamespaceDocumentation.xml" />
+    <Content Include="BattleNet\Friends\NamespaceDocumentation.xml" />
     <Content Include="BattleNet\NamespaceDocumentation.xml" />
     <Content Include="BattleNet\Stats\NamespaceDocumentation.xml" />
     <Content Include="MBNCSUtil\Data\NamespaceComments.xml" />
@@ -211,6 +214,7 @@
     <Content Include="MBNCSUtil\Resources\StormLib.dll" />
     <Content Include="MBNCSUtil\Resources\StormLib64.dll" />
     <Content Include="NamespaceComments.xml" />
+    <Content Include="Net\NamespaceDocumentation.xml" />
     <Content Include="Plugins\NamespaceComments.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
