@@ -242,70 +242,58 @@ namespace BNSharp.MBNCSUtil
             // Start by hashing A by the hashcode
             values[0] ^= hashcodes[mpqNumber];
 
+            byte[] currentOperandBuffer = new byte[1024];
             for (int i = 0; i < files.Length; i++)
             {
-                FileStream currentFile = new FileStream(files[i], FileMode.Open, FileAccess.Read, FileShare.Read);
-                int fileLength = (int)currentFile.Length;
-
-                int bufferSize = -1;
-                byte[] byteBuffer = null;
-                MemoryStream buffer = null;
-                if (fileLength % 1024 == 0)
+                using (FileStream currentFile = new FileStream(files[i], FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
-                    bufferSize = fileLength;
-                    byteBuffer = new byte[bufferSize];
-                    currentFile.Read(byteBuffer, 0, bufferSize);
-                }
-                else
-                {
-                    int paddingBytes = (1024 - (fileLength % 1024));
-                    bufferSize = fileLength + paddingBytes;
-                    byteBuffer = new byte[bufferSize];
-
-                    currentFile.Read(byteBuffer, 0, fileLength);
-                    byte currentPaddingByte = 0xff;
-                    for (int j = fileLength; j < bufferSize; j++)
+                    while (currentFile.Position < currentFile.Length)
                     {
-                        unchecked
+                        long currentFilePosition = 0;
+                        long amountToRead = Math.Min(currentFile.Length - currentFilePosition, 1024);
+                        currentFile.Read(currentOperandBuffer, 0, (int)amountToRead);
+
+                        if (amountToRead < 1024)
                         {
-                            // prevent underflow when rolling from 0 to 0xff.
-                            byteBuffer[j] = currentPaddingByte--;
+                            byte currentPaddingByte = 0xff;
+                            for (int j = (int)amountToRead; j < 1024; j++)
+                            {
+                                unchecked
+                                {
+                                    currentOperandBuffer[j] = currentPaddingByte--;
+                                }
+                            }
                         }
-                    }
-                }
 
-
-                buffer = new MemoryStream(byteBuffer, 0, bufferSize, false);
-
-                BinaryReader br = new BinaryReader(buffer);
-
-                for (int j = 0; j < bufferSize; j += 4)
-                {
-                    values[3] = br.ReadUInt32();
-
-                    for (int k = 0; k < currentFormula; k++)
-                    {
-                        switch (operation[k])
+                        for (int j = 0; j < 1024; j += 4)
                         {
-                            case '+':
-                                values[opValueDest[k]] = values[opValueSrc1[k]] + values[opValueSrc2[k]];
-                                break;
+                            values[3] = BitConverter.ToUInt32(currentOperandBuffer, j);
 
-                            case '-':
-                                values[opValueDest[k]] = values[opValueSrc1[k]] - values[opValueSrc2[k]];
-                                break;
+                            for (int k = 0; k < currentFormula; k++)
+                            {
+                                switch (operation[k])
+                                {
+                                    case '+':
+                                        values[opValueDest[k]] = values[opValueSrc1[k]] + values[opValueSrc2[k]];
+                                        break;
 
-                            case '^':
-                                values[opValueDest[k]] = values[opValueSrc1[k]] ^ values[opValueSrc2[k]];
-                                break;
+                                    case '-':
+                                        values[opValueDest[k]] = values[opValueSrc1[k]] - values[opValueSrc2[k]];
+                                        break;
 
-                            case '*': // as shady said, you never know.
-                                values[opValueDest[k]] = values[opValueSrc1[k]] * values[opValueSrc2[k]];
-                                break;
+                                    case '^':
+                                        values[opValueDest[k]] = values[opValueSrc1[k]] ^ values[opValueSrc2[k]];
+                                        break;
 
-                            case '/': // in case blizz gets "sneaky"
-                                values[opValueDest[k]] = values[opValueSrc1[k]] / values[opValueSrc2[k]];
-                                break;
+                                    case '*': // as shady said, you never know.
+                                        values[opValueDest[k]] = values[opValueSrc1[k]] * values[opValueSrc2[k]];
+                                        break;
+
+                                    case '/': // in case blizz gets "sneaky"
+                                        values[opValueDest[k]] = values[opValueSrc1[k]] / values[opValueSrc2[k]];
+                                        break;
+                                }
+                            }
                         }
                     }
                 }
