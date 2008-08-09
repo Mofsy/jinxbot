@@ -14,12 +14,12 @@ using BNSharp;
 /// <summary>
 /// Summary description for ChatEvent
 /// </summary>
-public class ChatEvent
+public partial class ChatEvent
 {
     private int m_id;
     private BaseEventArgs m_args;
 
-    public ChatEvent() { }
+    //public ChatEvent() { }
 
     public ChatEvent(int id, BaseEventArgs args)
     {

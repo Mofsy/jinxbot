@@ -16,6 +16,7 @@ namespace JinxBot
         public ProfileDisplay()
         {
             InitializeComponent();
+            
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -31,5 +32,7 @@ namespace JinxBot
         {
             profileSettingsEditor1.Profile = new ClientProfile();
         }
+
+        
     }
 }

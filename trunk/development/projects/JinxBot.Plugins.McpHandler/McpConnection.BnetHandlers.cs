@@ -32,7 +32,7 @@ namespace JinxBot.Plugins.McpHandler
             }
             else
             {
-                m_events.OnLoginFailed(BaseEventArgs.GetEmpty(data));
+                m_events.OnLoginFailed(new LoginFailedEventArgs(LoginFailureReason.AccountDoesNotExist, success));
             }
         }
 

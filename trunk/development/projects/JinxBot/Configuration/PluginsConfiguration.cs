@@ -5,7 +5,7 @@ using System.Text;
 
 namespace JinxBot.Configuration
 {
-    class PluginsConfiguration
+    public class PluginsConfiguration
     {
     }
 }

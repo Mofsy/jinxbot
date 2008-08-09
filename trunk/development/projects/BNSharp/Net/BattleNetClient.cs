@@ -7,6 +7,7 @@ using System.Net;
 using BNSharp.BattleNet;
 using System.Collections.ObjectModel;
 using System.Threading;
+using BNSharp.Plugins;
 
 namespace BNSharp.Net
 {
@@ -62,7 +63,9 @@ namespace BNSharp.Net
         /// </summary>
         /// <param name="packet">The buffer to send.</param>
         /// <remarks>
-        /// <para>Use of this method is preferred because, after sending the buffer, it frees the buffer from the outgoing buffer pool.</para>
+        /// <para>Use of this method is preferred when sending binary messages because, after sending the buffer, it frees the buffer from the outgoing buffer pool.  If you
+        /// are only sending a text command, you should use <see>Send(string)</see>; it not only automatically creates the packet, but uses the speed delay provider, 
+        /// if any, assigned to the <see>CommandQueueProvider</see> property.</para>
         /// </remarks>
         public virtual void Send(DataBuffer packet)
         {

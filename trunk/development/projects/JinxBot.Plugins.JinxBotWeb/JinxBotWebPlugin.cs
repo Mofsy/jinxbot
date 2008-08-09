@@ -53,7 +53,7 @@ namespace JinxBot.Plugins.JinxBotWeb
             __Information = new InformationEventHandler(Information);
             __InformationReceived = new ServerChatEventHandler(InformationReceived);
             __JoinedChannel = new ServerChatEventHandler(JoinedChannel);
-            __LoginFailed = new EventHandler(LoginFailed);
+            __LoginFailed = new LoginFailedEventHandler(LoginFailed);
             __LoginSucceeded = new EventHandler(LoginSucceeded);
             __MessageSent = new ChatMessageEventHandler(MessageSent);
             __ServerBroadcast = new ServerChatEventHandler(ServerBroadcast);
@@ -223,10 +223,10 @@ namespace JinxBot.Plugins.JinxBotWeb
             PostEvent(new ClientEvent { EventType = ClientEventType.LoginSucceeded, EventData = new InformationEventArgs("Login succeeded!") });
         }
 
-        private EventHandler __LoginFailed;
-        void LoginFailed(object sender, EventArgs e)
+        private LoginFailedEventHandler __LoginFailed;
+        void LoginFailed(object sender, LoginFailedEventArgs e)
         {
-            PostEvent(new ClientEvent { EventData = new InformationEventArgs("Login failed!"), EventType = ClientEventType.LoginFailed });
+            PostEvent(new ClientEvent { EventData = e, EventType = ClientEventType.LoginFailed });
         }
 
         private ServerChatEventHandler __JoinedChannel;

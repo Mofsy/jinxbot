@@ -25,7 +25,7 @@ namespace BNSharpTest
             client.Error += new ErrorEventHandler(client_Error);
             client.EnteredChat += new EnteredChatEventHandler(client_EnteredChat);
             client.LoginSucceeded += new EventHandler(client_LoginSucceeded);
-            client.LoginFailed += new EventHandler(client_LoginFailed);
+            client.LoginFailed += new LoginFailedEventHandler(client_LoginFailed);
             client.ServerBroadcast += new ServerChatEventHandler(client_ServerBroadcast);
             client.ServerErrorReceived += new ServerChatEventHandler(client_ServerErrorReceived);
             client.UserShown += new UserEventHandler(client_UserShown);
@@ -135,7 +135,7 @@ namespace BNSharpTest
             Console.WriteLine("SERVER: {0}", e.Text);
         }
 
-        static void client_LoginFailed(object sender, EventArgs e)
+        static void client_LoginFailed(object sender, LoginFailedEventArgs e)
         {
             Console.WriteLine("--- LOGIN FAILED:");
         }
