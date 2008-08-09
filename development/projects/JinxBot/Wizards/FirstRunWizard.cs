@@ -213,7 +213,7 @@ namespace JinxBot.Wizards
         private void wizardControl1_FinishButtonClick(object sender, EventArgs e)
         {
             JinxBotConfiguration.Instance.Globals.AllowDataCollection = this.rbAllowUsage.Checked;
-            JinxBotConfiguration.Instance.Globals.IconType = this.rbUseBnetWebsiteIcons.Checked ? IconType.BattleNetWebSite : IconType.IconsBni;
+            //JinxBotConfiguration.Instance.Globals.IconType = this.rbUseBnetWebsiteIcons.Checked ? IconType.BattleNetWebSite : IconType.IconsBni;
             JinxBotConfiguration.Instance.Save();
 
             this.DialogResult = DialogResult.OK;

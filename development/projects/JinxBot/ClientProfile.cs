@@ -226,11 +226,36 @@ namespace JinxBot
             set;
         }
 
-        [Browsable(false)]
-        public PluginsConfiguration PluginsConfiguration
+        [Browsable(true)]
+        [Name("Icon Styles")]
+        [Category("User Interface")]
+        [Description("The type of icon style that the user interface will present in channel lists and optionally in the chat window.")]
+        [XmlElement("IconStyle")]
+        //[DefaultValue("BNI Icons")]
+        public string IconProviderType
         {
             get;
             set;
+        }
+
+        [Browsable(true)]
+        [Name("Icons Included in Chat")]
+        [Category("User Interface")]
+        [Description("Whether to include product icons in user announcements.")]
+        [XmlElement("IncludeIconsInChat")]
+        //[DefaultValue(true)]
+        public bool IncludeIconsInChat
+        {
+            get;
+            set;
+        }
+
+        [Browsable(false)]
+        [XmlArray("PluginSettings")]
+        [XmlArrayItem("Plugin")]
+        public ProfilePluginConfiguration[] PluginSettings
+        {
+            get; set;
         }
     }
 }
