@@ -57,10 +57,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClientProfile.cs" />
-    <Compile Include="Configuration\GlobalSettings.cs" />
-    <Compile Include="Configuration\KnownPlugins.cs" />
+    <Compile Include="Configuration\DependencyConfiguration.cs" />
+    <Compile Include="Configuration\GlobalsConfigurationSection.cs" />
+    <Compile Include="Configuration\IconProviderConfiguration.cs" />
     <Compile Include="Configuration\PingStyle.cs" />
-    <Compile Include="Configuration\PluginsConfiguration.cs" />
+    <Compile Include="Configuration\PluginConfiguration.cs" />
+    <Compile Include="Configuration\ProfilePluginConfiguration.cs" />
+    <Compile Include="Configuration\ProfilePluginSettingConfiguration.cs" />
     <Compile Include="Configuration\WebIconList.cs" />
     <Compile Include="Configuration\IconType.cs" />
     <Compile Include="Configuration\JinxBotConfiguration.cs" />
@@ -276,10 +279,6 @@
     <ProjectReference Include="..\JinxBot.Controls\JinxBot.Controls.csproj">
       <Project>{48E3907C-69BB-48C1-817D-6E5B4BE51EF6}</Project>
       <Name>JinxBot.Controls</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\JinxBot.Data.LinqToSqlClient\JinxBot.Data.LinqToSqlClient.csproj">
-      <Project>{158210D7-9F67-4C81-85E3-240115A08685}</Project>
-      <Name>JinxBot.Data.LinqToSqlClient</Name>
     </ProjectReference>
     <ProjectReference Include="..\JinxBot.Plugins\JinxBot.Plugins.csproj">
       <Project>{9C13A2E5-2A06-4BD9-BED0-F93E9BB03D31}</Project>

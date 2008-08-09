@@ -68,10 +68,6 @@
       <Project>{2D02D43C-BC3B-41D2-9226-4E215939107F}</Project>
       <Name>BNSharp</Name>
     </ProjectReference>
-    <ProjectReference Include="..\JinxBot.Plugins.JinxBotWeb.Shared\JinxBot.Plugins.JinxBotWeb.Shared.csproj">
-      <Project>{CD06EB30-2533-40E5-9361-51B4C7A2451C}</Project>
-      <Name>JinxBot.Plugins.JinxBotWeb.Shared</Name>
-    </ProjectReference>
     <ProjectReference Include="..\JinxBot.Plugins\JinxBot.Plugins.csproj">
       <Project>{9C13A2E5-2A06-4BD9-BED0-F93E9BB03D31}</Project>
       <Name>JinxBot.Plugins</Name>

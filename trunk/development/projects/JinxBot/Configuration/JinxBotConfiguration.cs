@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
 using System.IO;
 using System.Diagnostics;
@@ -23,8 +21,25 @@ namespace JinxBot.Configuration
         /// </remarks>
         public JinxBotConfiguration()
         {
-            this.Globals = new GlobalSettings() { IconType = IconType.IconsBni, AllowDataCollection = false };
+            this.Version = "1.0";
+
+            this.Globals = new GlobalsConfigurationSection
+                               {
+                                   AllowDataCollection = false,
+                                   IconProviders = new IconProviderConfiguration[]
+                                                       {
+                                                           new IconProviderConfiguration {Name = "BNI Icons", TypeName = "JinxBot.Views.Chat.BniIconProvider, JinxBot"},
+                                                           new IconProviderConfiguration {Name = "Web Icons", TypeName = "JinxBot.Views.Chat.WebIconProvider, JinxBot"}
+                                                       },
+                                   KnownPlugins = new PluginConfiguration[0]
+                               };
             this.Profiles = new ClientProfile[0];
+        }
+
+        [XmlAttribute("Version")]
+        public string Version
+        {
+            get; set;
         }
 
         /// <summary>
@@ -35,7 +50,7 @@ namespace JinxBot.Configuration
         /// used from your code.</para>
         /// </remarks>
         [XmlElement("Globals")]
-        public GlobalSettings Globals
+        public GlobalsConfigurationSection Globals
         {
             get;
             set;
@@ -50,6 +65,7 @@ namespace JinxBot.Configuration
         /// used from your code.</para>
         /// </remarks>
         [XmlArray(ElementName = "Profiles")]
+        [XmlArrayItem("Profile")]
         public ClientProfile[] Profiles
         {
             get
@@ -158,8 +174,9 @@ namespace JinxBot.Configuration
                     {
                         return xs.Deserialize(fs) as JinxBotConfiguration;
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        Trace.WriteLine(ex);
                         return new JinxBotConfiguration();
                     }
                 }

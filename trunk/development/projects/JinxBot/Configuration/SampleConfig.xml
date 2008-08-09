@@ -1,7 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <JinxBotConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
     <Globals>
-        <Icons>BattleNetWebSite</Icons>
         <AllowDataCollection>true</AllowDataCollection>
         <KnownPlugins>
             <Plugin>
@@ -14,6 +13,10 @@
                 <Assembly>JinxBot.Plugins.McpHandler.dll</Assembly>
             </Plugin>
         </KnownPlugins>
+        <IconProviders>
+            <IconProvider Name="BNI Icons" Type="JinxBot.Views.Chat.BniIconProvider, JinxBot" />
+            <IconProvider Name="Web Icons" Type="JinxBot.Views.Chat.WebIconProvider, JinxBot" />
+        </IconProviders>
     </Globals>
     <Profiles>
         <ClientProfile ProfileName="DarkTemplar~AoA on useast.battle.net (Starcraft: Brood War)">

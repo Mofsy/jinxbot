@@ -12,6 +12,45 @@ namespace JinxBot.Views
 {
     public class ProfileResourceProvider : IDisposable
     {
+        #region IconProviderFactory class
+        private static class IconProviderFactory
+        {
+            private static Dictionary<string, IIconProvider> s_existingProviders = new Dictionary<string, IIconProvider>();
+            private static readonly object sync = new object();
+            
+            public static IIconProvider GetProvider(string providerName)
+            {
+                lock (sync)
+                {
+                    if (s_existingProviders.Count == 0)
+                    {
+                        InitializeDictionary();
+                    }
+
+                    if (s_existingProviders.ContainsKey(providerName))
+                    {
+                        return s_existingProviders[providerName];
+                    }
+
+                    return null;
+                }
+            }
+
+            private static void InitializeDictionary()
+            {
+                JinxBotConfiguration config = JinxBotConfiguration.Instance;
+                foreach (var element in config.Globals.IconProviders)
+                {
+                    Type type = Type.GetType(element.TypeName);
+                    if (type != null && typeof(IIconProvider).IsAssignableFrom(type))
+                    {
+                        IIconProvider provider = Activator.CreateInstance(type) as IIconProvider;
+                        s_existingProviders.Add(element.Name, provider);
+                    }
+                }
+            }
+        }
+        #endregion
         #region statics
         private static Dictionary<BattleNetClient, ProfileResourceProvider> s_providers = new Dictionary<BattleNetClient, ProfileResourceProvider>();
         /// <summary>
@@ -73,16 +112,17 @@ namespace JinxBot.Views
 
         private ProfileResourceProvider(BattleNetClient client)
         {
-            switch (JinxBotConfiguration.Instance.Globals.IconType)
-            {
-                case IconType.BattleNetWebSite:
-                    m_iconProvider = new WebIconProvider();
-                    break;
-                case IconType.IconsBni:
-                default:
-                    m_iconProvider = new BniIconProvider();
-                    break;
-            }
+            //switch (JinxBotConfiguration.Instance.Globals.IconType)
+            //{
+            //    case IconType.BattleNetWebSite:
+            //        m_iconProvider = new WebIconProvider();
+            //        break;
+            //    case IconType.IconsBni:
+            //    default:
+            //        m_iconProvider = new BniIconProvider();
+            //        break;
+            //}
+            m_iconProvider = new BniIconProvider();
         }
 
         /// <summary>

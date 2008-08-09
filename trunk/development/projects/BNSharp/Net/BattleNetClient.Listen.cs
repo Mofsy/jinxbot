@@ -670,7 +670,7 @@ namespace BNSharp.Net
             {
                 try
                 {
-                    if (m_warden.InitWarden(BitConverter.ToInt32(key1Hash, 0)))
+                    if (!m_warden.InitWarden(BitConverter.ToInt32(key1Hash, 0)))
                     {
                         m_warden.UninitWarden();
                         OnError(new ErrorEventArgs("The Warden module failed to initialize.  You will not be immediately disconnected; however, you may be disconnected after a short period of time.", false));
