@@ -59,6 +59,11 @@
     <Compile Include="ISingleClientPlugin.cs" />
     <Compile Include="JinxBotPluginAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UI\CustomItemDrawData.cs" />
+    <Compile Include="UI\CustomListBoxRendererAttribute.cs" />
+    <Compile Include="UI\CustomMeasurements.cs" />
+    <Compile Include="UI\ICustomListBoxItemRenderer.cs" />
+    <Compile Include="UI\IIconProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BNSharp\BNSharp.csproj">

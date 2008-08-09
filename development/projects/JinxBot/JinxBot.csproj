@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -63,6 +64,7 @@
     <Compile Include="Configuration\WebIconList.cs" />
     <Compile Include="Configuration\IconType.cs" />
     <Compile Include="Configuration\JinxBotConfiguration.cs" />
+    <Compile Include="DataResources.Designer.cs" />
     <Compile Include="Design\BattleNetServerTypeConverter.cs" />
     <Compile Include="Design\BinFileBrowserTypeEditor.cs" />
     <Compile Include="Design\DllFileBrowserTypeEditor.cs" />
@@ -79,6 +81,12 @@
     </Compile>
     <Compile Include="Plugins\PluginFactory.cs" />
     <Compile Include="Plugins\PluginInfo.cs" />
+    <Compile Include="ProfileDisplay.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ProfileDisplay.Designer.cs">
+      <DependentUpon>ProfileDisplay.cs</DependentUpon>
+    </Compile>
     <Compile Include="Reliability\GlobalErrorHandler.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -112,6 +120,7 @@
     <Compile Include="Views\ErrorLogDocument.Designer.cs">
       <DependentUpon>ErrorLogDocument.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\JinxBotMenuRenderer.cs" />
     <Compile Include="Views\NewsList.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -127,8 +136,15 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="DataResources.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProfileDisplay.resx">
+      <DependentUpon>ProfileDisplay.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources.resx">

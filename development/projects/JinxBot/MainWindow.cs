@@ -33,6 +33,15 @@ namespace JinxBot
 
             // show and hide again to ensure that web browser catches up
             GlobalErrorHandler.ErrorLog.Show(dock);
+            //GlobalErrorHandler.ErrorLog.Hide();
+
+            //this.menuStrip1.Renderer = new JinxBotMenuRenderer();
+        }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+
             GlobalErrorHandler.ErrorLog.Hide();
         }
 
