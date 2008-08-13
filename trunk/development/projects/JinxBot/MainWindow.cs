@@ -15,6 +15,7 @@ using JinxBot.Configuration;
 using System.Reflection;
 using JinxBot.Plugins;
 using JinxBot.Reliability;
+using JinxBot.Plugins.UI;
 
 namespace JinxBot
 {
@@ -193,6 +194,30 @@ namespace JinxBot
             {
                 GlobalErrorHandler.ErrorLog.Show(this.dock);
                 displayErrorLogToolStripMenuItem.Checked = true;
+            }
+        }
+
+        private void defaultStyleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            IChatTab tab = this.dock.ActiveDocument as IChatTab;
+            if (tab != null)
+            {
+                string jbControlsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "JinxBot.Controls");
+                string defaultPath = Path.Combine(jbControlsPath, "DefaultStyles.css");
+                Uri styleUri = new Uri(string.Concat("file:///", defaultPath));
+                tab.StylesheetUri = styleUri;
+            }
+        }
+
+        private void blizzardStyleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            IChatTab tab = this.dock.ActiveDocument as IChatTab;
+            if (tab != null)
+            {
+                string jbControlsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "JinxBot.Controls");
+                string defaultPath = Path.Combine(jbControlsPath, "BlizzStyles.css");
+                Uri styleUri = new Uri(string.Concat("file:///", defaultPath));
+                tab.StylesheetUri = styleUri;
             }
         }
     }

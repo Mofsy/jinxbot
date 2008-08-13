@@ -16,16 +16,18 @@ using BNSharp.BattleNet.Stats;
 using System.Threading;
 using JinxBot.Views.Chat;
 using BNSharp.BattleNet;
+using JinxBot.Plugins.UI;
 
 namespace JinxBot.Views
 {
-    public partial class ChatDocument : DockableDocument
+    public partial class ChatDocument : DockableDocument, IChatTab
     {
         private BattleNetClient m_client;
         private string m_userName;
         private bool m_inChat;
         private DateTime m_enteredChat;
         private ProfileResourceProvider m_prp;
+        private ClientProfile m_profile;
 
         /// <summary>
         /// Initializes a new <see>Chatdocument</see> with no client.
@@ -49,6 +51,7 @@ namespace JinxBot.Views
         {
             m_client = client;
             m_prp = ProfileResourceProvider.GetForClient(client);
+            m_profile = client.Settings as ClientProfile;
 
             SetupEventRegistration();
         }
@@ -114,24 +117,16 @@ namespace JinxBot.Views
             m_client.RegisterWardentUnhandledNotification(Priority.Low, __WardenUnhandled);
             m_client.RegisterWhisperReceivedNotification(Priority.Low, __WhisperReceived);
             m_client.RegisterWhisperSentNotification(Priority.Low, __WhisperSent);
-
-            m_client.UserShown += new UserEventHandler(m_client_UserShown);
-        }
-
-        void m_client_UserShown(object sender, UserEventArgs e)
-        {
-            throw new NotImplementedException();
         }
 
         private UserProfileEventHandler __UserProfileReceived;
         void UserProfileReceived(object sender, UserProfileEventArgs e)
         {
-            List<ChatNode> nodesToAdd = new List<ChatNode>() { new ChatNode("User Profile received for ", Color.Yellow), new ChatNode(e.Profile.UserName, Color.Lime) };
+            List<ChatNode> nodesToAdd = new List<ChatNode>() { new ChatNode("User Profile received for ", CssClasses.UserProfileReceivedNotification), new ChatNode(e.Profile.UserName, CssClasses.UsernameOther) };
             foreach (UserProfileKey key in e.Profile)
             {
                 nodesToAdd.Add(ChatNode.NewLine);
-                nodesToAdd.Add(new ChatNode(key.ToString(), Color.SlateGray));
-                nodesToAdd.Add(new ChatNode(": ", Color.White));
+                nodesToAdd.Add(new ChatNode(string.Concat(key.ToString(), ":"), CssClasses.UserProfileKey));
                 if (key.Equals(UserProfileKey.TotalTimeLogged))
                 {
                     int totalSeconds;
@@ -140,16 +135,16 @@ namespace JinxBot.Views
                         TimeSpan ts = TimeSpan.FromSeconds(totalSeconds);
                         nodesToAdd.Add(new ChatNode(string.Format("{0} day{4}, {1} hour{5}, {2} minute{6}, {3} second{7}.",
                             (int)ts.TotalDays, ts.Hours, ts.Minutes, ts.Seconds, ((int)ts.TotalDays == 1) ? string.Empty : "s",
-                            ts.Hours == 1 ? string.Empty : "s", ts.Minutes == 1 ? string.Empty : "s", ts.Seconds == 1 ? string.Empty : "s"), Color.LightSteelBlue));
+                            ts.Hours == 1 ? string.Empty : "s", ts.Minutes == 1 ? string.Empty : "s", ts.Seconds == 1 ? string.Empty : "s"), CssClasses.UserProfileValue));
                     }
                     else
                     {
-                        nodesToAdd.Add(new ChatNode(e.Profile[key], Color.LightSteelBlue));
+                        nodesToAdd.Add(new ChatNode(e.Profile[key], CssClasses.UserProfileValue));
                     }
                 }
                 else
                 {
-                    nodesToAdd.Add(new ChatNode(e.Profile[key], Color.LightSteelBlue));
+                    nodesToAdd.Add(new ChatNode(e.Profile[key], CssClasses.UserProfileValue));
                 }
             }
             chat.AddChat(nodesToAdd);
@@ -165,36 +160,36 @@ namespace JinxBot.Views
         private ChatMessageEventHandler __WhisperSent;
         void WhisperSent(object sender, ChatMessageEventArgs e)
         {
-            chat.AddChat(new ChatNode("You whisper to ", Color.Magenta), new ChatNode(e.Username, Color.Magenta), new ChatNode(": ", Color.Magenta), new ChatNode(e.Text, Color.Magenta));
+            chat.AddChat(new ChatNode("You whisper to ", CssClasses.WhisperHeader), new ChatNode(e.Username, CssClasses.WhisperOtherUser), new ChatNode(": ", CssClasses.WhisperHeader), new ChatNode(e.Text, CssClasses.WhisperText));
         }
 
         private ChatMessageEventHandler __WhisperReceived;
         void WhisperReceived(object sender, ChatMessageEventArgs e)
         {
-            chat.AddChat(new ChatNode(e.Username, Color.Magenta), 
-                new ChatNode(" whispers: ", Color.Magenta), 
-                new ChatNode(e.Text, Color.Magenta));
+            chat.AddChat(new ChatNode(e.Username, CssClasses.WhisperOtherUser), 
+                new ChatNode(" whispers: ", CssClasses.WhisperHeader), 
+                new ChatNode(e.Text, CssClasses.WhisperText));
         }
 
         private EventHandler __WardenUnhandled;
         void WardentUnhandled(object sender, EventArgs e)
         {
-            chat.AddChat(new ChatNode("WARNING: Warden was requested but unhandled.  You may be disconnected.", Color.IndianRed));
+            chat.AddChat(new ChatNode("WARNING: Warden was requested but unhandled.  You may be disconnected.", CssClasses.UnhandledWarden));
         }
 
         private ChatMessageEventHandler __UserSpoke;
         void UserSpoke(object sender, ChatMessageEventArgs e)
         {
-            chat.AddChat(new ChatNode("[", Color.LightBlue), 
-                new ChatNode(e.Username, Color.White), 
-                new ChatNode("]: ", Color.LightBlue), 
-                new ChatNode(e.Text, Color.White));
+            chat.AddChat(new ChatNode("[", CssClasses.SpeakBracketsOtherUsers), 
+                new ChatNode(e.Username, CssClasses.SpeakOtherUsername), 
+                new ChatNode("]: ", CssClasses.SpeakBracketsOtherUsers), 
+                new ChatNode(e.Text, CssClasses.SpeakText));
         }
 
         private UserEventHandler __UserLeft;
         void UserLeft(object sender, UserEventArgs e)
         {
-            chat.AddChat(new ChatNode(e.User.Username, Color.Lime), new ChatNode(" left the channel.", Color.Yellow));
+            chat.AddChat(new ChatNode(e.User.Username, CssClasses.UsernameOther), new ChatNode(" left the channel.", CssClasses.LeftChannel));
         }
 
         private UserEventHandler __UserJoined;
@@ -231,19 +226,19 @@ namespace JinxBot.Views
                 case "W2BN":
                     StarcraftStats ss = us as StarcraftStats;
                     if (ss == null)
-                        chat.AddChat(new ChatNode(user.Username, Color.Lime), productNode,
-                            new ChatNode(string.Format(" joined the channel with {0}.", us.Product.Name), Color.Yellow));
+                        chat.AddChat(new ChatNode(user.Username, CssClasses.UsernameOther), productNode,
+                            new ChatNode(string.Format(" joined the channel with {0}.", us.Product.Name), CssClasses.JoinedChannel));
                     else
                     {
-                        chat.AddChat(new ChatNode(user.Username, Color.Lime), productNode, new ChatNode(string.Format(" joined the channel with {0} ({1} win{2}, ladder rating {3}, rank {4}).", ss.Product.Name, ss.Wins, ss.Wins != 1 ? "s" : string.Empty,
-                            ss.LadderRating, ss.LadderRank), Color.Yellow));
+                        chat.AddChat(new ChatNode(user.Username, CssClasses.UsernameOther), productNode, new ChatNode(string.Format(" joined the channel with {0} ({1} win{2}, ladder rating {3}, rank {4}).", ss.Product.Name, ss.Wins, ss.Wins != 1 ? "s" : string.Empty,
+                            ss.LadderRating, ss.LadderRank), CssClasses.JoinedChannel));
                     }
                     break;
                 case "D2DV":
                 case "D2XP":
                     Diablo2Stats ds = us as Diablo2Stats;
                     if (ds == null)
-                        chat.AddChat(new ChatNode(user.Username, Color.Lime), productNode, new ChatNode(string.Format(" joined the channel with {0}.", us.Product.Name), Color.Yellow));
+                        chat.AddChat(new ChatNode(user.Username, CssClasses.UsernameOther), productNode, new ChatNode(string.Format(" joined the channel with {0}.", us.Product.Name), CssClasses.JoinedChannel));
                     else
                     {
                         StringBuilder sb = new StringBuilder();
@@ -265,11 +260,11 @@ namespace JinxBot.Views
                             sb.Append(ds.CharacterClass);
                             sb.Append(".");
 
-                            chat.AddChat(new ChatNode(ds.UserName, Color.Lime), new ChatNode(sb.ToString(), Color.Yellow));
+                            chat.AddChat(new ChatNode(ds.UserName, CssClasses.UsernameOther), new ChatNode(sb.ToString(), CssClasses.JoinedChannel));
                         }
                         else
                         {
-                            chat.AddChat(new ChatNode(user.Username, Color.Lime), productNode, new ChatNode(string.Format(" joined the channel with {0}.", us.Product.Name), Color.Yellow));
+                            chat.AddChat(new ChatNode(user.Username, CssClasses.UsernameOther), productNode, new ChatNode(string.Format(" joined the channel with {0}.", us.Product.Name), CssClasses.JoinedChannel));
                         }
                     }
                     break;
@@ -277,21 +272,21 @@ namespace JinxBot.Views
                 case "W3XP":
                     Warcraft3Stats ws = us as Warcraft3Stats;
                     if (ws == null)
-                        chat.AddChat(new ChatNode(user.Username, Color.Lime), productNode, new ChatNode(string.Format(" joined the channel with {0}.", us.Product.Name), Color.Yellow));
+                        chat.AddChat(new ChatNode(user.Username, CssClasses.UsernameOther), productNode, new ChatNode(string.Format(" joined the channel with {0}.", us.Product.Name), CssClasses.JoinedChannel));
                     else
                     {
                         if (string.IsNullOrEmpty(ws.ClanTag))
                         {
-                            chat.AddChat(new ChatNode(user.Username, Color.Lime), productNode, new ChatNode(string.Format(" joined the channel with {0}, {1} icon tier {2}, level {3}.", ws.Product.Name, ws.IconRace, ws.IconTier, ws.Level), Color.Yellow));
+                            chat.AddChat(new ChatNode(user.Username, CssClasses.UsernameOther), productNode, new ChatNode(string.Format(" joined the channel with {0}, {1} icon tier {2}, level {3}.", ws.Product.Name, ws.IconRace, ws.IconTier, ws.Level), CssClasses.JoinedChannel));
                         }
                         else
                         {
-                            chat.AddChat(new ChatNode(user.Username, Color.Lime), productNode, new ChatNode(string.Format(" of clan {0} joined the channel with {1}, {2} icon tier {3}, level {4}.", ws.ClanTag, ws.Product.Name, ws.IconRace, ws.IconTier, ws.Level), Color.Yellow));
+                            chat.AddChat(new ChatNode(user.Username, CssClasses.UsernameOther), productNode, new ChatNode(string.Format(" of clan {0} joined the channel with {1}, {2} icon tier {3}, level {4}.", ws.ClanTag, ws.Product.Name, ws.IconRace, ws.IconTier, ws.Level), CssClasses.JoinedChannel));
                         }
                     }
                     break;
                 default:
-                    chat.AddChat(new ChatNode(user.Username, Color.Lime), productNode, new ChatNode(string.Format(" joined the channel with {0} ({1}).", us.Product.Name, us.LiteralText), Color.Yellow));
+                    chat.AddChat(new ChatNode(user.Username, CssClasses.UsernameOther), productNode, new ChatNode(string.Format(" joined the channel with {0} ({1}).", us.Product.Name, us.LiteralText), CssClasses.JoinedChannel));
                     break;
 
             }
@@ -300,19 +295,19 @@ namespace JinxBot.Views
         private ChatMessageEventHandler __UserEmoted;
         void UserEmoted(object sender, ChatMessageEventArgs e)
         {
-            chat.AddChat(new ChatNode("<", Color.Yellow), new ChatNode(e.Username, Color.White), new ChatNode(string.Concat(" ", e.Text, ">"), Color.Yellow));
+            chat.AddChat(new ChatNode("<", CssClasses.EmoteText), new ChatNode(e.Username, CssClasses.EmoteOtherUsername), new ChatNode(string.Concat(" ", e.Text, ">"), CssClasses.EmoteText));
         }
 
         private ServerChatEventHandler __ServerErrorReceived;
         void m_client_ServerErrorReceived(object sender, ServerChatEventArgs e)
         {
-            chat.AddChat(new ChatNode("[Error]: ", Color.Gray), new ChatNode(e.Text, Color.Orange));
+            chat.AddChat(new ChatNode("[Error]: ", CssClasses.ServerInfo), new ChatNode(e.Text, CssClasses.Error));
         }
 
         private ServerChatEventHandler __ServerBroadcast;
         void ServerBroadcast(object sender, ServerChatEventArgs e)
         {
-            chat.AddChat(new ChatNode("[Server]: ", Color.Gray), new ChatNode(e.Text, Color.Gray));
+            chat.AddChat(new ChatNode("[Server]: ", CssClasses.ServerInfo), new ChatNode(e.Text, CssClasses.Broadcast));
         }
 
         private ChatMessageEventHandler __MessageSent;
@@ -320,29 +315,29 @@ namespace JinxBot.Views
         {
             if (m_inChat)
             {
-                chat.AddChat(new ChatNode("[", Color.LightBlue), new ChatNode(m_userName, Color.White), new ChatNode("]: ", Color.LightBlue), new ChatNode(e.Text, Color.White));
+                chat.AddChat(new ChatNode("[", CssClasses.SpeakBracketsOtherUsers), new ChatNode(m_userName, CssClasses.SpeakOtherUsername), new ChatNode("]: ", CssClasses.SpeakBracketsOtherUsers), new ChatNode(e.Text, CssClasses.SpeakText));
             }
         }
 
         private EventHandler __LoginSucceeded;
         void LoginSucceeded(object sender, EventArgs e)
         {
-            chat.AddChat(new ChatNode("Login succeeded!", Color.LimeGreen));
+            chat.AddChat(new ChatNode("Login succeeded!", CssClasses.LoginSucceeded));
         }
 
         private LoginFailedEventHandler __LoginFailed;
         void LoginFailed(object sender, LoginFailedEventArgs e)
         {
-            chat.AddChat(new ChatNode("Login failed.", Color.Red));
+            chat.AddChat(new ChatNode("Login failed.", CssClasses.LoginFailed));
         }
 
         private ServerChatEventHandler __JoinedChannel;
         void JoinedChannel(object sender, ServerChatEventArgs e)
         {
-            chat.AddChat(new ChatNode("Joined Channel: ", Color.Yellow), new ChatNode(e.Text, Color.White));
+            chat.AddChat(new ChatNode("Joined Channel: ", CssClasses.JoiningChannel), new ChatNode(e.Text, CssClasses.ChannelName));
             ChannelFlags flags = (ChannelFlags)e.Flags;
             if ((flags & ChannelFlags.SilentChannel) == ChannelFlags.SilentChannel)
-                chat.AddChat(new ChatNode("This is a silent channel.", Color.LightBlue));
+                chat.AddChat(new ChatNode("This is a silent channel.", CssClasses.SilentChannel));
 
             ThreadStart ts = delegate
             {
@@ -360,22 +355,22 @@ namespace JinxBot.Views
         void InformationReceived(object sender, ServerChatEventArgs e)
         {
             if (!string.IsNullOrEmpty(e.Text))
-                chat.AddChat(new ChatNode("[Server]: ", Color.Gray), new ChatNode(e.Text, Color.Gray));
+                chat.AddChat(new ChatNode("[Server]: ", CssClasses.ServerInfo), new ChatNode(e.Text, CssClasses.ServerInfo));
         }
 
         private InformationEventHandler __Information;
         void Information(object sender, InformationEventArgs e)
         {
-            chat.AddChat(new ChatNode(e.Information, Color.LightSteelBlue));
+            chat.AddChat(new ChatNode(e.Information, CssClasses.ClientInfo));
         }
 
         private ErrorEventHandler __Error;
         void Error(object sender, ErrorEventArgs e)
         {
-            chat.AddChat(new ChatNode(e.Error, Color.Orange));
+            chat.AddChat(new ChatNode(e.Error, CssClasses.Error));
             if (e.IsDisconnecting)
             {
-                chat.AddChat(new ChatNode("This error is causing you to disconnect.", Color.OrangeRed));
+                chat.AddChat(new ChatNode("This error is causing you to disconnect.", CssClasses.ErrorDisconnecting));
             }
         }
 
@@ -385,10 +380,10 @@ namespace JinxBot.Views
             Product clientProduct = Product.GetByProductCode(m_client.Settings.Client.ToUpperInvariant());
             string imgID = m_prp.Icons.GetImageIdFor(UserFlags.None, UserStats.CreateDefault(clientProduct));
             Image userImg = ProfileResourceProvider.GetForClient(m_client).Icons.GetImageFor(UserFlags.None, UserStats.CreateDefault(clientProduct));
-            chat.AddChat(new ChatNode("Entered chat as ", Color.Yellow),
+            chat.AddChat(new ChatNode("Entered chat as ", CssClasses.EnteringChat),
                 new ImageChatNode(string.Concat(imgID, ".jpg"), 
                     userImg, clientProduct.Name),
-                new ChatNode(e.UniqueUsername, Color.White));
+                new ChatNode(e.UniqueUsername, CssClasses.UsernameOther));
             m_userName = e.UniqueUsername;
             m_inChat = true;
             m_enteredChat = DateTime.Now;
@@ -397,7 +392,7 @@ namespace JinxBot.Views
         private EventHandler __Disconnected;
         void Disconnected(object sender, EventArgs e)
         {
-            chat.AddChat(new ChatNode("Disconnected.", Color.Yellow));
+            chat.AddChat(new ChatNode("Disconnected.", CssClasses.Disconnected));
             m_inChat = false;
             m_userName = null;
         }
@@ -405,49 +400,49 @@ namespace JinxBot.Views
         private EventHandler __Connected;
         void Connected(object sender, EventArgs e)
         {
-            chat.AddChat(new ChatNode("Connected!", Color.Yellow));
+            chat.AddChat(new ChatNode("Connected!", CssClasses.Connected));
         }
 
         private InformationEventHandler __CommandSent;
         void CommandSent(object sender, InformationEventArgs e)
         {
-            chat.AddChat(new ChatNode(e.Information, Color.Teal));
+            chat.AddChat(new ChatNode(e.Information, CssClasses.CommandSent));
         }
 
         private EventHandler __ClientCheckPassed;
         void ClientCheckPassed(object sender, EventArgs e)
         {
-            chat.AddChat(new ChatNode("Versioning passed!", Color.LimeGreen));
+            chat.AddChat(new ChatNode("Versioning passed!", CssClasses.VersioningPassed));
         }
 
         private ClientCheckFailedEventHandler __ClientCheckFailed;
         void ClientCheckFailed(object sender, ClientCheckFailedEventArgs e)
         {
-            chat.AddChat(new ChatNode(string.Format(CultureInfo.CurrentCulture, "Versioning check failed; {0}", e.Reason), Color.OrangeRed));
+            chat.AddChat(new ChatNode(string.Format(CultureInfo.CurrentCulture, "Versioning check failed; {0}", e.Reason), CssClasses.VersioningFailed));
         }
 
         private ServerChatEventHandler __ChannelWasRestricted;
         void ChannelWasRestricted(object sender, ServerChatEventArgs e)
         {
-            chat.AddChat(new ChatNode(e.Text, Color.Red));
+            chat.AddChat(new ChatNode(e.Text, CssClasses.ChannelRestricted));
         }
 
         private ServerChatEventHandler __ChannelWasFull;
         void ChannelWasFull(object sender, ServerChatEventArgs e)
         {
-            chat.AddChat(new ChatNode(e.Text, Color.Red));
+            chat.AddChat(new ChatNode(e.Text, CssClasses.ChannelFull));
         }
 
         private ChannelListEventHandler __ChannelListReceived;
         void ChannelListReceived(object sender, ChannelListEventArgs e)
         {
             List<ChatNode> nodesToAdd = new List<ChatNode>();
-            nodesToAdd.Add(new ChatNode("Available Channels:", Color.LightSteelBlue));
+            nodesToAdd.Add(new ChatNode("Available Channels:", CssClasses.ChannelListHeader));
             foreach (string s in e.Channels)
             {
                 nodesToAdd.Add(ChatNode.NewLine);
-                nodesToAdd.Add(new ChatNode(" - ", Color.Yellow));
-                nodesToAdd.Add(new ChatNode(s, Color.White));
+                nodesToAdd.Add(new ChatNode(" - ", CssClasses.ChannelBullet));
+                nodesToAdd.Add(new ChatNode(s, CssClasses.ChannelListItem));
             }
             chat.AddChat(nodesToAdd);
         }
@@ -455,7 +450,7 @@ namespace JinxBot.Views
         private ServerChatEventHandler __ChannelDidNotExist;
         void ChannelDidNotExist(object sender, ServerChatEventArgs e)
         {
-            chat.AddChat(new ChatNode(e.Text, Color.Red));
+            chat.AddChat(new ChatNode(e.Text, CssClasses.ChannelDNE));
         }
         #endregion
 
@@ -471,6 +466,18 @@ namespace JinxBot.Views
             else
             {
                 chat.AddChat(new ChatNode("You are not yet in chat!", Color.YellowGreen));
+            }
+        }
+
+        public Uri StylesheetUri
+        {
+            get
+            {
+                return this.chat.StylesheetUri;
+            }
+            set
+            {
+                this.chat.StylesheetUri = value;
             }
         }
     }

@@ -10,6 +10,7 @@ using System.Globalization;
 using mshtml;
 using JinxBot.Controls.Design;
 using System.Threading;
+using System.IO;
 
 namespace JinxBot.Controls
 {
@@ -20,34 +21,15 @@ namespace JinxBot.Controls
     [DefaultEvent("DisplayReady")]
     public partial class DisplayBox : UserControl
     {
+        private static string scriptInitializer;
         #region HTML document
         private const string HTML = @"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD XHTML 1.0 Transitional//EN"">
 <html xmlns=""http://www.w3.org/1999/xhtml"">
 	<head>
 		<title>JinxBot Display Interface</title>
-<style type=""text/css"">
-body
-{
-    background-color: black;
-    font-size: 12px;
-    color: #dddddd;
-    font-family: Tahoma, Verdana, Sans-serif;
+<!-- Script injection -->
+{0}
 
-}
-
-p
-{
-    text-indent: -3em;
-    margin-left: 3em;
-    margin-top: 4px;
-    margin-bottom: 0px;
-}
-
-#scrollTo
-{
-    height: 4px;
-}
-</style>
 	</head>	
 	<body>
 	    <div id=""enterText""></div>
@@ -70,6 +52,7 @@ p
         private bool m_useTimestamp = true;
         private string m_timestampFormat = "[{0}.{1:d2}.{2:d2}]";
         private int m_parasToKeep = 300;
+        private Uri m_stylesUri;
         #endregion
         #endregion
 
@@ -79,9 +62,53 @@ p
         /// </summary>
         public DisplayBox()
         {
+            InitializeExternals();
             InitializeComponent();
             this.AddChatImplementation = new AddChatCallback(AddChatImpl);
-            display.DocumentText = HTML;
+            display.DocumentText = string.Format(CultureInfo.InvariantCulture, HTML, scriptInitializer);
+        }
+
+        private void InitializeExternals()
+        {
+            string appDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "JinxBot.Controls");
+            if (!Directory.Exists(appDataPath))
+                Directory.CreateDirectory(appDataPath);
+
+            string mootoolsBasePath = Path.Combine(appDataPath, "mootools-base.js");
+            string mootoolsExtensionsPath = Path.Combine(appDataPath, "jinxbot-mootools.js");
+            string defaultStylesPath = Path.Combine(appDataPath, "DefaultStyles.css");
+            if (!File.Exists(mootoolsBasePath) || new FileInfo(mootoolsBasePath).Length != Resources.mootools_core.Length)
+            {
+                File.WriteAllText(mootoolsBasePath, Resources.mootools_core, Encoding.UTF8);
+            }
+
+            if (!File.Exists(mootoolsExtensionsPath) || new FileInfo(mootoolsExtensionsPath).Length != Resources.jinxbot_mootools.Length)
+            {
+                File.WriteAllText(mootoolsExtensionsPath, Resources.jinxbot_mootools, Encoding.UTF8);
+            }
+
+            if (!File.Exists(defaultStylesPath) || new FileInfo(defaultStylesPath).Length != Resources.DefaultStyles_css.Length)
+            {
+                File.WriteAllText(defaultStylesPath, Resources.DefaultStyles_css, Encoding.UTF8);
+            }
+
+            scriptInitializer = string.Format(CultureInfo.InvariantCulture, @"<link type=""text/css"" src=""file:///{2}"" rel=""stylesheet"" />
+<script type=""text/javascript"" src=""file:///{0}"" />
+<script type=""text/javascript"" src=""file:///{1}"" />
+", mootoolsBasePath.Replace(Path.PathSeparator, '/'), mootoolsExtensionsPath.Replace(Path.PathSeparator, '/'),
+ defaultStylesPath.Replace(Path.PathSeparator, '/'));
+            scriptInitializer = string.Format(CultureInfo.InvariantCulture, @"
+<script type=""text/javascript"">
+{0}
+
+{1}
+</script>
+<style type=""text/css"">
+{2}
+</style>
+", Resources.mootools_core, Resources.jinxbot_mootools, Resources.DefaultStyles_css);
+            
+            m_stylesUri = new Uri(string.Concat("file:///", defaultStylesPath.Replace(Path.PathSeparator, '/')));
         }
         #endregion
 
@@ -96,6 +123,8 @@ p
             m_renderers = new Dictionary<Type, ChatNodeRenderer>();
             InitializeRenderer(typeof(ChatNode), typeof(ChatNodeRenderer));
 
+            IHTMLDocument doc = display.Document.DomDocument as IHTMLDocument;
+            
             OnDisplayReady(e);
         }
         #endregion
@@ -347,6 +376,45 @@ p
                 m_parasToKeep = value;
 
                 UpdateParagraphs();
+            }
+        }
+
+        
+        /// <summary>
+        /// Gets or sets the URI of the stylesheet to use.
+        /// </summary>
+        [LocalizedCategory("CatAppearance")]
+        [LocalizedDescription("StylesheetUri")]
+        [Browsable(false)]
+        [TypeConverter(typeof(UriTypeConverter))]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public Uri StylesheetUri
+        {
+            get
+            {
+                return m_stylesUri;
+            }
+            set
+            {
+                if (object.ReferenceEquals(value, null))
+                    throw new ArgumentNullException("value");
+                try
+                {
+                    m_stylesUri = value;
+                } catch (Exception ex)
+                {
+                    throw new ArgumentException("Could not set the stylesheet to the specified URI.", "value", ex);
+                }
+
+                string uri = value.ToString();
+
+                IHTMLDocument2 doc = display.Document.DomDocument as IHTMLDocument2;
+                IHTMLWindow2 window = doc.parentWindow;
+                window.execScript(string.Format(CultureInfo.InvariantCulture, "new Asset.css('{0}');", uri.Replace("'", "\\'")), "javascript");
+
+                this.display.Dock = DockStyle.None;
+                this.display.Size = this.display.Size;
+                this.display.Dock = DockStyle.Fill;
             }
         }
         #endregion
