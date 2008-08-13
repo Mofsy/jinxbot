@@ -1,23 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 using JinxBot.Controls.Docking;
 using BNSharp.Net;
 using BNSharp;
 using BNSharp.BattleNet;
+using JinxBot.Plugins.UI;
 using JinxBot.Reliability;
-using System.Reflection;
-using System.Globalization;
-using System.Threading;
 
 namespace JinxBot.Views
 {
-    public partial class ProfileDocument : DockableDocument
+    public partial class ProfileDocument : DockableDocument, IChatTab
     {
         private ChatDocument m_chat;
         private FriendsList m_friends;
@@ -26,12 +18,13 @@ namespace JinxBot.Views
         private NewsList m_news;
         private BattleNetClient m_client;
         private Dictionary<string, int> m_assemblyNamesToErrors;
+        private List<DockableDocument> m_documents;
 
         public ProfileDocument()
         {
             InitializeComponent();
             m_assemblyNamesToErrors = new Dictionary<string, int>();
-
+            m_documents = new List<DockableDocument>();
         }
 
         public ProfileDocument(BattleNetClient client)
@@ -72,6 +65,10 @@ namespace JinxBot.Views
             }
 
             m_channel.Show();
+
+            m_ssUri = m_chat.StylesheetUri;
+
+            m_documents.Add(m_chat);
         }
 
         void client_EventExceptionThrown(object sender, EventExceptionEventArgs e)
@@ -94,6 +91,24 @@ namespace JinxBot.Views
         public BattleNetClient Client
         {
             get { return m_client; }
+        }
+
+        private Uri m_ssUri;
+        public Uri StylesheetUri
+        {
+            get { return m_ssUri; }
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException("value");
+                m_ssUri = value;
+                foreach (DockableDocument doc in m_documents)
+                {
+                    IChatTab tab = doc as IChatTab;
+                    if (tab != null)
+                        tab.StylesheetUri = value;
+                }
+            }
         }
     }
 }

@@ -215,6 +215,7 @@ namespace BNSharp.Net
         private byte[] m_ldValStr, m_ldDigest, m_w3srv;
         private string m_valString;
         private NLS m_nls;
+        private string m_uniqueUN;
 
         private void ResetConnectionState()
         {
@@ -244,6 +245,7 @@ namespace BNSharp.Net
             }
             m_ldDigest = null;
             m_ldValStr = null;
+            m_uniqueUN = null;
             m_w3srv = null;
             m_valString = null;
 
@@ -259,6 +261,7 @@ namespace BNSharp.Net
         {
             DataReader dr = new DataReader(data.Data);
             EnteredChatEventArgs e = new EnteredChatEventArgs(dr.ReadCString(), dr.ReadCString(), dr.ReadCString());
+            m_uniqueUN = e.UniqueUsername;
             e.EventData = data;
             OnEnteredChat(e);
 

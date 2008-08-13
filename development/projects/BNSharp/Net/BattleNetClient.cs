@@ -194,8 +194,7 @@ namespace BNSharp.Net
                 Send(pck);
                 if (text.StartsWith("/me ", StringComparison.OrdinalIgnoreCase) || text.StartsWith("/emote ", StringComparison.OrdinalIgnoreCase))
                 {
-                    ChatMessageEventArgs cme = new ChatMessageEventArgs(ChatEventType.Emote, UserFlags.None, "Me", text.Substring(text.IndexOf(' ') + 1));
-                    OnMessageSent(cme);
+                    // do nothing
                 }
                 else if (text.StartsWith("/", StringComparison.Ordinal))
                 {
@@ -203,7 +202,7 @@ namespace BNSharp.Net
                 }
                 else
                 {
-                    ChatMessageEventArgs cme = new ChatMessageEventArgs(ChatEventType.Talk, UserFlags.None, "Me", text);
+                    ChatMessageEventArgs cme = new ChatMessageEventArgs(ChatEventType.Talk, UserFlags.None, this.m_uniqueUN, text);
                     OnMessageSent(cme);
                 }
             }

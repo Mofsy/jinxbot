@@ -17,7 +17,7 @@ namespace JinxBot.Controls
         /// </summary>
         public static readonly ChatNode NewLine = new ChatNode(null, Color.Empty);
 
-        private string m_text;
+        private string m_text, m_cssClass;
         private Color m_col;
         private Uri m_uri;
 
@@ -26,10 +26,22 @@ namespace JinxBot.Controls
         /// </summary>
         /// <param name="text">The text to be displayed.</param>
         /// <param name="color">The color of the text.</param>
+        [Obsolete("This isn't really obsolete.")]
         public ChatNode(string text, Color color)
         {
             m_text = text;
             m_col = color;
+        }
+
+        /// <summary>
+        /// Initializes a new <see>ChatNode</see>.
+        /// </summary>
+        /// <param name="text">The text to be displayed.</param>
+        /// <param name="cssClass">The CSS class name to apply to the element.</param>
+        public ChatNode(string text, string cssClass)
+        {
+            m_text = text;
+            m_cssClass = cssClass;
         }
 
         /// <summary>
@@ -47,10 +59,34 @@ namespace JinxBot.Controls
         /// Initializes a new <b>ChatNode</b>.
         /// </summary>
         /// <param name="text">The text to be displayed.</param>
+        /// <param name="cssClass">The CSS class name to apply to the element.</param>
+        /// <param name="linkUrl">The URL the link for this text.</param>
+        public ChatNode(string text, string cssClass, string linkUrl) 
+            : this(text, cssClass, new Uri(linkUrl))
+        {
+            
+        }
+
+        /// <summary>
+        /// Initializes a new <b>ChatNode</b>.
+        /// </summary>
+        /// <param name="text">The text to be displayed.</param>
         /// <param name="color">The color of the text.</param>
         /// <param name="linkUri">The URL the link for this text.</param>
         public ChatNode(string text, Color color, Uri linkUri)
             : this(text, color)
+        {
+            m_uri = linkUri;
+        }
+
+        /// <summary>
+        /// Initializes a new <b>ChatNode</b>.
+        /// </summary>
+        /// <param name="text">The text to be displayed.</param>
+        /// <param name="cssClass">The CSS class name to apply to the element.</param>
+        /// <param name="linkUri">The URL the link for this text.</param>
+        public ChatNode(string text, string cssClass, Uri linkUri)
+            : this(text, cssClass)
         {
             m_uri = linkUri;
         }
@@ -67,6 +103,13 @@ namespace JinxBot.Controls
         /// Gets the URL that this text should link to.
         /// </summary>
         public Uri LinkUri { get { return m_uri; } }
+        /// <summary>
+        /// Gets the CSS class name that should be used to render this ChatNode.
+        /// </summary>
+        /// <remarks>
+        /// <para>If this property returns <see langword="null" />, then the <see>Color</see> property is used instead.</para>
+        /// </remarks>
+        public string CssClass { get{ return m_cssClass;} }
 
         #region ICloneable Members
 

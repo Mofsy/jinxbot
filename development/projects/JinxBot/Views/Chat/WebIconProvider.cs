@@ -41,7 +41,7 @@ namespace JinxBot.Views.Chat
         private bool m_valid;
         private Image m_defaultImage;
 
-        internal WebIconProvider()
+        public WebIconProvider()
         {
             WebIconList iconsList = null;
 

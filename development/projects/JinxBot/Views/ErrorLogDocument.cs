@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-using JinxBot.Controls.Docking;
+﻿using JinxBot.Controls.Docking;
 using JinxBot.Controls;
+using JinxBot.Views.Chat;
 
 namespace JinxBot.Views
 {
@@ -20,7 +13,7 @@ namespace JinxBot.Views
 
         public void AddError(string message)
         {
-            display.AddChat(new ChatNode(message, Color.Orange));
+            display.AddChat(new ChatNode(message, CssClasses.Error));
         }
     }
 }

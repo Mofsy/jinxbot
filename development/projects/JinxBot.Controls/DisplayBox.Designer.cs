@@ -37,7 +37,6 @@ namespace JinxBot.Controls
             this.display.AllowNavigation = false;
             this.display.AllowWebBrowserDrop = false;
             this.display.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.display.IsWebBrowserContextMenuEnabled = false;
             this.display.Location = new System.Drawing.Point(0, 0);
             this.display.MinimumSize = new System.Drawing.Size(20, 20);
             this.display.Name = "display";
@@ -51,6 +50,7 @@ namespace JinxBot.Controls
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.Controls.Add(this.display);
             this.Name = "DisplayBox";
             this.Size = new System.Drawing.Size(464, 229);

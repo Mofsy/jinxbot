@@ -238,6 +238,26 @@ namespace JinxBot.Controls
                 display.MaxDisplayedParagraphs = value;
             }
         }
+
+        /// <summary>
+        /// Gets or sets the URI of the stylesheet to use.
+        /// </summary>
+        [LocalizedCategory("CatAppearance")]
+        [LocalizedDescription("StylesheetUri")]
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        [TypeConverter(typeof(UriTypeConverter))]
+        public Uri StylesheetUri
+        {
+            get
+            {
+                return display.StylesheetUri;
+            }
+            set
+            {
+                display.StylesheetUri = value;
+            }
+        }
         #endregion
 
         #region events

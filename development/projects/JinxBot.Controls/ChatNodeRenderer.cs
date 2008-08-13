@@ -67,8 +67,14 @@ namespace JinxBot.Controls
             else if (node.LinkUri == null)
             {
                 HtmlElement chatSection = this.m_domDoc.CreateElement("span");
-                if (node.Color != Color.Empty)
+                if (node.CssClass != null)
+                {
+                    chatSection.SetAttribute("className", node.CssClass);
+                }
+                else if (node.Color != Color.Empty)
+                {
                     chatSection.Style = string.Format(CultureInfo.InvariantCulture, "color: #{0:x2}{1:x2}{2:x2};", node.Color.R, node.Color.G, node.Color.B);
+                }
                 chatSection.InnerText = node.Text;
 
                 result = chatSection;
@@ -78,9 +84,15 @@ namespace JinxBot.Controls
                 HtmlElement hrefSection = m_domDoc.CreateElement("a");
                 hrefSection.SetAttribute("href", node.LinkUri.ToString());
 
-                if (node.Color != Color.Empty)
-                    hrefSection.Style = 
+                if (node.CssClass != null)
+                {
+                    hrefSection.SetAttribute("className", node.CssClass);
+                }
+                else if (node.Color != Color.Empty)
+                {
+                    hrefSection.Style =
                         string.Format(CultureInfo.InvariantCulture, "color: #{0:x2}{1:x2}{2:x2};", node.Color.R, node.Color.G, node.Color.B);
+                }
 
                 hrefSection.SetAttribute("title", 
                     string.Format(CultureInfo.CurrentCulture, "Link to {0}", node.LinkUri.ToString().Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;")));
@@ -94,13 +106,26 @@ namespace JinxBot.Controls
             return result;
         }
 
-        protected void hrefSection_Click(object sender, HtmlElementEventArgs e)
+        private void hrefSection_Click(object sender, HtmlElementEventArgs e)
+        {
+            OnLinkClicked(sender, e);
+        }
+
+        protected virtual void OnLinkClicked(object sender, HtmlElementEventArgs e)
         {
             HtmlElement elem = e.FromElement;
 
             System.Diagnostics.Process.Start(elem.GetAttribute("href"));
 
             e.ReturnValue = false;
+        }
+
+        protected virtual HtmlElement CreateLink()
+        {
+            HtmlElement element = HtmlDomDocument.CreateElement("a");
+            element.Click += new HtmlElementEventHandler(hrefSection_Click);
+
+            return element;
         }
     }
 }

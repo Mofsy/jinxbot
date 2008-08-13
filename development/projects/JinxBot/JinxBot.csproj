@@ -106,6 +106,7 @@
     <Compile Include="Views\Chat\BuiltInPlugins.cs" />
     <Compile Include="Views\Chat\ChannelListBoxItemRenderer.cs" />
     <Compile Include="Views\Chat\ClanListBoxItemRenderer.cs" />
+    <Compile Include="Views\Chat\CssChatClasses.cs" />
     <Compile Include="Views\Chat\CustomDrawnListBox.cs">
       <SubType>Component</SubType>
     </Compile>

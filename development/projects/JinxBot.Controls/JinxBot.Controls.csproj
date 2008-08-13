@@ -21,7 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRules>-Microsoft.Design#CA1003;-Microsoft.Mobility#CA1600;-Microsoft.Mobility#CA1601;-Microsoft.Naming#CA1704;-Microsoft.Naming#CA1703</CodeAnalysisRules>
+    <CodeAnalysisRules>-Microsoft.Design#CA1003;-Microsoft.Mobility#CA1600;-Microsoft.Mobility#CA1601;-Microsoft.Naming#CA1704;-Microsoft.Naming#CA1701;-Microsoft.Naming#CA1703</CodeAnalysisRules>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <DocumentationFile>bin\Debug\JinxBot.Controls.XML</DocumentationFile>
   </PropertyGroup>
@@ -145,6 +145,9 @@
     <EmbeddedResource Include="DockPanel.bmp" />
     <Content Include="License.txt" />
     <Content Include="NamespaceComments.xml" />
+    <Content Include="Resources\DefaultStyles.css" />
+    <None Include="Resources\mootools-core.js" />
+    <None Include="Resources\jinxbot-mootools.js" />
     <None Include="Resources\DockPane_OptionOverflow.bmp" />
     <None Include="Resources\DockPane_Option.bmp" />
     <None Include="Resources\DockPane_Dock.bmp" />

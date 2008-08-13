@@ -62,6 +62,7 @@
     <Compile Include="UI\CustomItemDrawData.cs" />
     <Compile Include="UI\CustomListBoxRendererAttribute.cs" />
     <Compile Include="UI\CustomMeasurements.cs" />
+    <Compile Include="UI\IChatTab.cs" />
     <Compile Include="UI\ICustomListBoxItemRenderer.cs" />
     <Compile Include="UI\IIconProvider.cs" />
   </ItemGroup>

@@ -1,15 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using JinxBot.Plugins.UI;
-using JinxBot.Views.Chat;
-using BNSharp.BattleNet.Clans;
-using BNSharp;
 using System.Reflection;
 using System.Diagnostics;
 
@@ -63,11 +55,6 @@ namespace JinxBot.Views.Chat
                 return DrawMode.OwnerDrawVariable;
             }
             set { }
-        }
-
-        protected override void OnPaint(PaintEventArgs pe)
-        {
-            base.OnPaint(pe);
         }
 
         protected override void OnDrawItem(DrawItemEventArgs e)

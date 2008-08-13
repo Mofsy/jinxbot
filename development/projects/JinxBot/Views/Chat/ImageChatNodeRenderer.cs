@@ -38,14 +38,13 @@ namespace JinxBot.Views.Chat
 
                 if (icn.LinkUri != null)
                 {
-                    HtmlElement hrefSection = base.HtmlDomDocument.CreateElement("a");
+                    HtmlElement hrefSection = CreateLink();
                     hrefSection.SetAttribute("href", node.LinkUri.ToString());
 
                     hrefSection.SetAttribute("title",
                         string.Format(CultureInfo.CurrentCulture, "Link to {0}", node.LinkUri.ToString().Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;")));
 
                     hrefSection.AppendChild(img);
-                    hrefSection.Click += new HtmlElementEventHandler(hrefSection_Click);
 
                     return hrefSection;
                 }

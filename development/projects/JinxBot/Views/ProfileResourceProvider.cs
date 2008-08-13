@@ -42,7 +42,7 @@ namespace JinxBot.Views
                 foreach (var element in config.Globals.IconProviders)
                 {
                     Type type = Type.GetType(element.TypeName);
-                    if (type != null && typeof(IIconProvider).IsAssignableFrom(type))
+                    if (type != null && typeof (IIconProvider).IsAssignableFrom(type))
                     {
                         IIconProvider provider = Activator.CreateInstance(type) as IIconProvider;
                         s_existingProviders.Add(element.Name, provider);
@@ -96,8 +96,7 @@ namespace JinxBot.Views
             if (object.ReferenceEquals(null, client))
             {
                 KeyValuePair<BattleNetClient, ProfileResourceProvider> prp = s_providers.FirstOrDefault();
-                if (object.ReferenceEquals(prp, null))
-                    return null;
+                
                 return prp.Value;
             }
 
@@ -112,17 +111,8 @@ namespace JinxBot.Views
 
         private ProfileResourceProvider(BattleNetClient client)
         {
-            //switch (JinxBotConfiguration.Instance.Globals.IconType)
-            //{
-            //    case IconType.BattleNetWebSite:
-            //        m_iconProvider = new WebIconProvider();
-            //        break;
-            //    case IconType.IconsBni:
-            //    default:
-            //        m_iconProvider = new BniIconProvider();
-            //        break;
-            //}
-            m_iconProvider = new BniIconProvider();
+            ClientProfile profile = client.Settings as ClientProfile;
+            m_iconProvider = IconProviderFactory.GetProvider(profile.IconProviderType);
         }
 
         /// <summary>

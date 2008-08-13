@@ -55,6 +55,9 @@
             this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dock = new JinxBot.Controls.Docking.DockPanel();
+            this.styleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.defaultStyleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.blizzardStyleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -72,6 +75,7 @@
             this.fileToolStripMenuItem,
             this.profilesToolStripMenuItem,
             this.currentProfileNoneToolStripMenuItem,
+            this.styleToolStripMenuItem,
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -278,6 +282,29 @@
             this.dock.TabIndex = 2;
             this.dock.ActiveDocumentChanged += new System.EventHandler(this.dock_ActiveDocumentChanged);
             // 
+            // styleToolStripMenuItem
+            // 
+            this.styleToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.defaultStyleToolStripMenuItem,
+            this.blizzardStyleToolStripMenuItem});
+            this.styleToolStripMenuItem.Name = "styleToolStripMenuItem";
+            this.styleToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.styleToolStripMenuItem.Text = "&Style";
+            // 
+            // defaultStyleToolStripMenuItem
+            // 
+            this.defaultStyleToolStripMenuItem.Name = "defaultStyleToolStripMenuItem";
+            this.defaultStyleToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.defaultStyleToolStripMenuItem.Text = "&Default Style";
+            this.defaultStyleToolStripMenuItem.Click += new System.EventHandler(this.defaultStyleToolStripMenuItem_Click);
+            // 
+            // blizzardStyleToolStripMenuItem
+            // 
+            this.blizzardStyleToolStripMenuItem.Name = "blizzardStyleToolStripMenuItem";
+            this.blizzardStyleToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.blizzardStyleToolStripMenuItem.Text = "&Blizzard Style";
+            this.blizzardStyleToolStripMenuItem.Click += new System.EventHandler(this.blizzardStyleToolStripMenuItem_Click);
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -327,6 +354,9 @@
         private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem enableVoidViewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem displayErrorLogToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem styleToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem defaultStyleToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem blizzardStyleToolStripMenuItem;
 
     }
 }
