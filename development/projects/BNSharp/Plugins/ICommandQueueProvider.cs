@@ -1,9 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BNSharp.Plugins
 {
+    /// <summary>
+    /// The <see>ICommandQueueProvider</see> interface is not yet supported in BN# Beta 2.
+    /// </summary>
+    [Obsolete("ICommandQueueProvider is not available in BN# Beta 2.")]
     public interface ICommandQueueProvider
     {
         /// <summary>

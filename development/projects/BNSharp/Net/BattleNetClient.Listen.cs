@@ -97,6 +97,7 @@ namespace BNSharp.Net
                         byte[] data = BattleNetClientResources.IncomingBufferPool.GetBuffer();
                         result = Receive(data, 0, unchecked((ushort)(length - 4)));
                         if (result == null) return; // disconnected.
+                        length = unchecked((ushort)(length - 4));
                     }
                     else if (length == 4)
                     {
@@ -291,9 +292,9 @@ namespace BNSharp.Net
             do
             {
                 channel = dr.ReadCString();
-                if (channel != null && channel.Length > 0)
+                if (!string.IsNullOrEmpty(channel))
                     channelList.Add(channel);
-            } while (channel != null && channel.Length > 0);
+            } while (!string.IsNullOrEmpty(channel));
 
             ChannelListEventArgs e = new ChannelListEventArgs(channelList.ToArray());
             e.EventData = data;

@@ -98,6 +98,9 @@
     <Compile Include="BattleNet\UserProfileEventArgs.cs" />
     <Compile Include="BattleNet\UserProfileRequest.cs" />
     <Compile Include="BattleNet\UserProfileKeys.cs" />
+    <Compile Include="MBNCSUtil\Util\WardenCrypt.cs" />
+    <Compile Include="MBNCSUtil\Util\WardenRandom.cs" />
+    <Compile Include="MBNCSUtil\WardenEncryptionContext.cs" />
     <Compile Include="ChannelFlags.cs" />
     <Compile Include="ChannelListEventArgs.cs" />
     <Compile Include="ChatEventArgs.cs" />
