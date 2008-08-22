@@ -160,7 +160,7 @@ namespace BNSharp.MBNCSUtil
         ///						<description>Bnclient.dll</description>
         ///					</item>
         ///					<item>
-        ///						<description>D2Client.snp</description>
+        ///						<description>D2Client.dll</description>
         ///					</item>
         ///				</list>
         ///			</description>

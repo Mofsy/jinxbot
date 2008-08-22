@@ -172,7 +172,8 @@ namespace JinxBot.Configuration
                     XmlSerializer xs = new XmlSerializer(typeof(JinxBotConfiguration));
                     try
                     {
-                        return xs.Deserialize(fs) as JinxBotConfiguration;
+                        JinxBotConfiguration config = xs.Deserialize(fs) as JinxBotConfiguration;
+                        return config;
                     }
                     catch (Exception ex)
                     {

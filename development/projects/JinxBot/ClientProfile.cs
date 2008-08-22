@@ -231,6 +231,7 @@ namespace JinxBot
         [Category("User Interface")]
         [Description("The type of icon style that the user interface will present in channel lists and optionally in the chat window.")]
         [XmlElement("IconStyle")]
+        [TypeConverter(typeof(IconSelectionTypeConverter))]
         //[DefaultValue("BNI Icons")]
         public string IconProviderType
         {

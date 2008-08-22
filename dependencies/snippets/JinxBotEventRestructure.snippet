@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+    <CodeSnippet Format="1.0.0">
+        <Header>
+            <Title>JinxBot Event Restructure</Title>
+            <Shortcut>jber</Shortcut>
+            <Description>Code snippet for restructuring a JinxBot event declaration to use new event semantics.</Description>
+            <Author>MyndFyre</Author>
+            <SnippetTypes>
+                <SnippetType>Expansion</SnippetType>
+            </SnippetTypes>
+        </Header>
+        <Snippet>
+            <Declarations>
+                <Literal>
+                    <ID>eventName</ID>
+                    <ToolTip>
+                        The name of the event being restructured.
+                    </ToolTip>
+                    <Default>EventName</Default>
+                </Literal>
+                <Literal>
+                    <ID>argsType</ID>
+                    <ToolTip>
+                        The type name component for the delegate and event arguments used by this event.  For example,
+                        you might enter "EnteredChat" for EnteredChatEventHandler and EnteredChatEventArgs.
+                    </ToolTip>
+                    <Default>EventType</Default>
+                </Literal>
+            </Declarations>
+            <Code Language="csharp">
+                <![CDATA[protected virtual void On$eventName$($argsType$EventArgs e)
+        {
+            __Invoke$eventName$(Priority.High, e);
+        }
+
+        private void __Invoke$eventName$(Priority p, $argsType$EventArgs e)
+        {
+            foreach ($argsType$EventHandler eh in __$eventName$[p])
+            {
+                try
+                {
+                    eh(this, e);
+                }
+                catch (Exception ex)
+                {
+                    ReportException(
+                        ex,
+                        new KeyValuePair<string, object>("delegate", eh),
+                        new KeyValuePair<string, object>("Event", "$eventName$"),
+                        new KeyValuePair<string, object>("param: priority", p),
+                        new KeyValuePair<string, object>("param: this", this),
+                        new KeyValuePair<string, object>("param: e", e)
+                        );
+                }
+            }
+
+            if (p == Priority.High)
+            {
+                e_medPriorityEvents.Enqueue(new InvokeHelper<$argsType$EventArgs> { Arguments = e, Target = new Invokee<$argsType$EventArgs>(__Invoke$eventName$) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<$argsType$EventArgs> { Arguments = e, Target = new Invokee<$argsType$EventArgs>(__Invoke$eventName$) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
+        }]]>
+            </Code>
+        </Snippet>
+    </CodeSnippet>
+</CodeSnippets>

@@ -280,6 +280,12 @@
     </Compile>
     <Compile Include="Design\LocalizedCategoryAttribute.cs" />
     <Compile Include="Design\LocalizedDescriptionAttribute.cs" />
+    <Compile Include="Wizard\WizardBase.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Wizard\WizardBase.Designer.cs">
+      <DependentUpon>WizardBase.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

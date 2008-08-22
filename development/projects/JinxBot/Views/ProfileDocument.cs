@@ -4,8 +4,10 @@ using JinxBot.Controls.Docking;
 using BNSharp.Net;
 using BNSharp;
 using BNSharp.BattleNet;
+using JinxBot.Plugins;
 using JinxBot.Plugins.UI;
 using JinxBot.Reliability;
+using System.Diagnostics;
 
 namespace JinxBot.Views
 {
@@ -32,6 +34,12 @@ namespace JinxBot.Views
         {
             m_client = client;
             this.Text = this.TabText = (client.Settings as ClientProfile).ProfileName;
+
+            if (client.Settings.Client == Product.StarcraftRetail.ProductCode || client.Settings.Client == Product.StarcraftBroodWar.ProductCode)
+            {
+                WardenModule module = new WardenModule(client);
+                m_client.WardenHandler = module;
+            }
 
             client.EventExceptionThrown += new EventExceptionEventHandler(client_EventExceptionThrown);
 

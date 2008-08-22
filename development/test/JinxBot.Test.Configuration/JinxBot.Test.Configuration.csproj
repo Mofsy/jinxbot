@@ -59,6 +59,7 @@
     <Compile Include="ConfigurationLoader.cs" />
     <Compile Include="ConfigurationLoaderTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WardenCryptTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ManualTest1.mht">

@@ -436,6 +436,7 @@ namespace JinxBot.Controls
             if (DisplayReady != null)
                 DisplayReady(this, e);
         }
+
         #endregion
     }
 }

@@ -17,6 +17,7 @@ using System.Threading;
 using JinxBot.Views.Chat;
 using BNSharp.BattleNet;
 using JinxBot.Plugins.UI;
+using System.Diagnostics;
 
 namespace JinxBot.Views
 {
@@ -212,8 +213,10 @@ namespace JinxBot.Views
             ChatUser user = e.User;
             UserStats us = e.User.Stats;
             string imgID = m_prp.Icons.GetImageIdFor(user.Flags, us);
-            ImageChatNode productNode = new ImageChatNode(string.Concat(imgID, ".jpg"),
-                m_prp.Icons.GetImageFor(user.Flags, us), imgID);
+            ChatNode productNode = ChatNode.Empty;
+            if (m_profile.IncludeIconsInChat)
+                productNode = new ImageChatNode(string.Concat(imgID, ".jpg"),
+                    m_prp.Icons.GetImageFor(user.Flags, us), imgID);
 
             switch (us.Product.ProductCode)
             {
@@ -480,5 +483,6 @@ namespace JinxBot.Views
                 this.chat.StylesheetUri = value;
             }
         }
+
     }
 }

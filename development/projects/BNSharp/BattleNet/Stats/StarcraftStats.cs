@@ -50,23 +50,26 @@ namespace BNSharp.BattleNet.Stats
             if (m_prod == null)
                 m_prod = Product.UnknownProduct;
 
-            dr.ReadTerminatedString(' ', Encoding.ASCII);
-            string sRating = dr.ReadTerminatedString(' ', Encoding.ASCII);
-            int.TryParse(sRating, out m_ladderRating);
-            string sRank = dr.ReadTerminatedString(' ', Encoding.ASCII);
-            int.TryParse(sRank, out m_ladderRank);
-            string sWins = dr.ReadTerminatedString(' ', Encoding.ASCII);
-            int.TryParse(sWins, out m_wins);
-            int nSpawn;
-            string sSpawn = dr.ReadTerminatedString(' ', Encoding.ASCII);
-            int.TryParse(sSpawn, out nSpawn);
-            m_isSpawned = (nSpawn == 1);
-            dr.ReadTerminatedString(' ', Encoding.ASCII);
-            string sHighRating = dr.ReadTerminatedString(' ', Encoding.ASCII);
-            int.TryParse(sHighRating, out m_highestLadderRating);
-            dr.ReadTerminatedString(' ', Encoding.ASCII);
-            dr.ReadTerminatedString(' ', Encoding.ASCII);
-            m_iconCode = dr.ReadDwordString(0);
+            if (stats.Length > 4)
+            {
+                dr.ReadTerminatedString(' ', Encoding.ASCII);
+                string sRating = dr.ReadTerminatedString(' ', Encoding.ASCII);
+                int.TryParse(sRating, out m_ladderRating);
+                string sRank = dr.ReadTerminatedString(' ', Encoding.ASCII);
+                int.TryParse(sRank, out m_ladderRank);
+                string sWins = dr.ReadTerminatedString(' ', Encoding.ASCII);
+                int.TryParse(sWins, out m_wins);
+                int nSpawn;
+                string sSpawn = dr.ReadTerminatedString(' ', Encoding.ASCII);
+                int.TryParse(sSpawn, out nSpawn);
+                m_isSpawned = (nSpawn == 1);
+                dr.ReadTerminatedString(' ', Encoding.ASCII);
+                string sHighRating = dr.ReadTerminatedString(' ', Encoding.ASCII);
+                int.TryParse(sHighRating, out m_highestLadderRating);
+                dr.ReadTerminatedString(' ', Encoding.ASCII);
+                dr.ReadTerminatedString(' ', Encoding.ASCII);
+                m_iconCode = dr.ReadDwordString(0);
+            }
         }
         #endregion
 

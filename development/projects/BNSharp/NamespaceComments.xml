@@ -14,6 +14,34 @@
     <a href="http://www.jinxbot.net/wiki/index.php?title=How_to_develop_a_Battle.net_client_in_10_minutes" target="_blank">How to develop a Battle.net client in 10 minutes</a>.
     </para>
     <para>
+        <b style="font-size: larger;">Release Notes - BN# Beta 2</b>
+    </para>
+    <para>
+        <b>New Features</b>
+    </para>
+    <list type="bullet">
+        <item>Support for Warden has been partially implemented in the BNSharp.MBNCSUtil namespace in the class 
+        <see cref="BNSharp.MBNCSUtil.WardenEncryptionContext">WardenEncryptionContext</see>.  The end-user is still required to implement the 
+        <see cref="BNSharp.Plugins.IWardenModule">IWardenModule</see> interface.  However, developing the implementation
+        should be significantly improved.  This contribution was a joint effort by Warrior[x86] and MyndFyre.</item>
+        <item>Several changes that were related to Warden have been implemented and rolled into the BattleNetClient class.  These issues did not 
+        necessarily prevent correct implementation of Warden, but they did not follow the documentation and were corrected in this release.</item>
+        <item>Corrected an issue that caused an exception on the parsing thread during friend updates on Starcraft and Brood War.</item>
+    </list>
+    <para>
+        <b>What's coming for Beta 3</b>
+    </para>
+    <list type="bullet">
+        <item>Support for Warcraft III profiles and clan information lookups.</item>
+        <item>Built-in support for ad messages.</item>
+        <item>Support for setting e-mail interactively during login.</item>
+        <item>Sanity checking for passing the IBattleNetSettings interface.</item>
+        <item>The ability to change the server on ConnectionBase without reinstantiating the class.</item>
+        <item>Binary Join Channel command function.</item>
+        <item>Support for chat message throttling via the <see cref="BNSharp.Plugins.ICommandQueueProvider">ICommandQueueProvider</see> interface.</item>
+        <item>All remaining internal connection status strings will be removed into the localizable file format.</item>
+    </list>
+    <para>
         <b style="font-size: larger;">Release Notes - BN# Beta 1</b>
     </para>
     <para>
