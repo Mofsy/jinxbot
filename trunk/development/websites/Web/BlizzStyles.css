@@ -1,0 +1,217 @@
+﻿body
+{
+    background-color: #222;
+    font-size: 12px;
+    color: #dddddd;
+    font-family: 'Segoe UI', 'Avenir LT Std', Verdana, Sans-serif;
+}
+
+p
+{
+    text-indent: -3em;
+    margin-left: 3em;
+    margin-top: 4px;
+    margin-bottom: 0px;
+}
+
+#scrollTo
+{
+    height: 4px;
+}
+
+.timestamp
+{
+	color: #fff;
+}
+
+.error
+{
+	color: #00ffff;
+}
+
+.userProfileReceivedNotification
+{
+	color: Orange;
+}
+
+.userNameOtherUser 
+{
+	color: SkyBlue;
+}
+
+.userProfileKey
+{
+	color: Gray;
+}
+
+.userProfileValue
+{
+	color: Teal;
+}
+
+
+.whisperHeader 
+{
+	color: Red;
+}
+
+.whisperOtherUsername 
+{
+	color: White;
+}
+
+.whisperText
+{
+	color: Red;
+}
+
+.unhandledWarden 
+{
+	color: Orange;
+}
+
+.speakBracketsOtherUser 
+{
+	color: Lime;
+}
+
+.speakOtherUsername
+{
+	color: Lime;
+}
+
+.speakBracketsSelf 
+{
+	color: Lime;
+}
+
+.speakSelfUsername 
+{
+	color: Lime;
+}
+
+.speakText 
+{
+	color: Lime;
+}
+
+.emoteOtherUsername 
+{
+	color: Orange;
+}
+
+.emoteSelfUsername 
+{
+	color: Orange;
+}
+
+.emoteText 
+{
+	color: Orange;
+}
+
+
+.leftChannel
+{
+	color: SteelBlue;
+}
+
+.joinedChannel 
+{
+	color: SteelBlue; 
+}
+
+.loginSucceeded 
+{
+	color: LimeGreen;
+}
+
+.loginFailed 
+{
+	color: OrangeRed; 
+}
+
+.joiningChannel
+{
+	color: SteelBlue;
+}
+
+.channelName
+{
+	color: LightGray;
+}
+
+.silentChannel
+{
+	color: SteelBlue;
+}
+
+.serverInfo
+{
+	color: Yellow;
+}
+
+.clientInfo
+{
+	color: Yellow;
+}
+
+.errorDisconnecting
+{
+	color: Red;
+}
+
+.enteringChat 
+{
+	color: SteelBlue;
+}
+
+.disconnected 
+{
+	color: Red;
+}
+
+.connected
+{
+	color: LimeGreen;
+}
+
+.commandSent
+{
+	color: Teal;
+}
+
+.versioningPassed 
+{
+	color: LightSteelBlue;
+}
+
+.versioningFailed 
+{
+	color: Red;
+}
+
+.channelRestricted, .channelFull, .channelDNE
+{
+	color: Orange;
+}
+
+.channelListHeader
+{
+	color: LightSlateGray;
+}
+
+.channelBullet
+{
+	color: SlateGray;
+}
+
+.channelListItem 
+{
+	color: LightSteelBlue;
+}
+
+.broadcast
+{
+	color: Orange;
+}

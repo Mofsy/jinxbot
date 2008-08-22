@@ -16,6 +16,10 @@ namespace JinxBot.Controls
         /// Represents a <b>ChatNode</b> that creates a new line.
         /// </summary>
         public static readonly ChatNode NewLine = new ChatNode(null, Color.Empty);
+        /// <summary>
+        /// Represents a <see>ChatNode</see> that is empty (has no length).
+        /// </summary>
+        public static readonly ChatNode Empty = new ChatNode("", "");
 
         private string m_text, m_cssClass;
         private Color m_col;
@@ -26,7 +30,6 @@ namespace JinxBot.Controls
         /// </summary>
         /// <param name="text">The text to be displayed.</param>
         /// <param name="color">The color of the text.</param>
-        [Obsolete("This isn't really obsolete.")]
         public ChatNode(string text, Color color)
         {
             m_text = text;

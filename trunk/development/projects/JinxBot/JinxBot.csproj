@@ -72,6 +72,7 @@
     <Compile Include="Design\BinFileBrowserTypeEditor.cs" />
     <Compile Include="Design\DllFileBrowserTypeEditor.cs" />
     <Compile Include="Design\ExeFileBrowserTypeEditor.cs" />
+    <Compile Include="Design\IconSelectionTypeConverter.cs" />
     <Compile Include="Design\ProductStringTypeConverter.cs" />
     <Compile Include="Design\Server.cs" />
     <Compile Include="Design\ServerTypeConverter.cs" />
@@ -84,6 +85,7 @@
     </Compile>
     <Compile Include="Plugins\PluginFactory.cs" />
     <Compile Include="Plugins\PluginInfo.cs" />
+    <Compile Include="Plugins\WardenModule.cs" />
     <Compile Include="ProfileDisplay.cs">
       <SubType>Form</SubType>
     </Compile>

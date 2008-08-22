@@ -50,14 +50,14 @@
             this.automaticallyStartThisProfileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.automaticallyReconnectToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.enableVoidViewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.styleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.defaultStyleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.blizzardStyleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gettingStartedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dock = new JinxBot.Controls.Docking.DockPanel();
-            this.styleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.defaultStyleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.blizzardStyleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -140,13 +140,14 @@
             // newProfileToolStripMenuItem
             // 
             this.newProfileToolStripMenuItem.Name = "newProfileToolStripMenuItem";
-            this.newProfileToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
+            this.newProfileToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.newProfileToolStripMenuItem.Text = "&New Profile";
+            this.newProfileToolStripMenuItem.Click += new System.EventHandler(this.newProfileToolStripMenuItem_Click);
             // 
             // toolStripMenuItem5
             // 
             this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(132, 6);
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(149, 6);
             // 
             // currentProfileNoneToolStripMenuItem
             // 
@@ -241,6 +242,29 @@
             this.enableVoidViewToolStripMenuItem.Size = new System.Drawing.Size(234, 22);
             this.enableVoidViewToolStripMenuItem.Text = "Enable &Void View";
             // 
+            // styleToolStripMenuItem
+            // 
+            this.styleToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.defaultStyleToolStripMenuItem,
+            this.blizzardStyleToolStripMenuItem});
+            this.styleToolStripMenuItem.Name = "styleToolStripMenuItem";
+            this.styleToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.styleToolStripMenuItem.Text = "&Style";
+            // 
+            // defaultStyleToolStripMenuItem
+            // 
+            this.defaultStyleToolStripMenuItem.Name = "defaultStyleToolStripMenuItem";
+            this.defaultStyleToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+            this.defaultStyleToolStripMenuItem.Text = "&Default Style";
+            this.defaultStyleToolStripMenuItem.Click += new System.EventHandler(this.defaultStyleToolStripMenuItem_Click);
+            // 
+            // blizzardStyleToolStripMenuItem
+            // 
+            this.blizzardStyleToolStripMenuItem.Name = "blizzardStyleToolStripMenuItem";
+            this.blizzardStyleToolStripMenuItem.Size = new System.Drawing.Size(142, 22);
+            this.blizzardStyleToolStripMenuItem.Text = "&Blizzard Style";
+            this.blizzardStyleToolStripMenuItem.Click += new System.EventHandler(this.blizzardStyleToolStripMenuItem_Click);
+            // 
             // helpToolStripMenuItem
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -281,29 +305,6 @@
             this.dock.Size = new System.Drawing.Size(775, 426);
             this.dock.TabIndex = 2;
             this.dock.ActiveDocumentChanged += new System.EventHandler(this.dock_ActiveDocumentChanged);
-            // 
-            // styleToolStripMenuItem
-            // 
-            this.styleToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.defaultStyleToolStripMenuItem,
-            this.blizzardStyleToolStripMenuItem});
-            this.styleToolStripMenuItem.Name = "styleToolStripMenuItem";
-            this.styleToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.styleToolStripMenuItem.Text = "&Style";
-            // 
-            // defaultStyleToolStripMenuItem
-            // 
-            this.defaultStyleToolStripMenuItem.Name = "defaultStyleToolStripMenuItem";
-            this.defaultStyleToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.defaultStyleToolStripMenuItem.Text = "&Default Style";
-            this.defaultStyleToolStripMenuItem.Click += new System.EventHandler(this.defaultStyleToolStripMenuItem_Click);
-            // 
-            // blizzardStyleToolStripMenuItem
-            // 
-            this.blizzardStyleToolStripMenuItem.Name = "blizzardStyleToolStripMenuItem";
-            this.blizzardStyleToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.blizzardStyleToolStripMenuItem.Text = "&Blizzard Style";
-            this.blizzardStyleToolStripMenuItem.Click += new System.EventHandler(this.blizzardStyleToolStripMenuItem_Click);
             // 
             // MainWindow
             // 

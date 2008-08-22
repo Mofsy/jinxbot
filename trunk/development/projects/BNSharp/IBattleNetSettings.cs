@@ -60,7 +60,8 @@ namespace BNSharp
         /// Gets or sets the version byte.
         /// </summary>
         /// <remarks>
-        /// <para>The version byte is a value that cannot be reliably retrieved from game files.  It can be </para>
+        /// <para>The version byte is a value that cannot be reliably retrieved from game files.  It can be found on most 
+        /// web sites, or is generally updated on <a href="http://www.jinxbot.net/wiki/index.php?title=Client_Versions" target="_blank">the JinxBot Wiki</a>.</para>
         /// </remarks>
         int VersionByte
         {
@@ -171,7 +172,7 @@ namespace BNSharp
         ///     </item>
         ///     <item>
         ///         <term>Diablo II; Diablo II: Lord of Destruction</term>
-        ///         <description>D2Client.snp</description>
+        ///         <description>D2Client.dll</description>
         ///     </item>
         ///     <item>
         ///         <term>Warcraft III: The Reign of Chaos; Warcraft III: The Frozen Throne</term>
@@ -198,7 +199,7 @@ namespace BNSharp
         /// Gets or sets the full or relative path to the file used for Lockdown revision checking.
         /// </summary>
         /// <remarks>
-        /// <para>This property is not required for products other than Starcraft and Diablo 2.</para>
+        /// <para>This property is not required for products other than Starcraft and Warcraft II: Battle.net Edition.</para>
         /// </remarks>
         string ImageFile
         {

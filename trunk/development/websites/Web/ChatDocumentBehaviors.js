@@ -90,6 +90,110 @@ JinxBotWeb.ChatDisplay.prototype = {
 
 JinxBotWeb.ChatDisplay.registerClass('JinxBotWeb.ChatDisplay');
 
+function OnChannelDNE(clientEvent.EventData)
+{
+}
+
+function OnChannelListReceived(clientEvent.EventData) 
+{
+}
+
+function OnChannelFull(clientEvent.EventData)
+{
+
+}
+
+function OnChannelRestricted(clientEvent.EventData)
+{
+
+}
+
+function OnClientCheckFailed(clientEvent.EventData) 
+{
+}
+
+function OnClientCheckPassed(clientEvent.EventData)
+{
+}
+
+function OnCommandSent(clientEvent.EventData)
+{
+
+}
+function OnConnected(clientEvent.EventData)
+{
+
+}
+function OnDisconnected(clientEvent.EventData)
+{
+
+}
+
+function OnEnteredChat(clientEvent.EventData)
+{
+
+}
+function OnError(clientEvent.EventData)
+{
+
+}
+function OnInformation(clientEvent.EventData)
+{
+
+}
+function OnInformationReceived(clientEvent.EventData)
+{
+
+}
+function OnJoinedChannel(clientEvent.EventData)
+{
+
+}
+function OnLoginFailed(clientEvent.EventData)
+{
+
+}
+            break;
+        case JinxBot.Plugins.JinxBotWeb.ClientEventType.LoginSucceeded:
+            OnLoginSucceeded(clientEvent.EventData);
+            break;
+        case JinxBot.Plugins.JinxBotWeb.ClientEventType.MessageSent:
+            OnMessageSent(clientEvent.EventData);
+            break;
+        case JinxBot.Plugins.JinxBotWeb.ClientEventType.ServerBroadcast:
+            OnServerBroadcast(clientEvent.EventData);
+            break;
+        case JinxBot.Plugins.JinxBotWeb.ClientEventType.ServerError:
+            OnServerError(clientEvent.EventData);
+            break;
+        case JinxBot.Plugins.JinxBotWeb.ClientEventType.UserEmoted:
+            OnUserEmoted(clientEvent.EventData);
+            break;
+        case JinxBot.Plugins.JinxBotWeb.ClientEventType.UserFlags:
+            OnUserFlags(clientEvent.EventData);
+            break;
+        case JinxBot.Plugins.JinxBotWeb.ClientEventType.UserJoined:
+            OnUserJoined(clientEvent.EventData);
+            break;
+        case JinxBot.Plugins.JinxBotWeb.ClientEventType.UserLeft:
+            OnUserLeft(clientEvent.EventData);
+            break;
+        case JinxBot.Plugins.JinxBotWeb.ClientEventType.UserShown:
+            OnUserShown(clientEvent.EventData);
+            break;
+        case JinxBot.Plugins.JinxBotWeb.ClientEventType.UserSpoke:
+            OnUserSpoke(clientEvent.EventData);
+            break;
+        case JinxBot.Plugins.JinxBotWeb.ClientEventType.WardenUnhandled:
+            OnWardenUnhandled(clientEvent.EventData);
+            break;
+        case JinxBot.Plugins.JinxBotWeb.ClientEventType.WhisperReceived:
+            OnWhisperReceived(clientEvent.EventData);
+            break;
+        case JinxBot.Plugins.JinxBotWeb.ClientEventType.WhisperSent:
+            OnWhisperSent(clientEvent.EventData);
+            break;
+
 function addChat(event)
 {
     switch (event.EventData.__type)

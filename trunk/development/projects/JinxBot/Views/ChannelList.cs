@@ -5,17 +5,20 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using JinxBot.Controls.Docking;
 using BNSharp.Net;
 using BNSharp;
 using BNSharp.BattleNet;
+using Timer = System.Timers.Timer;
 
 namespace JinxBot.Views
 {
     public partial class ChannelList : DockableToolWindow
     {
         private BattleNetClient m_client;
+        private Timer m_tmr;
 
         public ChannelList()
         {
@@ -28,6 +31,11 @@ namespace JinxBot.Views
             m_client = client;
 
             ProcessEventSetup();
+
+            m_tmr = new Timer();
+            m_tmr.AutoReset = false;
+            m_tmr.Interval = 500;
+            m_tmr.Elapsed += new System.Timers.ElapsedEventHandler(m_tmr_Elapsed);
         }
 
         private void ProcessEventSetup()
@@ -144,6 +152,84 @@ namespace JinxBot.Views
                     m_client.RequestUserProfile(user.Username, request);
                 }
             }
+        }
+
+        private void tbSearch_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.Handled = true;
+            }
+            else if (e.KeyCode == Keys.Escape)
+            {
+                tbSearch.Text = string.Empty;
+                e.Handled = true;
+            }
+        }
+
+        private void ReadySearchTimeout()
+        {
+            m_tmr.Interval = 500;
+            m_tmr.Start();
+        }
+
+        void m_tmr_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            ThreadStart ts = delegate
+                                 {
+                                     if (tbSearch.Text.Length == 0)
+                                        tbSearch.Visible = false;
+                                 };
+            if (InvokeRequired)
+                BeginInvoke(ts);
+            else
+                ts();
+        }
+
+        private void listBox1_KeyDown(object sender, KeyEventArgs e)
+        {
+            
+        }
+
+        private void listBox1_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            this.tbSearch.Visible = true;
+            this.tbSearch.Focus();
+            if (e.IsInputKey)
+            {
+                this.tbSearch.Text = this.tbSearch.Text + (char) e.KeyValue;
+            }
+        }
+
+        private void tbSearch_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (tbSearch.Text.Length == 0)
+                ReadySearchTimeout(); 
+            else
+            {
+                ProcessList();
+            }
+        }
+
+        private void ProcessList()
+        {
+            List<ChatUser> users = new List<ChatUser>(this.listBox1.Items.Count);
+            foreach (object o in listBox1.Items)
+            {
+                ChatUser user = o as ChatUser;
+                if (user != null)
+                    users.Add(user);
+            }
+            listBox1.BeginUpdate();
+            List<ChatUser> result =
+                users.FindAll(
+                    u => u.Username.ToUpperInvariant().Contains(tbSearch.Text.ToUpperInvariant()));
+            listBox1.Items.Clear();
+            foreach (ChatUser user in result)
+            {
+                listBox1.Items.Add(user);
+            }
+            listBox1.EndUpdate();
         }
     }
 }

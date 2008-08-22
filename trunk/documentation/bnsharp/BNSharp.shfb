@@ -19,6 +19,34 @@
     &lt;a href="http://www.jinxbot.net/wiki/index.php?title=How_to_develop_a_Battle.net_client_in_10_minutes" target="_blank"&gt;How to develop a Battle.net client in 10 minutes&lt;/a&gt;.
     &lt;/para&gt;
     &lt;para&gt;
+        &lt;b style="font-size: larger;"&gt;Release Notes - BN# Beta 2&lt;/b&gt;
+    &lt;/para&gt;
+    &lt;para&gt;
+        &lt;b&gt;New Features&lt;/b&gt;
+    &lt;/para&gt;
+    &lt;list type="bullet"&gt;
+        &lt;item&gt;Support for Warden has been partially implemented in the BNSharp.MBNCSUtil namespace in the class 
+        &lt;see cref="BNSharp.MBNCSUtil.WardenEncryptionContext"&gt;WardenEncryptionContext&lt;/see&gt;.  The end-user is still required to implement the 
+        &lt;see cref="BNSharp.Plugins.IWardenModule"&gt;IWardenModule&lt;/see&gt; interface.  However, developing the implementation
+        should be significantly improved.  This contribution was a joint effort by Warrior[x86] and MyndFyre.&lt;/item&gt;
+        &lt;item&gt;Several changes that were related to Warden have been implemented and rolled into the BattleNetClient class.  These issues did not 
+        necessarily prevent correct implementation of Warden, but they did not follow the documentation and were corrected in this release.&lt;/item&gt;
+        &lt;item&gt;Corrected an issue that caused an exception on the parsing thread during friend updates on Starcraft and Brood War.&lt;/item&gt;
+    &lt;/list&gt;
+    &lt;para&gt;
+        &lt;b&gt;What's coming for Beta 3&lt;/b&gt;
+    &lt;/para&gt;
+    &lt;list type="bullet"&gt;
+        &lt;item&gt;Support for Warcraft III profiles and clan information lookups.&lt;/item&gt;
+        &lt;item&gt;Built-in support for ad messages.&lt;/item&gt;
+        &lt;item&gt;Support for setting e-mail interactively during login.&lt;/item&gt;
+        &lt;item&gt;Sanity checking for passing the IBattleNetSettings interface.&lt;/item&gt;
+        &lt;item&gt;The ability to change the server on ConnectionBase without reinstantiating the class.&lt;/item&gt;
+        &lt;item&gt;Binary Join Channel command function.&lt;/item&gt;
+        &lt;item&gt;Support for chat message throttling via the &lt;see cref="BNSharp.Plugins.ICommandQueueProvider"&gt;ICommandQueueProvider&lt;/see&gt; interface.&lt;/item&gt;
+        &lt;item&gt;All remaining internal connection status strings will be removed into the localizable file format.&lt;/item&gt;
+    &lt;/list&gt;
+    &lt;para&gt;
         &lt;b style="font-size: larger;"&gt;Release Notes - BN# Beta 1&lt;/b&gt;
     &lt;/para&gt;
     &lt;para&gt;
@@ -416,7 +444,7 @@
     <Preliminary>True</Preliminary>
     <RootNamespaceContainer>False</RootNamespaceContainer>
     <RootNamespaceTitle />
-    <HelpTitle>BN# - The Managed Battle.net Client Library [ Beta 1 ]</HelpTitle>
+    <HelpTitle>BN# - The Managed Battle.net Client Library [ Beta 2 ]</HelpTitle>
     <HtmlHelpName>BNSharp</HtmlHelpName>
     <Language>en-US</Language>
     <CopyrightHref>http://www.jinxbot.net/</CopyrightHref>

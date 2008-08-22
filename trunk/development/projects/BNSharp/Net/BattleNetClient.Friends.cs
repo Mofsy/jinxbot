@@ -62,6 +62,10 @@ namespace BNSharp.Net
         {
             DataReader dr = new DataReader(pd.Data);
             byte entry = dr.ReadByte();
+            if (m_friendsList.Count <= entry)
+            {
+                return;
+            }
             FriendUser friend = m_friendsList[entry];
             friend.Status = (FriendStatus)dr.ReadByte();
             friend.LocationType = (FriendLocation)dr.ReadByte();

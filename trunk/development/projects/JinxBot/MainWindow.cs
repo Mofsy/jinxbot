@@ -87,17 +87,6 @@ namespace JinxBot
                     ProfileDocument profile = new ProfileDocument(bnc);
                     m_activeProfiles.Add(cp, profile);
                     profile.Show(this.dock);
-
-                    if (cp.ProfileName == "DT on East - D2DV")
-                    {
-                        Assembly asm = Assembly.LoadFile(Path.Combine(Application.StartupPath, "JinxBot.Plugins.JinxBotWeb.dll"));
-                        Type t = asm.GetType("JinxBot.Plugins.JinxBotWeb.JinxBotWebPlugin", false, false);
-                        IEventListener listener = Activator.CreateInstance(t) as IEventListener;
-                        if (listener != null)
-                        {
-                            listener.HandleClientStartup(bnc);
-                        }
-                    }
                 }
             }
         }

@@ -31,6 +31,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BNSharp, Version=0.8.8.15, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\BNSharp\bin\Release\BNSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="JinxBot.Plugins, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\JinxBot.Plugins\bin\Release\JinxBot.Plugins.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -64,16 +72,6 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BNSharp\BNSharp.csproj">
-      <Project>{2D02D43C-BC3B-41D2-9226-4E215939107F}</Project>
-      <Name>BNSharp</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\JinxBot.Plugins\JinxBot.Plugins.csproj">
-      <Project>{9C13A2E5-2A06-4BD9-BED0-F93E9BB03D31}</Project>
-      <Name>JinxBot.Plugins</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="app.config" />
     <None Include="Service References\JinxBotWeb\JinxBotWebApplication.wsdl" />
     <None Include="Service References\JinxBotWeb\JinxBotWebApplication.xsd" />
@@ -105,6 +103,12 @@
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\JinxBot.Plugins.JinxBotWeb.Shared\JinxBot.Plugins.JinxBotWeb.Shared.csproj">
+      <Project>{CD06EB30-2533-40E5-9361-51B4C7A2451C}</Project>
+      <Name>JinxBot.Plugins.JinxBotWeb.Shared</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
