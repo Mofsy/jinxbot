@@ -45,7 +45,14 @@ namespace BNSharp.Net
 
             ParseData data = e.EventData as ParseData;
             if (data != null && data.Data != null)
-                BattleNetClientResources.IncomingBufferPool.FreeBuffer(data.Data);
+            {
+                if (data.Data.Length == BattleNetClientResources.IncomingBufferPool.BufferLength)
+                {
+                    BattleNetClientResources.IncomingBufferPool.FreeBuffer(data.Data);
+                }
+
+                data.Data = null;
+            }
         }
     }
 }

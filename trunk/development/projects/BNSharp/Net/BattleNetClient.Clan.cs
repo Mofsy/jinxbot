@@ -85,7 +85,7 @@ namespace BNSharp.Net
         /// <param name="usersToInvite">The list of users to invite.  This parameter must be exactly 9 items long.</param>
         /// <returns>The request ID assigned to this request.</returns>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="clanName"/>, <paramref name="clanTag"/>, 
-        /// <paramref name="userToInvite"/>, or any of the strings in the array of <paramref name="usersToInvite"/>
+        /// <paramref name="usersToInvite"/>, or any of the strings in the array of <paramref name="usersToInvite"/>
         /// is <see langword="null" />.</exception>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="usersToInvite"/> is not exactly 9 items long.</exception>
         public int InviteUsersToNewClan(string clanName, string clanTag, string[] usersToInvite)
