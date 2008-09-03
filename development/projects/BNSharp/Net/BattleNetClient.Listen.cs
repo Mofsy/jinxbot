@@ -91,10 +91,12 @@ namespace BNSharp.Net
                     ushort length = BitConverter.ToUInt16(hdr, 2);
                     if (length > 4)
                     {
+                        byte[] data = null;
                         if (length > BattleNetClientResources.IncomingBufferPool.BufferLength)
-                            throw new ProtocolViolationException(Strings.ReceivedTooLongMessage);
+                            data = new byte[unchecked((ushort)length - 4)];
+                        else
+                            data = BattleNetClientResources.IncomingBufferPool.GetBuffer();
 
-                        byte[] data = BattleNetClientResources.IncomingBufferPool.GetBuffer();
                         result = Receive(data, 0, unchecked((ushort)(length - 4)));
                         if (result == null) return; // disconnected.
                         length = unchecked((ushort)(length - 4));
