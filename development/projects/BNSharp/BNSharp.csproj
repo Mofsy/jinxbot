@@ -176,10 +176,13 @@
     <Compile Include="MBNCSUtil\Util\PeFileReader.cs" />
     <Compile Include="MBNCSUtil\XSha1.cs" />
     <Compile Include="Net\DefaultPacketPriorityProvider.cs" />
+    <Compile Include="Net\ThinProxiedConnectionBase.cs" />
     <Compile Include="Net\WarcraftCommands.cs" />
     <Compile Include="Plugins\ICommandQueueProvider.cs" />
     <Compile Include="Plugins\IBattleNetEvents.cs" />
     <Compile Include="Plugins\IPacketPriorityProvider.cs" />
+    <Compile Include="Plugins\IProxiedRealConnection.cs" />
+    <Compile Include="Plugins\IProxyConnector.cs" />
     <Compile Include="Plugins\IWardenModule.cs" />
     <Compile Include="Plugins\ParseCallback.cs" />
     <Compile Include="Priority.cs" />

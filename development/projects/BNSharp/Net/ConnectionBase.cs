@@ -28,11 +28,38 @@ namespace BNSharp.Net
         {
             m_server = server;
             m_port = port;
-            try
-            {
-                m_ipep = new IPEndPoint(Dns.GetHostEntry(server).AddressList[0], port);
-            }
-            catch (SocketException) { }
+        }
+
+        /// <summary>
+        /// Resolves an IP end point for the specified server and port.
+        /// </summary>
+        /// <param name="server">The DNS name or IP address (as a string) of the server to look up.</param>
+        /// <param name="port">The port number to which to connect.</param>
+        /// <returns>An <see>IPEndPoint</see> representing the server and port.</returns>
+        protected virtual IPEndPoint ResolveEndpoint(string server, int port)
+        {
+            return new IPEndPoint(Dns.GetHostEntry(server).AddressList[0], port);
+        }
+
+        /// <summary>
+        /// Connects the connection to a remote host other than the one for which the connection was initialized.
+        /// </summary>
+        /// <param name="server">The URI of the server to which to connect.</param>
+        /// <param name="port">The port of the server to which to connect.</param>
+        /// <returns><see langword="true" /> if the connection completed successfully; otherwise <see langword="false" />.</returns>
+        /// <remarks>
+        /// <para>The <see cref="OnError">OnError</see> method is called when an error takes place, but no
+        /// behavior is defined by default.  Inheriting classes should provide an implementation 
+        /// to handle errors.</para>
+        /// <para>This method may return false if the connection is already established.  To check whether the 
+        /// connection is established, check the <see>IsConnected</see> property.</para>
+        /// </remarks>
+        public bool Connect(string server, int port)
+        {
+            m_server = server;
+            m_port = port;
+
+            return Connect();
         }
 
         /// <summary>
@@ -52,11 +79,11 @@ namespace BNSharp.Net
             if (m_open)
                 return false;
 
-            if (m_ipep == null)
+            if (m_ipep == null || AlwaysResolveRemoteHost)
             {
                 try
                 {
-                    m_ipep = new IPEndPoint(Dns.GetHostEntry(m_server).AddressList[0], m_port);
+                    m_ipep = ResolveEndpoint(m_server, m_port);
                 }
                 catch (SocketException se)
                 {
@@ -134,12 +161,20 @@ namespace BNSharp.Net
         }
 
         /// <summary>
+        /// Allows derived classes to always require the connection to re-resolve the remote host during the <see cref="Connect"/> method.
+        /// </summary>
+        protected virtual bool AlwaysResolveRemoteHost
+        {
+            get { return false; }
+        }
+
+        /// <summary>
         /// For derived classes, sends the specified binary data to the server.
         /// </summary>
         /// <param name="data">The data to send.</param>
         protected virtual void Send(byte[] data)
         {
-            m_client.GetStream().Write(data, 0, data.Length);
+            Send(data, 0, data.Length);
         }
 
         /// <summary>
@@ -164,29 +199,8 @@ namespace BNSharp.Net
         /// <returns>A byte array containing the specified data.</returns>
         public virtual byte[] Receive(int len)
         {
-            byte[] incBuffer = BattleNetClientResources.IncomingBufferPool.GetBuffer();
-            int totRecv = 0;
-            if (!m_open)
-                return null;
-
-            NetworkStream localNS = m_client.GetStream();
-            while (m_open
-                && m_client.Connected
-                && totRecv < len)
-            {
-                try
-                {
-                    totRecv += localNS.Read(incBuffer, totRecv, (int)len - totRecv);
-                }
-                catch (IOException se)
-                {
-                    Close();
-                    OnError("A read error occurred on the connection.", se);
-                    return null;
-                }
-            }
-
-            return incBuffer;
+            byte[] result = new byte[len];
+            return Receive(result, 0, len);
         }
 
         /// <summary>

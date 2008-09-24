@@ -257,5 +257,19 @@ namespace BNSharp
             get;
             set;
         }
+
+        /// <summary>
+        /// Gets or sets the channel the client should join when first logging in.
+        /// </summary>
+        /// <remarks>
+        /// <para>If this property returns <see langword="null" /> or an empty string, then the standard channel
+        /// join will be performed (for example, a client connecting with Starcraft: Brood War emulation might 
+        /// join the channel Brood War USA-2).</para>
+        /// </remarks>
+        string HomeChannel
+        {
+            get;
+            set;
+        }
     }
 }
