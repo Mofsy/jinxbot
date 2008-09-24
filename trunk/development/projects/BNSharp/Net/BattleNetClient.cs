@@ -20,7 +20,7 @@ namespace BNSharp.Net
     /// and this object is created, the client should register for events and that's it.</para>
     /// </remarks>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
-    public partial class BattleNetClient : ConnectionBase
+    public partial class BattleNetClient : ThinProxiedConnectionBase
     {
         #region partial methods that exist in the other partial files
         partial void InitializeListenState();
