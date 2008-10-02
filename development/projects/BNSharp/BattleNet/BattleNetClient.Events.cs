@@ -6,7 +6,7 @@ using BNSharp.BattleNet;
 using BNSharp.BattleNet.Clans;
 using BNSharp.BattleNet.Friends;
 
-namespace BNSharp.Net
+namespace BNSharp.BattleNet
 {
     partial class BattleNetClient
     {

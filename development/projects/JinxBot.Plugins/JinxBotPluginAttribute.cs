@@ -13,25 +13,46 @@ namespace JinxBot.Plugins
     {
         public JinxBotPluginAttribute() { }
 
+        /// <summary>
+        /// Gets the Name of the plugin.
+        /// </summary>
         public string Name
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// Gets the Author of the plugin.
+        /// </summary>
         public string Author
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// Gets the Description of the plugin.
+        /// </summary>
         public string Description
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// Gets the Version of the plugin.
+        /// </summary>
         public string Version
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets the Url of the About page, for display in the Plugin Browser feature of JinxBot.
+        /// </summary>
+        public string Url
         {
             get;
             set;

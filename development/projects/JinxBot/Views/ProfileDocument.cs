@@ -8,6 +8,7 @@ using JinxBot.Plugins;
 using JinxBot.Plugins.UI;
 using JinxBot.Reliability;
 using System.Diagnostics;
+using BNSharp.BattleNet.Stats;
 
 namespace JinxBot.Views
 {
@@ -77,6 +78,8 @@ namespace JinxBot.Views
             m_ssUri = m_chat.StylesheetUri;
 
             m_documents.Add(m_chat);
+
+            client.RegisterWarcraftProfileReceivedNotification(Priority.Low, WarcraftProfileReceived);
         }
 
         void client_EventExceptionThrown(object sender, EventExceptionEventArgs e)
@@ -117,6 +120,12 @@ namespace JinxBot.Views
                         tab.StylesheetUri = value;
                 }
             }
+        }
+
+        private void WarcraftProfileReceived(object sender, WarcraftProfileEventArgs e)
+        {
+            if (Debugger.IsAttached)
+                Debugger.Break();
         }
     }
 }

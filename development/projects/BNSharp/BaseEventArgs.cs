@@ -7,6 +7,7 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Reflection;
 using BNSharp.Net;
+using BNSharp.BattleNet;
 
 namespace BNSharp
 {

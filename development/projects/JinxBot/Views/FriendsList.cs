@@ -10,6 +10,7 @@ using JinxBot.Controls.Docking;
 using BNSharp.Net;
 using BNSharp.BattleNet.Friends;
 using System.Threading;
+using BNSharp.BattleNet;
 
 namespace JinxBot.Views
 {

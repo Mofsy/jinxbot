@@ -16,6 +16,7 @@ using System.Reflection;
 using JinxBot.Plugins;
 using JinxBot.Reliability;
 using JinxBot.Plugins.UI;
+using BNSharp.BattleNet;
 
 namespace JinxBot
 {

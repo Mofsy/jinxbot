@@ -14,6 +14,29 @@
     <a href="http://www.jinxbot.net/wiki/index.php?title=How_to_develop_a_Battle.net_client_in_10_minutes" target="_blank">How to develop a Battle.net client in 10 minutes</a>.
     </para>
     <para>
+        <b style="font-size: larger;">Release Notes - BN# Beta 3</b>
+    </para>
+    <para>
+        <b>New Features</b>
+    </para>
+    <list type="bullet">
+        <item>Support for proxying connections has been enabled.  Proxy support is not included directly in BN#; developers need to implement 
+        support for it themselves.  For more information, see the Wiki article <a href="http://www.jinxbot.net/wiki/index.php?title=Proxy_support_in_BNSharp" target="_blank">Proxy support in BN#</a>.
+        </item>
+        <item>Support for UTF-8 characters in chat messages has been added.</item>
+        <item>Built-in support has been added for ad messages.</item>
+        <item>Support has been added to set an account's e-mail address during login.</item>
+    </list>
+    <para>
+        <b>Breaking Changes</b>
+    </para>
+    <list type="bullet">
+        <item>The <see cref="BNSharp.BattleNet.BattleNetClient">BattleNetClient</see> class has been moved out of the <b>BNSharp.Net</b>
+        namespace into the more-appropriate <b>BNSharp.BattleNet</b> namespace.</item>
+        <item>The <see cref="BNSharp.IBattleNetSettings">IBattleNetSettings</see> interface has gained the <see cref="BNSharp.IBattleNetSettings.HomeChannel">HomeChannel property</see>.
+        Implementing classes will need to provide a concrete implementation, even if it is simply to return a null value.</item>
+    </list>
+    <para>
         <b style="font-size: larger;">Release Notes - BN# Beta 2</b>
     </para>
     <para>

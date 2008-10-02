@@ -7,6 +7,7 @@ using JinxBot.Plugins;
 using JinxBot.Configuration;
 using JinxBot.Views.Chat;
 using JinxBot.Plugins.UI;
+using BNSharp.BattleNet;
 
 namespace JinxBot.Views
 {

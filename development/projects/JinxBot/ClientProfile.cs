@@ -212,6 +212,17 @@ namespace JinxBot
             set;
         }
 
+        [Browsable(true)]
+        [Category("Behavior")]
+        [Description("The name of the channel to join when logging in.  Leave this blank to join the default channel for your product (for example, Starcraft USA-1).")]
+        [Name("Home Channel")]
+        [DefaultValue(null)]
+        [XmlElement("HomeChannel")]
+        public string HomeChannel
+        {
+            get;
+            set;
+        }
         #endregion
 
 

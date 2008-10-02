@@ -5,6 +5,7 @@ using BNSharp.Net;
 using BNSharp.BattleNet.Clans;
 using BNSharp.BattleNet;
 using BNSharp.BattleNet.Friends;
+using BNSharp.BattleNet.Stats;
 
 namespace BNSharp.Plugins
 {
@@ -267,5 +268,16 @@ namespace BNSharp.Plugins
         /// </summary>
         /// <param name="e">The event arguments.</param>
         void OnWhisperSent(ChatMessageEventArgs e);
+
+        /// <summary>
+        /// Fires the <see cref="BattleNetClient.WarcraftProfileReceived">WarcraftProfileReceived</see> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        void OnWarcraftProfileReceived(WarcraftProfileEventArgs e);
+        /// <summary>
+        /// Fires the <see cref="BattleNetClient.ProfileLookupFailed">ProfileLookupFailed</see> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        void OnProfileLookupFailed(ProfileLookupFailedEventArgs e);
     }
 }

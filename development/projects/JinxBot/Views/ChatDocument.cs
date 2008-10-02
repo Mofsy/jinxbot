@@ -84,7 +84,7 @@ namespace JinxBot.Views
             __UserLeft = new UserEventHandler(UserLeft);
             __UserShown = new UserEventHandler(UserShown);
             __UserSpoke = new ChatMessageEventHandler(UserSpoke);
-            __WardenUnhandled = new EventHandler(WardentUnhandled);
+            __WardenUnhandled = new EventHandler(WardenUnhandled);
             __WhisperReceived = new ChatMessageEventHandler(WhisperReceived);
             __WhisperSent = new ChatMessageEventHandler(WhisperSent);
             __UserProfileReceived = new UserProfileEventHandler(UserProfileReceived);
@@ -115,7 +115,7 @@ namespace JinxBot.Views
             m_client.RegisterUserLeftNotification(Priority.Low, __UserLeft);
             m_client.RegisterUserShownNotification(Priority.Low, __UserShown);
             m_client.RegisterUserSpokeNotification(Priority.Low, __UserSpoke);
-            m_client.RegisterWardentUnhandledNotification(Priority.Low, __WardenUnhandled);
+            m_client.RegisterWardenUnhandledNotification(Priority.Low, __WardenUnhandled);
             m_client.RegisterWhisperReceivedNotification(Priority.Low, __WhisperReceived);
             m_client.RegisterWhisperSentNotification(Priority.Low, __WhisperSent);
         }
@@ -173,7 +173,7 @@ namespace JinxBot.Views
         }
 
         private EventHandler __WardenUnhandled;
-        void WardentUnhandled(object sender, EventArgs e)
+        void WardenUnhandled(object sender, EventArgs e)
         {
             chat.AddChat(new ChatNode("WARNING: Warden was requested but unhandled.  You may be disconnected.", CssClasses.UnhandledWarden));
         }
@@ -332,6 +332,7 @@ namespace JinxBot.Views
         void LoginFailed(object sender, LoginFailedEventArgs e)
         {
             chat.AddChat(new ChatNode("Login failed.", CssClasses.LoginFailed));
+            m_client.CreateAccount();
         }
 
         private ServerChatEventHandler __JoinedChannel;

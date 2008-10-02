@@ -6,7 +6,7 @@ using BNSharp.MBNCSUtil;
 using BNSharp.BattleNet;
 using System.Diagnostics;
 
-namespace BNSharp.Net
+namespace BNSharp.BattleNet
 {
     partial class BattleNetClient
     {

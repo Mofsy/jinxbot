@@ -11,6 +11,7 @@ using BNSharp.Net;
 using BNSharp.BattleNet.Clans;
 using System.Threading;
 using System.Globalization;
+using BNSharp.BattleNet;
 
 namespace JinxBot.Views
 {
