@@ -4626,9 +4626,9 @@ namespace BNSharp.Net
         }
         #endregion
 
-        #region WardentUnhandled event
+        #region WardenUnhandled event
         [NonSerialized]
-        private Dictionary<Priority, List<EventHandler>> __WardentUnhandled = new Dictionary<Priority, List<EventHandler>>(3)
+        private Dictionary<Priority, List<EventHandler>> __WardenUnhandled = new Dictionary<Priority, List<EventHandler>>(3)
         {
             { Priority.High, new List<EventHandler>() },
             { Priority.Normal, new List<EventHandler>() },
@@ -4640,8 +4640,8 @@ namespace BNSharp.Net
         /// </summary>
         /// <remarks>
         /// <para>Registering for this event with this member will register with <see cref="Priority">Normal priority</see>.  To register for 
-        /// <see cref="Priority">High</see> or <see cref="Priority">Low</see> priority, use the <see>RegisterWardentUnhandledNotification</see> and
-        /// <see>UnregisterWardentUnhandledNotification</see> methods.</para>
+        /// <see cref="Priority">High</see> or <see cref="Priority">Low</see> priority, use the <see>RegisterWardenUnhandledNotification</see> and
+        /// <see>UnregisterWardenUnhandledNotification</see> methods.</para>
         /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
         /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
         /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
@@ -4649,30 +4649,30 @@ namespace BNSharp.Net
         /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
         /// </remarks>
         /// <seealso cref="BNSharp.Plugins.IWardenModule"/>
-        public event EventHandler WardentUnhandled
+        public event EventHandler WardenUnhandled
         {
             add
             {
-                lock (__WardentUnhandled)
+                lock (__WardenUnhandled)
                 {
-                    if (!__WardentUnhandled.ContainsKey(Priority.Normal))
+                    if (!__WardenUnhandled.ContainsKey(Priority.Normal))
                     {
-                        __WardentUnhandled.Add(Priority.Normal, new List<EventHandler>());
+                        __WardenUnhandled.Add(Priority.Normal, new List<EventHandler>());
                     }
                 }
-                __WardentUnhandled[Priority.Normal].Add(value);
+                __WardenUnhandled[Priority.Normal].Add(value);
             }
             remove
             {
-                if (__WardentUnhandled.ContainsKey(Priority.Normal))
+                if (__WardenUnhandled.ContainsKey(Priority.Normal))
                 {
-                    __WardentUnhandled[Priority.Normal].Remove(value);
+                    __WardenUnhandled[Priority.Normal].Remove(value);
                 }
             }
         }
 
         /// <summary>
-        /// Registers for notification of the <see>WardentUnhandled</see> event at the specified priority.
+        /// Registers for notification of the <see>WardenUnhandled</see> event at the specified priority.
         /// </summary>
         /// <remarks>
         /// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
@@ -4689,22 +4689,22 @@ namespace BNSharp.Net
         /// </remarks>
         /// <param name="p">The priority at which to register.</param>
         /// <param name="callback">The event handler that should be registered for this event.</param>
-        /// <seealso cref="WardentUnhandled" />
-        /// <seealso cref="UnregisterWardentUnhandledNotification" />
-        public void RegisterWardentUnhandledNotification(Priority p, EventHandler callback)
+        /// <seealso cref="WardenUnhandled" />
+        /// <seealso cref="UnregisterWardenUnhandledNotification" />
+        public void RegisterWardenUnhandledNotification(Priority p, EventHandler callback)
         {
-            lock (__WardentUnhandled)
+            lock (__WardenUnhandled)
             {
-                if (!__WardentUnhandled.ContainsKey(p))
+                if (!__WardenUnhandled.ContainsKey(p))
                 {
-                    __WardentUnhandled.Add(p, new List<EventHandler>());
+                    __WardenUnhandled.Add(p, new List<EventHandler>());
                 }
             }
-            __WardentUnhandled[p].Add(callback);
+            __WardenUnhandled[p].Add(callback);
         }
 
         /// <summary>
-        /// Unregisters for notification of the <see>WardentUnhandled</see> event at the specified priority.
+        /// Unregisters for notification of the <see>WardenUnhandled</see> event at the specified priority.
         /// </summary>
         /// <remarks>
         /// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
@@ -4721,27 +4721,27 @@ namespace BNSharp.Net
         /// </remarks>
         /// <param name="p">The priority from which to unregister.</param>
         /// <param name="callback">The event handler that should be unregistered for this event.</param>
-        /// <seealso cref="WardentUnhandled" />
-        /// <seealso cref="RegisterWardentUnhandledNotification" />
-        public void UnregisterWardentUnhandledNotification(Priority p, EventHandler callback)
+        /// <seealso cref="WardenUnhandled" />
+        /// <seealso cref="RegisterWardenUnhandledNotification" />
+        public void UnregisterWardenUnhandledNotification(Priority p, EventHandler callback)
         {
-            if (__WardentUnhandled.ContainsKey(p))
+            if (__WardenUnhandled.ContainsKey(p))
             {
-                __WardentUnhandled[p].Remove(callback);
+                __WardenUnhandled[p].Remove(callback);
             }
         }
 
         /// <summary>
-        /// Raises the WardentUnhandled event.
+        /// Raises the WardenUnhandled event.
         /// </summary>
         /// <remarks>
-        /// <para>Only high-priority events are invoked immediately; others are deferred.  For more information, see <see>WardentUnhandled</see>.</para>
+        /// <para>Only high-priority events are invoked immediately; others are deferred.  For more information, see <see>WardenUnhandled</see>.</para>
         /// </remarks>
         /// <param name="e">The event arguments.</param>
-        /// <seealso cref="WardentUnhandled" />
-        protected virtual void OnWardentUnhandled(EventArgs e)
+        /// <seealso cref="WardenUnhandled" />
+        protected virtual void OnWardenUnhandled(EventArgs e)
         {
-            foreach (EventHandler eh in __WardentUnhandled[Priority.High])
+            foreach (EventHandler eh in __WardenUnhandled[Priority.High])
             {
                 try
                 {
@@ -4752,7 +4752,7 @@ namespace BNSharp.Net
                     ReportException(
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
-                        new KeyValuePair<string, object>("Event", "WardentUnhandled"),
+                        new KeyValuePair<string, object>("Event", "WardenUnhandled"),
                         new KeyValuePair<string, object>("param: priority", Priority.High),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
@@ -4762,7 +4762,7 @@ namespace BNSharp.Net
 
             ThreadPool.QueueUserWorkItem((WaitCallback)delegate
             {
-                foreach (EventHandler eh in __WardentUnhandled[Priority.Normal])
+                foreach (EventHandler eh in __WardenUnhandled[Priority.Normal])
                 {
                     try
                     {
@@ -4773,7 +4773,7 @@ namespace BNSharp.Net
                         ReportException(
                             ex,
                             new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "WardentUnhandled"),
+                            new KeyValuePair<string, object>("Event", "WardenUnhandled"),
                             new KeyValuePair<string, object>("param: priority", Priority.Normal),
                             new KeyValuePair<string, object>("param: this", this),
                             new KeyValuePair<string, object>("param: e", e)
@@ -4782,7 +4782,7 @@ namespace BNSharp.Net
                 }
                 ThreadPool.QueueUserWorkItem((WaitCallback)delegate
                 {
-                    foreach (EventHandler eh in __WardentUnhandled[Priority.Low])
+                    foreach (EventHandler eh in __WardenUnhandled[Priority.Low])
                     {
                         try
                         {
@@ -4793,7 +4793,7 @@ namespace BNSharp.Net
                             ReportException(
                                 ex,
                                 new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "WardentUnhandled"),
+                                new KeyValuePair<string, object>("Event", "WardenUnhandled"),
                                 new KeyValuePair<string, object>("param: priority", Priority.Low),
                                 new KeyValuePair<string, object>("param: this", this),
                                 new KeyValuePair<string, object>("param: e", e)
