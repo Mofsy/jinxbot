@@ -145,11 +145,18 @@ namespace JinxBot.Views
                 ChatUser user = listBox1.SelectedItem as ChatUser;
                 if (user != null)
                 {
-                    UserProfileRequest request = new UserProfileRequest(user.Username,
-                        UserProfileKey.Age, UserProfileKey.Sex, UserProfileKey.Location, UserProfileKey.Description,
-                        UserProfileKey.AccountCreated, UserProfileKey.LastLogon, UserProfileKey.LastLogoff, UserProfileKey.TotalTimeLogged);
+                    if (user.Stats.Product == Product.Warcraft3Retail || user.Stats.Product == Product.Warcraft3Expansion)
+                    {
+                        m_client.RequestWarcraft3Profile(user);
+                    }
+                    else
+                    {
+                        UserProfileRequest request = new UserProfileRequest(user.Username,
+                            UserProfileKey.Age, UserProfileKey.Sex, UserProfileKey.Location, UserProfileKey.Description,
+                            UserProfileKey.AccountCreated, UserProfileKey.LastLogon, UserProfileKey.LastLogoff, UserProfileKey.TotalTimeLogged);
 
-                    m_client.RequestUserProfile(user.Username, request);
+                        m_client.RequestUserProfile(user.Username, request);
+                    }
                 }
             }
         }

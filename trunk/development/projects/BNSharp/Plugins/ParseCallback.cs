@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using BNSharp.Net;
+using BNSharp.BattleNet;
 
 namespace BNSharp.Plugins
 {

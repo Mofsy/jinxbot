@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BNSharp.Net
+namespace BNSharp.BattleNet
 {
     internal enum WarcraftCommands : byte
     {

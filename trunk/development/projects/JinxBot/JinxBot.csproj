@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{AB0945C2-7421-4D55-98AE-AB28B813E59D}</ProjectGuid>
     <OutputType>WinExe</OutputType>
@@ -86,12 +86,6 @@
     <Compile Include="Plugins\PluginFactory.cs" />
     <Compile Include="Plugins\PluginInfo.cs" />
     <Compile Include="Plugins\WardenModule.cs" />
-    <Compile Include="ProfileDisplay.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ProfileDisplay.Designer.cs">
-      <DependentUpon>ProfileDisplay.cs</DependentUpon>
-    </Compile>
     <Compile Include="Reliability\GlobalErrorHandler.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -133,6 +127,12 @@
     <Compile Include="Views\NewsList.Designer.cs">
       <DependentUpon>NewsList.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\PluginBrowser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\PluginBrowser.Designer.cs">
+      <DependentUpon>PluginBrowser.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\ProfileResourceProvider.cs" />
     <Compile Include="Views\ProfileSettingsEditor.cs">
       <SubType>UserControl</SubType>
@@ -147,10 +147,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MainWindow.resx">
       <DependentUpon>MainWindow.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ProfileDisplay.resx">
-      <DependentUpon>ProfileDisplay.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources.resx">
@@ -198,6 +194,12 @@
     <EmbeddedResource Include="Views\ProfileDocument.resx">
       <DependentUpon>ProfileDocument.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Stats\RaceStatsDisplay.resx">
+      <DependentUpon>RaceStatsDisplay.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\WarcraftProfileDisplayDocument.resx">
+      <DependentUpon>WarcraftProfileDisplayDocument.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Wizards\CreateProfileWizard.resx">
       <DependentUpon>CreateProfileWizard.cs</DependentUpon>
@@ -250,6 +252,18 @@
     </Compile>
     <Compile Include="Views\ProfileDocument.Designer.cs">
       <DependentUpon>ProfileDocument.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Stats\RaceStatsDisplay.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Stats\RaceStatsDisplay.Designer.cs">
+      <DependentUpon>RaceStatsDisplay.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\WarcraftProfileDisplayDocument.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\WarcraftProfileDisplayDocument.Designer.cs">
+      <DependentUpon>WarcraftProfileDisplayDocument.cs</DependentUpon>
     </Compile>
     <Compile Include="WebProtocols\AbortEvent.cs" />
     <Compile Include="WebProtocols\NativeMethods.cs">

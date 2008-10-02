@@ -1,0 +1,20 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+using JinxBot.Controls.Docking;
+
+namespace JinxBot.Views
+{
+    public partial class WarcraftProfileDisplayDocument : DockableDocument
+    {
+        public WarcraftProfileDisplayDocument()
+        {
+            InitializeComponent();
+        }
+    }
+}

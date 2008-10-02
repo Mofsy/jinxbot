@@ -5,8 +5,9 @@ using BNSharp.Plugins;
 using System.Diagnostics;
 using BNSharp.BattleNet.Clans;
 using BNSharp.BattleNet;
+using BNSharp.BattleNet.Stats;
 
-namespace BNSharp.Net
+namespace BNSharp.BattleNet
 {
     partial class BattleNetClient
     {
@@ -271,6 +272,16 @@ namespace BNSharp.Net
             public void OnLeftClan(LeftClanEventArgs e)
             {
                 m_host.OnLeftClan(e);
+            }
+
+            public void OnWarcraftProfileReceived(WarcraftProfileEventArgs e)
+            {
+                m_host.OnWarcraftProfileReceived(e);
+            }
+
+            public void OnProfileLookupFailed(ProfileLookupFailedEventArgs e)
+            {
+                m_host.OnProfileLookupFailed(e);
             }
 
             #endregion

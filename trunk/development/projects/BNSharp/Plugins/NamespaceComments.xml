@@ -19,5 +19,5 @@
         <a href="http://www.jinxbot.net/wiki/" target="_blank">JinxBot Wiki</a>, including the article
         <a href="http://www.jinxbot.net/wiki/index.php?title=Custom_packet_handling_with_BNSharp" target="_blank">Custom packet handling with BN#</a>.
     </para>
-    <seealso cref="BNSharp.Net.BattleNetClient" />
+    <seealso cref="BNSharp.BattleNet.BattleNetClient" />
 </summary>

@@ -8,8 +8,9 @@ using BNSharp.BattleNet;
 using System.Collections.ObjectModel;
 using System.Threading;
 using BNSharp.Plugins;
+using BNSharp.Net;
 
-namespace BNSharp.Net
+namespace BNSharp.BattleNet
 {
     /// <summary>
     /// Implements a client connection to Battle.net.

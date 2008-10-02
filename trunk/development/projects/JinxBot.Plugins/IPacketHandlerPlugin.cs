@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using BNSharp.Net;
+using BNSharp.BattleNet;
 
 namespace JinxBot.Plugins
 {

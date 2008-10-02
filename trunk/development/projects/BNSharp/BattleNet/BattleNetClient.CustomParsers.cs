@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using BNSharp.Plugins;
+using BNSharp.Net;
 
-namespace BNSharp.Net
+namespace BNSharp.BattleNet
 {
     partial class BattleNetClient
     {

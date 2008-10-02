@@ -15,7 +15,7 @@ using Tmr = System.Timers.Timer;
 using BNSharp.BattleNet;
 using BNSharp.BattleNet.Stats;
 
-namespace BNSharp.Net
+namespace BNSharp.BattleNet
 {
     partial class BattleNetClient
     {
@@ -32,46 +32,47 @@ namespace BNSharp.Net
 
             m_packetToParserMap = new Dictionary<BncsPacketId, ParseCallback>()
             {
-                { BncsPacketId.EnterChat, new ParseCallback(HandleEnterChat) },
-                { BncsPacketId.GetChannelList, new ParseCallback(HandleGetChannelList) },
-                { BncsPacketId.ChatEvent, new ParseCallback(HandleChatEvent) },
-                { BncsPacketId.Ping, new ParseCallback(HandlePing) },
-                { BncsPacketId.ReadUserData, new ParseCallback(HandleUserProfileRequest) },
-                { BncsPacketId.LogonResponse, new ParseCallback(HandleLogonResponse) },
-                { BncsPacketId.LogonResponse2, new ParseCallback(HandleLogonResponse2) },
-                { BncsPacketId.CreateAccount2, new ParseCallback(HandleCreateAccount2) },
-                { BncsPacketId.WarcraftGeneral, new ParseCallback(HandleWarcraftGeneral) },
-                { BncsPacketId.NewsInfo, new ParseCallback(HandleNewsInfo) },
-                { BncsPacketId.AuthInfo, new ParseCallback(HandleAuthInfo) },
-                { BncsPacketId.AuthCheck, new ParseCallback(HandleAuthCheck) },
-                { BncsPacketId.AuthAccountCreate, new ParseCallback(HandleAuthAccountCreate) },
-                { BncsPacketId.AuthAccountLogon, new ParseCallback(HandleAuthAccountLogon) },
-                { BncsPacketId.AuthAccountLogonProof, new ParseCallback(HandleAuthAccountLogonProof) },
-                { BncsPacketId.AuthAccountChange, new ParseCallback(HandleAuthAccountChange) },
-                { BncsPacketId.AuthAccountChangeProof, new ParseCallback(HandleAuthAccountChangeProof) },
-                { BncsPacketId.Warden, new ParseCallback(HandleWarden) },
-                { BncsPacketId.FriendsList, new ParseCallback(HandleFriendsList) },
-                { BncsPacketId.FriendsAdd, new ParseCallback(HandleFriendAdded) },
-                { BncsPacketId.FriendsUpdate, new ParseCallback(HandleFriendUpdate) },
-                { BncsPacketId.FriendsRemove, new ParseCallback(HandleFriendRemoved) },
-                { BncsPacketId.FriendsPosition, new ParseCallback(HandleFriendMoved) },
-                { BncsPacketId.ClanFindCandidates, new ParseCallback(HandleClanFindCandidates) },
-                { BncsPacketId.ClanInviteMultiple, new ParseCallback(HandleClanInviteMultiple) },
-                { BncsPacketId.ClanCreationInvitation, new ParseCallback(HandleClanCreationInvitation) },
-                { BncsPacketId.ClanDisband, new ParseCallback(HandleDisbandClan) },
-                { BncsPacketId.ClanMakeChieftan, new ParseCallback(HandleClanMakeChieftan) },
-                { BncsPacketId.ClanInfo, new ParseCallback(HandleClanInfo) },
-                { BncsPacketId.ClanQuitNotify, new ParseCallback(HandleClanQuitNotify) },
-                { BncsPacketId.ClanInvitation, new ParseCallback(HandleClanInvitation) },
-                { BncsPacketId.ClanRemoveMember, new ParseCallback(HandleClanRemoveMember) },
-                { BncsPacketId.ClanInvitationResponse, new ParseCallback(HandleClanInvitationResponse) },
-                { BncsPacketId.ClanRankChange, new ParseCallback(HandleClanRankChange) },
-                { BncsPacketId.ClanMOTD, new ParseCallback(HandleClanMotd) },
-                { BncsPacketId.ClanMemberList, new ParseCallback(HandleClanMemberList) },
-                { BncsPacketId.ClanMemberRemoved, new ParseCallback(HandleClanMemberRemoved) },
-                { BncsPacketId.ClanMemberStatusChanged, new ParseCallback(HandleClanMemberStatusChanged) },
-                { BncsPacketId.ClanMemberRankChange, new ParseCallback(HandleClanRankChange) },
-                { BncsPacketId.ClanMemberInformation, new ParseCallback(HandleClanMemberInformation) }
+                { BncsPacketId.EnterChat, HandleEnterChat },
+                { BncsPacketId.GetChannelList, HandleGetChannelList },
+                { BncsPacketId.ChatEvent, HandleChatEvent },
+                { BncsPacketId.Ping, HandlePing },
+                { BncsPacketId.ReadUserData, HandleUserProfileRequest },
+                { BncsPacketId.LogonResponse, HandleLogonResponse },
+                { BncsPacketId.Profile, HandleProfile },
+                { BncsPacketId.LogonResponse2, HandleLogonResponse2 },
+                { BncsPacketId.CreateAccount2, HandleCreateAccount2 },
+                { BncsPacketId.WarcraftGeneral, HandleWarcraftGeneral },
+                { BncsPacketId.NewsInfo, HandleNewsInfo },
+                { BncsPacketId.AuthInfo, HandleAuthInfo },
+                { BncsPacketId.AuthCheck, HandleAuthCheck },
+                { BncsPacketId.AuthAccountCreate, HandleAuthAccountCreate },
+                { BncsPacketId.AuthAccountLogon, HandleAuthAccountLogon },
+                { BncsPacketId.AuthAccountLogonProof, HandleAuthAccountLogonProof },
+                { BncsPacketId.AuthAccountChange, HandleAuthAccountChange },
+                { BncsPacketId.AuthAccountChangeProof, HandleAuthAccountChangeProof },
+                { BncsPacketId.Warden, HandleWarden },
+                { BncsPacketId.FriendsList, HandleFriendsList },
+                { BncsPacketId.FriendsAdd, HandleFriendAdded },
+                { BncsPacketId.FriendsUpdate, HandleFriendUpdate },
+                { BncsPacketId.FriendsRemove, HandleFriendRemoved },
+                { BncsPacketId.FriendsPosition, HandleFriendMoved },
+                { BncsPacketId.ClanFindCandidates, HandleClanFindCandidates },
+                { BncsPacketId.ClanInviteMultiple, HandleClanInviteMultiple },
+                { BncsPacketId.ClanCreationInvitation, HandleClanCreationInvitation },
+                { BncsPacketId.ClanDisband, HandleDisbandClan },
+                { BncsPacketId.ClanMakeChieftan, HandleClanMakeChieftan },
+                { BncsPacketId.ClanInfo, HandleClanInfo },
+                { BncsPacketId.ClanQuitNotify, HandleClanQuitNotify },
+                { BncsPacketId.ClanInvitation, HandleClanInvitation },
+                { BncsPacketId.ClanRemoveMember, HandleClanRemoveMember },
+                { BncsPacketId.ClanInvitationResponse, HandleClanInvitationResponse },
+                { BncsPacketId.ClanRankChange, HandleClanRankChange },
+                { BncsPacketId.ClanMOTD, HandleClanMotd },
+                { BncsPacketId.ClanMemberList, HandleClanMemberList },
+                { BncsPacketId.ClanMemberRemoved, HandleClanMemberRemoved },
+                { BncsPacketId.ClanMemberStatusChanged, HandleClanMemberStatusChanged },
+                { BncsPacketId.ClanMemberRankChange, HandleClanRankChange },
+                { BncsPacketId.ClanMemberInformation, HandleClanMemberInformation }
             };
         }
 
@@ -254,6 +255,8 @@ namespace BNSharp.Net
 
             ResetFriendsState();
             ResetClanState();
+
+            m_warcraftProfileRequests.Clear();
         }
 
         partial void ResetFriendsState();
@@ -427,7 +430,7 @@ namespace BNSharp.Net
                 case ChatEventType.Talk:
                 case ChatEventType.WhisperReceived:
                 case ChatEventType.WhisperSent:
-                    ChatMessageEventArgs cmArgs = new ChatMessageEventArgs(type, (UserFlags)flags, user, text);
+                    ChatMessageEventArgs cmArgs = new ChatMessageEventArgs(type, (UserFlags)flags, user, Encoding.UTF8.GetString(userInfo));
                     HandleChatMessageEvent(cmArgs);
                     break;
                 case ChatEventType.NewChannelJoined:
@@ -580,6 +583,12 @@ namespace BNSharp.Net
             {
                 case WarcraftCommands.RequestLadderMap:
                     HandleWarcraftRequestLadderMap(data, dr);
+                    break;
+                case WarcraftCommands.UserInfoRequest:
+                    HandleWarcraftUserInfoRequest(data, dr);
+                    break;
+                case WarcraftCommands.ClanInfoRequest:
+                    HandleWarcraftClanInfoRequest(data, dr);
                     break;
                 default:
                     BattleNetClientResources.IncomingBufferPool.FreeBuffer(data.Data);
@@ -1082,6 +1091,8 @@ namespace BNSharp.Net
             m_tmr.Elapsed += new System.Timers.ElapsedEventHandler(SendSidNull);
 
             m_news = new List<NewsEntry>();
+
+            m_warcraftProfileRequests = new Dictionary<int, WarcraftProfileEventArgs>();
         }
 
         void SendSidNull(object sender, System.Timers.ElapsedEventArgs e)

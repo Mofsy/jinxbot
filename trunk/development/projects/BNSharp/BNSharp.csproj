@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{2D02D43C-BC3B-41D2-9226-4E215939107F}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -51,6 +51,18 @@
     <Compile Include="AccountCreationEventArgs.cs" />
     <Compile Include="AccountCreationFailedEventArgs.cs" />
     <Compile Include="BaseEventArgs.cs" />
+    <Compile Include="BattleNet\BattleNetClient.WarcraftProfiles.cs" />
+    <Compile Include="BattleNet\Stats\ArrangedTeamRecord.cs" />
+    <Compile Include="BattleNet\Stats\ArrangedTeamType.cs" />
+    <Compile Include="BattleNet\BattleNetClient.Clan.cs" />
+    <Compile Include="BattleNet\BattleNetClient.cs" />
+    <Compile Include="BattleNet\BattleNetClient.CustomParsers.cs" />
+    <Compile Include="BattleNet\BattleNetClient.ErrorHandling.cs" />
+    <Compile Include="BattleNet\BattleNetClient.Events.cs" />
+    <Compile Include="BattleNet\BattleNetClient.EventSink.cs" />
+    <Compile Include="BattleNet\BattleNetClient.Friends.cs" />
+    <Compile Include="BattleNet\BattleNetClient.Listen.cs" />
+    <Compile Include="BattleNet\BattleNetClient.ParseData.cs" />
     <Compile Include="BattleNet\ChatUser.cs" />
     <Compile Include="BattleNet\Clans\ClanCandidatesSearchEventArgs.cs" />
     <Compile Include="BattleNet\Clans\ClanCandidatesSearchStatus.cs" />
@@ -73,6 +85,16 @@
     <Compile Include="BattleNet\Clans\ClanRemovalResponseEventArgs.cs" />
     <Compile Include="BattleNet\Clans\ClanResponseCode.cs" />
     <Compile Include="BattleNet\Clans\LeftClanEventArgs.cs" />
+    <Compile Include="BattleNet\Stats\ClanProfile.cs" />
+    <Compile Include="BattleNet\Stats\ProfileLookupFailedEventArgs.cs" />
+    <Compile Include="BattleNet\Stats\WarcraftClanLadderRecord.cs" />
+    <Compile Include="BattleNet\Stats\WarcraftClanLadderType.cs" />
+    <Compile Include="BattleNet\Stats\WarcraftLadderRecord.cs" />
+    <Compile Include="BattleNet\Stats\WarcraftLadderType.cs" />
+    <Compile Include="BattleNet\Stats\WarcraftProfileEventArgs.cs" />
+    <Compile Include="BattleNet\Stats\WarcraftRaceRecord.cs" />
+    <Compile Include="BattleNet\WarcraftCommands.cs" />
+    <Compile Include="BattleNet\Stats\WarcraftProfile.cs" />
     <Compile Include="BattleNet\Diablo2CharacterClass.cs" />
     <Compile Include="BattleNet\Diablo2DifficultyLevel.cs" />
     <Compile Include="BattleNet\Friends\FriendAddedEventArgs.cs" />
@@ -124,18 +146,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Net\BattleNetClient.Clan.cs" />
-    <Compile Include="Net\BattleNetClient.cs" />
-    <Compile Include="Net\BattleNetClient.CustomParsers.cs" />
-    <Compile Include="Net\BattleNetClient.ErrorHandling.cs" />
-    <Compile Include="Net\BattleNetClient.Events.cs" />
-    <Compile Include="Net\BattleNetClient.EventSink.cs" />
-    <Compile Include="Net\BattleNetClient.Friends.cs" />
-    <Compile Include="Net\BattleNetClient.Listen.cs" />
     <Compile Include="BattleNetClientResources.cs" />
-    <Compile Include="Net\BattleNetClient.ParseData.cs" />
     <Compile Include="Net\BufferPool.cs" />
-    <Compile Include="Net\ChannelJoinFlags.cs" />
+    <Compile Include="BattleNet\ChannelJoinFlags.cs" />
     <Compile Include="Net\CombinedPacketPriorityProvider.cs" />
     <Compile Include="Net\ConnectionBase.cs" />
     <Compile Include="BncsPacketId.cs" />
@@ -177,7 +190,6 @@
     <Compile Include="MBNCSUtil\XSha1.cs" />
     <Compile Include="Net\DefaultPacketPriorityProvider.cs" />
     <Compile Include="Net\ThinProxiedConnectionBase.cs" />
-    <Compile Include="Net\WarcraftCommands.cs" />
     <Compile Include="Plugins\ICommandQueueProvider.cs" />
     <Compile Include="Plugins\IBattleNetEvents.cs" />
     <Compile Include="Plugins\IPacketPriorityProvider.cs" />

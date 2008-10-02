@@ -14,7 +14,7 @@ namespace BNSharp
     /// <para>Battle.net-related events driven by <see>BattleNetClient</see> are guaranteed to execute sequentially, in the order in which they
     /// were registered relative to other event handlers of their priority.</para>
     /// <example>
-    /// <para>For example, consider a scenario in which there are three handlers registered for the <see cref="BNSharp.Net.BattleNetClient.UserJoined">UserJoined event</see>; 
+    /// <para>For example, consider a scenario in which there are three handlers registered for the <see cref="BNSharp.BattleNet.BattleNetClient.UserJoined">UserJoined event</see>; 
     /// one is registered at High <see>Priority</see> and two are registered at Low priority:</para>
     /// <list type="bullet">
     ///     <item>High: Moderation.ChannelModerationHandler.client_UserJoined(System.Object, BNSharp.UserEventArgs)</item>
@@ -22,7 +22,7 @@ namespace BNSharp
     ///     <item>Low: Client.UI.ChannelDisplay.client_UserJoined(System.Object, BNSharp.UserEventArgs)</item>
     /// </list>
     /// <para>Unlike normal .NET event handlers, every one of those handlers are guaranteed to be called back, regardless of whether a prior handler caused an 
-    /// exception to be thrown.  However, if an exception is thrown, the <see cref="BNSharp.Net.BattleNetClient.EventExceptionThrown">EventExceptionThrown event</see>
+    /// exception to be thrown.  However, if an exception is thrown, the <see cref="BNSharp.BattleNet.BattleNetClient.EventExceptionThrown">EventExceptionThrown event</see>
     /// will be raised on the client.  So, the sequence of external method calls that would happen in such an event, if the Moderation handler threw an exception, 
     /// would be something along these lines:</para>
     /// <list type="bullet">
@@ -89,7 +89,7 @@ namespace BNSharp
         /// Gets the <c>sender</c> parameter of the method being invoked.
         /// </summary>
         /// <remarks>
-        /// <para>This property typically returns the <see cref="BNSharp.Net.BattleNetClient">BattleNetClient</see> that was executing the event.</para>
+        /// <para>This property typically returns the <see cref="BNSharp.BattleNet.BattleNetClient">BattleNetClient</see> that was executing the event.</para>
         /// </remarks>
         public object Sender
         {
@@ -352,7 +352,7 @@ namespace BNSharp
     /// <summary>
     /// Specifies the contract for handlers wishing to listen for event exception events.
     /// </summary>
-    /// <param name="sender">The object that originated the event (typically a <see cref="BNSharp.Net.BattleNetClient">BattleNetClient</see>).</param>
+    /// <param name="sender">The object that originated the event (typically a <see cref="BNSharp.BattleNet.BattleNetClient">BattleNetClient</see>).</param>
     /// <param name="e">The event arguments.</param>
     public delegate void EventExceptionEventHandler(object sender, EventExceptionEventArgs e);
 }

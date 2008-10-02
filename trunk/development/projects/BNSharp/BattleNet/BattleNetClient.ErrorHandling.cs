@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics;
 
-namespace BNSharp.Net
+namespace BNSharp.BattleNet
 {
     partial class BattleNetClient
     {
