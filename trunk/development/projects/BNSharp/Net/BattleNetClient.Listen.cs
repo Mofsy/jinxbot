@@ -1049,7 +1049,7 @@ namespace BNSharp.Net
             }
             else
             {
-                OnWardentUnhandled(BaseEventArgs.GetEmpty(null));
+                OnWardenUnhandled(BaseEventArgs.GetEmpty(null));
             }
 
             BattleNetClientResources.IncomingBufferPool.FreeBuffer(data.Data);
