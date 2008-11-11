@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.IO;
 using BNSharp.MBNCSUtil;
 using System.Globalization;
+using System.Threading;
 
 namespace BNSharp.Net
 {
@@ -108,6 +109,23 @@ namespace BNSharp.Net
                 return false;
             }
             return true;
+        }
+
+        /// <summary>
+        /// Begins a connection asynchronously.
+        /// </summary>
+        /// <param name="state">Any user object that is desired to be passed back to the connection completed callback.  This will be represented
+        /// through the <see>ConnectCompletedResult.State</see> property.</param>
+        /// <param name="callback">The method to call when the connection has completed.</param>
+        public void ConnectAsync(object state, ConnectCompletedCallback callback)
+        {
+            WaitCallback ts = delegate
+                             {
+                                 bool ok = Connect();
+                                 ConnectCompletedResult result = new ConnectCompletedResult { State = state, Succeeded = ok };
+                                 callback(result);
+                             };
+            ThreadPool.QueueUserWorkItem(ts);
         }
 
         /// <summary>
