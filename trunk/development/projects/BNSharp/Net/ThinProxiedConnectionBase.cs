@@ -15,6 +15,7 @@ namespace BNSharp.Net
     {
         private IProxyConnector m_proxy;
 
+        [System.Diagnostics.DebuggerDisplay("(pass-through connector)")]
         private class NoProxyProxyConnector : IProxyConnector
         {
             private IProxiedRealConnection m_con;
