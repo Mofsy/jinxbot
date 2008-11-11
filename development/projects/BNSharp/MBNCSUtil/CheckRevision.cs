@@ -392,8 +392,11 @@ namespace BNSharp.MBNCSUtil
                 throw new ArgumentNullException(Resources.param_fileName, Resources.crExeFileNull);
 
             string file = fileName.Substring(fileName.LastIndexOf('\\') + 1);
-            FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
-            uint fileSize = unchecked((uint)fs.Length);
+            uint fileSize = 0;
+            using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                fileSize = unchecked((uint)fs.Length);
+            }
 
             DateTime ft = File.GetLastWriteTimeUtc(fileName);
 
