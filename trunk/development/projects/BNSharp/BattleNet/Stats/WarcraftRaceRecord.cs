@@ -6,6 +6,9 @@ using System.ComponentModel;
 
 namespace BNSharp.BattleNet.Stats
 {
+    /// <summary>
+    /// Contains information about a race as part of a Warcraft III profile containing race statistics.
+    /// </summary>
     [DataContract]
     public class WarcraftRaceRecord
     {
@@ -16,6 +19,16 @@ namespace BNSharp.BattleNet.Stats
         [DataMember(Name = "Race")]
         private Warcraft3IconRace m_race;
 
+        /// <summary>
+        /// Creates a new single <see>WarcraftRaceRecord</see>.
+        /// </summary>
+        /// <param name="race">The race represented by this record.</param>
+        /// <param name="wins">The number of wins represented by this record.</param>
+        /// <param name="losses">The number of losses represented by this record.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="wins"/> or 
+        /// <paramref name="losses"/> are negative.</exception>
+        /// <exception cref="InvalidEnumArgumentException">Thrown if <paramref name="race" />
+        /// is not defined by <see>Warcraft3IconRace</see>.</exception>
         public WarcraftRaceRecord(Warcraft3IconRace race, int wins, int losses)
         {
             if (wins < 0)

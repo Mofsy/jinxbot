@@ -61,7 +61,10 @@ namespace BNSharp.MBNCSUtil
         /// </summary>
         public byte[] UnderlyingBuffer
         {
-            get { return m_data; }
+            get 
+            {
+                return m_data; 
+            }
         }
 
         #region ctors

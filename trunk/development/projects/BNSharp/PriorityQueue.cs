@@ -82,6 +82,23 @@ namespace BNSharp
         }
 
         /// <summary>
+        /// Clears all queued items.
+        /// </summary>
+        /// <remarks>
+        /// <para>This method is thread-safe; however, if another thread is actively dequeuing an item and already has taken a lock, that operation will
+        /// complete first.</para>
+        /// </remarks>
+        public void Clear()
+        {
+            lock (m_list)
+            {
+                m_list[Priority.Low].Clear();
+                m_list[Priority.Normal].Clear();
+                m_list[Priority.High].Clear();
+            }
+        }
+
+        /// <summary>
         /// Gets the current number of items in the queue.
         /// </summary>
         public int Count
