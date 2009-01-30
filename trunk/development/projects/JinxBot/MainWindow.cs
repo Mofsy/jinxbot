@@ -17,6 +17,7 @@ using JinxBot.Plugins;
 using JinxBot.Reliability;
 using JinxBot.Plugins.UI;
 using BNSharp.BattleNet;
+using JinxBot.Plugins.BNSharp;
 
 namespace JinxBot
 {
@@ -84,6 +85,7 @@ namespace JinxBot
                 else
                 {
                     BattleNetClient bnc = new BattleNetClient(cp);
+                    //bnc.CommandQueue = new TimedMessageQueue();
                     ProfileResourceProvider.RegisterProvider(bnc);
                     ProfileDocument profile = new ProfileDocument(bnc);
                     m_activeProfiles.Add(cp, profile);
@@ -107,8 +109,10 @@ namespace JinxBot
             ProfileDocument pd = this.dock.ActiveDocument as ProfileDocument;
             if (pd != null)
             {
-                BattleNetClient bnc = pd.Client;
-                bnc.Connect();
+                pd.BeginConnecting();
+
+                this.connectToolStripMenuItem1.Enabled = false;
+                this.disconnectToolStripMenuItem.Enabled = true;
             }
         }
 
@@ -141,6 +145,8 @@ namespace JinxBot
             if (profileDoc != null)
             {
                 this.currentProfileNoneToolStripMenuItem.Enabled = true;
+                this.connectToolStripMenuItem1.Enabled = !profileDoc.Client.IsConnected;
+                this.disconnectToolStripMenuItem.Enabled = !connectToolStripMenuItem1.Enabled;
             }
             else
             {
@@ -168,8 +174,10 @@ namespace JinxBot
             ProfileDocument pd = this.dock.ActiveDocument as ProfileDocument;
             if (pd != null)
             {
-                BattleNetClient bnc = pd.Client;
-                bnc.Close();
+                pd.Disconnect();
+
+                this.disconnectToolStripMenuItem.Enabled = false;
+                this.connectToolStripMenuItem1.Enabled = true;
             }
         }
 

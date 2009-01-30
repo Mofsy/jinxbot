@@ -3520,9 +3520,7 @@
             </summary>
             <param name="packet">The buffer to send.</param>
             <remarks>
-            <para>Use of this method is preferred when sending binary messages because, after sending the buffer, it frees the buffer from the outgoing buffer pool.  If you
-            are only sending a text command, you should use <see>Send(string)</see>; it not only automatically creates the packet, but uses the speed delay provider, 
-            if any, assigned to the <see>CommandQueueProvider</see> property.</para>
+            <para>Use of this method is preferred because, after sending the buffer, it frees the buffer from the outgoing buffer pool.</para>
             </remarks>
         </member>
         <member name="M:BNSharp.Net.BattleNetClient.Connect">
@@ -8596,25 +8594,6 @@
             Gets the current number of items in the queue.
             </summary>
         </member>
-        <member name="T:BNSharp.Plugins.ICommandQueueProvider">
-            <summary>
-            The <see>ICommandQueueProvider</see> interface is not yet supported in BN# Beta 2.
-            </summary>
-        </member>
-        <member name="M:BNSharp.Plugins.ICommandQueueProvider.WillMessageFlood(System.Int32)">
-            <summary>
-            Determines whether sending a message of the specified length will cause a flood condition on the server.
-            </summary>
-            <param name="messageLength">The length of the message being tested.</param>
-            <returns><see langword="true"/> if sending the message will cause a flood; otherwise <see langword="false" />.</returns>
-        </member>
-        <member name="M:BNSharp.Plugins.ICommandQueueProvider.SetupDelay(System.Int32)">
-            <summary>
-            Calculates the message delay and allows the command queue to perform any additional calculations for the message.
-            </summary>
-            <param name="messageLength">The length of the message being sent.</param>
-            <returns>A value specifying the number of milliseconds to delay after sending the message.</returns>
-        </member>
         <member name="T:BNSharp.MBNCSUtil.Data.MpqFileStream">
             <summary>
             Represents an MPQ file stream (that is, a stream within an MPQ file).
@@ -10642,57 +10621,6 @@
             </summary>
             <param name="sender">The object that originated the event.</param>
             <param name="e">The event arguments.</param>
-        </member>
-        <member name="T:BNSharp.MBNCSUtil.WardenEncryptionContext">
-            <summary>
-            Handles the encryption and decryption of Warden modules for a given connection.
-            </summary>
-        </member>
-        <member name="M:BNSharp.MBNCSUtil.WardenEncryptionContext.#ctor(System.Int32)">
-            <summary>
-            Creates a new <see>WardenEncryptionContext</see> with the specified seed.
-            </summary>
-            <param name="keyHashPart">The value with which to seed the encryption keys.</param>
-        </member>
-        <member name="M:BNSharp.MBNCSUtil.WardenEncryptionContext.Encrypt(System.Byte[])">
-            <summary>
-            Encrypts an entire array.
-            </summary>
-            <param name="data">The data to encrypt.</param>
-            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="data"/> is <see langword="null"/>.</exception>
-            <returns>A new, encrypted array.</returns>
-        </member>
-        <member name="M:BNSharp.MBNCSUtil.WardenEncryptionContext.Encrypt(System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            Encrypts a block of data using the current encryption key.
-            </summary>
-            <param name="data">The data to encrypt.</param>
-            <param name="start">The starting 0-based index to begin encryption.</param>
-            <param name="length">The amount of data to encrypt.</param>
-            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="data"/> is <see langword="null"/>.</exception>
-            <exception cref="T:System.ArgumentOutOfRangeException">Thrown if <paramref name="start"/> is negative, or if <paramref name="start"/> and <paramref name="length"/>
-            sum to greater than the length of <paramref name="data"/>.</exception>
-            <returns>A new, encrypted array.</returns>
-        </member>
-        <member name="M:BNSharp.MBNCSUtil.WardenEncryptionContext.Decrypt(System.Byte[])">
-            <summary>
-            Decrypts an entire array.
-            </summary>
-            <param name="data">The data to encrypt.</param>
-            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="data"/> is <see langword="null"/>.</exception>
-            <returns>A new, decrypted array.</returns>
-        </member>
-        <member name="M:BNSharp.MBNCSUtil.WardenEncryptionContext.Decrypt(System.Byte[],System.Int32,System.Int32)">
-            <summary>
-            Decrypts a block of data using the current decryption key.
-            </summary>
-            <param name="data">The data to decrypt.</param>
-            <param name="start">The starting 0-based index to begin decryption.</param>
-            <param name="length">The amount of data to decrypt.</param>
-            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="data"/> is <see langword="null"/>.</exception>
-            <exception cref="T:System.ArgumentOutOfRangeException">Thrown if <paramref name="start"/> is negative, or if <paramref name="start"/> and <paramref name="length"/>
-            sum to greater than the length of <paramref name="data"/>.</exception>
-            <returns>A new, decrypted array.</returns>
         </member>
     </members>
 </doc>

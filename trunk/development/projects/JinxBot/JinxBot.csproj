@@ -83,9 +83,10 @@
     <Compile Include="MainWindow.Designer.cs">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="Plugins\BNSharp\Socks4ProxyConnector.cs" />
+    <Compile Include="Plugins\BNSharp\TimedMessageQueue.cs" />
     <Compile Include="Plugins\PluginFactory.cs" />
     <Compile Include="Plugins\PluginInfo.cs" />
-    <Compile Include="Plugins\WardenModule.cs" />
     <Compile Include="Reliability\GlobalErrorHandler.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -120,7 +121,6 @@
     <Compile Include="Views\ErrorLogDocument.Designer.cs">
       <DependentUpon>ErrorLogDocument.cs</DependentUpon>
     </Compile>
-    <Compile Include="Views\JinxBotMenuRenderer.cs" />
     <Compile Include="Views\NewsList.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -197,9 +197,11 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Views\Stats\RaceStatsDisplay.resx">
       <DependentUpon>RaceStatsDisplay.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\WarcraftProfileDisplayDocument.resx">
       <DependentUpon>WarcraftProfileDisplayDocument.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Wizards\CreateProfileWizard.resx">
       <DependentUpon>CreateProfileWizard.cs</DependentUpon>

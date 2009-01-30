@@ -21,5 +21,15 @@ namespace JinxBot.Plugins
         /// </summary>
         /// <param name="settings"></param>
         void Shutdown(IDictionary<string, string> settings);
+
+        /// <summary>
+        /// Causes a plugin to check whether it should be updated.
+        /// </summary>
+        /// <remarks>
+        /// <para>During initialization and plugin discovery, JinxBot prompts all located plugins to determine whether they should be updated.  A plugin
+        /// that does not support this capability should simply return <see langword="false" /> in all cases.</para>
+        /// </remarks>
+        /// <returns><see langword="true" /> if the plugin should be updated; otherwise <see langword="false" />.</returns>
+        bool CheckForUpdates();
     }
 }

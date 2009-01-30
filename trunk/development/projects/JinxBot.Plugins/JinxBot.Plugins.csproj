@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{9C13A2E5-2A06-4BD9-BED0-F93E9BB03D31}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="AutoUpdates\Fileset.cs" />
     <Compile Include="AutoUpdates\InstallableFile.cs" />
+    <Compile Include="ICommandHandler.cs" />
     <Compile Include="IEventListener.cs" />
     <Compile Include="IJinxBotPlugin.cs" />
     <Compile Include="IMultiClientPlugin.cs" />
@@ -65,11 +66,16 @@
     <Compile Include="UI\IChatTab.cs" />
     <Compile Include="UI\ICustomListBoxItemRenderer.cs" />
     <Compile Include="UI\IIconProvider.cs" />
+    <Compile Include="UI\IProfileDocument.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BNSharp\BNSharp.csproj">
       <Project>{2D02D43C-BC3B-41D2-9226-4E215939107F}</Project>
       <Name>BNSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\JinxBot.Controls\JinxBot.Controls.csproj">
+      <Project>{48E3907C-69BB-48C1-817D-6E5B4BE51EF6}</Project>
+      <Name>JinxBot.Controls</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
