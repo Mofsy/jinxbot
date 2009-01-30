@@ -264,6 +264,18 @@ namespace JinxBot
         }
 
         [Browsable(true)]
+        [Name("Void View")]
+        [Category("User Interface")]
+        [Description("Whether you should be able to view the users within The Void whenever you're there.  Disabling this may improve performance when idling in The Void.")]
+        [XmlElement("VoidView")]
+        [DefaultValue(false)]
+        public bool VoidView
+        {
+            get;
+            set;
+        }
+
+        [Browsable(true)]
         [Name("Icons Included in Chat")]
         [Category("User Interface")]
         [Description("Whether to include product icons in user announcements.")]

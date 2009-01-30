@@ -1,6 +1,7 @@
 ﻿/// <reference name="MicrosoftAjax.js"/>
 /// <reference name="BattleNetClientScript.js" />
 /// <reference name="JinxBotWebClient.svc" />
+
 Type.registerNamespace("JinxBotWeb");
 
 JinxBotWeb.ChatNode = function(text, cssClass)
@@ -90,110 +91,243 @@ JinxBotWeb.ChatDisplay.prototype = {
 
 JinxBotWeb.ChatDisplay.registerClass('JinxBotWeb.ChatDisplay');
 
-function OnChannelDNE(clientEvent.EventData)
+JinxBotWeb.UserList = function(channelNameElement, usersListElement)
+{
+    this._channelNameElement = channelNameElement;
+    this._usersListElement = usersListElement;
+    this._users = [];
+}
+
+JinxBotWeb.UserList.prototype =
+{
+    addUser: function(user)
+    {
+        var element = this._createElement(user);
+        if (user.Flags == BNSharp.UserFlags.ChannelOperator)
+        {
+            var idx = this._findIndexOfFirstNonOpsUser();
+            if (idx == -1)
+            {
+                this._usersListElement.appendChild(element);
+            }
+            else
+            {
+                this._usersListElement.insertBefore(this._usersListElement.childNodes[idx], element);
+            }
+        }
+        else
+        {
+            this._usersListElement.appendChild(element);
+        }
+
+        this._users[user.Username] = element;
+    },
+
+    removeUser: function(userName)
+    {
+        if (this._users[userName])
+        {
+            this._usersListElement.removeChild(this._users[userName]);
+            this._users[userName] = false;
+        }
+    },
+
+    _findIndexOfFirstNonOpsUser: function()
+    {
+        return (this._usersListElement.childNodex.length == 0) ? -1 : 0;
+    },
+
+    _createElement: function(user)
+    {
+        var userItem = document.createElement('div');
+        var className = 'userListItem userProd';
+        switch (user.Stats.Product.ProductCode)
+        {
+            case 'CHAT':
+            case 'D2DV':
+            case 'D2XP':
+            case 'DRTL':
+            case 'DSHR':
+            case 'JSTR':
+            case 'SEXP':
+            case 'STAR':
+            case 'W2BN':
+            case 'W3XP':
+            case 'WAR3':
+                className += user.Stats.Product.ProductCode;
+                break;
+            default:
+                className += 'CHAT';
+                break;
+        }
+
+        if (user.Flags != BNSharp.UserFlags.None)
+        {
+            switch (user.Flags)
+            {
+                case BNSharp.UserFlags.SpecialGuest:
+                    className += ' userFlagsGuest';
+                    break;
+                case BNSharp.UserFlags.Speaker:
+                    className += ' userFlagsSpeaker';
+                    break;
+                case BNSharp.UserFlags.Squelched:
+                    className += ' userFlagsSquelched';
+                    break;
+                case BNSharp.UserFlags.ChannelOperator:
+                    className += ' userFlagsOps';
+                    break;
+                case BNSharp.UserFlags.BattleNetAdministrator:
+                    className += ' userFlagsBnet';
+                    break;
+                case BNSharp.UserFlags.BlizzardRepresentative:
+                    className += ' userFlagBlizz';
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        var nameNode = document.createTextNode(user.Username);
+        userItem.appendChild(nameNode);
+
+        userItem.className = className;
+        
+        return userItem;
+    }
+};
+
+JinxBotWeb.UserList.registerClass('JinxBotWeb.UserList');
+
+function OnChannelDNE(eventData)
 {
 }
 
-function OnChannelListReceived(clientEvent.EventData) 
+function OnChannelListReceived(eventData) 
 {
 }
 
-function OnChannelFull(clientEvent.EventData)
-{
-
-}
-
-function OnChannelRestricted(clientEvent.EventData)
+function OnChannelFull(eventData)
 {
 
 }
 
-function OnClientCheckFailed(clientEvent.EventData) 
-{
-}
-
-function OnClientCheckPassed(clientEvent.EventData)
-{
-}
-
-function OnCommandSent(clientEvent.EventData)
-{
-
-}
-function OnConnected(clientEvent.EventData)
-{
-
-}
-function OnDisconnected(clientEvent.EventData)
+function OnChannelRestricted(eventData)
 {
 
 }
 
-function OnEnteredChat(clientEvent.EventData)
+function OnClientCheckFailed(eventData) 
+{
+}
+
+function OnClientCheckPassed(eventData)
+{
+}
+
+function OnCommandSent(eventData)
 {
 
 }
-function OnError(clientEvent.EventData)
+function OnConnected(eventData)
 {
 
 }
-function OnInformation(clientEvent.EventData)
+function OnDisconnected(eventData)
 {
 
 }
-function OnInformationReceived(clientEvent.EventData)
+
+function OnEnteredChat(eventData)
 {
 
 }
-function OnJoinedChannel(clientEvent.EventData)
+function OnError(eventData)
 {
 
 }
-function OnLoginFailed(clientEvent.EventData)
+function OnInformation(eventData)
 {
 
 }
-            break;
-        case JinxBot.Plugins.JinxBotWeb.ClientEventType.LoginSucceeded:
-            OnLoginSucceeded(clientEvent.EventData);
-            break;
-        case JinxBot.Plugins.JinxBotWeb.ClientEventType.MessageSent:
-            OnMessageSent(clientEvent.EventData);
-            break;
-        case JinxBot.Plugins.JinxBotWeb.ClientEventType.ServerBroadcast:
-            OnServerBroadcast(clientEvent.EventData);
-            break;
-        case JinxBot.Plugins.JinxBotWeb.ClientEventType.ServerError:
-            OnServerError(clientEvent.EventData);
-            break;
-        case JinxBot.Plugins.JinxBotWeb.ClientEventType.UserEmoted:
-            OnUserEmoted(clientEvent.EventData);
-            break;
-        case JinxBot.Plugins.JinxBotWeb.ClientEventType.UserFlags:
-            OnUserFlags(clientEvent.EventData);
-            break;
-        case JinxBot.Plugins.JinxBotWeb.ClientEventType.UserJoined:
-            OnUserJoined(clientEvent.EventData);
-            break;
-        case JinxBot.Plugins.JinxBotWeb.ClientEventType.UserLeft:
-            OnUserLeft(clientEvent.EventData);
-            break;
-        case JinxBot.Plugins.JinxBotWeb.ClientEventType.UserShown:
-            OnUserShown(clientEvent.EventData);
-            break;
-        case JinxBot.Plugins.JinxBotWeb.ClientEventType.UserSpoke:
-            OnUserSpoke(clientEvent.EventData);
-            break;
-        case JinxBot.Plugins.JinxBotWeb.ClientEventType.WardenUnhandled:
-            OnWardenUnhandled(clientEvent.EventData);
-            break;
-        case JinxBot.Plugins.JinxBotWeb.ClientEventType.WhisperReceived:
-            OnWhisperReceived(clientEvent.EventData);
-            break;
-        case JinxBot.Plugins.JinxBotWeb.ClientEventType.WhisperSent:
-            OnWhisperSent(clientEvent.EventData);
-            break;
+function OnInformationReceived(eventData)
+{
 
+}
+function OnJoinedChannel(eventData)
+{
+
+}
+function OnLoginFailed(eventData)
+{
+
+}
+            
+function OnLoginSucceeded(eventData)
+{
+
+}
+
+function OnMessageSent(eventData)
+{
+
+}
+
+function OnServerBroadcast(eventData) 
+{
+
+}
+
+function OnServerError(eventData)
+{
+
+}
+
+function OnUserEmoted(eventData)
+{
+
+}
+
+function OnUserFlags(eventData)
+{
+
+}
+
+function OnUserJoined(eventData)
+{
+
+}
+
+function OnUserLeft(eventData)
+{
+
+}
+
+function OnUserShown(eventData)
+{
+
+}
+
+function OnUserSpoke(eventData)
+{
+
+}
+
+function OnWardenUnhandled(eventData)
+{
+
+}
+
+function OnWhisperReceived(eventData)
+{
+
+}
+
+function OnWhisperSent(eventData)
+{
+
+}
+ 
 function addChat(event)
 {
     switch (event.EventData.__type)
@@ -323,6 +457,7 @@ function addChat_UserLeft(event)
         new JinxBotWeb.ChatNode(event.EventData.User.Username, 'userName'),
         new JinxBotWeb.ChatNode(' has left the channel.', 'information')
         );
+    userList.removeUser(event.EventData.User.Username);
 }
 
 function announceUser(event)
@@ -335,6 +470,7 @@ function announceUser(event)
         new JinxBotWeb.ChatNode(', using ', 'information'),
         new JinxBotWeb.ChatNode(event.EventData.User.Stats.Product.Name, 'information')
         );
+    userList.addUser(event.EventData.User);
 }
 
 function generateTimestamp(event)

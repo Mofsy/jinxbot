@@ -27,7 +27,7 @@ function serviceSuccess(result)
     for (var i = 0; i < result.length; i++)
     {
         addChat(result[i]);
-        chatEvents.push(result[i]);
+        //chatEvents.push(result[i]);
         mostRecentEvent = result[i].EventID;
     }
     

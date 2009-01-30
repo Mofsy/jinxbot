@@ -38,6 +38,22 @@ public class JinxBotWebClient
         } while (sleeps < 30);
         return new ClientChatEvent[0];
     }
+
+    [OperationContract]
+    [WebGet(ResponseFormat = WebMessageFormat.Json)]
+    public ClientChannel[] GetAvailableChannels()
+    {
+        var dataContext = Services.DataConnection;
+        var channels = from c in dataContext.Channels
+                       orderby c.ClientName ascending
+                       select c;
+        List<ClientChannel> result = new List<ClientChannel>();
+        foreach (var channel in channels)
+        {
+            result.Add(new ClientChannel(channel));
+        }
+        return result.ToArray();
+    }
 }
 
 public static class ClientConverters

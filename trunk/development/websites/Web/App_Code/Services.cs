@@ -17,7 +17,17 @@ using System.Collections.Generic;
 public static class Services
 {
     public static ChannelServiceDataContext DataConnection;
-    public static Dictionary<Guid, List<ChatEvent>> ExistingEvents = InitializeExistingEventDictionary();
+    private static Dictionary<Guid, List<ChatEvent>> _existingEvents;
+
+    public static Dictionary<Guid, List<ChatEvent>> ExistingEvents
+    {
+        get
+        {
+            if (_existingEvents == null)
+                _existingEvents = InitializeExistingEventDictionary();
+            return _existingEvents;
+        }
+    }
 
     public static Dictionary<Guid, List<ChatEvent>> InitializeExistingEventDictionary()
     {
@@ -30,7 +40,7 @@ public static class Services
         {
             list.Add(c.ChannelID, new List<ChatEvent>());
             var events = from ev in DataConnection.ChatEvents
-                         where ev.ChannelID == c.ChannelID && ev.Time >= (DateTime.Now - new TimeSpan(1, 0, 0, 0))
+                         where ev.ChannelID == c.ChannelID //&& ev.Time >= (DateTime.Now - new TimeSpan(1, 0, 0, 0))
                          select ev;
 
             list[c.ChannelID].AddRange(events);

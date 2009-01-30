@@ -129,6 +129,7 @@ namespace BNSharp.Net
         /// </summary>
         /// <param name="buffersToAdd">The number of buffers to preallocate.</param>
         /// <exception cref="OutOfMemoryException">Thrown if the system is unable to preallocate the requested number of buffers.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="buffersToAdd"/> is less than or equal to 0.</exception>
         /// <remarks>
         /// <para>This method does not cause the <see>NewBufferAllocated</see> event to be raised.</para>
         /// </remarks>
@@ -163,6 +164,7 @@ namespace BNSharp.Net
         /// For example, if the number of buffers free is 15, and the callee requests the removal of 20 buffers, only 15 will be freed, and so the
         /// returned value will be 15.</para>
         /// </remarks>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="buffersToRemove"/> is less than or equal to 0.</exception>
         public int DecreaseBufferCount(int buffersToRemove)
         {
             if (buffersToRemove <= 0)

@@ -4,7 +4,6 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using System.IO;
-using BNSharp.MBNCSUtil;
 using System.Globalization;
 using System.Threading;
 

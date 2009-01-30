@@ -90,9 +90,6 @@ public class JinxBotWebApplication : IJinxBotWebApplication
 
     public bool CreateChannel(string clientName, byte[] mainPasswordHash, out Guid newChannelID)
     {
-        if (Services.ExistingEvents == null)
-            Services.ExistingEvents = Services.InitializeExistingEventDictionary();
-
         newChannelID = Guid.Empty;
 
         int existingChannel = (from channel in Services.DataConnection.Channels

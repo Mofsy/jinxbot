@@ -30,11 +30,9 @@
         </Scripts>
     </asp:ScriptManager>
     <div id="channelSelect" style="height: 100%; overflow: hidden;">
-        <p>Select a Channel:</p>
+        <p>Select a Channel: <span id="availableChannelsList"></span> <a href="javascript:requestAvailableChannels();">[refresh channel list]</a></p>
     </div>
-    <div id="userLists" style="height: 100%;">
-    
-    </div>
+    <div id="userLists" style="height: 100%;"></div>
 
     <div id="chatArea" style="height: 100%;">
         <div id="enterText">
@@ -42,10 +40,17 @@
         </div>
         <div id="scrollTo">&nbsp;</div>
     </div>
-    
+<asp:Literal id="initializationScript" runat="server" Mode="PassThrough">
+<script type="text/javascript">
+<!--
+// just a sample; never actually gets passed through
+    var channelID = "539be340-302f-442c-ae1c-f9db9b40fc75";
+// -->
+</script>
+</asp:Literal>
         <script type="text/javascript">
     <!--
-var channelID = "539be340-302f-442c-ae1c-f9db9b40fc75";
+
 var mostRecentEvent = 0;
 
 function OnApplicationReady()
@@ -53,15 +58,74 @@ function OnApplicationReady()
     var layout = new YAHOO.widget.Layout({
         units : [
             { position: 'top', height: 40, body: 'channelSelect', collapse: true },
-            { position: 'right', width: 300, body: 'userLists', animate: true, resize: false, collapse: true, close: false },
-            { position: 'center', body: 'chatArea' }
+            { position: 'right', width: 300, body: 'userLists', animate: true, resize: false, collapse: true, close: false, scroll: true },
+            { position: 'center', body: 'chatArea', scroll: true }
             ]
     });
     layout.render();
-    
+
     chatWindow = new JinxBotWeb.ChatDisplay(document.getElementById('enterText'), document.getElementById('scrollTo'));
+    userList = new JinxBotWeb.UserList(null, document.getElementById('userLists'));
+
+    if (channelID)
+    {
+        startServicePolling();
+    }
     
+    requestAvailableChannels();
+}
+
+function requestAvailableChannels()
+{
+    var client = new JinxBotWebClient();
+    client.GetAvailableChannels(AvailableChannelsRequestSucceeded, AvailableChannelsRequestFailed);
+}
+
+function AvailableChannelsRequestSucceeded(result)
+{
+    var avChannelsList = document.getElementById('availableChannelsList');
+    while (avChannelsList.childNodes.length > 0)
+        avChannelsList.removeChild(avChannelsList.childNodes[0]);
+        
+    for (var i = 0; i < result.length; i++)
+    {
+        CreateChannelLink(result[i], avChannelsList);
+    }
+}
+
+function loadChannel(clientID, channelName)
+{
+    window.location = cleanupLocation() + "/" + channelName;
+    channelID = clientID;
     startServicePolling();
+}
+
+function AvailableChannelsRequestFailed(error)
+{
+    alert('Could not request available channels.\n' + error);
+}
+
+function CreateChannelLink(clientChannel, container)
+{
+    var link = document.createElement('a');
+    link.appendChild(document.createTextNode(clientChannel.ClientName + ' - ' + clientChannel.Gateway));
+    link.href = cleanupLocation() + '/' + setupChannelName(clientChannel.ClientName);
+    link.setAttribute('onclick', "loadChannel('" + clientChannel.ChannelID + "', '" + setupChannelName(clientChannel.ClientName) + "'); return false;");
+    container.appendChild(link);
+    container.appendChild(document.createTextNode(' '));
+}
+
+function cleanupLocation()
+{
+    var loc = window.location.toString();
+    if (loc.indexOf('aspx/') > -1)
+        loc = loc.substring(0, loc.indexOf('aspx/') + 4);
+    return loc;
+}
+
+function setupChannelName(name)
+{
+    return name.replace(' ', '_');
 }
 
 Sys.Application.add_load(OnApplicationReady);

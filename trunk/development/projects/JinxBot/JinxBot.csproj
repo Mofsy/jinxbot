@@ -83,10 +83,12 @@
     <Compile Include="MainWindow.Designer.cs">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="Plugins\GlobalPluginManager.cs" />
     <Compile Include="Plugins\BNSharp\Socks4ProxyConnector.cs" />
     <Compile Include="Plugins\BNSharp\TimedMessageQueue.cs" />
     <Compile Include="Plugins\PluginFactory.cs" />
     <Compile Include="Plugins\PluginInfo.cs" />
+    <Compile Include="Plugins\ProfilePluginManager.cs" />
     <Compile Include="Reliability\GlobalErrorHandler.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -99,6 +101,7 @@
     <Compile Include="Views\ChannelSelect.Designer.cs">
       <DependentUpon>ChannelSelect.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\ChannelToolTipRenderer.cs" />
     <Compile Include="Views\Chat\BniIconProvider.cs" />
     <Compile Include="Views\Chat\BuiltInPlugins.cs" />
     <Compile Include="Views\Chat\ChannelListBoxItemRenderer.cs" />
@@ -110,11 +113,17 @@
     <Compile Include="Views\Chat\CustomDrawnListBox.Designer.cs">
       <DependentUpon>CustomDrawnListBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\Chat\CustomDrawnSearchableListBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Views\Chat\FriendListBoxItemRenderer.cs" />
     <Compile Include="Views\Chat\ImageChatNode.cs" />
     <Compile Include="Views\Chat\ImageChatNodeProtocol.cs" />
     <Compile Include="Views\Chat\ImageChatNodeRenderer.cs" />
+    <Compile Include="Views\Chat\ItemFilteringEventArgs.cs" />
+    <Compile Include="Views\Chat\NativeMethods.cs" />
     <Compile Include="Views\Chat\WebIconProvider.cs" />
+    <Compile Include="Views\Chat\WM.cs" />
     <Compile Include="Views\ErrorLogDocument.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -261,6 +270,7 @@
     <Compile Include="Views\Stats\RaceStatsDisplay.Designer.cs">
       <DependentUpon>RaceStatsDisplay.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\ToolTipPropertySet.cs" />
     <Compile Include="Views\WarcraftProfileDisplayDocument.cs">
       <SubType>Form</SubType>
     </Compile>

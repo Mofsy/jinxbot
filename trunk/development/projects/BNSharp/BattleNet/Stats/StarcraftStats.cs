@@ -67,8 +67,15 @@ namespace BNSharp.BattleNet.Stats
                 string sHighRating = dr.ReadTerminatedString(' ', Encoding.ASCII);
                 int.TryParse(sHighRating, out m_highestLadderRating);
                 dr.ReadTerminatedString(' ', Encoding.ASCII);
-                dr.ReadTerminatedString(' ', Encoding.ASCII);
-                m_iconCode = dr.ReadDwordString(0);
+                if (dr.Length > dr.Position)
+                {
+                    dr.ReadTerminatedString(' ', Encoding.ASCII);
+                    m_iconCode = dr.ReadDwordString(0);
+                }
+                else
+                {
+                    m_iconCode = productCode;
+                }
             }
         }
         #endregion

@@ -4,11 +4,12 @@ using System.Text;
 using BNSharp.MBNCSUtil;
 using System.Globalization;
 using System.Net;
-using BNSharp.BattleNet;
 using System.Collections.ObjectModel;
 using System.Threading;
 using BNSharp.Plugins;
 using BNSharp.Net;
+using System.IO;
+using System.Configuration;
 
 namespace BNSharp.BattleNet
 {
@@ -45,10 +46,15 @@ namespace BNSharp.BattleNet
         /// </summary>
         /// <param name="settings">An object containing the settings for a Battle.net connection.</param>
         /// <exception cref="NullReferenceException">Thrown if <paramref name="settings"/> is <see langword="null" />.</exception>
+        /// <exception cref="FileNotFoundException">Thrown if <paramref name="settings" /> points the client to a file that does not exist.</exception>
+        /// <exception cref="ConfigurationErrorsException">Thrown if <paramref name="settings"/> contains inconsistent settings.  For more information, 
+        /// check the specific status message.</exception>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
         public BattleNetClient(IBattleNetSettings settings)
             : base(settings.Server, settings.Port)
         {
+            ValidateSettings(settings);
+
             m_settings = settings;
             m_priorityProvider = new CombinedPacketPriorityProvider();
 
@@ -61,6 +67,35 @@ namespace BNSharp.BattleNet
             m_queue = new DefaultCommandQueue();
             m_messageReadyCallback = SendCallbackImpl;
             m_queue.MessageReady += m_messageReadyCallback;
+        }
+
+        private static void ValidateSettings(IBattleNetSettings settings)
+        {
+            if (!File.Exists(settings.GameExe))
+                throw new FileNotFoundException("IBattleNetSettings.GameExe did not point to a valid file.");
+            if (!File.Exists(settings.GameFile2))
+                throw new FileNotFoundException("IBattleNetSettings.GameFile2 did not point to a valid file.");
+            if (!File.Exists(settings.GameFile3))
+                throw new FileNotFoundException("IBattleNetSettings.GameFile3 did not point to a valid file.");
+            if (string.IsNullOrEmpty(settings.Username))
+                throw new ConfigurationErrorsException("IBattleNetSettings.Username was null or zero-length.");
+            if (string.IsNullOrEmpty(settings.Password))
+                throw new ConfigurationErrorsException("IBattleNetSettings.Password was null or zero-length.");
+            if (!Enum.IsDefined(typeof(PingType), settings.PingMethod))
+                throw new ConfigurationErrorsException("IBattleNetSettings.PingType was not a valid enumeration member for the PingType enumeration.");
+
+            Product productToUse = Product.GetByProductCode(settings.Client);
+            if (productToUse == null)
+                throw new ConfigurationErrorsException("IBattleNetSettings.Client was not valid because it did not specify a valid client type.");
+            if (!productToUse.CanConnect)
+                throw new ConfigurationErrorsException("IBattleNetSettings.Client did not specify a client that could connect.  Valid values are STAR, SEXP, D2DV, D2XP, W2BN, WAR3, and W3XP.");
+            if (string.IsNullOrEmpty(settings.CdKey1))
+                throw new ConfigurationErrorsException("IBattleNetSettings.CdKey1 contained a null or zero-length string.");
+            if (productToUse.NeedsTwoKeys && string.IsNullOrEmpty(settings.CdKey2))
+                throw new ConfigurationErrorsException("IBattleNetSettings.CdKey2 contained a null or zero-length string, but the specified product requires two CD keys.");
+            if (productToUse.NeedsLockdown && !File.Exists(settings.ImageFile))
+                throw new FileNotFoundException("IBattleNetSettings.ImageFile did not point to a valid file, but the selected product uses the Lockdown method of versioning.");
+
         }
         #endregion
 
