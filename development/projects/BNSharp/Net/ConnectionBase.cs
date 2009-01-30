@@ -179,7 +179,7 @@ namespace BNSharp.Net
         }
 
         /// <summary>
-        /// Allows derived classes to always require the connection to re-resolve the remote host during the <see cref="Connect"/> method.
+        /// Allows derived classes to always require the connection to re-resolve the remote host during the <see cref="Connect()"/> method.
         /// </summary>
         protected virtual bool AlwaysResolveRemoteHost
         {

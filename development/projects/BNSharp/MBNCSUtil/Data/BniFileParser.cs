@@ -25,6 +25,7 @@ using System.IO;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Diagnostics;
+using System.Security.Permissions;
 
 namespace BNSharp.MBNCSUtil.Data
 {
@@ -85,6 +86,7 @@ namespace BNSharp.MBNCSUtil.Data
         /// <param name="filePath">The path to the file to parse.</param>
         /// <exception cref="FileNotFoundException">Thrown if the file specified in <paramref name="filePath"/> does not exist.</exception>
         /// <exception cref="InvalidDataException">Thrown if the file contains data types that are unsupported by this implementation.</exception>
+        [SecurityPermission(SecurityAction.LinkDemand, UnmanagedCode = true)]
         public BniFileParser(string filePath)
         {
             if (!File.Exists(filePath))
@@ -102,6 +104,7 @@ namespace BNSharp.MBNCSUtil.Data
         /// <param name="bniFileStream">The stream to load.</param>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="bniFileStream"/> is <see langword="null" />.</exception>
         /// <exception cref="InvalidDataException">Thrown if the file contains data types that are unsupported by this implementation.</exception>
+        [SecurityPermission(SecurityAction.LinkDemand, UnmanagedCode = true)]
         public BniFileParser(Stream bniFileStream)
         {
             if (object.ReferenceEquals(null, bniFileStream))

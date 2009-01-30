@@ -35,6 +35,8 @@ namespace BNSharp.BattleNet
         private Dictionary<int, UserProfileRequest> m_profileRequests = new Dictionary<int, UserProfileRequest>();
         private int m_currentProfileRequestID;
         private string m_channelName;
+        private ICommandQueue m_queue;
+        private QueuedMessageReadyCallback m_messageReadyCallback;
         #endregion
 
         #region .ctor
@@ -55,6 +57,10 @@ namespace BNSharp.BattleNet
             InitializeParseDictionaries();
 
             CreateEventThreads();
+
+            m_queue = new DefaultCommandQueue();
+            m_messageReadyCallback = SendCallbackImpl;
+            m_queue.MessageReady += m_messageReadyCallback;
         }
         #endregion
 
@@ -139,9 +145,11 @@ namespace BNSharp.BattleNet
 
                 OnDisconnected(BaseEventArgs.GetEmpty(null));
 
-                ResetConnectionState();
+                m_queue.Clear(); // clear the outgoing command queue
 
                 StopParsingAndListening();
+
+                ResetConnectionState();
             }
             else 
                 m_closing = false;
@@ -173,29 +181,18 @@ namespace BNSharp.BattleNet
             }
         }
 
-        /// <summary>
-        /// Sends a textual message to the server.
-        /// </summary>
-        /// <param name="text">The message to send.</param>
-        /// <exception cref="InvalidOperationException">Thrown if the client is not connected.</exception>
-        /// <exception cref="ProtocolViolationException">Thrown if <paramref name="text"/> is longer than 223 characters.</exception>
-        /// <exception cref="ArgumentNullException">Thrown if <paramref name="text"/> is <see langword="null" />.</exception>
-        public virtual void SendMessage(string text)
+        // Implements the actual sending of the text.  This method is called as the callback referenced by m_messageReadyCallback, hooked into 
+        // the queue's MessageReady event.
+        private void SendCallbackImpl(string text)
         {
-            if (object.ReferenceEquals(null, text))
-                throw new ArgumentNullException("text");
-
-            if (text.Length > 223)
-                throw new ProtocolViolationException("Maximum text length is 223 characters.");
-
             if (IsConnected)
             {
                 BncsPacket pck = new BncsPacket((byte)BncsPacketId.ChatCommand);
-                pck.InsertCString(text);
+                pck.InsertCString(text, Encoding.UTF8);
                 Send(pck);
                 if (text.StartsWith("/me ", StringComparison.OrdinalIgnoreCase) || text.StartsWith("/emote ", StringComparison.OrdinalIgnoreCase))
                 {
-                    // do nothing
+                    // do nothing, but we need this case first so that command sent doesn't fire for emotes.
                 }
                 else if (text.StartsWith("/", StringComparison.Ordinal))
                 {
@@ -207,10 +204,44 @@ namespace BNSharp.BattleNet
                     OnMessageSent(cme);
                 }
             }
+        }
+
+        /// <summary>
+        /// Sends a textual message to the server.
+        /// </summary>
+        /// <param name="text">The message to send.</param>
+        /// <param name="priority">The priority at which to send the message.</param>
+        /// <exception cref="InvalidOperationException">Thrown if the client is not connected.</exception>
+        /// <exception cref="ProtocolViolationException">Thrown if <paramref name="text"/> is longer than 223 characters.</exception>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="text"/> is <see langword="null" /> or zero-length.</exception>
+        public virtual void Send(string text, Priority priority)
+        {
+            if (string.IsNullOrEmpty(text))
+                throw new ArgumentNullException("text");
+
+            if (text.Length > 223)
+                throw new ProtocolViolationException("Maximum text length is 223 characters.");
+
+            if (IsConnected)
+            {
+                m_queue.EnqueueMessage(text, priority);
+            }
             else
             {
                 throw new InvalidOperationException("The client must be connected in order to send a message.");
             }
+        }
+
+        /// <summary>
+        /// Sends a textual message to the server at normal priority.
+        /// </summary>
+        /// <param name="text">The message to send.</param>
+        /// <exception cref="InvalidOperationException">Thrown if the client is not connected.</exception>
+        /// <exception cref="ProtocolViolationException">Thrown if <paramref name="text"/> is longer than 223 characters.</exception>
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="text"/> is <see langword="null" />.</exception>
+        public virtual void SendMessage(string text)
+        {
+            Send(text, Priority.Normal);
         }
 
         /// <summary>
@@ -323,6 +354,35 @@ namespace BNSharp.BattleNet
         public IBattleNetSettings Settings
         {
             get { return m_settings; }
+        }
+
+        /// <summary>
+        /// Gets or sets a command queue implementation to be used by the Battle.net client.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">Thrown if this property is set while the 
+        /// client is connected.</exception>
+        public ICommandQueue CommandQueue
+        {
+            get { return m_queue; }
+            set
+            {
+                if (IsConnected)
+                    throw new InvalidOperationException("Cannot change the command queue implementation while the client is connected.");
+
+                m_queue.Clear();
+                if (value == null)
+                {
+                    m_queue.MessageReady -= m_messageReadyCallback;
+                    m_queue = new DefaultCommandQueue();
+                    m_queue.MessageReady += m_messageReadyCallback;
+                }
+                else
+                {
+                    m_queue.MessageReady -= m_messageReadyCallback;
+                    m_queue = value;
+                    m_queue.MessageReady += m_messageReadyCallback;
+                }
+            }
         }
 
         /// <summary>

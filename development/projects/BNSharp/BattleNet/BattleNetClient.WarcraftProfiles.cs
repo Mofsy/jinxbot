@@ -6,6 +6,7 @@ using System.Threading;
 using BNSharp.MBNCSUtil;
 using System.Diagnostics;
 using BNSharp.BattleNet.Clans;
+using System.Globalization;
 
 namespace BNSharp.BattleNet
 {
@@ -14,6 +15,12 @@ namespace BNSharp.BattleNet
         private int m_curProfileCookie;
         private Dictionary<int, WarcraftProfileEventArgs> m_warcraftProfileRequests;
 
+        /// <summary>
+        /// Requests a Warcraft 3 profile.
+        /// </summary>
+        /// <param name="username">The name of the user to request.</param>
+        /// <param name="getFrozenThroneProfile"><see langword="true" /> to get the Frozen Throne profile;
+        /// <see langword="false" /> to get the Reign of Chaos profile.</param>
         public void RequestWarcraft3Profile(string username, bool getFrozenThroneProfile)
         {
             Product pr = getFrozenThroneProfile ? Product.Warcraft3Expansion : Product.Warcraft3Retail;
@@ -29,6 +36,13 @@ namespace BNSharp.BattleNet
             Send(pck);
         }
 
+        /// <summary>
+        /// Requests a Warcraft 3 profile for the specified user, requesting them for the user's 
+        /// specific product.
+        /// </summary>
+        /// <param name="user">The user for whom to request a profile.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="user"/> does 
+        /// not on Warcraft III: The Reign of Chaos or The Frozen Throne.</exception>
         public void RequestWarcraft3Profile(ChatUser user)
         {
             if (user.Stats.Product != Product.Warcraft3Expansion && user.Stats.Product != Product.Warcraft3Retail)
@@ -43,7 +57,7 @@ namespace BNSharp.BattleNet
             int cookie = dr.ReadInt32();
             if (!m_warcraftProfileRequests.ContainsKey(cookie))
             {
-                Trace.WriteLine(string.Format("Unable to locate profile request with cookie {0:x2}", cookie));
+                Trace.WriteLine(string.Format(CultureInfo.InvariantCulture, "Unable to locate profile request with cookie {0:x2}", cookie));
                 return;
             }
             WarcraftProfileEventArgs args = m_warcraftProfileRequests[cookie];
@@ -79,7 +93,7 @@ namespace BNSharp.BattleNet
             int cookie = dr.ReadInt32();
             if (!m_warcraftProfileRequests.ContainsKey(cookie))
             {
-                Trace.WriteLine(string.Format("Unable to locate profile request with cookie {0:x2}", cookie));
+                Trace.WriteLine(string.Format(CultureInfo.InvariantCulture, "Unable to locate profile request with cookie {0:x2}", cookie));
                 return;
             }
             WarcraftProfileEventArgs args = m_warcraftProfileRequests[cookie];
@@ -121,12 +135,12 @@ namespace BNSharp.BattleNet
             BattleNetClientResources.IncomingBufferPool.FreeBuffer(pd.Data);
         }
 
-        private void HandleWarcraftClanInfoRequest(ParseData data, DataReader dr)
+        private void HandleWarcraftClanInfoRequest(DataReader dr)
         {
             int cookie = dr.ReadInt32();
             if (!m_warcraftProfileRequests.ContainsKey(cookie))
             {
-                Trace.WriteLine(string.Format("Unable to locate profile request with cookie {0:x2}", cookie));
+                Trace.WriteLine(string.Format(CultureInfo.InvariantCulture, "Unable to locate profile request with cookie {0:x2}", cookie));
                 return;
             }
             WarcraftProfileEventArgs args = m_warcraftProfileRequests[cookie];
@@ -174,7 +188,7 @@ namespace BNSharp.BattleNet
             int cookie = dr.ReadInt32();
             if (!m_warcraftProfileRequests.ContainsKey(cookie))
             {
-                Trace.WriteLine(string.Format("Unable to locate profile request with cookie {0:x2}", cookie));
+                Trace.WriteLine(string.Format(CultureInfo.InvariantCulture, "Unable to locate profile request with cookie {0:x2}", cookie));
                 return;
             }
             WarcraftProfileEventArgs args = m_warcraftProfileRequests[cookie];

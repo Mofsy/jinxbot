@@ -150,6 +150,7 @@
     <Compile Include="Net\BufferPool.cs" />
     <Compile Include="BattleNet\ChannelJoinFlags.cs" />
     <Compile Include="Net\CombinedPacketPriorityProvider.cs" />
+    <Compile Include="Net\ConnectCompletedEventArgs.cs" />
     <Compile Include="Net\ConnectionBase.cs" />
     <Compile Include="BncsPacketId.cs" />
     <Compile Include="GlobalSuppressions.cs" />
@@ -190,7 +191,8 @@
     <Compile Include="MBNCSUtil\XSha1.cs" />
     <Compile Include="Net\DefaultPacketPriorityProvider.cs" />
     <Compile Include="Net\ThinProxiedConnectionBase.cs" />
-    <Compile Include="Plugins\ICommandQueueProvider.cs" />
+    <Compile Include="Plugins\DefaultCommandQueue.cs" />
+    <Compile Include="Plugins\ICommandQueue.cs" />
     <Compile Include="Plugins\IBattleNetEvents.cs" />
     <Compile Include="Plugins\IPacketPriorityProvider.cs" />
     <Compile Include="Plugins\IProxiedRealConnection.cs" />

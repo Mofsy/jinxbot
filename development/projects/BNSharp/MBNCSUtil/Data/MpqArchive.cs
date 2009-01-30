@@ -45,6 +45,11 @@ namespace BNSharp.MBNCSUtil.Data
                 throw new ObjectDisposedException("MpqArchive");
         }
 
+        /// <summary>
+        /// Creates a new <see>MpqArchive</see>.
+        /// </summary>
+        protected MpqArchive() { }
+
         internal MpqArchive(string path)
         {
             m_files = new List<MpqFileStream>();
@@ -62,7 +67,7 @@ namespace BNSharp.MBNCSUtil.Data
         /// <returns>An <see cref="MpqFileStream">MpqFileStream</see> to the file within the MPQ.</returns>
         /// <exception cref="MpqException">Thrown if the file is not found or there is a problem reading from the MPQ.</exception>
         /// <exception cref="ArgumentNullException">Thrown if <c>mpqFilePath</c> is <b>null</b> (<b>Nothing</b> in Visual Basic).</exception>
-        public MpqFileStream OpenFile(string mpqFilePath)
+        public virtual MpqFileStream OpenFile(string mpqFilePath)
         {
             if (mpqFilePath == null) throw new ArgumentNullException(Resources.param_mpqFilePath, Resources.mpqFilePathArgNull);
 
@@ -89,7 +94,7 @@ namespace BNSharp.MBNCSUtil.Data
         /// </summary>
         /// <param name="fileName">The path to the file relative to the MPQ root.</param>
         /// <returns><b>True</b> if the file is contained within the MPQ; otherwise <b>false</b>.</returns>
-        public bool ContainsFile(string fileName)
+        public virtual bool ContainsFile(string fileName)
         {
             return LateBoundStormDllApi.SFileHasFile(m_hMPQ, fileName);
         }
@@ -113,7 +118,7 @@ namespace BNSharp.MBNCSUtil.Data
         /// <param name="mpqFileName">The fully-qualified name of the file in the MPQ.</param>
         /// <param name="pathBase">The root path to which to save the file.</param>
         /// <param name="useFullMpqPath">Whether to create child directories based on the path to the file in the MPQ.</param>
-        public void SaveToPath(string mpqFileName, string pathBase, bool useFullMpqPath)
+        public virtual void SaveToPath(string mpqFileName, string pathBase, bool useFullMpqPath)
         {
             string path;
             if (useFullMpqPath)
@@ -196,7 +201,7 @@ namespace BNSharp.MBNCSUtil.Data
         /// </remarks>
         /// <returns>A string containing the full text of the list file.</returns>
         /// <exception cref="MpqException">Thrown if the list file is not located.</exception>
-        public string GetListFile()
+        public virtual string GetListFile()
         {
             string list = string.Empty;
             using (MpqFileStream mfs = OpenFile("(listfile)"))

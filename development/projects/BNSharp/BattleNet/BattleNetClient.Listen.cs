@@ -1,4 +1,8 @@
-﻿using System;
+﻿#if DEBUG
+#define DETECT_MISBEHAVING_PLUGINS
+#endif
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -436,6 +440,7 @@ namespace BNSharp.BattleNet
                 case ChatEventType.NewChannelJoined:
                     ServerChatEventArgs joinArgs = new ServerChatEventArgs(type, flags, text);
                     m_channelName = text;
+                    m_namesToUsers.Clear();
                     OnJoinedChannel(joinArgs);
                     break;
                 case ChatEventType.Broadcast:
@@ -588,7 +593,7 @@ namespace BNSharp.BattleNet
                     HandleWarcraftUserInfoRequest(data, dr);
                     break;
                 case WarcraftCommands.ClanInfoRequest:
-                    HandleWarcraftClanInfoRequest(data, dr);
+                    HandleWarcraftClanInfoRequest(dr);
                     break;
                 default:
                     BattleNetClientResources.IncomingBufferPool.FreeBuffer(data.Data);
