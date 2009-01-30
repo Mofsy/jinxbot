@@ -192,7 +192,6 @@
     <Compile Include="MBNCSUtil\XSha1.cs" />
     <Compile Include="Net\DefaultPacketPriorityProvider.cs" />
     <Compile Include="Net\ThinProxiedConnectionBase.cs" />
-    <Compile Include="Net\UdpClientConnection.cs" />
     <Compile Include="Plugins\DefaultCommandQueue.cs" />
     <Compile Include="Plugins\ICommandQueue.cs" />
     <Compile Include="Plugins\IBattleNetEvents.cs" />
