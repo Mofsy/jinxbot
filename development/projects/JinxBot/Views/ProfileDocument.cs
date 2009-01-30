@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using JinxBot.Controls;
 using JinxBot.Controls.Docking;
 using BNSharp.Net;
 using BNSharp;
@@ -9,6 +10,9 @@ using JinxBot.Plugins.UI;
 using JinxBot.Reliability;
 using System.Diagnostics;
 using BNSharp.BattleNet.Stats;
+
+using JinxBot.Views.Chat;
+using System.Threading;
 
 namespace JinxBot.Views
 {
@@ -38,9 +42,11 @@ namespace JinxBot.Views
 
             if (client.Settings.Client == Product.StarcraftRetail.ProductCode || client.Settings.Client == Product.StarcraftBroodWar.ProductCode)
             {
-                WardenModule module = new WardenModule(client);
-                m_client.WardenHandler = module;
+                //WardenModule module = new WardenModule(client);
+                //m_client.WardenHandler = module;
             }
+
+            //m_client.ProxyConnector = new JinxBot.Plugins.BNSharp.Socks4ProxyConnector(client.Settings as ClientProfile);
 
             client.EventExceptionThrown += new EventExceptionEventHandler(client_EventExceptionThrown);
 
@@ -122,10 +128,46 @@ namespace JinxBot.Views
             }
         }
 
+        private Thread m_connectingThread;
+        public void BeginConnecting()
+        {
+            m_chat.AddChat(new ChatNode("Connecting...", CssClasses.Connected));
+            m_connectingThread = new Thread(__Connect);
+            m_connectingThread.IsBackground = true;
+            m_connectingThread.Start();
+        }
+
+        private void __Connect()
+        {
+            try
+            {
+                m_client.Connect();
+            }
+            catch (ThreadAbortException)
+            {
+            }
+        }
+
+        public void Disconnect()
+        {
+            if (m_connectingThread.IsAlive)
+            {
+                m_connectingThread.Abort();
+            }
+            m_client.Close();
+        }
+
         private void WarcraftProfileReceived(object sender, WarcraftProfileEventArgs e)
         {
             if (Debugger.IsAttached)
                 Debugger.Break();
+        }
+
+        protected override void OnFormClosed(System.Windows.Forms.FormClosedEventArgs e)
+        {
+            base.OnFormClosed(e);
+
+            m_client.Dispose();
         }
     }
 }

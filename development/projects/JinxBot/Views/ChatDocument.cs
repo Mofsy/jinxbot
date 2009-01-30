@@ -485,5 +485,10 @@ namespace JinxBot.Views
             }
         }
 
+        public void AddChat(params ChatNode[] nodes)
+        {
+            IEnumerable<ChatNode> nodeList = nodes;
+            chat.AddChat(nodeList);
+        }
     }
 }

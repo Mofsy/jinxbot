@@ -213,16 +213,29 @@ namespace JinxBot
         }
 
         [Browsable(true)]
-        [Category("Behavior")]
-        [Description("The name of the channel to join when logging in.  Leave this blank to join the default channel for your product (for example, Starcraft USA-1).")]
+        [Category("Client Behavior")]
+        [Description("The first channel the client should join when connecting to Battle.net.  Leave this empty to have the client connect to the normal client-specific or clan channel like a real client.")]
         [Name("Home Channel")]
-        [DefaultValue(null)]
         [XmlElement("HomeChannel")]
+        [DefaultValue("")]
         public string HomeChannel
         {
             get;
             set;
         }
+
+        [Browsable(true)]
+        [Category("Client Behavior")]
+        [Description("The character which should signal the bot to attempt to interpret a command.  This character is '?' by default.")]
+        [Name("Trigger Character")]
+        [XmlElement("Trigger")]
+        [DefaultValue("?")]
+        public string TriggerCharacter
+        {
+            get;
+            set;
+        }
+
         #endregion
 
 
