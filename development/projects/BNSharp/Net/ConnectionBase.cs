@@ -255,8 +255,11 @@ namespace BNSharp.Net
                 }
                 catch (IOException se)
                 {
-                    Close();
-                    OnError("A read error occurred on the connection.", se);
+                    if (IsConnected)
+                    {
+                        Close();
+                        OnError("A read error occurred on the connection.", se);
+                    }
                     return null;
                 }
             }
