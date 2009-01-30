@@ -10,6 +10,7 @@ using JinxBot.Plugins.UI;
 using JinxBot.Reliability;
 using System.Diagnostics;
 using BNSharp.BattleNet.Stats;
+using JinxBot.Configuration;
 
 using JinxBot.Views.Chat;
 using System.Threading;
@@ -86,6 +87,8 @@ namespace JinxBot.Views
             m_documents.Add(m_chat);
 
             client.RegisterWarcraftProfileReceivedNotification(Priority.Low, WarcraftProfileReceived);
+
+            m_channel.VoidView = this.VoidView;
         }
 
         void client_EventExceptionThrown(object sender, EventExceptionEventArgs e)
@@ -125,6 +128,22 @@ namespace JinxBot.Views
                     if (tab != null)
                         tab.StylesheetUri = value;
                 }
+            }
+        }
+
+        public bool VoidView
+        {
+            get
+            {
+                ClientProfile profile = m_client.Settings as ClientProfile;
+                return profile.VoidView;
+            }
+            set
+            {
+                ClientProfile profile = m_client.Settings as ClientProfile;
+                profile.VoidView = value;
+                JinxBotConfiguration.Instance.Save();
+                m_channel.VoidView = value;
             }
         }
 

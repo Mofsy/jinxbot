@@ -37,6 +37,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization">
@@ -191,6 +192,7 @@
     <Compile Include="MBNCSUtil\XSha1.cs" />
     <Compile Include="Net\DefaultPacketPriorityProvider.cs" />
     <Compile Include="Net\ThinProxiedConnectionBase.cs" />
+    <Compile Include="Net\UdpClientConnection.cs" />
     <Compile Include="Plugins\DefaultCommandQueue.cs" />
     <Compile Include="Plugins\ICommandQueue.cs" />
     <Compile Include="Plugins\IBattleNetEvents.cs" />

@@ -140,14 +140,14 @@
             // newProfileToolStripMenuItem
             // 
             this.newProfileToolStripMenuItem.Name = "newProfileToolStripMenuItem";
-            this.newProfileToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.newProfileToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
             this.newProfileToolStripMenuItem.Text = "&New Profile";
             this.newProfileToolStripMenuItem.Click += new System.EventHandler(this.newProfileToolStripMenuItem_Click);
             // 
             // toolStripMenuItem5
             // 
             this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(149, 6);
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(132, 6);
             // 
             // currentProfileNoneToolStripMenuItem
             // 
@@ -241,6 +241,7 @@
             this.enableVoidViewToolStripMenuItem.Name = "enableVoidViewToolStripMenuItem";
             this.enableVoidViewToolStripMenuItem.Size = new System.Drawing.Size(234, 22);
             this.enableVoidViewToolStripMenuItem.Text = "Enable &Void View";
+            this.enableVoidViewToolStripMenuItem.Click += new System.EventHandler(this.enableVoidViewToolStripMenuItem_Click);
             // 
             // styleToolStripMenuItem
             // 

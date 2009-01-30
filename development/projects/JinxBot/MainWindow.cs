@@ -85,7 +85,7 @@ namespace JinxBot
                 else
                 {
                     BattleNetClient bnc = new BattleNetClient(cp);
-                    //bnc.CommandQueue = new TimedMessageQueue();
+                    bnc.CommandQueue = new TimedMessageQueue();
                     ProfileResourceProvider.RegisterProvider(bnc);
                     ProfileDocument profile = new ProfileDocument(bnc);
                     m_activeProfiles.Add(cp, profile);
@@ -145,6 +145,7 @@ namespace JinxBot
             if (profileDoc != null)
             {
                 this.currentProfileNoneToolStripMenuItem.Enabled = true;
+                this.enableVoidViewToolStripMenuItem.Checked = profileDoc.VoidView;
                 this.connectToolStripMenuItem1.Enabled = !profileDoc.Client.IsConnected;
                 this.disconnectToolStripMenuItem.Enabled = !connectToolStripMenuItem1.Enabled;
             }
@@ -216,6 +217,15 @@ namespace JinxBot
                 string defaultPath = Path.Combine(jbControlsPath, "BlizzStyles.css");
                 Uri styleUri = new Uri(string.Concat("file:///", defaultPath));
                 tab.StylesheetUri = styleUri;
+            }
+        }
+
+        private void enableVoidViewToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ProfileDocument tab = this.dock.ActiveDocument as ProfileDocument;
+            if (tab != null)
+            {
+                tab.VoidView = enableVoidViewToolStripMenuItem.Checked;
             }
         }
     }

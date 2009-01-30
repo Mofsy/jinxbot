@@ -6,13 +6,117 @@
     font-family: 'Segoe UI', 'Avenir LT Std', Verdana, Sans-serif;
 }
 
+a:link, a:hover, a:active, a:visited
+{
+	color: #B0C4DE;
+}
+
 p
 {
     text-indent: -3em;
     margin-left: 3em;
     margin-top: 4px;
     margin-bottom: 0px;
+    width: 95%;
 }
+
+/* user lists */
+.userListHeader
+{
+	width: 90%;
+	height: 20px;
+	background-color: Black;
+	text-align: center;
+}
+
+.userListItem
+{
+	width: 85%;
+	height: 20px;
+	background-position: 2px 3px;
+	background-repeat: no-repeat;
+	padding-left: 34px;
+	padding-top: 4px;
+}
+
+.userListItem:hover
+{
+	background-color: Navy;
+}
+
+.userFlagBnet
+{
+	background-image: url('./assets/icons/BattleNetAdmin.png');
+}
+.userFlagBlizz
+{
+	background-image: url('./assets/icons/BlizzardRep.png');
+}
+.userFlagOps
+{
+	background-image: url('./assets/icons/ChannelOps.png');
+}
+.userFlagGuest
+{
+	background-image: url('./assets/icons/Guest.png');
+}
+.userFlagSpeaker
+{
+	background-image: url('./assets/icons/Speaker.png');
+}
+.userFlagSquelched
+{
+	background-image: url('./assets/icons/BattleNetSquelched.png');
+}
+.userProdChat
+{
+	background-image: url('./assets/icons/prod-chat.png');
+}
+.userProdD2DV
+{
+	background-image: url('./assets/icons/prod-d2dv.png');
+}
+.userProdD2XP
+{
+	background-image: url('./assets/icons/prod-d2xp.png');
+}
+.userProdDRTL
+{
+	background-image: url('./assets/icons/prod-drtl.png');
+}
+.userProdDSHR
+{
+	background-image: url('./assets/icons/prod-dshr.png');
+}
+.userProdJSTR
+{
+	background-image: url('./assets/icons/prod-jstr.png');
+}
+.userProdSEXP
+{
+	background-image: url('./assets/icons/prod-sexp.png');
+}
+.userProdSSHR
+{
+	background-image: url('./assets/icons/prod-sshr.png');
+}
+.userProdSTAR
+{
+	background-image: url('./assets/icons/prod-star.png');
+}
+.userProdW2BN
+{
+	background-image: url('./assets/icons/prod-w2bn.png');
+}
+.userProdW3XP
+{
+	background-image: url('./assets/icons/prod-w3xp.png');
+}
+.userProdWAR3
+{
+	background-image: url('./assets/icons/prod-war3.png');
+}
+
 
 #scrollTo
 {
@@ -31,22 +135,22 @@ p
 
 .userProfileReceivedNotification
 {
-	color: Orange;
+	color: #ffa500;
 }
 
 .userNameOtherUser 
 {
-	color: SkyBlue;
+	color: #87CEEB;
 }
 
 .userProfileKey
 {
-	color: Gray;
+	color: #808080;
 }
 
 .userProfileValue
 {
-	color: Teal;
+	color: #008080;
 }
 
 
@@ -67,7 +171,7 @@ p
 
 .unhandledWarden 
 {
-	color: Orange;
+	color: #ffa500;
 }
 
 .speakBracketsOtherUser 
@@ -97,53 +201,53 @@ p
 
 .emoteOtherUsername 
 {
-	color: Orange;
+	color: #ffa500;
 }
 
 .emoteSelfUsername 
 {
-	color: Orange;
+	color: #ffa500;
 }
 
 .emoteText 
 {
-	color: Orange;
+	color: #ffa500;
 }
 
 
 .leftChannel
 {
-	color: SteelBlue;
+	color: #4682B4;
 }
 
 .joinedChannel 
 {
-	color: SteelBlue; 
+	color: #4682B4; 
 }
 
 .loginSucceeded 
 {
-	color: LimeGreen;
+	color: #32CD32;
 }
 
 .loginFailed 
 {
-	color: OrangeRed; 
+	color: #ffa500; 
 }
 
 .joiningChannel
 {
-	color: SteelBlue;
+	color: #4682B4;
 }
 
 .channelName
 {
-	color: LightGray;
+	color: #D3D3D3;
 }
 
 .silentChannel
 {
-	color: SteelBlue;
+	color: #4682B4;
 }
 
 .serverInfo
@@ -163,7 +267,7 @@ p
 
 .enteringChat 
 {
-	color: SteelBlue;
+	color: #4682B4;
 }
 
 .disconnected 
@@ -173,7 +277,7 @@ p
 
 .connected
 {
-	color: LimeGreen;
+	color: #32CD32;
 }
 
 .commandSent
@@ -183,7 +287,7 @@ p
 
 .versioningPassed 
 {
-	color: LightSteelBlue;
+	color: #B0C4DE;
 }
 
 .versioningFailed 
@@ -193,25 +297,107 @@ p
 
 .channelRestricted, .channelFull, .channelDNE
 {
-	color: Orange;
+	color: #ffa500;
 }
 
 .channelListHeader
 {
-	color: LightSlateGray;
+	color: #778899;
 }
 
 .channelBullet
 {
-	color: SlateGray;
+	color: #708090;
 }
 
 .channelListItem 
 {
-	color: LightSteelBlue;
+	color: #B0C4DE;
 }
 
 .broadcast
 {
+	color: #ffa500;
+}
+
+
+/* Chat node styles */
+.timestamp
+{
+	color: #999999;
+}
+
+.information
+{
+	color: Yellow;
+}
+
+.error
+{
 	color: Orange;
+}
+
+.userName
+{
+	color: Lime;
+}
+
+.text
+{
+	color: White;
+}
+
+.channelName
+{
+	color: #B0C4DE;
+}
+
+.whisper
+{
+	color: #ff00ff;
+}
+
+.whisperReceivedName
+{
+	color: White;
+}
+
+.whisperReceivedText
+{
+	color: #ff00ff;
+}
+
+.whisperSentName
+{
+	color: White;
+}
+
+.whisperSentText
+{
+	color: #ff00ff;
+}
+
+.talkUsername
+{
+	color: #B0C4DE;
+}
+
+.emoteUsername
+{
+	color: #ADFF2F;
+}
+
+.emote
+{
+	color: Yellow;
+}
+
+.channelStart
+{
+	color: #B0C4DE;
+}
+
+.channelName
+{
+	color: #ADFF2F;
 }

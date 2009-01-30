@@ -29,6 +29,7 @@ namespace BNSharp.BattleNet
         private Dictionary<BncsPacketId, Priority> m_packetToPriorityMap;
         private Tmr m_tmr;
         private Dictionary<BncsPacketId, ParseCallback> m_packetToParserMap;
+        
 
         partial void InitializeParseDictionaries()
         {
@@ -610,136 +611,144 @@ namespace BNSharp.BattleNet
         #region client authentication
         private void HandleAuthInfo(ParseData data)
         {
-            DataReader dr = new DataReader(data.Data);
-            if (m_pingPck != null)
+            try
             {
-                Send(m_pingPck);
-                m_pingPck = null;
-            }
-            m_received0x50 = true;
-
-            m_loginType = dr.ReadUInt32();
-            m_srvToken = dr.ReadUInt32();
-            m_udpVal = dr.ReadUInt32();
-            m_mpqFiletime = dr.ReadInt64();
-            m_versioningFilename = dr.ReadCString();
-            m_usingLockdown = m_versioningFilename.StartsWith("LOCKDOWN", StringComparison.OrdinalIgnoreCase);
-
-            int crResult = -1, exeVer = -1;
-            string exeInfo = null;
-
-            if (!m_usingLockdown)
-            {
-                m_valString = dr.ReadCString();
-                int mpqNum = CheckRevision.ExtractMPQNumber(m_versioningFilename);
-                crResult = CheckRevision.DoCheckRevision(m_valString, new string[] { m_settings.GameExe, m_settings.GameFile2, m_settings.GameFile3 }, mpqNum);
-                exeVer = CheckRevision.GetExeInfo(m_settings.GameExe, out exeInfo);
-            }
-            else
-            {
-                m_ldValStr = dr.ReadNullTerminatedByteArray();
-                string dllName = m_versioningFilename.Replace(".mpq", ".dll");
-
-                BnFtpVersion1Request req = new BnFtpVersion1Request(m_settings.Client, m_versioningFilename, null);
-                req.Server = m_settings.Server;
-                req.LocalFileName = Path.Combine(Path.GetTempPath(), m_versioningFilename);
-                req.ExecuteRequest();
-
-                string ldPath = null;
-                using (MpqArchive arch = MpqServices.OpenArchive(req.LocalFileName))
+                DataReader dr = new DataReader(data.Data);
+                if (m_pingPck != null)
                 {
-                    if (arch.ContainsFile(dllName))
+                    Send(m_pingPck);
+                    m_pingPck = null;
+                }
+                m_received0x50 = true;
+
+                m_loginType = dr.ReadUInt32();
+                m_srvToken = dr.ReadUInt32();
+                m_udpVal = dr.ReadUInt32();
+                m_mpqFiletime = dr.ReadInt64();
+                m_versioningFilename = dr.ReadCString();
+                m_usingLockdown = m_versioningFilename.StartsWith("LOCKDOWN", StringComparison.OrdinalIgnoreCase);
+
+                int crResult = -1, exeVer = -1;
+                string exeInfo = null;
+
+                if (!m_usingLockdown)
+                {
+                    m_valString = dr.ReadCString();
+                    int mpqNum = CheckRevision.ExtractMPQNumber(m_versioningFilename);
+                    crResult = CheckRevision.DoCheckRevision(m_valString, new string[] { m_settings.GameExe, m_settings.GameFile2, m_settings.GameFile3 }, mpqNum);
+                    exeVer = CheckRevision.GetExeInfo(m_settings.GameExe, out exeInfo);
+                }
+                else
+                {
+                    m_ldValStr = dr.ReadNullTerminatedByteArray();
+                    string dllName = m_versioningFilename.Replace(".mpq", ".dll");
+
+                    BnFtpVersion1Request req = new BnFtpVersion1Request(m_settings.Client, m_versioningFilename, null);
+                    req.Server = m_settings.Server;
+                    req.LocalFileName = Path.Combine(Path.GetTempPath(), m_versioningFilename);
+                    req.ExecuteRequest();
+
+                    string ldPath = null;
+                    using (MpqArchive arch = MpqServices.OpenArchive(req.LocalFileName))
                     {
-                        ldPath = Path.Combine(Path.GetTempPath(), dllName);
-                        arch.SaveToPath(dllName, Path.GetTempPath(), false);
+                        if (arch.ContainsFile(dllName))
+                        {
+                            ldPath = Path.Combine(Path.GetTempPath(), dllName);
+                            arch.SaveToPath(dllName, Path.GetTempPath(), false);
+                        }
+                    }
+
+                    m_ldDigest = CheckRevision.DoLockdownCheckRevision(m_ldValStr, new string[] { m_settings.GameExe, m_settings.GameFile2, m_settings.GameFile3 },
+                                    ldPath, m_settings.ImageFile, ref exeVer, ref crResult);
+                }
+
+                m_prodCode = m_settings.Client;
+
+                if (m_prodCode == "WAR3" ||
+                    m_prodCode == "W3XP")
+                {
+                    m_w3srv = dr.ReadByteArray(128);
+
+                    if (!NLS.ValidateServerSignature(m_w3srv, RemoteEP.Address.GetAddressBytes()))
+                    {
+                        OnError(new ErrorEventArgs(Strings.War3ServerValidationFailed, true));
+                        Close();
+                        return;
                     }
                 }
 
-                m_ldDigest = CheckRevision.DoLockdownCheckRevision(m_ldValStr, new string[] { m_settings.GameExe, m_settings.GameFile2, m_settings.GameFile3 },
-                                ldPath, m_settings.ImageFile, ref exeVer, ref crResult);
-            }
+                BattleNetClientResources.IncomingBufferPool.FreeBuffer(data.Data);
 
-            m_prodCode = m_settings.Client;
-
-            if (m_prodCode == "WAR3" ||
-                m_prodCode == "W3XP")
-            {
-                m_w3srv = dr.ReadByteArray(128);
-
-                if (!NLS.ValidateServerSignature(m_w3srv, RemoteEP.Address.GetAddressBytes()))
+                CdKey key1, key2 = null;
+                key1 = new CdKey(m_settings.CdKey1);
+                if (m_prodCode == "D2XP" || m_prodCode == "W3XP")
                 {
-                    OnError(new ErrorEventArgs(Strings.War3ServerValidationFailed, true));
-                    Close();
-                    return;
+                    key2 = new CdKey(m_settings.CdKey2);
                 }
-            }
 
-            BattleNetClientResources.IncomingBufferPool.FreeBuffer(data.Data);
+                m_clientToken = unchecked((uint)new Random().Next());
 
-            CdKey key1, key2 = null;
-            key1 = new CdKey(m_settings.CdKey1);
-            if (m_prodCode == "D2XP" || m_prodCode == "W3XP")
-            {
-                key2 = new CdKey(m_settings.CdKey2);
-            }
-
-            m_clientToken = unchecked((uint)new Random().Next());
-
-            byte[] key1Hash = key1.GetHash(m_clientToken, m_srvToken);
-            if (m_warden != null)
-            {
-                try
+                byte[] key1Hash = key1.GetHash(m_clientToken, m_srvToken);
+                if (m_warden != null)
                 {
-                    if (!m_warden.InitWarden(BitConverter.ToInt32(key1Hash, 0)))
+                    try
                     {
-                        m_warden.UninitWarden();
+                        if (!m_warden.InitWarden(BitConverter.ToInt32(key1Hash, 0)))
+                        {
+                            m_warden.UninitWarden();
+                            OnError(new ErrorEventArgs("The Warden module failed to initialize.  You will not be immediately disconnected; however, you may be disconnected after a short period of time.", false));
+                            m_warden = null;
+                        }
+                    }
+                    catch (Win32Exception we)
+                    {
                         OnError(new ErrorEventArgs("The Warden module failed to initialize.  You will not be immediately disconnected; however, you may be disconnected after a short period of time.", false));
+                        OnError(new ErrorEventArgs(string.Format(CultureInfo.CurrentCulture, "Additional information: {0}", we.Message), false));
+                        m_warden.UninitWarden();
                         m_warden = null;
                     }
                 }
-                catch (Win32Exception we)
-                {
-                    OnError(new ErrorEventArgs("The Warden module failed to initialize.  You will not be immediately disconnected; however, you may be disconnected after a short period of time.", false));
-                    OnError(new ErrorEventArgs(string.Format(CultureInfo.CurrentCulture, "Additional information: {0}", we.Message), false));
-                    m_warden.UninitWarden();
-                    m_warden = null;
-                }
-            }
 
-            BncsPacket pck0x51 = new BncsPacket((byte)BncsPacketId.AuthCheck);
-            pck0x51.Insert(m_clientToken);
-            pck0x51.Insert(exeVer);
-            pck0x51.Insert(crResult);
-            if (m_prodCode == "D2XP" || m_prodCode == "W3XP")
-                pck0x51.Insert(2);
-            else
-                pck0x51.Insert(1);
-            pck0x51.Insert(false);
-            pck0x51.Insert(key1.Key.Length);
-            pck0x51.Insert(key1.Product);
-            pck0x51.Insert(key1.Value1);
-            pck0x51.Insert(0);
-            pck0x51.Insert(key1Hash);
-            if (key2 != null)
-            {
-                pck0x51.Insert(key2.Key.Length);
-                pck0x51.Insert(key2.Product);
-                pck0x51.Insert(key2.Value1);
+                BncsPacket pck0x51 = new BncsPacket((byte)BncsPacketId.AuthCheck);
+                pck0x51.Insert(m_clientToken);
+                pck0x51.Insert(exeVer);
+                pck0x51.Insert(crResult);
+                if (m_prodCode == "D2XP" || m_prodCode == "W3XP")
+                    pck0x51.Insert(2);
+                else
+                    pck0x51.Insert(1);
+                pck0x51.Insert(false);
+                pck0x51.Insert(key1.Key.Length);
+                pck0x51.Insert(key1.Product);
+                pck0x51.Insert(key1.Value1);
                 pck0x51.Insert(0);
-                pck0x51.Insert(key2.GetHash(m_clientToken, m_srvToken));
-            }
+                pck0x51.Insert(key1Hash);
+                if (key2 != null)
+                {
+                    pck0x51.Insert(key2.Key.Length);
+                    pck0x51.Insert(key2.Product);
+                    pck0x51.Insert(key2.Value1);
+                    pck0x51.Insert(0);
+                    pck0x51.Insert(key2.GetHash(m_clientToken, m_srvToken));
+                }
 
-            if (m_usingLockdown)
+                if (m_usingLockdown)
+                {
+                    pck0x51.InsertByteArray(m_ldDigest);
+                    pck0x51.InsertByte(0);
+                }
+                else
+                    pck0x51.InsertCString(exeInfo);
+
+                pck0x51.InsertCString(m_settings.CdKeyOwner);
+
+                Send(pck0x51);
+            }
+            catch (Exception ex)
             {
-                pck0x51.InsertByteArray(m_ldDigest);
-                pck0x51.InsertByte(0);
+                OnError(new ErrorEventArgs("There was an error while initializing your client.  Refer to the exception message for more information.\n" + ex.ToString(), true));
+                Close();
             }
-            else
-                pck0x51.InsertCString(exeInfo);
-
-            pck0x51.InsertCString(m_settings.CdKeyOwner);
-
-            Send(pck0x51);
         }
 
         private void HandleAuthCheck(ParseData data)

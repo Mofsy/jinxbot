@@ -15,7 +15,7 @@ namespace BNSharp.BattleNet
     /// by this class.</para>
     /// </remarks>
     [DataContract]
-    public sealed class Product
+    public sealed class Product : IEquatable<Product>, IEquatable<string>
     {
         private static Dictionary<string, Product> s_products;
 
@@ -24,6 +24,8 @@ namespace BNSharp.BattleNet
         private string m_prodCode;
         [DataMember(Name = "Name")]
         private string m_descriptiveTitle;
+
+        private bool m_canConnect, m_needs2Keys, m_needsLockdown;
         #endregion
 
         private Product(string productCode, string descriptiveTitle)
@@ -37,6 +39,19 @@ namespace BNSharp.BattleNet
             s_products.Add(productCode, this);
         }
 
+        private Product(string productCode, string descriptiveTitle, bool canConnect, bool needs2Keys)
+            : this(productCode, descriptiveTitle)
+        {
+            m_canConnect = canConnect;
+            m_needs2Keys = needs2Keys;
+        }
+
+        private Product(string productCode, string descriptiveTitle, bool canConnect, bool needs2Keys, bool needsLockdown)
+            : this(productCode, descriptiveTitle, canConnect, needs2Keys)
+        {
+            m_needsLockdown = needsLockdown;
+        }
+
         /// <summary>
         /// The <see>Product</see> object for a telnet chat client.
         /// </summary>
@@ -45,7 +60,7 @@ namespace BNSharp.BattleNet
         /// <summary>
         /// The <see>Product</see> object for Starcraft (Retail).
         /// </summary>
-        public static readonly Product StarcraftRetail = new Product("STAR", Strings.ProdSTAR);
+        public static readonly Product StarcraftRetail = new Product("STAR", Strings.ProdSTAR, true, false, true);
         /// <summary>
         /// The <see>Product</see> object for Starcraft Shareware.
         /// </summary>
@@ -53,7 +68,7 @@ namespace BNSharp.BattleNet
         /// <summary>
         /// The <see>Product</see> object for Starcraft: Brood War.
         /// </summary>
-        public static readonly Product StarcraftBroodWar = new Product("SEXP", Strings.ProdSEXP);
+        public static readonly Product StarcraftBroodWar = new Product("SEXP", Strings.ProdSEXP, true, false, true);
         /// <summary>
         /// The <see>Product</see> object for Japan Starcraft.
         /// </summary>
@@ -62,7 +77,7 @@ namespace BNSharp.BattleNet
         /// <summary>
         /// The <see>Product</see> object for Warcraft II: Battle.net Edition.
         /// </summary>
-        public static readonly Product Warcraft2BNE = new Product("W2BN", Strings.ProdW2BN);
+        public static readonly Product Warcraft2BNE = new Product("W2BN", Strings.ProdW2BN, true, false, true);
 
         /// <summary>
         /// The <see>Product</see> object for Diablo (Retail).
@@ -80,21 +95,21 @@ namespace BNSharp.BattleNet
         /// <summary>
         /// The <see>Product</see> object for Diablo 2 (Retail).
         /// </summary>
-        public static readonly Product Diablo2Retail = new Product("D2DV", Strings.ProdD2DV);
+        public static readonly Product Diablo2Retail = new Product("D2DV", Strings.ProdD2DV, true, false);
         /// <summary>
         /// The <see>Product</see> object for Diablo 2: The Lord of Destruction.
         /// </summary>
-        public static readonly Product Diablo2Expansion = new Product("D2XP", Strings.ProdD2XP);
+        public static readonly Product Diablo2Expansion = new Product("D2XP", Strings.ProdD2XP, true, true);
         
         /// <summary>
         /// The <see>Product</see> object for Warcraft 3: The Reign of Chaos.
         /// </summary>
-        public static readonly Product Warcraft3Retail = new Product("WAR3", Strings.ProdWAR3);
+        public static readonly Product Warcraft3Retail = new Product("WAR3", Strings.ProdWAR3, true, false);
 
         /// <summary>
         /// The <see>Product</see> object for Warcraft 3: The Frozen Throne.
         /// </summary>
-        public static readonly Product Warcraft3Expansion = new Product("W3XP", Strings.ProdW3XP);
+        public static readonly Product Warcraft3Expansion = new Product("W3XP", Strings.ProdW3XP, true, true);
 
         /// <summary>
         /// The <see>Product</see> object that represents any product unrecognized by BN#.
@@ -141,5 +156,47 @@ namespace BNSharp.BattleNet
             List<Product> products = new List<Product>(s_products.Values);
             return new ReadOnlyCollection<Product>(products);
         }
+
+        internal bool CanConnect
+        {
+            get { return m_canConnect; }
+        }
+
+        internal bool NeedsTwoKeys
+        {
+            get { return m_needs2Keys; }
+        }
+
+        internal bool NeedsLockdown
+        {
+            get { return m_needsLockdown; }
+        }
+
+        #region IEquatable<string> Members
+
+        /// <summary>
+        /// Determines whether the specified product's product code matches the specified product code.
+        /// </summary>
+        /// <param name="other">The product code to test.</param>
+        /// <returns><see langword="true" /> if this product matches the tested product code; otherwise <see langword="false" />.</returns>
+        public bool Equals(string other)
+        {
+            return m_prodCode.Equals(other, StringComparison.OrdinalIgnoreCase);
+        }
+
+        #endregion
+
+        #region IEquatable<Product> Members
+        /// <summary>
+        /// Determines whether the specified product and this product represent the same Battle.net client.
+        /// </summary>
+        /// <param name="other">The client to test.</param>
+        /// <returns><see langword="true" /> if the products match; otherwise <see langword="false" />.</returns>
+        public bool Equals(Product other)
+        {
+            return m_prodCode.Equals(other.m_prodCode, StringComparison.OrdinalIgnoreCase);
+        }
+
+        #endregion
     }
 }

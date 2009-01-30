@@ -18,6 +18,7 @@ using JinxBot.Views.Chat;
 using BNSharp.BattleNet;
 using JinxBot.Plugins.UI;
 using System.Diagnostics;
+using JinxBot.Configuration;
 
 namespace JinxBot.Views
 {
@@ -202,10 +203,7 @@ namespace JinxBot.Views
         private UserEventHandler __UserFlagsChanged;
         void UserFlagsChanged(object sender, UserEventArgs e)
         {
-            if (m_client.ChannelName.Equals("The Void", StringComparison.Ordinal)) /* void view */
-            {
-                AnnounceUser(e);
-            }
+
         }
 
         private void AnnounceUser(UserEventArgs e)
@@ -292,6 +290,10 @@ namespace JinxBot.Views
                     chat.AddChat(new ChatNode(user.Username, CssClasses.UsernameOther), productNode, new ChatNode(string.Format(" joined the channel with {0} ({1}).", us.Product.Name, us.LiteralText), CssClasses.JoinedChannel));
                     break;
 
+            }
+            if (user.Flags != UserFlags.None)
+            {
+                chat.AddChat(new ChatNode(user.Username, CssClasses.UsernameOther), new ChatNode(string.Format(" had the following flags: {0}", user.Flags), CssClasses.JoinedChannel));
             }
         }
 
