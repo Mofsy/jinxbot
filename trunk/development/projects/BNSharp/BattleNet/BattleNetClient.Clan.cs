@@ -5,18 +5,21 @@ using BNSharp.BattleNet.Clans;
 using BNSharp.MBNCSUtil;
 using System.Diagnostics;
 using System.Threading;
+using System.ComponentModel;
 
 namespace BNSharp.BattleNet
 {
     partial class BattleNetClient
     {
-        private Dictionary<string, ClanMember> m_clanList = new Dictionary<string, ClanMember>();
+        private Dictionary<string, ClanMember> m_clanList = new Dictionary<string, ClanMember>(StringComparer.OrdinalIgnoreCase);
+        private Dictionary<int, string> m_clanRankChangeToMemberList = new Dictionary<int, string>();
         private string m_clanTag;
         private int m_clanCookie;
 
         partial void ResetClanState()
         {
             m_clanList.Clear();
+            m_clanRankChangeToMemberList.Clear();
             m_clanTag = null;
             m_clanCookie = 0;
         }
@@ -64,7 +67,7 @@ namespace BNSharp.BattleNet
         public int BeginClanCandidatesSearch(string clanTag)
         {
             if (object.ReferenceEquals(clanTag, null))
-                throw new ArgumentNullException("clanTag");
+                throw new ArgumentNullException(Strings.param_clanTag);
 
             int result = Interlocked.Increment(ref m_clanCookie);
 
@@ -90,12 +93,12 @@ namespace BNSharp.BattleNet
         /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="usersToInvite"/> is not exactly 9 items long.</exception>
         public int InviteUsersToNewClan(string clanName, string clanTag, string[] usersToInvite)
         {
-            if (object.ReferenceEquals(null, clanName)) throw new ArgumentNullException("clanName");
-            if (object.ReferenceEquals(null, clanTag)) throw new ArgumentNullException("clanTag");
-            if (object.ReferenceEquals(null, usersToInvite)) throw new ArgumentNullException("usersToInvite");
-            if (usersToInvite.Length != 9) throw new ArgumentOutOfRangeException("usersToInvite", usersToInvite, "Exactly 9 users may be invited to form a new clan.");
+            if (object.ReferenceEquals(null, clanName)) throw new ArgumentNullException(Strings.param_clanName);
+            if (object.ReferenceEquals(null, clanTag)) throw new ArgumentNullException(Strings.param_clanTag);
+            if (object.ReferenceEquals(null, usersToInvite)) throw new ArgumentNullException(Strings.param_usersToInvite);
+            if (usersToInvite.Length != 9) throw new ArgumentOutOfRangeException(Strings.param_usersToInvite, usersToInvite, Strings.BnetClient_InviteUsersToNewClan_WrongUserCount);
             for (int i = 0; i < 9; i++)
-                if (object.ReferenceEquals(usersToInvite[i], null)) throw new ArgumentNullException("usersToInvite", "One or more names of users to invite is null.");
+                if (object.ReferenceEquals(usersToInvite[i], null)) throw new ArgumentNullException(Strings.param_usersToInvite, Strings.BnetClient_InviteUsersToNewClan_NullUser);
 
             int result = Interlocked.Increment(ref m_clanCookie);
 
@@ -214,7 +217,7 @@ namespace BNSharp.BattleNet
         public int DesignateClanChieftan(string newChieftanName)
         {
             if (object.ReferenceEquals(null, newChieftanName))
-                throw new ArgumentNullException("newChieftanName");
+                throw new ArgumentNullException(Strings.param_newChieftanName);
 
             int result = Interlocked.Increment(ref m_clanCookie);
 
@@ -252,7 +255,7 @@ namespace BNSharp.BattleNet
         public int InviteUserToClan(string userToInvite)
         {
             if (string.IsNullOrEmpty(userToInvite))
-                throw new ArgumentNullException("userToInvite", "Clan invitation user must not be null or zero-length.");
+                throw new ArgumentNullException(Strings.param_userToInvite, Strings.BnetClient_InviteUserToClan_NullUser);
 
             int result = Interlocked.Increment(ref m_clanCookie);
 
@@ -282,7 +285,7 @@ namespace BNSharp.BattleNet
         public int RemoveClanMember(string memberToRemove)
         {
             if (string.IsNullOrEmpty(memberToRemove))
-                throw new ArgumentNullException("memberToRemove");
+                throw new ArgumentNullException(Strings.param_memberToRemove);
 
             int result = Interlocked.Increment(ref m_clanCookie);
 
@@ -354,19 +357,46 @@ namespace BNSharp.BattleNet
             OnClanCandidatesSearchCompleted(args);
         }
 
+        /// <summary>
+        /// Attempts to change the specified clan member's rank.
+        /// </summary>
+        /// <remarks>
+        /// <para>This method does not attempt to verify that the current user is allowed to change the specified user's rank, or even if the specified
+        /// user exists or is in the current user's clan.  The results of this method call are returned via the 
+        /// <see>ClanRankChangeResponseReceived</see> event.</para>
+        /// </remarks>
+        /// <param name="name">The name of the user to change.</param>
+        /// <param name="newRank">The user's new rank.</param>
+        /// <exception cref="InvalidEnumArgumentException">Thrown if <paramref name="newRank"/> is not a valid value of the <see>ClanRank</see>
+        /// enumeration</exception>.
+        /// <exception cref="ArgumentNullException">Thrown if <paramref name="name"/> is <see langword="null" /> or zero-length.</exception>
+        public void ChangeClanMemberRank(string name, ClanRank newRank)
+        {
+            if (!Enum.IsDefined(typeof(ClanRank), newRank))
+                throw new InvalidEnumArgumentException(Strings.param_newRank, (int)newRank, typeof(ClanRank));
+            if (string.IsNullOrEmpty(name))
+                throw new ArgumentNullException(Strings.param_name);
+
+            BncsPacket pck = new BncsPacket((byte)BncsPacketId.ClanRankChange);
+            int cookie = Interlocked.Increment(ref m_clanCookie);
+            m_clanRankChangeToMemberList.Add(cookie, name);
+            pck.InsertInt32(cookie);
+            pck.InsertCString(name);
+            pck.InsertByte((byte)newRank);
+
+            Send(pck);
+        }
+
         private void HandleClanRankChange(ParseData pd)
         {
             DataReader dr = new DataReader(pd.Data);
-            ClanRank old = (ClanRank)dr.ReadByte();
-            ClanRank newRank = (ClanRank)dr.ReadByte();
-            string memberName = dr.ReadCString();
-            ClanMember member = null;
-            if (m_clanList.ContainsKey(memberName))
-                member = m_clanList[memberName];
+            int cookie = dr.ReadInt32();
+            string userName = m_clanRankChangeToMemberList[cookie];
+            m_clanRankChangeToMemberList.Remove(cookie);
+            ClanRankChangeStatus status = (ClanRankChangeStatus)dr.ReadByte();
 
-            ClanRankChangeEventArgs args = new ClanRankChangeEventArgs(old, newRank, member);
-            args.EventData = pd;
-            OnClanRankChanged(args);
+            ClanRankChangeEventArgs args = new ClanRankChangeEventArgs(userName, status) { EventData = pd };
+            OnClanRankChangeResponseReceived(args);
         }
 
         private void HandleClanMotd(ParseData pd)
@@ -404,7 +434,13 @@ namespace BNSharp.BattleNet
 
         private void HandleClanMemberRemoved(ParseData pd)
         {
+            DataReader dr = new DataReader(pd.Data);
+            string memberName = dr.ReadCString();
+            ClanMember member = m_clanList[memberName];
+            m_clanList.Remove(memberName);
 
+            ClanMemberStatusEventArgs args = new ClanMemberStatusEventArgs(member) { EventData = pd };
+            OnClanMemberRemoved(args);
         }
 
         private void HandleClanMemberStatusChanged(ParseData pd)
@@ -427,10 +463,19 @@ namespace BNSharp.BattleNet
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "pd"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        private void ClanMemberRankChanged(ParseData pd)
+        private void HandleClanMemberRankChange(ParseData pd)
         {
+            DataReader dr = new DataReader(pd.Data);
+            ClanRank old = (ClanRank)dr.ReadByte();
+            ClanRank newRank = (ClanRank)dr.ReadByte();
+            string memberName = dr.ReadCString();
+            ClanMember member = null;
+            if (m_clanList.ContainsKey(memberName))
+                member = m_clanList[memberName];
 
+            ClanMemberRankChangeEventArgs args = new ClanMemberRankChangeEventArgs(old, newRank, member);
+            args.EventData = pd;
+            OnClanMemberRankChanged(args);
         }
     }
 }

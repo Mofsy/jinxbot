@@ -25,7 +25,22 @@
         </item>
         <item>Support for UTF-8 characters in chat messages has been added.</item>
         <item>Built-in support has been added for ad messages.</item>
-        <item>Support has been added to set an account's e-mail address during login.</item>
+        <item>Support has been added to set an account's e-mail address during login, or to change
+        login credentials during the login process.  To do so, the client no longer automatically 
+        disconnects for invalid login credentials; instead, you can use the <b>ContinueLogin</b>
+        method once the credentials have been changed.</item>
+        <item>Some support for sanity checking has been implemented in the constructor for 
+        <b>BattleNetClient</b>.  It either will throw <see>FileNotFoundException</see> or
+        <see>ConfigurationErrorsException</see>; for more information, see the documentation 
+        for the constructor.</item>
+        <item>Command queuing now has support; to implement it, see the <see cref="BNSharp.Plugins.ICommandQueue">ICommandQueue interface</see> 
+        and the wiki article <a href="http://www.jinxbot.net/wiki/index.php?title=Command_queuing">Command queuing</a>.</item>
+        <item>Added a method to support binary channel join.</item>
+        <item>Added support for joining a predefined home channel upon logging in, instead of joining the default product channel.</item>
+        <item>The ability to change the server on ConnectionBase without reinstantiating the class has been added.  To use it, an overload
+        of the Connect method has been added, accepting a name (or IP) and a port.</item>
+        <item>Support for Warcraft III profiles and clan information lookups has been added.  It is 
+        still experimental but generally OK.</item>
     </list>
     <para>
         <b>Breaking Changes</b>
@@ -55,13 +70,6 @@
         <b>What's coming for Beta 3</b>
     </para>
     <list type="bullet">
-        <item>Support for Warcraft III profiles and clan information lookups.</item>
-        <item>Built-in support for ad messages.</item>
-        <item>Support for setting e-mail interactively during login.</item>
-        <item>Sanity checking for passing the IBattleNetSettings interface.</item>
-        <item>The ability to change the server on ConnectionBase without reinstantiating the class.</item>
-        <item>Binary Join Channel command function.</item>
-        <item>Support for chat message throttling via the <see cref="BNSharp.Plugins.ICommandQueueProvider">ICommandQueueProvider</see> interface.</item>
         <item>All remaining internal connection status strings will be removed into the localizable file format.</item>
     </list>
     <para>

@@ -6,71 +6,50 @@ using System.Runtime.Serialization;
 namespace BNSharp.BattleNet.Clans
 {
     /// <summary>
-    /// Contains information about when the client's user's clan rank has changed.
+    /// Represents the result of an attempt to change a user's clan rank.
     /// </summary>
+#if !NET_2_ONLY
     [DataContract]
+#endif
     public class ClanRankChangeEventArgs : BaseEventArgs
     {
-        #region fields
-        [DataMember(Name = "PreviousRank")]
-        private ClanRank m_old;
-        [DataMember(Name = "NewRank")]
-        private ClanRank m_new;
-        [DataMember(Name = "MemberResponsible")]
-        private ClanMember m_changer; 
-        #endregion
+        [DataMember(Name = "MemberName")]
+        private string m_memberName;
+        [DataMember(Name = "Status")]
+        private ClanRankChangeStatus m_status;
 
         /// <summary>
-        /// Creates a new instance of <see>ClanRankChangeEventArgs</see>.
+        /// Creates a new <see>ClanRankChangeEventArgs</see>.
         /// </summary>
-        /// <param name="oldRank">The previous rank.</param>
-        /// <param name="newRank">The new rank.</param>
-        /// <param name="memberWhoChangedTheRank">The member who was responsible for the rank change.</param>
-        public ClanRankChangeEventArgs(ClanRank oldRank, ClanRank newRank, ClanMember memberWhoChangedTheRank)
+        /// <param name="memberName">The name of the target user.</param>
+        /// <param name="status">The result of the change request.</param>
+        public ClanRankChangeEventArgs(string memberName, ClanRankChangeStatus status)
         {
-            m_old = oldRank;
-            m_new = newRank;
-            m_changer = memberWhoChangedTheRank;
+            m_memberName = memberName;
+            m_status = status;
         }
 
         /// <summary>
-        /// Gets your previous clan rank.
+        /// Gets the name of the user whose rank was requested to be changed.
         /// </summary>
-        /// <remarks>
-        /// <para>When exposed under a WCF data contract, this property's backing store is given the name <c>PreviousRank</c>.</para>
-        /// </remarks>
-        public ClanRank PreviousRank
+        public string MemberName
         {
-            get { return m_old; }
+            get { return m_memberName; }
         }
 
         /// <summary>
-        /// Gets your new clan rank.
+        /// Gets the status of the change request.
         /// </summary>
-        /// <remarks>
-        /// <para>When exposed under a WCF data contract, this property's backing store is given the name <c>NewRank</c>.</para>
-        /// </remarks>
-        public ClanRank NewRank
+        public ClanRankChangeStatus Status
         {
-            get { return m_new; }
-        }
-
-        /// <summary>
-        /// Gets the <see>ClanMember</see> who changed the rank.
-        /// </summary>
-        /// <remarks>
-        /// <para>When exposed under a WCF data contract, this property's backing store is given the name <c>MemberResponsible</c>.</para>
-        /// </remarks>
-        public ClanMember MemberResponsible
-        {
-            get { return m_changer; }
+            get { return m_status; }
         }
     }
 
     /// <summary>
-    /// Specifies the contract for when handlers want to take care of the event in which the client's clan rank has changed.
+    /// Specifies the contract for handlers wishing to listen for clan rank change response events.
     /// </summary>
-    /// <param name="sender">The <see>BattleNetClient</see> that originated the event.</param>
+    /// <param name="sender">The object that originated the event.</param>
     /// <param name="e">The event arguments.</param>
     public delegate void ClanRankChangeEventHandler(object sender, ClanRankChangeEventArgs e);
 }

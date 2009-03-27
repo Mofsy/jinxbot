@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Runtime.Serialization;
+using System.Diagnostics;
 
 namespace BNSharp
 {
@@ -9,6 +10,7 @@ namespace BNSharp
     /// Provides the base information about a chat event.
     /// </summary>
     [DataContract]
+    [DebuggerDisplay("Type={EventType}")]
     public abstract class ChatEventArgs : BaseEventArgs
     {
         [DataMember(Name = "EventType")]

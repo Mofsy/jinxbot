@@ -114,10 +114,15 @@ namespace BNSharp.Plugins
         /// <param name="e">The event arguments.</param>
         void OnClanMessageOfTheDay(InformationEventArgs e);
         /// <summary>
-        /// Fires the <see cref="BattleNetClient.ClanRankChanged">ClanRankChanged</see> event.
+        /// Fires the <see cref="BattleNetClient.ClanMemberRankChanged">ClanMemberRankChanged</see> event.
         /// </summary>
         /// <param name="e">The event arguments.</param>
-        void OnClanRankChanged(ClanRankChangeEventArgs e);
+        void OnClanMemberRankChanged(ClanMemberRankChangeEventArgs e);
+        /// <summary>
+        /// Fires the <see cref="BattleNetClient.ClanRankChangeResponseReceived">ClanRankChangeResponseReceived</see> event.
+        /// </summary>
+        /// <param name="e"></param>
+        void OnClanRankChangeResponseReceived(ClanRankChangeEventArgs e);
         /// <summary>
         /// Fires the <see cref="BattleNetClient.ClanRemovalResponse">ClanRemovalResponse</see> event.
         /// </summary>
@@ -279,5 +284,11 @@ namespace BNSharp.Plugins
         /// </summary>
         /// <param name="e">The event arguments.</param>
         void OnProfileLookupFailed(ProfileLookupFailedEventArgs e);
+
+        /// <summary>
+        /// Fires the <see cref="BattleNetClient.AdChanged">AdChanged</see> event.
+        /// </summary>
+        /// <param name="e">The event arguments.</param>
+        void OnAdChanged(AdChangedEventArgs e);
     }
 }

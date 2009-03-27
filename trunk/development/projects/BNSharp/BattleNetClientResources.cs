@@ -9,6 +9,10 @@ namespace BNSharp
     /// <summary>
     /// Provides global resources preallocated for performance.
     /// </summary>
+    /// <remarks>
+    /// <para>When custom packet handlers are being used, if the next handler is null, the handler should free the packet (return it to the pool) 
+    /// by calling <c>BattleNetClientResources.IncomingBufferPool.FreeBuffer()</c> on the related packet.</para>
+    /// </remarks>
     public static class BattleNetClientResources
     {
         private static List<BattleNetClient> s_activeClients = new List<BattleNetClient>();

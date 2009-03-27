@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Runtime.Serialization;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace BNSharp
 {
@@ -17,6 +18,7 @@ namespace BNSharp
     /// Specifies the channel list event arguments.
     /// </summary>
     [DataContract]
+    [DebuggerDisplay("{m_list.Length} channel(s).")]
     public class ChannelListEventArgs : BaseEventArgs
     {
         #region fields

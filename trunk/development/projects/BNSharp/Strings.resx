@@ -120,6 +120,84 @@
   <data name="AccountDNECreating" xml:space="preserve">
     <value>The account '{0}' does not exist.  Attempting to create...</value>
   </data>
+  <data name="BnetClient_InviteUsersToNewClan_NullUser" xml:space="preserve">
+    <value>One or more names of users to invite is null.</value>
+  </data>
+  <data name="BnetClient_InviteUsersToNewClan_WrongUserCount" xml:space="preserve">
+    <value>Exactly 9 users may be invited to form a new clan.</value>
+  </data>
+  <data name="BnetClient_InviteUserToClan_NullUser" xml:space="preserve">
+    <value>Clan invitation user must not be null or zero-length.</value>
+  </data>
+  <data name="BnetClient_LoginAccountOld_ClientNotSupported_fmt" xml:space="preserve">
+    <value>Client '{0}' is not supported with old-style account login.</value>
+  </data>
+  <data name="BnetClient_Send_NotConnected" xml:space="preserve">
+    <value>The client must be connected in order to send a message.</value>
+  </data>
+  <data name="BnetClient_Send_TooLong" xml:space="preserve">
+    <value>Maximum text length is 223 characters.</value>
+  </data>
+  <data name="BnetClient_setCommandQueue_Connected" xml:space="preserve">
+    <value>Cannot change the command queue implementation while the client is connected.</value>
+  </data>
+  <data name="BnetClient_Validate_CdKey1Null" xml:space="preserve">
+    <value>IBattleNetSettings.CdKey1 contained a null or zero-length string.</value>
+  </data>
+  <data name="BnetClient_Validate_CdKey2Null" xml:space="preserve">
+    <value>IBattleNetSettings.CdKey2 contained a null or zero-length string, but the specified product requires two CD keys.</value>
+  </data>
+  <data name="BnetClient_Validate_ClientTypeCantConnect" xml:space="preserve">
+    <value>IBattleNetSettings.Client did not specify a client that could connect.  Valid values are STAR, SEXP, D2DV, D2XP, W2BN, WAR3, and W3XP.</value>
+  </data>
+  <data name="BnetClient_Validate_GameExeDNE" xml:space="preserve">
+    <value>IBattleNetSettings.GameExe did not point to a valid file.</value>
+  </data>
+  <data name="BnetClient_Validate_GameFile2DNE" xml:space="preserve">
+    <value>IBattleNetSettings.GameFile2 did not point to a valid file.</value>
+  </data>
+  <data name="BnetClient_Validate_GameFile3DNE" xml:space="preserve">
+    <value>IBattleNetSettings.GameFile3 did not point to a valid file.</value>
+  </data>
+  <data name="BnetClient_Validate_GameImageFileDNE" xml:space="preserve">
+    <value>IBattleNetSettings.ImageFile did not point to a valid file, but the selected product uses the Lockdown method of versioning.</value>
+  </data>
+  <data name="BnetClient_Validate_InvalidClientType" xml:space="preserve">
+    <value>IBattleNetSettings.Client was not valid because it did not specify a valid client type.</value>
+  </data>
+  <data name="BnetClient_Validate_PasswordNull" xml:space="preserve">
+    <value>IBattleNetSettings.Password was null or zero-length.</value>
+  </data>
+  <data name="BnetClient_Validate_PingTypeInvalid" xml:space="preserve">
+    <value>IBattleNetSettings.PingType was not a valid enumeration member for the PingType enumeration.</value>
+  </data>
+  <data name="BnetClient_Validate_UsernameNull" xml:space="preserve">
+    <value>IBattleNetSettings.Username was null or zero-length.</value>
+  </data>
+  <data name="ChannelFlags_GloballyAccessibleChannel" xml:space="preserve">
+    <value>a globally-accessible channel</value>
+  </data>
+  <data name="ChannelFlags_ModeratedChannel" xml:space="preserve">
+    <value>a moderated channel</value>
+  </data>
+  <data name="ChannelFlags_None" xml:space="preserve">
+    <value>a private channel</value>
+  </data>
+  <data name="ChannelFlags_ProductSpecificChannel" xml:space="preserve">
+    <value>a product-specific channel</value>
+  </data>
+  <data name="ChannelFlags_PublicChannel" xml:space="preserve">
+    <value>a public channel</value>
+  </data>
+  <data name="ChannelFlags_RestrictedChannel" xml:space="preserve">
+    <value>a restricted channel</value>
+  </data>
+  <data name="ChannelFlags_SilentChannel" xml:space="preserve">
+    <value>a silent channel</value>
+  </data>
+  <data name="ChannelFlags_SystemChannel" xml:space="preserve">
+    <value>a system channel</value>
+  </data>
   <data name="InvalidPacketSizeFromBnet" xml:space="preserve">
     <value>Battle.net specified an invalid packet size.</value>
   </data>
@@ -164,6 +242,30 @@
   </data>
   <data name="NameCreateSuccess" xml:space="preserve">
     <value>Successfully created account name '{0}'.  Logging in...</value>
+  </data>
+  <data name="param_channelName" xml:space="preserve">
+    <value>channelName</value>
+  </data>
+  <data name="param_clanName" xml:space="preserve">
+    <value>clanName</value>
+  </data>
+  <data name="param_clanTag" xml:space="preserve">
+    <value>clanTag</value>
+  </data>
+  <data name="param_memberToRemove" xml:space="preserve">
+    <value>memberToRemove</value>
+  </data>
+  <data name="param_newChieftanName" xml:space="preserve">
+    <value>newChieftanName</value>
+  </data>
+  <data name="param_text" xml:space="preserve">
+    <value>text</value>
+  </data>
+  <data name="param_usersToInvite" xml:space="preserve">
+    <value>usersToInvite</value>
+  </data>
+  <data name="param_userToInvite" xml:space="preserve">
+    <value>userToInvite</value>
   </data>
   <data name="ProdCHAT" xml:space="preserve">
     <value>Chat client</value>
@@ -221,5 +323,17 @@
   </data>
   <data name="War3ServerValidationFailed" xml:space="preserve">
     <value>The Warcraft 3 server validation check failed.  You may not be connecting to a legitimate Battle.net server.</value>
+  </data>
+  <data name="param_newRank" xml:space="preserve">
+    <value>newRank</value>
+  </data>
+  <data name="param_name" xml:space="preserve">
+    <value>name</value>
+  </data>
+  <data name="ConnectionBase_Connect_ConnectFailed_fmt" xml:space="preserve">
+    <value>The connection was unable to complete a connection to {0}:{1} ({2}).  More information is available in the exception.</value>
+  </data>
+  <data name="ConnectionBase_Connect_ResolveFailed_fmt" xml:space="preserve">
+    <value>Your computer was unable to resolve hostname {0}.  If necessary, add an entry to %SystemRoot%\system32\drivers\etc\hosts, or flush your DNS resolver cache, and try again.</value>
   </data>
 </root>

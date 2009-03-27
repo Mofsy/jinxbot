@@ -24,6 +24,11 @@ namespace BNSharp.BattleNet
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
     public partial class BattleNetClient : ThinProxiedConnectionBase
     {
+        const string PLATFORM_TYPE = "IX86";
+        const string EMOTE_1 = "/me ";
+        const string EMOTE_2 = "/emote ";
+        const string COMMAND_START = "/";
+
         #region partial methods that exist in the other partial files
         partial void InitializeListenState();
         partial void InitializeParseDictionaries();
@@ -72,29 +77,29 @@ namespace BNSharp.BattleNet
         private static void ValidateSettings(IBattleNetSettings settings)
         {
             if (!File.Exists(settings.GameExe))
-                throw new FileNotFoundException("IBattleNetSettings.GameExe did not point to a valid file.");
+                throw new FileNotFoundException(Strings.BnetClient_Validate_GameExeDNE);
             if (!File.Exists(settings.GameFile2))
-                throw new FileNotFoundException("IBattleNetSettings.GameFile2 did not point to a valid file.");
+                throw new FileNotFoundException(Strings.BnetClient_Validate_GameFile2DNE);
             if (!File.Exists(settings.GameFile3))
-                throw new FileNotFoundException("IBattleNetSettings.GameFile3 did not point to a valid file.");
+                throw new FileNotFoundException(Strings.BnetClient_Validate_GameFile3DNE);
             if (string.IsNullOrEmpty(settings.Username))
-                throw new ConfigurationErrorsException("IBattleNetSettings.Username was null or zero-length.");
+                throw new ConfigurationErrorsException(Strings.BnetClient_Validate_UsernameNull);
             if (string.IsNullOrEmpty(settings.Password))
-                throw new ConfigurationErrorsException("IBattleNetSettings.Password was null or zero-length.");
+                throw new ConfigurationErrorsException(Strings.BnetClient_Validate_PasswordNull);
             if (!Enum.IsDefined(typeof(PingType), settings.PingMethod))
-                throw new ConfigurationErrorsException("IBattleNetSettings.PingType was not a valid enumeration member for the PingType enumeration.");
+                throw new ConfigurationErrorsException(Strings.BnetClient_Validate_PingTypeInvalid);
 
             Product productToUse = Product.GetByProductCode(settings.Client);
             if (productToUse == null)
-                throw new ConfigurationErrorsException("IBattleNetSettings.Client was not valid because it did not specify a valid client type.");
+                throw new ConfigurationErrorsException(Strings.BnetClient_Validate_InvalidClientType);
             if (!productToUse.CanConnect)
-                throw new ConfigurationErrorsException("IBattleNetSettings.Client did not specify a client that could connect.  Valid values are STAR, SEXP, D2DV, D2XP, W2BN, WAR3, and W3XP.");
+                throw new ConfigurationErrorsException(Strings.BnetClient_Validate_ClientTypeCantConnect);
             if (string.IsNullOrEmpty(settings.CdKey1))
-                throw new ConfigurationErrorsException("IBattleNetSettings.CdKey1 contained a null or zero-length string.");
+                throw new ConfigurationErrorsException(Strings.BnetClient_Validate_CdKey1Null);
             if (productToUse.NeedsTwoKeys && string.IsNullOrEmpty(settings.CdKey2))
-                throw new ConfigurationErrorsException("IBattleNetSettings.CdKey2 contained a null or zero-length string, but the specified product requires two CD keys.");
+                throw new ConfigurationErrorsException(Strings.BnetClient_Validate_CdKey2Null);
             if (productToUse.NeedsLockdown && !File.Exists(settings.ImageFile))
-                throw new FileNotFoundException("IBattleNetSettings.ImageFile did not point to a valid file, but the selected product uses the Lockdown method of versioning.");
+                throw new FileNotFoundException(Strings.BnetClient_Validate_GameImageFileDNE);
 
         }
         #endregion
@@ -138,7 +143,7 @@ namespace BNSharp.BattleNet
 
                 BncsPacket pck = new BncsPacket((byte)BncsPacketId.AuthInfo);
                 pck.Insert(0);
-                pck.InsertDwordString("IX86"); // platform
+                pck.InsertDwordString(PLATFORM_TYPE); // platform
                 pck.InsertDwordString(m_settings.Client); // product
                 pck.InsertInt32(m_settings.VersionByte); // verbyte
                 pck.InsertDwordString(string.Concat(ci.TwoLetterISOLanguageName, ri.TwoLetterISORegionName));
@@ -212,6 +217,12 @@ namespace BNSharp.BattleNet
                     m_tmr = null;
                 }
 
+                if (m_adTmr != null)
+                {
+                    m_adTmr.Dispose();
+                    m_adTmr = null;
+                }
+
                 CloseEventThreads();
             }
         }
@@ -225,11 +236,11 @@ namespace BNSharp.BattleNet
                 BncsPacket pck = new BncsPacket((byte)BncsPacketId.ChatCommand);
                 pck.InsertCString(text, Encoding.UTF8);
                 Send(pck);
-                if (text.StartsWith("/me ", StringComparison.OrdinalIgnoreCase) || text.StartsWith("/emote ", StringComparison.OrdinalIgnoreCase))
+                if (text.StartsWith(EMOTE_1, StringComparison.OrdinalIgnoreCase) || text.StartsWith(EMOTE_2, StringComparison.OrdinalIgnoreCase))
                 {
                     // do nothing, but we need this case first so that command sent doesn't fire for emotes.
                 }
-                else if (text.StartsWith("/", StringComparison.Ordinal))
+                else if (text.StartsWith(COMMAND_START, StringComparison.Ordinal))
                 {
                     OnCommandSent(new InformationEventArgs(text));
                 }
@@ -252,10 +263,10 @@ namespace BNSharp.BattleNet
         public virtual void Send(string text, Priority priority)
         {
             if (string.IsNullOrEmpty(text))
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(Strings.param_text);
 
             if (text.Length > 223)
-                throw new ProtocolViolationException("Maximum text length is 223 characters.");
+                throw new ProtocolViolationException(Strings.BnetClient_Send_TooLong);
 
             if (IsConnected)
             {
@@ -263,7 +274,7 @@ namespace BNSharp.BattleNet
             }
             else
             {
-                throw new InvalidOperationException("The client must be connected in order to send a message.");
+                throw new InvalidOperationException(Strings.BnetClient_Send_NotConnected);
             }
         }
 
@@ -317,6 +328,53 @@ namespace BNSharp.BattleNet
             }
         }
 
+        /// <summary>
+        /// Informs the server that an ad has been displayed.  This should be sent whenever an ad 
+        /// is updated on the client.
+        /// </summary>
+        /// <param name="adID">The ID of the ad assigned by the server.</param>
+        public virtual void DisplayAd(int adID)
+        {
+            BncsPacket pck = new BncsPacket((byte)BncsPacketId.DisplayAd);
+            pck.InsertDwordString(PLATFORM_TYPE);
+            pck.InsertDwordString(Settings.Client);
+            pck.InsertInt32(adID);
+            pck.InsertInt16(0); // NULL strings for filename and URL.
+
+            Send(pck);
+        }
+
+        /// <summary>
+        /// Informs the server that an ad has been clicked.
+        /// </summary>
+        /// <param name="adID">The ID of the ad assigned by the server.</param>
+        public virtual void ClickAd(int adID)
+        {
+            BncsPacket pck = new BncsPacket((byte)BncsPacketId.ClickAd);
+            pck.InsertInt32(adID);
+            pck.InsertInt32(1); // non-SID_QUERYADURL request
+
+            Send(pck);
+        }
+
+        /// <summary>
+        /// Sends a binary channel join command.
+        /// </summary>
+        /// <param name="channelName">The name of the channel to join.</param>
+        /// <param name="method">The specific way by which to join.  This should typically be 
+        /// set to <see cref="JoinMethod">JoinMethod.NoCreate</see>.</param>
+        public virtual void JoinChannel(string channelName, JoinMethod method)
+        {
+            if (string.IsNullOrEmpty(channelName))
+                throw new ArgumentNullException(Strings.param_channelName);
+
+            BncsPacket pck = new BncsPacket((byte)BncsPacketId.JoinChannel);
+            pck.InsertInt32((int)method);
+            pck.InsertCString(channelName);
+
+            Send(pck);
+        }
+
         #region helpers
         private void LoginAccountOld()
         {
@@ -347,7 +405,7 @@ namespace BNSharp.BattleNet
                     break;
 
                 default:
-                    throw new NotSupportedException(string.Format(CultureInfo.InvariantCulture, "Client '{0}' is not supported with old-style account login.", m_settings.Client));
+                    throw new NotSupportedException(string.Format(CultureInfo.InvariantCulture, Strings.BnetClient_LoginAccountOld_ClientNotSupported_fmt, m_settings.Client));
             }
         }
 
@@ -402,7 +460,7 @@ namespace BNSharp.BattleNet
             set
             {
                 if (IsConnected)
-                    throw new InvalidOperationException("Cannot change the command queue implementation while the client is connected.");
+                    throw new InvalidOperationException(Strings.BnetClient_setCommandQueue_Connected);
 
                 m_queue.Clear();
                 if (value == null)
