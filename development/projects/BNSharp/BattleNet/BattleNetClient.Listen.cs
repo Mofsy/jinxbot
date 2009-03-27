@@ -23,11 +23,12 @@ namespace BNSharp.BattleNet
 {
     partial class BattleNetClient
     {
+        private int m_lastAd;
         private PriorityQueue<ParseData> m_packetQueue;
         private Thread m_listener, m_parser;
         private EventWaitHandle m_parseWait;
         private Dictionary<BncsPacketId, Priority> m_packetToPriorityMap;
-        private Tmr m_tmr;
+        private Tmr m_tmr, m_adTmr;
         private Dictionary<BncsPacketId, ParseCallback> m_packetToParserMap;
         
 
@@ -40,6 +41,7 @@ namespace BNSharp.BattleNet
                 { BncsPacketId.EnterChat, HandleEnterChat },
                 { BncsPacketId.GetChannelList, HandleGetChannelList },
                 { BncsPacketId.ChatEvent, HandleChatEvent },
+                { BncsPacketId.CheckAd, HandleCheckAd },
                 { BncsPacketId.Ping, HandlePing },
                 { BncsPacketId.ReadUserData, HandleUserProfileRequest },
                 { BncsPacketId.LogonResponse, HandleLogonResponse },
@@ -76,7 +78,7 @@ namespace BNSharp.BattleNet
                 { BncsPacketId.ClanMemberList, HandleClanMemberList },
                 { BncsPacketId.ClanMemberRemoved, HandleClanMemberRemoved },
                 { BncsPacketId.ClanMemberStatusChanged, HandleClanMemberStatusChanged },
-                { BncsPacketId.ClanMemberRankChange, HandleClanRankChange },
+                { BncsPacketId.ClanMemberRankChange, HandleClanMemberRankChange },
                 { BncsPacketId.ClanMemberInformation, HandleClanMemberInformation }
             };
         }
@@ -228,6 +230,7 @@ namespace BNSharp.BattleNet
 
         private void ResetConnectionState()
         {
+            m_adTmr.Stop();
             m_tmr.Stop();
 
             m_news.Clear();
@@ -291,6 +294,23 @@ namespace BNSharp.BattleNet
 
                 RequestChannelList();
             }
+        }
+
+        private void HandleCheckAd(ParseData data)
+        {
+            DataReader dr = new DataReader(data.Data);
+            int adID = dr.ReadInt32();
+            dr.Seek(4); // extension
+            long filetime = dr.ReadInt64();
+            DateTime ft = DateTime.FromFileTimeUtc(filetime);
+            string filename = dr.ReadCString(Encoding.ASCII);
+            string link = dr.ReadCString(Encoding.ASCII);
+
+            AdChangedEventArgs args = new AdChangedEventArgs(adID, ft, filename, link);
+            m_lastAd = adID;
+            OnAdChanged(args);
+
+            BattleNetClientResources.IncomingBufferPool.FreeBuffer(data.Data);
         }
 
         private void HandleGetChannelList(ParseData data)
@@ -1104,9 +1124,24 @@ namespace BNSharp.BattleNet
             m_tmr.AutoReset = true;
             m_tmr.Elapsed += new System.Timers.ElapsedEventHandler(SendSidNull);
 
+            m_adTmr = new System.Timers.Timer(15000.0);
+            m_adTmr.AutoReset = true;
+            m_adTmr.Elapsed += new System.Timers.ElapsedEventHandler(SendAdCheck);
+
             m_news = new List<NewsEntry>();
 
             m_warcraftProfileRequests = new Dictionary<int, WarcraftProfileEventArgs>();
+        }
+
+        void SendAdCheck(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            BncsPacket pck = new BncsPacket((byte)BncsPacketId.CheckAd);
+            pck.InsertDwordString("IX86");
+            pck.InsertDwordString(Settings.Client);
+            pck.InsertInt32(m_lastAd);
+            pck.InsertInt32(m_lastAd + 1);
+
+            Send(pck);
         }
 
         void SendSidNull(object sender, System.Timers.ElapsedEventArgs e)
@@ -1150,6 +1185,8 @@ namespace BNSharp.BattleNet
         {
             m_parser.Abort();
             m_listener.Abort();
+            m_tmr.Stop();
+            m_adTmr.Stop();
         }
 
         private void StartListening()

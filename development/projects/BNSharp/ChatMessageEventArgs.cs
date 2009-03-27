@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Runtime.Serialization;
+using System.Diagnostics;
 
 namespace BNSharp
 {
@@ -16,6 +17,7 @@ namespace BNSharp
     /// Represents the event information associated with a chat event with a given user and communication.
     /// </summary>
     [DataContract]
+    [DebuggerDisplay("Type={EventType}, User={Username}, \"{Text}\"")]
     public class ChatMessageEventArgs : ChatEventArgs
     {
         #region fields

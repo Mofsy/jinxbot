@@ -84,9 +84,14 @@ namespace BNSharp.BattleNet
                 m_host.OnClanMessageOfTheDay(e);
             }
 
-            public void OnClanRankChanged(BNSharp.BattleNet.Clans.ClanRankChangeEventArgs e)
+            public void OnClanMemberRankChanged(ClanMemberRankChangeEventArgs e)
             {
-                m_host.OnClanRankChanged(e);
+                m_host.OnClanMemberRankChanged(e);
+            }
+
+            public void OnClanRankChangeResponseReceived(ClanRankChangeEventArgs e)
+            {
+                m_host.OnClanRankChangeResponseReceived(e);
             }
 
             public void OnClientCheckFailed(ClientCheckFailedEventArgs e)
@@ -282,6 +287,11 @@ namespace BNSharp.BattleNet
             public void OnProfileLookupFailed(ProfileLookupFailedEventArgs e)
             {
                 m_host.OnProfileLookupFailed(e);
+            }
+
+            public void OnAdChanged(AdChangedEventArgs e)
+            {
+                m_host.OnAdChanged(e);
             }
 
             #endregion

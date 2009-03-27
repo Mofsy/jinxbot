@@ -44,8 +44,8 @@ namespace BNSharp.BattleNet.Stats
         public WarcraftClanLadderRecord(WarcraftClanLadderType teamType, int wins, int losses,
             int level, int hoursUntilExperienceDecay, int totalExperience, int rank)
         {
-            if (!Enum.IsDefined(typeof(WarcraftLadderType), teamType))
-                throw new InvalidEnumArgumentException("teamType", (int)teamType, typeof(WarcraftLadderType));
+            if (!Enum.IsDefined(typeof(WarcraftClanLadderType), teamType))
+                throw new InvalidEnumArgumentException("teamType", (int)teamType, typeof(WarcraftClanLadderType));
             m_type = teamType;
 
             if (wins < 0)

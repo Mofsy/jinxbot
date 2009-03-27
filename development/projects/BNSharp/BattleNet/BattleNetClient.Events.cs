@@ -4624,6 +4624,162 @@ namespace BNSharp.BattleNet
                 FreeArgumentResources(e as BaseEventArgs);
             }
         }
+
+        #region AdChanged event
+        [NonSerialized]
+        private Dictionary<Priority, List<AdChangedEventHandler>> __AdChanged = new Dictionary<Priority, List<AdChangedEventHandler>>(3)
+        {
+            { Priority.High, new List<AdChangedEventHandler>() },
+            { Priority.Normal, new List<AdChangedEventHandler>() },
+            { Priority.Low, new List<AdChangedEventHandler>() }
+        };
+        /// <summary>
+        /// Informs listeners that an advertisement has changed.
+        /// </summary>
+        /// <remarks>
+        /// <para>Registering for this event with this member will register with <see cref="Priority">Normal priority</see>.  To register for 
+        /// <see cref="Priority">High</see> or <see cref="Priority">Low</see> priority, use the <see>RegisterAdChangedNotification</see> and
+        /// <see>UnregisterAdChangedNotification</see> methods.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        /// </remarks>
+        public event AdChangedEventHandler AdChanged
+        {
+            add
+            {
+                lock (__AdChanged)
+                {
+                    if (!__AdChanged.ContainsKey(Priority.Normal))
+                    {
+                        __AdChanged.Add(Priority.Normal, new List<AdChangedEventHandler>());
+                    }
+                }
+                __AdChanged[Priority.Normal].Add(value);
+            }
+            remove
+            {
+                if (__AdChanged.ContainsKey(Priority.Normal))
+                {
+                    __AdChanged[Priority.Normal].Remove(value);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Registers for notification of the <see>AdChanged</see> event at the specified priority.
+        /// </summary>
+        /// <remarks>
+        /// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
+        /// normal syntax to register for events at <see cref="Priority">Normal priority</see>, so no special registration is needed; this is 
+        /// accessed through normal event handling syntax (the += syntax in C#, or the <see langword="Handles" lang="VB" /> in Visual Basic.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        ///	<para>To be well-behaved within JinxBot, plugins should always unregister themselves when they are being unloaded or when they 
+        /// otherwise need to do so.  Plugins may opt-in to a Reflection-based event handling registration system which uses attributes to 
+        /// mark methods that should be used as event handlers.</para>
+        /// </remarks>
+        /// <param name="p">The priority at which to register.</param>
+        /// <param name="callback">The event handler that should be registered for this event.</param>
+        /// <seealso cref="AdChanged" />
+        /// <seealso cref="UnregisterAdChangedNotification" />
+        public void RegisterAdChangedNotification(Priority p, AdChangedEventHandler callback)
+        {
+            lock (__AdChanged)
+            {
+                if (!__AdChanged.ContainsKey(p))
+                {
+                    __AdChanged.Add(p, new List<AdChangedEventHandler>());
+                }
+            }
+            __AdChanged[p].Add(callback);
+        }
+
+        /// <summary>
+        /// Unregisters for notification of the <see>AdChanged</see> event at the specified priority.
+        /// </summary>
+        /// <remarks>
+        /// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
+        /// normal syntax to register for events at <see cref="Priority">Normal priority</see>, so no special registration is needed; this is 
+        /// accessed through normal event handling syntax (the += syntax in C#, or the <see langword="Handles" lang="VB" /> in Visual Basic.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        ///	<para>To be well-behaved within JinxBot, plugins should always unregister themselves when they are being unloaded or when they 
+        /// otherwise need to do so.  Plugins may opt-in to a Reflection-based event handling registration system which uses attributes to 
+        /// mark methods that should be used as event handlers.</para>
+        /// </remarks>
+        /// <param name="p">The priority from which to unregister.</param>
+        /// <param name="callback">The event handler that should be unregistered for this event.</param>
+        /// <seealso cref="AdChanged" />
+        /// <seealso cref="RegisterAdChangedNotification" />
+        public void UnregisterAdChangedNotification(Priority p, AdChangedEventHandler callback)
+        {
+            if (__AdChanged.ContainsKey(p))
+            {
+                __AdChanged[p].Remove(callback);
+            }
+        }
+
+        /// <summary>
+        /// Raises the AdChanged event.
+        /// </summary>
+        /// <remarks>
+        /// <para>Only high-priority events are invoked immediately; others are deferred.  For more information, see <see>AdChanged</see>.</para>
+        /// </remarks>
+        /// <param name="e">The event arguments.</param>
+        /// <seealso cref="AdChanged" />
+        protected virtual void OnAdChanged(AdChangedEventArgs e)
+        {
+            __InvokeAdChanged(Priority.High, e);
+        }
+
+        private void __InvokeAdChanged(Priority p, AdChangedEventArgs e)
+        {
+            foreach (AdChangedEventHandler eh in __AdChanged[p])
+            {
+                try
+                {
+                    eh(this, e);
+                }
+                catch (Exception ex)
+                {
+                    ReportException(
+                        ex,
+                        new KeyValuePair<string, object>("delegate", eh),
+                        new KeyValuePair<string, object>("Event", "AdChanged"),
+                        new KeyValuePair<string, object>("param: priority", p),
+                        new KeyValuePair<string, object>("param: this", this),
+                        new KeyValuePair<string, object>("param: e", e)
+                        );
+                }
+            }
+
+            if (p == Priority.High)
+            {
+                e_medPriorityEvents.Enqueue(new InvokeHelper<AdChangedEventArgs> { Arguments = e, Target = new Invokee<AdChangedEventArgs>(__InvokeAdChanged) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<AdChangedEventArgs> { Arguments = e, Target = new Invokee<AdChangedEventArgs>(__InvokeAdChanged) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
+        }
+
+        
+        #endregion
+		
         #endregion
 
         #region WardenUnhandled event
@@ -5727,51 +5883,51 @@ namespace BNSharp.BattleNet
         }
         #endregion
 
-        #region ClanRankChanged event
+        #region ClanMemberRankChanged event
         [NonSerialized]
-        private Dictionary<Priority, List<ClanRankChangeEventHandler>> __ClanRankChanged = new Dictionary<Priority, List<ClanRankChangeEventHandler>>(3)
+        private Dictionary<Priority, List<ClanMemberRankChangeEventHandler>> __ClanMemberRankChanged = new Dictionary<Priority, List<ClanMemberRankChangeEventHandler>>(3)
         {
-            { Priority.High, new List<ClanRankChangeEventHandler>() },
-            { Priority.Normal, new List<ClanRankChangeEventHandler>() },
-            { Priority.Low, new List<ClanRankChangeEventHandler>() }
+            { Priority.High, new List<ClanMemberRankChangeEventHandler>() },
+            { Priority.Normal, new List<ClanMemberRankChangeEventHandler>() },
+            { Priority.Low, new List<ClanMemberRankChangeEventHandler>() }
         };
         /// <summary>
         /// Informs listeners that the client's user's clan rank has changed.
         /// </summary>
         /// <remarks>
         /// <para>Registering for this event with this member will register with <see cref="Priority">Normal priority</see>.  To register for 
-        /// <see cref="Priority">High</see> or <see cref="Priority">Low</see> priority, use the <see>RegisterClanRankChangedNotification</see> and
-        /// <see>UnregisterClanRankChangedNotification</see> methods.</para>
+        /// <see cref="Priority">High</see> or <see cref="Priority">Low</see> priority, use the <see>RegisterClanMemberRankChangedNotification</see> and
+        /// <see>UnregisterClanMemberRankChangedNotification</see> methods.</para>
         /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
         /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
         /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
         /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
         /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
         /// </remarks>
-        public event ClanRankChangeEventHandler ClanRankChanged
+        public event ClanMemberRankChangeEventHandler ClanMemberRankChanged
         {
             add
             {
-                lock (__ClanRankChanged)
+                lock (__ClanMemberRankChanged)
                 {
-                    if (!__ClanRankChanged.ContainsKey(Priority.Normal))
+                    if (!__ClanMemberRankChanged.ContainsKey(Priority.Normal))
                     {
-                        __ClanRankChanged.Add(Priority.Normal, new List<ClanRankChangeEventHandler>());
+                        __ClanMemberRankChanged.Add(Priority.Normal, new List<ClanMemberRankChangeEventHandler>());
                     }
                 }
-                __ClanRankChanged[Priority.Normal].Add(value);
+                __ClanMemberRankChanged[Priority.Normal].Add(value);
             }
             remove
             {
-                if (__ClanRankChanged.ContainsKey(Priority.Normal))
+                if (__ClanMemberRankChanged.ContainsKey(Priority.Normal))
                 {
-                    __ClanRankChanged[Priority.Normal].Remove(value);
+                    __ClanMemberRankChanged[Priority.Normal].Remove(value);
                 }
             }
         }
 
         /// <summary>
-        /// Registers for notification of the <see>ClanRankChanged</see> event at the specified priority.
+        /// Registers for notification of the <see>ClanMemberRankChanged</see> event at the specified priority.
         /// </summary>
         /// <remarks>
         /// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
@@ -5788,22 +5944,22 @@ namespace BNSharp.BattleNet
         /// </remarks>
         /// <param name="p">The priority at which to register.</param>
         /// <param name="callback">The event handler that should be registered for this event.</param>
-        /// <seealso cref="ClanRankChanged" />
-        /// <seealso cref="UnregisterClanRankChangedNotification" />
-        public void RegisterClanRankChangedNotification(Priority p, ClanRankChangeEventHandler callback)
+        /// <seealso cref="ClanMemberRankChanged" />
+        /// <seealso cref="UnregisterClanMemberRankChangedNotification" />
+        public void RegisterClanMemberRankChangedNotification(Priority p, ClanMemberRankChangeEventHandler callback)
         {
-            lock (__ClanRankChanged)
+            lock (__ClanMemberRankChanged)
             {
-                if (!__ClanRankChanged.ContainsKey(p))
+                if (!__ClanMemberRankChanged.ContainsKey(p))
                 {
-                    __ClanRankChanged.Add(p, new List<ClanRankChangeEventHandler>());
+                    __ClanMemberRankChanged.Add(p, new List<ClanMemberRankChangeEventHandler>());
                 }
             }
-            __ClanRankChanged[p].Add(callback);
+            __ClanMemberRankChanged[p].Add(callback);
         }
 
         /// <summary>
-        /// Unregisters for notification of the <see>ClanRankChanged</see> event at the specified priority.
+        /// Unregisters for notification of the <see>ClanMemberRankChanged</see> event at the specified priority.
         /// </summary>
         /// <remarks>
         /// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
@@ -5820,32 +5976,32 @@ namespace BNSharp.BattleNet
         /// </remarks>
         /// <param name="p">The priority from which to unregister.</param>
         /// <param name="callback">The event handler that should be unregistered for this event.</param>
-        /// <seealso cref="ClanRankChanged" />
-        /// <seealso cref="RegisterClanRankChangedNotification" />
-        public void UnregisterClanRankChangedNotification(Priority p, ClanRankChangeEventHandler callback)
+        /// <seealso cref="ClanMemberRankChanged" />
+        /// <seealso cref="RegisterClanMemberRankChangedNotification" />
+        public void UnregisterClanMemberRankChangedNotification(Priority p, ClanMemberRankChangeEventHandler callback)
         {
-            if (__ClanRankChanged.ContainsKey(p))
+            if (__ClanMemberRankChanged.ContainsKey(p))
             {
-                __ClanRankChanged[p].Remove(callback);
+                __ClanMemberRankChanged[p].Remove(callback);
             }
         }
 
         /// <summary>
-        /// Raises the ClanRankChanged event.
+        /// Raises the ClanMemberRankChanged event.
         /// </summary>
         /// <remarks>
-        /// <para>Only high-priority events are invoked immediately; others are deferred.  For more information, see <see>ClanRankChanged</see>.</para>
+        /// <para>Only high-priority events are invoked immediately; others are deferred.  For more information, see <see>ClanMemberRankChanged</see>.</para>
         /// </remarks>
         /// <param name="e">The event arguments.</param>
-        /// <seealso cref="ClanRankChanged" />
-        protected virtual void OnClanRankChanged(ClanRankChangeEventArgs e)
+        /// <seealso cref="ClanMemberRankChanged" />
+        protected virtual void OnClanMemberRankChanged(ClanMemberRankChangeEventArgs e)
         {
-            __InvokeClanRankChanged(Priority.High, e);
+            __InvokeClanMemberRankChanged(Priority.High, e);
         }
 
-        private void __InvokeClanRankChanged(Priority p, ClanRankChangeEventArgs e)
+        private void __InvokeClanMemberRankChanged(Priority p, ClanMemberRankChangeEventArgs e)
         {
-            foreach (ClanRankChangeEventHandler eh in __ClanRankChanged[p])
+            foreach (ClanMemberRankChangeEventHandler eh in __ClanMemberRankChanged[p])
             {
                 try
                 {
@@ -5856,7 +6012,7 @@ namespace BNSharp.BattleNet
                     ReportException(
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
-                        new KeyValuePair<string, object>("Event", "ClanRankChanged"),
+                        new KeyValuePair<string, object>("Event", "ClanMemberRankChanged"),
                         new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
@@ -5866,12 +6022,12 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ClanRankChangeEventArgs> { Arguments = e, Target = new Invokee<ClanRankChangeEventArgs>(__InvokeClanRankChanged) });
+                e_medPriorityEvents.Enqueue(new InvokeHelper<ClanMemberRankChangeEventArgs> { Arguments = e, Target = new Invokee<ClanMemberRankChangeEventArgs>(__InvokeClanMemberRankChanged) });
                 e_medBlocker.Set();
             }
             else if (p == Priority.Normal)
             {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ClanRankChangeEventArgs> { Arguments = e, Target = new Invokee<ClanRankChangeEventArgs>(__InvokeClanRankChanged) });
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<ClanMemberRankChangeEventArgs> { Arguments = e, Target = new Invokee<ClanMemberRankChangeEventArgs>(__InvokeClanMemberRankChanged) });
             }
             else // if (p == Priority.Low)
             {
@@ -7409,6 +7565,160 @@ namespace BNSharp.BattleNet
             }
         }
         #endregion
+
+        #region ClanRankChangeResponseReceived event
+        [NonSerialized]
+        private Dictionary<Priority, List<ClanRankChangeEventHandler>> __ClanRankChangeResponseReceived = new Dictionary<Priority, List<ClanRankChangeEventHandler>>(3)
+        {
+            { Priority.High, new List<ClanRankChangeEventHandler>() },
+            { Priority.Normal, new List<ClanRankChangeEventHandler>() },
+            { Priority.Low, new List<ClanRankChangeEventHandler>() }
+        };
+        /// <summary>
+        /// Informs listeners that a request to change a user's rank has completed.
+        /// </summary>
+        /// <remarks>
+        /// <para>Registering for this event with this member will register with <see cref="Priority">Normal priority</see>.  To register for 
+        /// <see cref="Priority">High</see> or <see cref="Priority">Low</see> priority, use the <see>RegisterClanRankChangeResponseReceivedNotification</see> and
+        /// <see>UnregisterClanRankChangeResponseReceivedNotification</see> methods.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        /// </remarks>
+        public event ClanRankChangeEventHandler ClanRankChangeResponseReceived
+        {
+            add
+            {
+                lock (__ClanRankChangeResponseReceived)
+                {
+                    if (!__ClanRankChangeResponseReceived.ContainsKey(Priority.Normal))
+                    {
+                        __ClanRankChangeResponseReceived.Add(Priority.Normal, new List<ClanRankChangeEventHandler>());
+                    }
+                }
+                __ClanRankChangeResponseReceived[Priority.Normal].Add(value);
+            }
+            remove
+            {
+                if (__ClanRankChangeResponseReceived.ContainsKey(Priority.Normal))
+                {
+                    __ClanRankChangeResponseReceived[Priority.Normal].Remove(value);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Registers for notification of the <see>ClanRankChangeResponseReceived</see> event at the specified priority.
+        /// </summary>
+        /// <remarks>
+        /// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
+        /// normal syntax to register for events at <see cref="Priority">Normal priority</see>, so no special registration is needed; this is 
+        /// accessed through normal event handling syntax (the += syntax in C#, or the <see langword="Handles" lang="VB" /> in Visual Basic.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        ///	<para>To be well-behaved within JinxBot, plugins should always unregister themselves when they are being unloaded or when they 
+        /// otherwise need to do so.  Plugins may opt-in to a Reflection-based event handling registration system which uses attributes to 
+        /// mark methods that should be used as event handlers.</para>
+        /// </remarks>
+        /// <param name="p">The priority at which to register.</param>
+        /// <param name="callback">The event handler that should be registered for this event.</param>
+        /// <seealso cref="ClanRankChangeResponseReceived" />
+        /// <seealso cref="UnregisterClanRankChangeResponseReceivedNotification" />
+        public void RegisterClanRankChangeResponseReceivedNotification(Priority p, ClanRankChangeEventHandler callback)
+        {
+            lock (__ClanRankChangeResponseReceived)
+            {
+                if (!__ClanRankChangeResponseReceived.ContainsKey(p))
+                {
+                    __ClanRankChangeResponseReceived.Add(p, new List<ClanRankChangeEventHandler>());
+                }
+            }
+            __ClanRankChangeResponseReceived[p].Add(callback);
+        }
+
+        /// <summary>
+        /// Unregisters for notification of the <see>ClanRankChangeResponseReceived</see> event at the specified priority.
+        /// </summary>
+        /// <remarks>
+        /// <para>The event system in the JinxBot API supports normal event registration and prioritized event registration.  You can use
+        /// normal syntax to register for events at <see cref="Priority">Normal priority</see>, so no special registration is needed; this is 
+        /// accessed through normal event handling syntax (the += syntax in C#, or the <see langword="Handles" lang="VB" /> in Visual Basic.</para>
+        /// <para>Events in the JinxBot API are never guaranteed to be executed on the UI thread.  Events that affect the user interface should
+        /// be marshaled back to the UI thread by the event handling code.  Generally, high-priority event handlers are
+        /// raised on the thread that is parsing data from Battle.net, and lower-priority event handler are executed from the thread pool.</para>
+        /// <para>JinxBot guarantees that all event handlers will be fired regardless of exceptions raised in previous event handlers.  However, 
+        /// if a plugin repeatedly raises an exception, it may be forcefully unregistered from events.</para>
+        ///	<para>To be well-behaved within JinxBot, plugins should always unregister themselves when they are being unloaded or when they 
+        /// otherwise need to do so.  Plugins may opt-in to a Reflection-based event handling registration system which uses attributes to 
+        /// mark methods that should be used as event handlers.</para>
+        /// </remarks>
+        /// <param name="p">The priority from which to unregister.</param>
+        /// <param name="callback">The event handler that should be unregistered for this event.</param>
+        /// <seealso cref="ClanRankChangeResponseReceived" />
+        /// <seealso cref="RegisterClanRankChangeResponseReceivedNotification" />
+        public void UnregisterClanRankChangeResponseReceivedNotification(Priority p, ClanRankChangeEventHandler callback)
+        {
+            if (__ClanRankChangeResponseReceived.ContainsKey(p))
+            {
+                __ClanRankChangeResponseReceived[p].Remove(callback);
+            }
+        }
+
+        /// <summary>
+        /// Raises the ClanRankChangeResponseReceived event.
+        /// </summary>
+        /// <remarks>
+        /// <para>Only high-priority events are invoked immediately; others are deferred.  For more information, see <see>ClanRankChangeResponseReceived</see>.</para>
+        /// </remarks>
+        /// <param name="e">The event arguments.</param>
+        /// <seealso cref="ClanRankChangeResponseReceived" />
+        protected virtual void OnClanRankChangeResponseReceived(ClanRankChangeEventArgs e)
+        {
+            __InvokeClanRankChangeResponseReceived(Priority.High, e);
+        }
+
+        private void __InvokeClanRankChangeResponseReceived(Priority p, ClanRankChangeEventArgs e)
+        {
+            foreach (ClanRankChangeEventHandler eh in __ClanRankChangeResponseReceived[p])
+            {
+                try
+                {
+                    eh(this, e);
+                }
+                catch (Exception ex)
+                {
+                    ReportException(
+                        ex,
+                        new KeyValuePair<string, object>("delegate", eh),
+                        new KeyValuePair<string, object>("Event", "ClanRankChangeResponseReceived"),
+                        new KeyValuePair<string, object>("param: priority", p),
+                        new KeyValuePair<string, object>("param: this", this),
+                        new KeyValuePair<string, object>("param: e", e)
+                        );
+                }
+            }
+
+            if (p == Priority.High)
+            {
+                e_medPriorityEvents.Enqueue(new InvokeHelper<ClanRankChangeEventArgs> { Arguments = e, Target = new Invokee<ClanRankChangeEventArgs>(__InvokeClanRankChangeResponseReceived) });
+                e_medBlocker.Set();
+            }
+            else if (p == Priority.Normal)
+            {
+                e_lowPriorityEvents.Enqueue(new InvokeHelper<ClanRankChangeEventArgs> { Arguments = e, Target = new Invokee<ClanRankChangeEventArgs>(__InvokeClanRankChangeResponseReceived) });
+            }
+            else // if (p == Priority.Low)
+            {
+                FreeArgumentResources(e as BaseEventArgs);
+            }
+        }
+        #endregion
+		
 		
         #endregion
 

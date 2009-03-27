@@ -35,10 +35,16 @@ namespace BNSharp.Net
         /// </summary>
         /// <param name="server">The DNS name or IP address (as a string) of the server to look up.</param>
         /// <param name="port">The port number to which to connect.</param>
-        /// <returns>An <see>IPEndPoint</see> representing the server and port.</returns>
+        /// <returns>An <see>IPEndPoint</see> representing the server and port; or, if resolution failed, <see langword="null" />.</returns>
         protected virtual IPEndPoint ResolveEndpoint(string server, int port)
         {
-            return new IPEndPoint(Dns.GetHostEntry(server).AddressList[0], port);
+            IPAddress[] addresses = Dns.GetHostEntry(server).AddressList;
+            foreach (IPAddress addr in addresses)
+            {
+                if (addr.AddressFamily == AddressFamily.InterNetwork)
+                    return new IPEndPoint(addr, port);
+            }
+            return null;
         }
 
         /// <summary>
@@ -84,10 +90,12 @@ namespace BNSharp.Net
                 try
                 {
                     m_ipep = ResolveEndpoint(m_server, m_port);
+                    if (m_ipep == null)
+                        throw new SocketException();
                 }
                 catch (SocketException se)
                 {
-                    OnError(string.Format(CultureInfo.CurrentCulture, "Your computer was unable to resolve hostname {0}.  If necessary, add an entry to %SystemRoot%\\system32\\drivers\\etc\\hosts, or flush your DNS resolver cache, and try again.",
+                    OnError(string.Format(CultureInfo.CurrentCulture, Strings.ConnectionBase_Connect_ResolveFailed_fmt,
                         m_server), se);
                     return false;
                 }
@@ -103,7 +111,7 @@ namespace BNSharp.Net
             {
                 m_open = false;
                 OnError(string.Format(CultureInfo.CurrentCulture,
-                    "The connection was unable to complete a connection to {0}:{1} ({2}).  More information is available in the exception.",
+                    Strings.ConnectionBase_Connect_ConnectFailed_fmt,
                     m_server, m_port, m_ipep.Address.ToString()), se);
                 return false;
             }
