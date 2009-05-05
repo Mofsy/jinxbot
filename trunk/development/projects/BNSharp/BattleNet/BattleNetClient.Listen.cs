@@ -691,9 +691,9 @@ namespace BNSharp.BattleNet
 
                     if (!NLS.ValidateServerSignature(m_w3srv, RemoteEP.Address.GetAddressBytes()))
                     {
-                        OnError(new ErrorEventArgs(Strings.War3ServerValidationFailed, true));
-                        Close();
-                        return;
+                        OnError(new ErrorEventArgs(ErrorType.Warcraft3ServerValidationFailure, Strings.War3ServerValidationFailed, false));
+                        //Close();
+                        //return;
                     }
                 }
 
@@ -716,14 +716,14 @@ namespace BNSharp.BattleNet
                         if (!m_warden.InitWarden(BitConverter.ToInt32(key1Hash, 0)))
                         {
                             m_warden.UninitWarden();
-                            OnError(new ErrorEventArgs("The Warden module failed to initialize.  You will not be immediately disconnected; however, you may be disconnected after a short period of time.", false));
+                            OnError(new ErrorEventArgs(ErrorType.WardenModuleFailure, "The Warden module failed to initialize.  You will not be immediately disconnected; however, you may be disconnected after a short period of time.", false));
                             m_warden = null;
                         }
                     }
                     catch (Win32Exception we)
                     {
-                        OnError(new ErrorEventArgs("The Warden module failed to initialize.  You will not be immediately disconnected; however, you may be disconnected after a short period of time.", false));
-                        OnError(new ErrorEventArgs(string.Format(CultureInfo.CurrentCulture, "Additional information: {0}", we.Message), false));
+                        OnError(new ErrorEventArgs(ErrorType.WardenModuleFailure, "The Warden module failed to initialize.  You will not be immediately disconnected; however, you may be disconnected after a short period of time.", false));
+                        OnError(new ErrorEventArgs(ErrorType.WardenModuleFailure, string.Format(CultureInfo.CurrentCulture, "Additional information: {0}", we.Message), false));
                         m_warden.UninitWarden();
                         m_warden = null;
                     }
@@ -766,7 +766,7 @@ namespace BNSharp.BattleNet
             }
             catch (Exception ex)
             {
-                OnError(new ErrorEventArgs("There was an error while initializing your client.  Refer to the exception message for more information.\n" + ex.ToString(), true));
+                OnError(new ErrorEventArgs(ErrorType.General, "There was an error while initializing your client.  Refer to the exception message for more information.\n" + ex.ToString(), true));
                 Close();
             }
         }
@@ -903,13 +903,13 @@ namespace BNSharp.BattleNet
                 }
                 else if (status == 5)
                 {
-                    OnError(new ErrorEventArgs(Strings.UpgradeRequestedUnsupported, true));
+                    OnError(new ErrorEventArgs(ErrorType.AccountUpgradeUnsupported, Strings.UpgradeRequestedUnsupported, true));
                     Close();
                     return;
                 }
                 else
                 {
-                    OnError(new ErrorEventArgs(Strings.InvalidUsernameOrPassword, true));
+                    OnError(new ErrorEventArgs(ErrorType.InvalidUsernameOrPassword, Strings.InvalidUsernameOrPassword, true));
                     Close();
                     return;
                 }
@@ -933,7 +933,7 @@ namespace BNSharp.BattleNet
                     if (!m_nls.VerifyServerProof(m2))
                     {
                         //CloseWithError(BattleNet.LoginProofServerProofFailed);
-                        OnError(new ErrorEventArgs(Strings.LoginProofServerProofFailed, false));
+                        OnError(new ErrorEventArgs(ErrorType.LoginServerProofFailed, Strings.LoginProofServerProofFailed, false));
                         EnterChat();
                     }
                     else
@@ -944,12 +944,12 @@ namespace BNSharp.BattleNet
                     }
                     break;
                 case 2:
-                    CloseWithError(Strings.LoginProofClientProofFailed);
+                    CloseWithError(Strings.LoginProofClientProofFailed, ErrorType.InvalidUsernameOrPassword);
                     break;
                 case 14:
                     if (!m_nls.VerifyServerProof(m2))
                     {
-                        OnError(new ErrorEventArgs(Strings.LoginProofServerProofFailed, false));
+                        OnError(new ErrorEventArgs(ErrorType.LoginServerProofFailed, Strings.LoginProofServerProofFailed, false));
                         EnterChat();
                     }
                     else
@@ -960,7 +960,8 @@ namespace BNSharp.BattleNet
                     break;
                 case 15:
                     CloseWithError(
-                        string.Format(CultureInfo.CurrentCulture, Strings.LoginProofCustomError, dr.ReadCString())
+                        string.Format(CultureInfo.CurrentCulture, Strings.LoginProofCustomError, dr.ReadCString()),
+                        ErrorType.InvalidUsernameOrPassword
                     );
                     break;
             }
@@ -1168,9 +1169,17 @@ namespace BNSharp.BattleNet
         }
         #endregion
         #region shortcuts
+        [Obsolete("The CloseWithError(string) method is deprecated.  Use the CloseWithError(string, ErrorType) variant instead.", true)]
         private void CloseWithError(string p)
         {
-            OnError(new ErrorEventArgs(p, true));
+            throw new NotSupportedException();
+            //OnError(new ErrorEventArgs(p, true));
+            //Close();
+        }
+
+        private void CloseWithError(string message, ErrorType error)
+        {
+            OnError(new ErrorEventArgs(error, message, true));
             Close();
         }
         #endregion

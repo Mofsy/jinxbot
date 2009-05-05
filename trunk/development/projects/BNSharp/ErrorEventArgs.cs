@@ -19,6 +19,8 @@ namespace BNSharp
     public class ErrorEventArgs : BaseEventArgs
     {
         #region fields
+        [DataMember(Name = "Reason")]
+        private ErrorType m_reason;
         [DataMember(Name = "Error")]
         private string m_err;
         [DataMember(Name = "IsDisconnecting")]
@@ -28,12 +30,21 @@ namespace BNSharp
         /// <summary>
         /// Creates a new instance of <see>ErrorEventArgs</see>.
         /// </summary>
+        /// <param name="reason">The specific cause of the error message.</param>
         /// <param name="error">The error message.</param>
         /// <param name="disconnecting">Whether it is causing the client to disconnect.</param>
-        public ErrorEventArgs(string error, bool disconnecting)
+        public ErrorEventArgs(ErrorType reason, string error, bool disconnecting)
         {
             m_err = error;
             m_disc = disconnecting;
+        }
+
+        /// <summary>
+        /// Gets the programmatic reason for the error.
+        /// </summary>
+        public ErrorType Reason
+        {
+            get { return m_reason; }
         }
 
         /// <summary>
