@@ -21,5 +21,9 @@ namespace BNSharp.BattleNet
         /// Specifies that the connection should attempt to have a 0ms ping.
         /// </summary>
         ZeroMs,
+        /// <summary>
+        /// Specifies that the client should reply to the ping packet before beginning the version check.
+        /// </summary>
+        ReplyBeforeVersioning,
     }
 }
