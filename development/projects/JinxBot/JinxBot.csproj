@@ -22,6 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <CodeAnalysisRules>-Microsoft.Design#CA1057;-Microsoft.Design#CA1054;-Microsoft.Design#CA1056;-Microsoft.Design#CA1055</CodeAnalysisRules>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -83,12 +84,12 @@
     <Compile Include="MainWindow.Designer.cs">
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="Plugins\GlobalPluginManager.cs" />
     <Compile Include="Plugins\BNSharp\Socks4ProxyConnector.cs" />
     <Compile Include="Plugins\BNSharp\TimedMessageQueue.cs" />
     <Compile Include="Plugins\PluginFactory.cs" />
     <Compile Include="Plugins\PluginInfo.cs" />
     <Compile Include="Plugins\ProfilePluginManager.cs" />
+    <Compile Include="Plugins\WardenPacketHandler.cs" />
     <Compile Include="Reliability\GlobalErrorHandler.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -204,9 +205,15 @@
       <DependentUpon>ProfileDocument.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Views\Stats\ArrangedTeamDisplay.resx">
+      <DependentUpon>ArrangedTeamDisplay.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\Stats\RaceStatsDisplay.resx">
       <DependentUpon>RaceStatsDisplay.cs</DependentUpon>
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Stats\RecordDisplay.resx">
+      <DependentUpon>RecordDisplay.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Views\WarcraftProfileDisplayDocument.resx">
       <DependentUpon>WarcraftProfileDisplayDocument.cs</DependentUpon>
@@ -264,11 +271,23 @@
     <Compile Include="Views\ProfileDocument.Designer.cs">
       <DependentUpon>ProfileDocument.cs</DependentUpon>
     </Compile>
+    <Compile Include="Views\Stats\ArrangedTeamDisplay.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Stats\ArrangedTeamDisplay.Designer.cs">
+      <DependentUpon>ArrangedTeamDisplay.cs</DependentUpon>
+    </Compile>
     <Compile Include="Views\Stats\RaceStatsDisplay.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Views\Stats\RaceStatsDisplay.Designer.cs">
       <DependentUpon>RaceStatsDisplay.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Stats\RecordDisplay.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Stats\RecordDisplay.Designer.cs">
+      <DependentUpon>RecordDisplay.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\ToolTipPropertySet.cs" />
     <Compile Include="Views\WarcraftProfileDisplayDocument.cs">

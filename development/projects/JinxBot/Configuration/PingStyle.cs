@@ -26,5 +26,10 @@ namespace JinxBot.Configuration
         /// </summary>
         [Name("0 ms")]
         ZeroMs,
+        /// <summary>
+        /// Specifies that the connection should delay the version check to respond to the ping request more quickly.
+        /// </summary>
+        [Name("Reply before Versioning")]
+        ReplyBeforeVersioning
     }
 }

@@ -21,6 +21,20 @@ namespace JinxBot.Configuration
             get; set; 
         }
 
+        [XmlElement("Type")]
+        public string Type
+        {
+            get;
+            set;
+        }
+
+        [XmlElement("MultiClientName", IsNullable = true)]
+        public string MultiClientName
+        {
+            get;
+            set;
+        }
+
         [XmlArray("Settings")]
         [XmlArrayItem("Setting")]
         public ProfilePluginSettingConfiguration[] Settings

@@ -36,7 +36,7 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
+            this.tt = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
             this.rw = new System.Windows.Forms.Label();
             this.hw = new System.Windows.Forms.Label();
@@ -64,7 +64,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(142, 0);
+            this.label1.Location = new System.Drawing.Point(108, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(33, 13);
             this.label1.TabIndex = 0;
@@ -74,7 +74,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(216, 0);
+            this.label2.Location = new System.Drawing.Point(159, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(40, 13);
             this.label2.TabIndex = 1;
@@ -84,7 +84,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(299, 0);
+            this.label3.Location = new System.Drawing.Point(213, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(45, 13);
             this.label3.TabIndex = 2;
@@ -135,14 +135,14 @@
             this.label8.TabIndex = 7;
             this.label8.Text = "Night Elf";
             // 
-            // label9
+            // tt
             // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(10, 145);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(69, 13);
-            this.label9.TabIndex = 8;
-            this.label9.Text = "Tournament";
+            this.tt.AutoSize = true;
+            this.tt.Location = new System.Drawing.Point(10, 145);
+            this.tt.Name = "tt";
+            this.tt.Size = new System.Drawing.Size(69, 13);
+            this.tt.TabIndex = 8;
+            this.tt.Text = "Tournament";
             // 
             // label10
             // 
@@ -155,7 +155,7 @@
             // 
             // rw
             // 
-            this.rw.Location = new System.Drawing.Point(134, 25);
+            this.rw.Location = new System.Drawing.Point(100, 25);
             this.rw.Name = "rw";
             this.rw.Size = new System.Drawing.Size(41, 13);
             this.rw.TabIndex = 10;
@@ -164,7 +164,7 @@
             // 
             // hw
             // 
-            this.hw.Location = new System.Drawing.Point(134, 49);
+            this.hw.Location = new System.Drawing.Point(100, 49);
             this.hw.Name = "hw";
             this.hw.Size = new System.Drawing.Size(41, 13);
             this.hw.TabIndex = 11;
@@ -173,7 +173,7 @@
             // 
             // uw
             // 
-            this.uw.Location = new System.Drawing.Point(134, 97);
+            this.uw.Location = new System.Drawing.Point(100, 97);
             this.uw.Name = "uw";
             this.uw.Size = new System.Drawing.Size(41, 13);
             this.uw.TabIndex = 13;
@@ -182,7 +182,7 @@
             // 
             // ow
             // 
-            this.ow.Location = new System.Drawing.Point(134, 73);
+            this.ow.Location = new System.Drawing.Point(100, 73);
             this.ow.Name = "ow";
             this.ow.Size = new System.Drawing.Size(41, 13);
             this.ow.TabIndex = 12;
@@ -191,7 +191,7 @@
             // 
             // tw
             // 
-            this.tw.Location = new System.Drawing.Point(134, 145);
+            this.tw.Location = new System.Drawing.Point(100, 145);
             this.tw.Name = "tw";
             this.tw.Size = new System.Drawing.Size(41, 13);
             this.tw.TabIndex = 15;
@@ -200,7 +200,7 @@
             // 
             // nw
             // 
-            this.nw.Location = new System.Drawing.Point(134, 121);
+            this.nw.Location = new System.Drawing.Point(100, 121);
             this.nw.Name = "nw";
             this.nw.Size = new System.Drawing.Size(41, 13);
             this.nw.TabIndex = 14;
@@ -209,7 +209,7 @@
             // 
             // wins
             // 
-            this.wins.Location = new System.Drawing.Point(112, 169);
+            this.wins.Location = new System.Drawing.Point(78, 169);
             this.wins.Name = "wins";
             this.wins.Size = new System.Drawing.Size(63, 13);
             this.wins.TabIndex = 16;
@@ -218,7 +218,7 @@
             // 
             // tl
             // 
-            this.tl.Location = new System.Drawing.Point(215, 145);
+            this.tl.Location = new System.Drawing.Point(158, 145);
             this.tl.Name = "tl";
             this.tl.Size = new System.Drawing.Size(41, 13);
             this.tl.TabIndex = 22;
@@ -227,7 +227,7 @@
             // 
             // nl
             // 
-            this.nl.Location = new System.Drawing.Point(215, 121);
+            this.nl.Location = new System.Drawing.Point(158, 121);
             this.nl.Name = "nl";
             this.nl.Size = new System.Drawing.Size(41, 13);
             this.nl.TabIndex = 21;
@@ -236,7 +236,7 @@
             // 
             // ul
             // 
-            this.ul.Location = new System.Drawing.Point(215, 97);
+            this.ul.Location = new System.Drawing.Point(158, 97);
             this.ul.Name = "ul";
             this.ul.Size = new System.Drawing.Size(41, 13);
             this.ul.TabIndex = 20;
@@ -245,7 +245,7 @@
             // 
             // ol
             // 
-            this.ol.Location = new System.Drawing.Point(215, 73);
+            this.ol.Location = new System.Drawing.Point(158, 73);
             this.ol.Name = "ol";
             this.ol.Size = new System.Drawing.Size(41, 13);
             this.ol.TabIndex = 19;
@@ -254,7 +254,7 @@
             // 
             // hl
             // 
-            this.hl.Location = new System.Drawing.Point(215, 49);
+            this.hl.Location = new System.Drawing.Point(158, 49);
             this.hl.Name = "hl";
             this.hl.Size = new System.Drawing.Size(41, 13);
             this.hl.TabIndex = 18;
@@ -263,7 +263,7 @@
             // 
             // rl
             // 
-            this.rl.Location = new System.Drawing.Point(215, 25);
+            this.rl.Location = new System.Drawing.Point(158, 25);
             this.rl.Name = "rl";
             this.rl.Size = new System.Drawing.Size(41, 13);
             this.rl.TabIndex = 17;
@@ -272,7 +272,7 @@
             // 
             // losses
             // 
-            this.losses.Location = new System.Drawing.Point(193, 169);
+            this.losses.Location = new System.Drawing.Point(136, 169);
             this.losses.Name = "losses";
             this.losses.Size = new System.Drawing.Size(63, 13);
             this.losses.TabIndex = 23;
@@ -281,7 +281,7 @@
             // 
             // pct
             // 
-            this.pct.Location = new System.Drawing.Point(281, 169);
+            this.pct.Location = new System.Drawing.Point(195, 169);
             this.pct.Name = "pct";
             this.pct.Size = new System.Drawing.Size(63, 13);
             this.pct.TabIndex = 30;
@@ -290,7 +290,7 @@
             // 
             // tp
             // 
-            this.tp.Location = new System.Drawing.Point(303, 145);
+            this.tp.Location = new System.Drawing.Point(217, 145);
             this.tp.Name = "tp";
             this.tp.Size = new System.Drawing.Size(41, 13);
             this.tp.TabIndex = 29;
@@ -299,7 +299,7 @@
             // 
             // np
             // 
-            this.np.Location = new System.Drawing.Point(303, 121);
+            this.np.Location = new System.Drawing.Point(217, 121);
             this.np.Name = "np";
             this.np.Size = new System.Drawing.Size(41, 13);
             this.np.TabIndex = 28;
@@ -308,7 +308,7 @@
             // 
             // up
             // 
-            this.up.Location = new System.Drawing.Point(303, 97);
+            this.up.Location = new System.Drawing.Point(217, 97);
             this.up.Name = "up";
             this.up.Size = new System.Drawing.Size(41, 13);
             this.up.TabIndex = 27;
@@ -317,7 +317,7 @@
             // 
             // op
             // 
-            this.op.Location = new System.Drawing.Point(303, 73);
+            this.op.Location = new System.Drawing.Point(217, 73);
             this.op.Name = "op";
             this.op.Size = new System.Drawing.Size(41, 13);
             this.op.TabIndex = 26;
@@ -326,7 +326,7 @@
             // 
             // hp
             // 
-            this.hp.Location = new System.Drawing.Point(303, 49);
+            this.hp.Location = new System.Drawing.Point(217, 49);
             this.hp.Name = "hp";
             this.hp.Size = new System.Drawing.Size(41, 13);
             this.hp.TabIndex = 25;
@@ -335,7 +335,7 @@
             // 
             // rp
             // 
-            this.rp.Location = new System.Drawing.Point(303, 25);
+            this.rp.Location = new System.Drawing.Point(217, 25);
             this.rp.Name = "rp";
             this.rp.Size = new System.Drawing.Size(41, 13);
             this.rp.TabIndex = 24;
@@ -368,7 +368,7 @@
             this.Controls.Add(this.hw);
             this.Controls.Add(this.rw);
             this.Controls.Add(this.label10);
-            this.Controls.Add(this.label9);
+            this.Controls.Add(this.tt);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
@@ -379,7 +379,7 @@
             this.Controls.Add(this.label1);
             this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "RaceStatsDisplay";
-            this.Size = new System.Drawing.Size(360, 188);
+            this.Size = new System.Drawing.Size(277, 188);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -395,7 +395,7 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label tt;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label rw;
         private System.Windows.Forms.Label hw;

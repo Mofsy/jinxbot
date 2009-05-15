@@ -17,7 +17,7 @@ using System.Threading;
 
 namespace JinxBot.Views
 {
-    public partial class ProfileDocument : DockableDocument, IChatTab
+    public partial class ProfileDocument : DockableDocument, IChatTab, IProfileDocument
     {
         private ChatDocument m_chat;
         private FriendsList m_friends;
@@ -41,9 +41,10 @@ namespace JinxBot.Views
             m_client = client;
             this.Text = this.TabText = (client.Settings as ClientProfile).ProfileName;
 
-            if (client.Settings.Client == Product.StarcraftRetail.ProductCode || client.Settings.Client == Product.StarcraftBroodWar.ProductCode)
+            if (client.Settings.Client == Product.StarcraftRetail.ProductCode || client.Settings.Client == Product.StarcraftBroodWar.ProductCode 
+                || client.Settings.Client == Product.Warcraft3Retail.ProductCode || client.Settings.Client == Product.Warcraft3Expansion.ProductCode)
             {
-                //WardenModule module = new WardenModule(client);
+                //WardenPacketHandler module = new WardenPacketHandler(client);
                 //m_client.WardenHandler = module;
             }
 
@@ -178,8 +179,15 @@ namespace JinxBot.Views
 
         private void WarcraftProfileReceived(object sender, WarcraftProfileEventArgs e)
         {
-            if (Debugger.IsAttached)
-                Debugger.Break();
+            ThreadStart ts = delegate
+            {
+                WarcraftProfileDisplayDocument doc = new WarcraftProfileDisplayDocument(e);
+                doc.ShowDialog(this);
+            };
+            if (InvokeRequired)
+                BeginInvoke(ts);
+            else
+                ts();
         }
 
         protected override void OnFormClosed(System.Windows.Forms.FormClosedEventArgs e)
@@ -188,5 +196,32 @@ namespace JinxBot.Views
 
             m_client.Dispose();
         }
+
+        #region IProfileDocument Members
+
+        public void AddDocument(DockableDocument profileDocument)
+        {
+            if (profileDocument == null)
+                throw new ArgumentNullException("profileDocument");
+
+            profileDocument.Show(dock);
+        }
+
+        public void RemoveDocument(DockableDocument profileDocument)
+        {
+            profileDocument.Hide();
+        }
+
+        public void AddToolWindow(DockableToolWindow toolWindow)
+        {
+            toolWindow.Show(dock);
+        }
+
+        public void RemoveToolWindow(DockableToolWindow toolWindow)
+        {
+            toolWindow.Hide();
+        }
+
+        #endregion
     }
 }

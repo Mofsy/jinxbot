@@ -103,6 +103,22 @@ namespace JinxBot.Configuration
             public string Uri { get; set; }
 
             /// <summary>
+            /// Gets or sets the URL from which the corresponding animated icon can be downloaded.
+            /// </summary>
+            /// <para>This property supports the 
+            /// JinxBot icon infrastructure and is not intended to be used from your code.</para>
+            [XmlAttribute("AnimationUrl")]
+            public string AnimationUri { get; set; }
+
+            /// <summary>
+            /// Gets or sets the name of the animation as it is locally-stored.
+            /// </summary>
+            /// <para>This property supports the 
+            /// JinxBot icon infrastructure and is not intended to be used from your code.</para>
+            [XmlAttribute("AnimationLocal")]
+            public string LocalAnimationName { get; set; }
+
+            /// <summary>
             /// Gets or sets the name of the icon as it is locally-stored.
             /// </summary>
             /// <remarks>

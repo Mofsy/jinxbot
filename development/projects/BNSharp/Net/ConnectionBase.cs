@@ -159,7 +159,7 @@ namespace BNSharp.Net
             if (m_open)
             {
                 m_open = false;
-                m_client.Close();
+                m_client.Client.Disconnect(true);
             }
         }
 

@@ -25,7 +25,7 @@ namespace BNSharp.BattleNet
         [DataMember(Name = "Name")]
         private string m_descriptiveTitle;
 
-        private bool m_canConnect, m_needs2Keys, m_needsLockdown;
+        private bool m_canConnect, m_needs2Keys, m_needsLockdown, m_usesUdp;
         #endregion
 
         private Product(string productCode, string descriptiveTitle)
@@ -52,6 +52,12 @@ namespace BNSharp.BattleNet
             m_needsLockdown = needsLockdown;
         }
 
+        private Product(string productCode, string descriptiveTitle, bool canConnect, bool needs2Keys, bool needsLockdown, bool needsUdp)
+            : this(productCode, descriptiveTitle, canConnect, needs2Keys, needsLockdown)
+        {
+            m_usesUdp = needsUdp;
+        }
+
         /// <summary>
         /// The <see>Product</see> object for a telnet chat client.
         /// </summary>
@@ -60,7 +66,7 @@ namespace BNSharp.BattleNet
         /// <summary>
         /// The <see>Product</see> object for Starcraft (Retail).
         /// </summary>
-        public static readonly Product StarcraftRetail = new Product("STAR", Strings.ProdSTAR, true, false, true);
+        public static readonly Product StarcraftRetail = new Product("STAR", Strings.ProdSTAR, true, false, true, true);
         /// <summary>
         /// The <see>Product</see> object for Starcraft Shareware.
         /// </summary>
@@ -68,16 +74,16 @@ namespace BNSharp.BattleNet
         /// <summary>
         /// The <see>Product</see> object for Starcraft: Brood War.
         /// </summary>
-        public static readonly Product StarcraftBroodWar = new Product("SEXP", Strings.ProdSEXP, true, false, true);
+        public static readonly Product StarcraftBroodWar = new Product("SEXP", Strings.ProdSEXP, true, false, true, true);
         /// <summary>
         /// The <see>Product</see> object for Japan Starcraft.
         /// </summary>
-        public static readonly Product JapanStarcraft = new Product("JSTR", Strings.ProdJSTR);
+        public static readonly Product JapanStarcraft = new Product("JSTR", Strings.ProdJSTR, true, false, false, true);
 
         /// <summary>
         /// The <see>Product</see> object for Warcraft II: Battle.net Edition.
         /// </summary>
-        public static readonly Product Warcraft2BNE = new Product("W2BN", Strings.ProdW2BN, true, false, true);
+        public static readonly Product Warcraft2BNE = new Product("W2BN", Strings.ProdW2BN, true, false, true, true);
 
         /// <summary>
         /// The <see>Product</see> object for Diablo (Retail).
@@ -170,6 +176,11 @@ namespace BNSharp.BattleNet
         internal bool NeedsLockdown
         {
             get { return m_needsLockdown; }
+        }
+
+        internal bool UsesUdpPing
+        {
+            get { return m_usesUdp; }
         }
 
         #region IEquatable<string> Members
