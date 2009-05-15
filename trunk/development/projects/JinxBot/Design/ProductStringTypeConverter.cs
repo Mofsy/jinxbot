@@ -29,6 +29,8 @@ namespace JinxBot.Design
 
         public override object ConvertTo(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
         {
+            if (value as string == null)
+                return null;
             Product pr = Product.GetByProductCode(value as string);
             if (pr == null)
                 return null;

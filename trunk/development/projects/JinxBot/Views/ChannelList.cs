@@ -71,21 +71,32 @@ namespace JinxBot.Views
             __UserShown = new UserEventHandler(UserShown);
             __JoinedChannel = new ServerChatEventHandler(JoinedChannel);
             __UserFlagsUpdated = new UserEventHandler(UserFlagsUpdated);
+            __Disconnected = Disconnected;
 
             m_client.RegisterUserFlagsChangedNotification(Priority.Low, __UserFlagsUpdated);
             m_client.RegisterUserJoinedNotification(Priority.Low, __UserJoined);
             m_client.RegisterUserLeftNotification(Priority.Low, __UserLeft);
             m_client.RegisterUserShownNotification(Priority.Low, __UserShown);
             m_client.RegisterJoinedChannelNotification(Priority.Low, __JoinedChannel);
+            m_client.RegisterDisconnectedNotification(Priority.Low, __Disconnected);
+        }
+
+        private EventHandler __Disconnected;
+        void Disconnected(object sender, EventArgs e)
+        {
+            if (InvokeRequired)
+                Invoke(new Invokee(ClearChannelList));
+            else
+                ClearChannelList();
         }
 
         private ServerChatEventHandler __JoinedChannel;
         void JoinedChannel(object sender, ServerChatEventArgs e)
         {
             if (InvokeRequired)
-                Invoke(new Invokee<ServerChatEventArgs>(ClearChannelList), e);
+                Invoke(new Invokee(ClearChannelList));
             else
-                ClearChannelList(e);
+                ClearChannelList();
         }
 
         private UserEventHandler __UserFlagsUpdated;
@@ -100,7 +111,7 @@ namespace JinxBot.Views
             }
         }
 
-        private void ClearChannelList(ServerChatEventArgs e)
+        private void ClearChannelList()
         {
             this.listBox1.Items.Clear();
             UpdateUserCount();
@@ -162,6 +173,7 @@ namespace JinxBot.Views
                 ShowUser(e);
         }
 
+        private delegate void Invokee();
         private delegate void Invokee<T>(T args);
 
         private void listBox1_DoubleClick(object sender, EventArgs e)
@@ -216,7 +228,7 @@ namespace JinxBot.Views
                 else
                 {
                     StopVoidPolling();
-                    ClearChannelList(null);
+                    ClearChannelList();
                 }
             }
         }

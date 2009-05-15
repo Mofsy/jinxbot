@@ -40,6 +40,24 @@ namespace JinxBot.Views.Stats
             totalsRow = new Row { Win = wins, Loss = losses, Percent = pct };
         }
 
+        private bool m_exp = true;
+        [Browsable(true)]
+        [Category("Appearance")]
+        [Description("Specifies whether the viewed user is using the Warcraft III Expansion.")]
+        [DefaultValue(true)]
+        public bool IsExpansion
+        {
+            get
+            {
+                return m_exp;
+            }
+            set
+            {
+                m_exp = value;
+                tt.Visible = tw.Visible = tl.Visible = tp.Visible = value;
+            }
+        }
+
         public void BindToStats(IEnumerable<WarcraftRaceRecord> raceRecords)
         {
             foreach (var record in raceRecords)

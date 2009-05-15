@@ -424,7 +424,45 @@ namespace JinxBot.Views
         private ClientCheckFailedEventHandler __ClientCheckFailed;
         void ClientCheckFailed(object sender, ClientCheckFailedEventArgs e)
         {
-            chat.AddChat(new ChatNode(string.Format(CultureInfo.CurrentCulture, "Versioning check failed; {0}", e.Reason), CssClasses.VersioningFailed));
+            switch (e.Reason)
+            {
+                case ClientCheckFailureCause.BannedCdKey:
+                    chat.AddChat(new ChatNode("Your primary CD key (for example, Warcraft III: Reign of Chaos, or Diablo II) is banned.", CssClasses.VersioningFailed));
+                    break;
+                case ClientCheckFailureCause.BannedExpCdKey:
+                    chat.AddChat(new ChatNode("Your secondary CD key (for example, Warcraft III: The Frozen Throne, or Diablo II: The Lord of Destruction) is banned.", CssClasses.VersioningFailed));
+                    break;
+                case ClientCheckFailureCause.CdKeyInUse:
+                    chat.AddChat(new ChatNode(string.Format(CultureInfo.CurrentCulture, "Your primary CD key (for example, Warcraft III: Reign of Chaos, or Diablo II) is currently in use by '{0}'.", e.AdditionalInformation), CssClasses.VersioningFailed));
+                    break;
+                case ClientCheckFailureCause.ExpCdKeyInUse:
+                    chat.AddChat(new ChatNode(string.Format(CultureInfo.CurrentCulture, "Your secondary CD key (for example, Warcraft III: The Frozen Throne, or Diablo II: The Lord of Destruction) is currently in use by '{0}'.", e.AdditionalInformation), CssClasses.VersioningFailed));
+                    break;
+                case ClientCheckFailureCause.InvalidCdKey:
+                    chat.AddChat(new ChatNode("Your primary CD key (for example, Warcraft III: Reign of Chaos, or Diablo II) is invalid.", CssClasses.VersioningFailed));
+                    break;
+                case ClientCheckFailureCause.InvalidExpCdKey:
+                    chat.AddChat(new ChatNode("Your secondary CD key (for example, Warcraft III: The Frozen Throne, or Diablo II: The Lord of Destruction) is invalid.", CssClasses.VersioningFailed));
+                    break;
+                case ClientCheckFailureCause.InvalidVersion:
+                    chat.AddChat(new ChatNode("Your client version is invalid.  This most commonly is due to game files that do not match your version byte.", CssClasses.VersioningFailed));
+                    break;
+                case ClientCheckFailureCause.NewerVersion:
+                    chat.AddChat(new ChatNode("Your client version is newer than the version currently on Battle.net.", CssClasses.VersioningFailed));
+                    break;
+                case ClientCheckFailureCause.OldVersion:
+                    chat.AddChat(new ChatNode(string.Format(CultureInfo.CurrentCulture, "Your client version is out-of-date.  You should download and apply '{0}' to patch, and verify that your version byte is correct.", e.AdditionalInformation), CssClasses.VersioningFailed));
+                    break;
+                case ClientCheckFailureCause.WrongProduct:
+                    chat.AddChat(new ChatNode("Your primary CD key (for example, Warcraft III: Reign of Chaos, or Diablo II) is for the incorrect product.  This typically means that you are trying to log in with the wrong kind of CD key (for instance, logging in with Diablo 2 while using a Starcraft CD key), but could also indicate that your CD keys (if you are using two) are backwards.", CssClasses.VersioningFailed));
+                    break;
+                case ClientCheckFailureCause.WrongExpProduct:
+                    chat.AddChat(new ChatNode("Your secondary CD key (for example, Warcraft III: The Frozen Throne, or Diablo II: The Lord of Destruction) is for the incorrect product.  This typically means that you are trying to log in with the wrong kind of CD key (for instance, logging in with Diablo 2: Lord of Destruction while using a Starcraft CD key), but could also indicate that your CD keys are entered backwards.", CssClasses.VersioningFailed));
+                    break;
+                default:
+                    chat.AddChat(new ChatNode(string.Format(CultureInfo.CurrentCulture, "Versioning check failed with an unknown response code (0x{0:x8}).", (int)e.Reason), CssClasses.VersioningFailed));
+                    break;
+            }
         }
 
         private ServerChatEventHandler __ChannelWasRestricted;

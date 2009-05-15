@@ -4,7 +4,8 @@
     </assemblies>
     <namespaceSummaries>
         <namespaceSummaryItem name="" isDocumented="False" />
-        <namespaceSummaryItem name="BNSharp" isDocumented="True">&lt;summary&gt;
+        <namespaceSummaryItem name="BNSharp" isDocumented="True">&lt;?xml version="1.0" encoding="utf-8" ?&gt;
+&lt;summary&gt;
     &lt;para&gt;BN# is a utility library designed to simplify the creation of Battle.net client applications by 
     abstracting away the underlying connection protocols and allowing the user to worry about implementing 
     client functionality.  BN# can be as simple as you need, by dropping it into your project and creating 
@@ -18,6 +19,41 @@
     &lt;a href="http://www.jinxbot.net/wiki/" target="_blank"&gt;JinxBot Wiki&lt;/a&gt;, including the article
     &lt;a href="http://www.jinxbot.net/wiki/index.php?title=How_to_develop_a_Battle.net_client_in_10_minutes" target="_blank"&gt;How to develop a Battle.net client in 10 minutes&lt;/a&gt;.
     &lt;/para&gt;
+    &lt;para&gt;
+        &lt;b style="font-size: larger;"&gt;Release Notes - BN# Beta 3&lt;/b&gt;
+    &lt;/para&gt;
+    &lt;para&gt;
+        &lt;b&gt;New Features&lt;/b&gt;
+    &lt;/para&gt;
+    &lt;list type="bullet"&gt;
+        &lt;item&gt;Support for proxying connections has been enabled.  Proxy support is not included directly in BN#; developers need to implement 
+        support for it themselves.  For more information, see the Wiki article &lt;a href="http://www.jinxbot.net/wiki/index.php?title=Proxy_support_in_BNSharp" target="_blank"&gt;Proxy support in BN#&lt;/a&gt;.
+        &lt;/item&gt;
+        &lt;item&gt;Support for UTF-8 characters in chat messages has been added.&lt;/item&gt;
+        &lt;item&gt;Built-in support has been added for ad messages.&lt;/item&gt;
+        &lt;item&gt;Support has been added to set an account's e-mail address during login, or to change
+        login credentials during the login process.  To do so, the client no longer automatically 
+        disconnects for invalid login credentials; instead, you can use the &lt;b&gt;ContinueLogin&lt;/b&gt;
+        method once the credentials have been changed.&lt;/item&gt;
+        &lt;item&gt;Some support for sanity checking has been implemented in the constructor for 
+        &lt;b&gt;BattleNetClient&lt;/b&gt;.  It either will throw &lt;see&gt;FileNotFoundException&lt;/see&gt; or
+        &lt;see&gt;ConfigurationErrorsException&lt;/see&gt;; for more information, see the documentation 
+        for the constructor.&lt;/item&gt;
+        &lt;item&gt;Command queuing now has support; to implement it, see the &lt;see cref="BNSharp.Plugins.ICommandQueue"&gt;ICommandQueue interface&lt;/see&gt; 
+        and the wiki article &lt;a href="http://www.jinxbot.net/wiki/index.php?title=Command_queuing"&gt;Command queuing&lt;/a&gt;.&lt;/item&gt;
+        &lt;item&gt;Added a method to support binary channel join.&lt;/item&gt;
+        &lt;item&gt;Added support for joining a predefined home channel upon logging in, instead of joining the default product channel.&lt;/item&gt;
+        &lt;item&gt;&lt;/item&gt;
+    &lt;/list&gt;
+    &lt;para&gt;
+        &lt;b&gt;Breaking Changes&lt;/b&gt;
+    &lt;/para&gt;
+    &lt;list type="bullet"&gt;
+        &lt;item&gt;The &lt;see cref="BNSharp.BattleNet.BattleNetClient"&gt;BattleNetClient&lt;/see&gt; class has been moved out of the &lt;b&gt;BNSharp.Net&lt;/b&gt;
+        namespace into the more-appropriate &lt;b&gt;BNSharp.BattleNet&lt;/b&gt; namespace.&lt;/item&gt;
+        &lt;item&gt;The &lt;see cref="BNSharp.IBattleNetSettings"&gt;IBattleNetSettings&lt;/see&gt; interface has gained the &lt;see cref="BNSharp.IBattleNetSettings.HomeChannel"&gt;HomeChannel property&lt;/see&gt;.
+        Implementing classes will need to provide a concrete implementation, even if it is simply to return a null value.&lt;/item&gt;
+    &lt;/list&gt;
     &lt;para&gt;
         &lt;b style="font-size: larger;"&gt;Release Notes - BN# Beta 2&lt;/b&gt;
     &lt;/para&gt;

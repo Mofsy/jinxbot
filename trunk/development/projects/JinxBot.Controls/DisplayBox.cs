@@ -438,5 +438,70 @@ namespace JinxBot.Controls
         }
 
         #endregion
+
+        /// <summary>
+        /// Copies the selected text as UBBC code.  This is experimental.
+        /// </summary>
+        public void CopySelectionAsUbbc()
+        {
+            IHTMLDocument2 doc = (IHTMLDocument2)display.Document.DomDocument;
+
+            if (doc.selection != null && !doc.selection.type.Equals("None", StringComparison.Ordinal))
+            {
+                IHTMLSelectionObject2 selection = (IHTMLSelectionObject2)doc.selection;
+                IHTMLTxtRangeCollection rangeCollection = (IHTMLTxtRangeCollection)selection.createRangeCollection();
+                foreach (IHTMLTxtRange range in rangeCollection)
+                {
+                    UbbcHtmlConverter converter = new UbbcHtmlConverter();
+                    Clipboard.SetData(DataFormats.Text, converter.Convert(range.htmlText, this));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Copies the selected text as plain text.
+        /// </summary>
+        public void CopySelectionAsPlainText()
+        {
+            IHTMLDocument2 doc = (IHTMLDocument2)display.Document.DomDocument;
+            if (doc.selection != null && !doc.selection.type.Equals("None", StringComparison.Ordinal))
+            {
+                IHTMLTxtRange range = (IHTMLTxtRange)doc.selection.createRange();
+                Clipboard.SetData(DataFormats.Text, range.text);
+            }
+        }
+
+        /// <summary>
+        /// Copies the selected text as HTML.
+        /// </summary>
+        public void CopySelectionAsHtml()
+        {
+            IHTMLDocument2 doc = (IHTMLDocument2)display.Document.DomDocument;
+            if (doc.selection != null && !doc.selection.type.Equals("None", StringComparison.Ordinal))
+            {
+                IHTMLTxtRange range = (IHTMLTxtRange)doc.selection.createRange();
+                range.execCommand("copy", false, null);
+            }
+        }
+
+        private void display_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            
+        }
+
+        private void copyAsPlainTextToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CopySelectionAsPlainText();
+        }
+
+        private void copyAsHTMLTextToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CopySelectionAsHtml();
+        }
+
+        private void copyAsUBBCForumTextToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            CopySelectionAsUbbc();
+        }
     }
 }

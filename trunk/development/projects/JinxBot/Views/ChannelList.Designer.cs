@@ -56,6 +56,7 @@
             this.listBox1.TabIndex = 0;
             this.listBox1.MouseHover += new System.EventHandler(this.listBox1_MouseHover);
             this.listBox1.FilteringItem += new System.EventHandler<JinxBot.Views.Chat.ItemFilteringEventArgs>(this.listBox1_FilteringItem);
+            this.listBox1.DoubleClick += new System.EventHandler(this.listBox1_DoubleClick);
             this.listBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.listBox1_MouseMove);
             this.listBox1.MouseLeave += new System.EventHandler(this.listBox1_MouseLeave);
             // 

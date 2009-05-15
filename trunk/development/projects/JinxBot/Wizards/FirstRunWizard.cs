@@ -126,9 +126,12 @@ namespace JinxBot.Wizards
             if (!Directory.Exists(localPath))
                 Directory.CreateDirectory(localPath);
 
+            string animationLocalPath = Path.Combine(localPath, icon.LocalAnimationName);
+
             string temporaryPath = Path.GetTempFileName();
             localPath = Path.Combine(localPath, icon.LocalName);
             WebClient client = new WebClient();
+            client.DownloadFile(icon.AnimationUri, animationLocalPath);
             client.DownloadFile(icon.Uri, temporaryPath);
 
             using (Image source = Image.FromFile(temporaryPath))

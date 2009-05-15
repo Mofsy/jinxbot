@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{48E3907C-69BB-48C1-817D-6E5B4BE51EF6}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -173,6 +173,30 @@
     <None Include="Resources\DockIndicator_PaneDiamond.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Css\CSSParser.cs" />
+    <Compile Include="Css\CSSRenderer.cs" />
+    <Compile Include="Css\HSV.cs" />
+    <Compile Include="Css\HTMLRenderer.cs" />
+    <Compile Include="Css\Model\Attribute.cs" />
+    <Compile Include="Css\Model\AttributeOperator.cs" />
+    <Compile Include="Css\Model\Combinator.cs" />
+    <Compile Include="Css\Model\CSSDocument.cs" />
+    <Compile Include="Css\Model\Declaration.cs" />
+    <Compile Include="Css\Model\Directive.cs" />
+    <Compile Include="Css\Model\DirectiveType.cs" />
+    <Compile Include="Css\Model\Expression.cs" />
+    <Compile Include="Css\Model\Function.cs" />
+    <Compile Include="Css\Model\IDeclarationContainer.cs" />
+    <Compile Include="Css\Model\IRuleSetContainer.cs" />
+    <Compile Include="Css\Model\Medium.cs" />
+    <Compile Include="Css\Model\RuleSet.cs" />
+    <Compile Include="Css\Model\Selector.cs" />
+    <Compile Include="Css\Model\SimpleSelector.cs" />
+    <Compile Include="Css\Model\Term.cs" />
+    <Compile Include="Css\Model\TermType.cs" />
+    <Compile Include="Css\Model\Unit.cs" />
+    <Compile Include="Css\Parser.cs" />
+    <Compile Include="Css\Scanner.cs" />
     <Compile Include="DesignResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -280,6 +304,8 @@
     </Compile>
     <Compile Include="Design\LocalizedCategoryAttribute.cs" />
     <Compile Include="Design\LocalizedDescriptionAttribute.cs" />
+    <Compile Include="IHtmlTextConverter.cs" />
+    <Compile Include="UbbcHtmlConverter.cs" />
     <Compile Include="Wizard\WizardBase.cs">
       <SubType>Form</SubType>
     </Compile>

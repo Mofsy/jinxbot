@@ -565,6 +565,14 @@ namespace BNSharp.BattleNet
             if (status == 1)
             {
                 OnLoginSucceeded(BaseEventArgs.GetEmpty(data));
+                Product product = Product.GetByProductCode(m_settings.Client);
+                if (product.UsesUdpPing)
+                {
+                    BncsPacket pck = new BncsPacket((byte)BncsPacketId.UdpPingResponse);
+                    pck.InsertDwordString("bnet");
+                    Send(pck);
+                }
+
                 EnterChat();
             }
             else
@@ -581,6 +589,14 @@ namespace BNSharp.BattleNet
             if (success == 0)
             {
                 OnLoginSucceeded(BaseEventArgs.GetEmpty(data));
+                Product product = Product.GetByProductCode(m_settings.Client);
+                if (product.UsesUdpPing)
+                {
+                    BncsPacket pck = new BncsPacket((byte)BncsPacketId.UdpPingResponse);
+                    pck.InsertDwordString("bnet");
+                    Send(pck);
+                }
+
                 EnterChat();
             }
             else

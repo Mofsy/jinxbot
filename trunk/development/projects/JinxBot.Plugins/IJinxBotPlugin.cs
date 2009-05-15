@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using JinxBot.Controls.Design;
+using System.ComponentModel;
 
 namespace JinxBot.Plugins
 {
@@ -21,6 +23,19 @@ namespace JinxBot.Plugins
         /// </summary>
         /// <param name="settings"></param>
         void Shutdown(IDictionary<string, string> settings);
+
+        /// <summary>
+        /// Causes a plugin to present a settings object.
+        /// </summary>
+        /// <remarks>
+        /// <para>This object is displayed to the user
+        /// via a PropertyGrid.  Consequently, it may use any normal PropertyGrid descriptors, 
+        /// such as a <see>DescriptionAttribute</see>, <see>BrowsableAttribute</see> or 
+        /// <see>CategoryAttribute</see>, as well as <see>NameAttribute</see> from within 
+        /// JinxBot.Controls.dll.</para>
+        /// </remarks>
+        /// <returns></returns>
+        object GetSettingsObject();
 
         /// <summary>
         /// Causes a plugin to check whether it should be updated.

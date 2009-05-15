@@ -31,7 +31,7 @@ namespace MBNCSUtil.Applications
         static void Main(string[] args)
         {
             if (args.Length == 0)
-                args = new string[] { "icons-star.bni" };
+                args = new string[] { "SEXP_IX86_1xx_1161.mpq" };
             BnFtpVersion1Request req = new BnFtpVersion1Request("STAR", args[0], null);
             if (args.Length > 1)
                 req.Server = args[1];

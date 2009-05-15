@@ -78,6 +78,15 @@
                         <Setting Name="CharacterName" Value="Martok" />
                     </Settings>
                 </Plugin>
+                <Plugin>
+                    <Name>JinxBot Moderation</Name>
+                    <Type>JinxBot.Plugins.Moderation.JinxBotModerationPlugin, JinxBot.Plugins.Moderation</Type>
+                    <PluginAssembly>JinxBot.Plugins.Moderation.dll</PluginAssembly>
+                    <MultiClientName>[vL] Moderation</MultiClientName>
+                    <Settings>
+                        <Setting Name="LeetBan" Value="True" />
+                    </Settings>
+                </Plugin>
             </PluginSettings>
         </ClientProfile>
     </Profiles>
