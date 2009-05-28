@@ -78,6 +78,7 @@
     <Compile Include="Design\Server.cs" />
     <Compile Include="Design\ServerTypeConverter.cs" />
     <Compile Include="Design\VersionByteTypeConverter.cs" />
+    <Compile Include="JinxBotClient.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -86,6 +87,9 @@
     </Compile>
     <Compile Include="Plugins\BNSharp\Socks4ProxyConnector.cs" />
     <Compile Include="Plugins\BNSharp\TimedMessageQueue.cs" />
+    <Compile Include="Plugins\Data\JinxBotDefaultDatabase.cs" />
+    <Compile Include="Plugins\Data\JinxBotDefaultIdentity.cs" />
+    <Compile Include="Plugins\Data\JinxBotDefaultPrincipal.cs" />
     <Compile Include="Plugins\PluginFactory.cs" />
     <Compile Include="Plugins\PluginInfo.cs" />
     <Compile Include="Plugins\ProfilePluginManager.cs" />

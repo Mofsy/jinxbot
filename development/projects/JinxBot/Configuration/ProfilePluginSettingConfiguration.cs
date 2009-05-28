@@ -12,7 +12,7 @@ namespace JinxBot.Configuration
             get; set; 
         }
 
-        [XmlAttribute]
+        [XmlElement(ElementName = "Value")]
         public string Value
         {
             get;

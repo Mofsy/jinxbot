@@ -61,6 +61,8 @@
     </para>
     <list type="bullet">
         <item>BN# no longer forces a disconnect when the server fails to prove that it is a legitimate server.</item>
+        <item>Fixed an issue in which a disconnect (for instance, due to Warden or certain instances when a CD key was in use) would not bubble the 
+        disconnecting event.</item>
     </list>
     <para>
         <b style="font-size: larger;">Release Notes - BN# Beta 2</b>
