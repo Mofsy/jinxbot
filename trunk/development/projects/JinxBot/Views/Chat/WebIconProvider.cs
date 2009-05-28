@@ -67,7 +67,7 @@ namespace JinxBot.Views.Chat
                 catch (Exception ex)
                 {
                     // TODO: Log the exception.
-                    Trace.WriteLine(ex, "Exception loading in icon provider.");
+                    Debug.WriteLine(ex, "Exception loading in icon provider.");
                 }
             }
 

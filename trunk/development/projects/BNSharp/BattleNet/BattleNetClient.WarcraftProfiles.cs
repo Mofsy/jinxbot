@@ -57,7 +57,7 @@ namespace BNSharp.BattleNet
             int cookie = dr.ReadInt32();
             if (!m_warcraftProfileRequests.ContainsKey(cookie))
             {
-                Trace.WriteLine(string.Format(CultureInfo.InvariantCulture, "Unable to locate profile request with cookie {0:x2}", cookie));
+                Debug.WriteLine(string.Format(CultureInfo.InvariantCulture, "Unable to locate profile request with cookie {0:x2}", cookie));
                 return;
             }
             WarcraftProfileEventArgs args = m_warcraftProfileRequests[cookie];
@@ -93,7 +93,7 @@ namespace BNSharp.BattleNet
             int cookie = dr.ReadInt32();
             if (!m_warcraftProfileRequests.ContainsKey(cookie))
             {
-                Trace.WriteLine(string.Format(CultureInfo.InvariantCulture, "Unable to locate profile request with cookie {0:x2}", cookie));
+                Debug.WriteLine(string.Format(CultureInfo.InvariantCulture, "Unable to locate profile request with cookie {0:x2}", cookie));
                 return;
             }
             WarcraftProfileEventArgs args = m_warcraftProfileRequests[cookie];
@@ -140,7 +140,7 @@ namespace BNSharp.BattleNet
             int cookie = dr.ReadInt32();
             if (!m_warcraftProfileRequests.ContainsKey(cookie))
             {
-                Trace.WriteLine(string.Format(CultureInfo.InvariantCulture, "Unable to locate profile request with cookie {0:x2}", cookie));
+                Debug.WriteLine(string.Format(CultureInfo.InvariantCulture, "Unable to locate profile request with cookie {0:x2}", cookie));
                 return;
             }
             WarcraftProfileEventArgs args = m_warcraftProfileRequests[cookie];
@@ -188,7 +188,7 @@ namespace BNSharp.BattleNet
             int cookie = dr.ReadInt32();
             if (!m_warcraftProfileRequests.ContainsKey(cookie))
             {
-                Trace.WriteLine(string.Format(CultureInfo.InvariantCulture, "Unable to locate profile request with cookie {0:x2}", cookie));
+                Debug.WriteLine(string.Format(CultureInfo.InvariantCulture, "Unable to locate profile request with cookie {0:x2}", cookie));
                 return;
             }
             WarcraftProfileEventArgs args = m_warcraftProfileRequests[cookie];

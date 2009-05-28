@@ -260,7 +260,7 @@ namespace JinxBot.Controls.Docking
                         FlagsSetWindowPos.SWP_NOOWNERZORDER |
                         FlagsSetWindowPos.SWP_FRAMECHANGED))
                     {
-                        Trace.WriteLine("SetWindowPos failed.");
+                        Debug.WriteLine("SetWindowPos failed.");
                     }
                 }
             }

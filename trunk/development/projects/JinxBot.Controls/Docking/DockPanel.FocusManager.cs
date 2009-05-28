@@ -96,7 +96,7 @@ namespace JinxBot.Controls.Docking
                     {
                         if (!NativeMethods.UnhookWindowsHookEx(m_hHook))
                         {
-                            Trace.WriteLine(m_hHook.ToInt64().ToString("x16", CultureInfo.InvariantCulture), "Unable to unhook focus manager hook.");
+                            Debug.WriteLine(m_hHook.ToInt64().ToString("x16", CultureInfo.InvariantCulture), "Unable to unhook focus manager hook.");
                         }
                         m_hHook = IntPtr.Zero;
                     }

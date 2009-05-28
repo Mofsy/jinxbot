@@ -396,7 +396,7 @@ namespace BNSharp.BattleNet
             }
             else
             {
-                Trace.WriteLine(requestID, "Unknown profile request response.");
+                Debug.WriteLine(requestID, "Unknown profile request response.");
                 BattleNetClientResources.IncomingBufferPool.FreeBuffer(data.Data);
                 return;
             }

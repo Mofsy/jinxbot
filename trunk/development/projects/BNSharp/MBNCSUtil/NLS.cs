@@ -133,10 +133,8 @@ namespace BNSharp.MBNCSUtil
             BigInteger client_m2 = new BigInteger(client_hash_m2);
             BigInteger server_m2 = new BigInteger(serverProof);
 
-#if DEBUG
-            Trace.WriteLine(client_m2.ToHexString(), "Client");
-            Trace.WriteLine(server_m2.ToHexString(), "Server");
-#endif
+            Debug.WriteLine(client_m2.ToHexString(), "Client");
+            Debug.WriteLine(server_m2.ToHexString(), "Server");
 
             return client_m2.Equals(server_m2);
         }

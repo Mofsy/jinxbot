@@ -144,7 +144,7 @@ namespace BNSharp.MBNCSUtil.Net
             sck.Receive(hdrLengthBytes, 2, SocketFlags.None);
 
             int hdrLen = BitConverter.ToInt16(hdrLengthBytes, 0);
-            Trace.WriteLine(hdrLen, "Header Length");
+            Debug.WriteLine(hdrLen, "Header Length");
             byte[] hdrBytes = new byte[hdrLen - 2];
             sck.Receive(hdrBytes, hdrLen - 2, SocketFlags.None);
             DataReader rdr = new DataReader(hdrBytes);
@@ -158,7 +158,7 @@ namespace BNSharp.MBNCSUtil.Net
             {
                 throw new FileNotFoundException(Resources.bnftp_filenotfound);
             }
-            Trace.WriteLine(fileSize, "File Size");
+            Debug.WriteLine(fileSize, "File Size");
 
             byte[] data = ReceiveLoop(sck, fileSize);
             sck.Close();
