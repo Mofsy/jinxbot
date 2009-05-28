@@ -177,7 +177,7 @@ namespace JinxBot.Configuration
                     }
                     catch (Exception ex)
                     {
-                        Trace.WriteLine(ex);
+                        Debug.WriteLine(ex);
                         return new JinxBotConfiguration();
                     }
                 }

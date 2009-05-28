@@ -19,7 +19,7 @@ namespace JinxBot.Configuration
                 ser.Serialize(sw, JinxBotConfiguration.Instance);
             }
 
-            Trace.WriteLine(sb.ToString());
+            Debug.WriteLine(sb.ToString());
         }
     }
 }
