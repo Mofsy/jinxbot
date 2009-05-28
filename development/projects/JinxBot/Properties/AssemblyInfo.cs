@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("JinxBot")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("A binary Battle.net client for Windows")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
+[assembly: AssemblyCompany("The JinxBot Project")]
 [assembly: AssemblyProduct("JinxBot")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2008")]
+[assembly: AssemblyCopyright("Copyright © The JinxBot Project, 2008-2009")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.08.07.09")]
-[assembly: AssemblyFileVersion("0.08.07.09")]
+[assembly: AssemblyVersion("0.09.05.29")]
+[assembly: AssemblyFileVersion("0.09.05.29")]
