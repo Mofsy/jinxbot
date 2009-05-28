@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\JinxBot.Plugins.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -52,8 +53,12 @@
   <ItemGroup>
     <Compile Include="AutoUpdates\Fileset.cs" />
     <Compile Include="AutoUpdates\InstallableFile.cs" />
+    <Compile Include="Data\IJinxBotDatabase.cs" />
+    <Compile Include="Data\IJinxBotIdentity.cs" />
+    <Compile Include="Data\IJinxBotPrincipal.cs" />
     <Compile Include="ICommandHandler.cs" />
     <Compile Include="IEventListener.cs" />
+    <Compile Include="IJinxBotClient.cs" />
     <Compile Include="IJinxBotPlugin.cs" />
     <Compile Include="IMultiClientPlugin.cs" />
     <Compile Include="IPacketHandlerPlugin.cs" />

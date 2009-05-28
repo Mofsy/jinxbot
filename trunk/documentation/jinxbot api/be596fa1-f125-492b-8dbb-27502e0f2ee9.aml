@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="be596fa1-f125-492b-8dbb-27502e0f2ee9" revisionNumber="1">
+  <developerOrientationDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!--
+    <summary>
+      <para>Optional summary abstract</para>
+    </summary>
+    -->
+    <introduction>
+    	<para>This article contains the latest release notes for BN#.</para>
+    </introduction>
+    <reference>
+    <para>
+        <b>New Features</b>
+    </para>
+    <list type="bullet">
+        <item>Support for proxying connections has been enabled.  Proxy support is not included directly in BN#; developers need to implement 
+        support for it themselves.  For more information, see the Wiki article <a href="http://www.jinxbot.net/wiki/index.php?title=Proxy_support_in_BNSharp" target="_blank">Proxy support in BN#</a>.
+        </item>
+        <item>Support for UTF-8 characters in chat messages has been added.</item>
+        <item>Built-in support has been added for ad messages.</item>
+        <item>Support has been added to set an account's e-mail address during login, or to change
+        login credentials during the login process.  To do so, the client no longer automatically 
+        disconnects for invalid login credentials; instead, you can use the <b>ContinueLogin</b>
+        method once the credentials have been changed.</item>
+        <item>Some support for sanity checking has been implemented in the constructor for 
+        <b>BattleNetClient</b>.  It either will throw <see>FileNotFoundException</see> or
+        <see>ConfigurationErrorsException</see>; for more information, see the documentation 
+        for the constructor.</item>
+        <item>Command queuing now has support; to implement it, see the <see cref="BNSharp.Plugins.ICommandQueue">ICommandQueue interface</see> 
+        and the wiki article <a href="http://www.jinxbot.net/wiki/index.php?title=Command_queuing">Command queuing</a>.</item>
+        <item>Added a method to support binary channel join.</item>
+        <item>Added support for joining a predefined home channel upon logging in, instead of joining the default product channel.</item>
+        <item>The ability to change the server on ConnectionBase without reinstantiating the class has been added.  To use it, an overload
+        of the Connect method has been added, accepting a name (or IP) and a port.</item>
+        <item>Support for Warcraft III profiles and clan information lookups has been added.  It is 
+        still experimental but generally OK.</item>
+        <item>Added a new field to the PingType enumeration, ReplyBeforeVersioning.  When enabled, this will cause a BattleNetClient to wait for
+        500ms after the arrival of 0x50 (AuthInfo) for a Ping packet to arrive, and will reply to that first.  This will most likely offer faster 
+        ping times as the process will not have to wait for the revision check to complete.</item>
+        <item>The ErrorEventArgs class now has a new member, the Reason property.  The Reason property exposes an enumeration of type ErrorType
+        that indicates to the program the reason for the disconnect, allowing developers to handle the error as they see fit.</item>
+    </list>
+    <para>
+        <b>Breaking Changes</b>
+    </para>
+    <list type="bullet">
+        <item>The <see cref="BNSharp.BattleNet.BattleNetClient">BattleNetClient</see> class has been moved out of the <b>BNSharp.Net</b>
+        namespace into the more-appropriate <b>BNSharp.BattleNet</b> namespace.</item>
+        <item>The <see cref="BNSharp.IBattleNetSettings">IBattleNetSettings</see> interface has gained the <see cref="BNSharp.IBattleNetSettings.HomeChannel">HomeChannel property</see>.
+        Implementing classes will need to provide a concrete implementation, even if it is simply to return a null value.</item>
+    </list>
+    <para>
+        <b>Non-Breaking Changes</b>
+    </para>
+    <list type="bullet">
+        <item>BN# no longer forces a disconnect when the server fails to prove that it is a legitimate server.</item>
+    </list>
+    </reference>
+    <!-- <inThisSection>Optional description of content in this section</inThisSection> -->
+    <!-- <reference>Optional reference section</reference> -->
+    <!-- <relatedSections>Optional related sections info</relatedSections> -->
+    <!-- <externalResources>Optional external resources section</externalResources> -->
+    <relatedTopics>
+      <!-- One or more of the following:
+           - A local link
+           - An external link
+           - A code entity reference
+
+      <link xlink:href="Other Topic's ID">Link text</link>
+      <externalLink>
+          <linkText>Link text</linkText>
+          <linkAlternateText>Optional alternate link text</linkAlternateText>
+          <linkUri>URI</linkUri>
+      </externalLink>
+      <codeEntityReference>API member ID</codeEntityReference>
+
+      Examples:
+
+      <link xlink:href="00e97994-e9e6-46e0-b420-5be86b2f8278">Some other topic</link>
+
+      <externalLink>
+          <linkText>SHFB on CodePlex</linkText>
+          <linkAlternateText>Go to CodePlex</linkAlternateText>
+          <linkUri>http://shfb.codeplex.com</linkUri>
+      </externalLink>
+
+      <codeEntityReference>T:TestDoc.TestClass</codeEntityReference>
+      <codeEntityReference>P:TestDoc.TestClass.SomeProperty</codeEntityReference>
+      <codeEntityReference>M:TestDoc.TestClass.#ctor</codeEntityReference>
+      <codeEntityReference>M:TestDoc.TestClass.#ctor(System.String,System.Int32)</codeEntityReference>
+      <codeEntityReference>M:TestDoc.TestClass.ToString</codeEntityReference>
+      <codeEntityReference>M:TestDoc.TestClass.FirstMethod</codeEntityReference>
+      <codeEntityReference>M:TestDoc.TestClass.SecondMethod(System.Int32,System.String)</codeEntityReference>
+      -->
+    </relatedTopics>
+  </developerOrientationDocument>
+</topic>

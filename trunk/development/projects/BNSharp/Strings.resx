@@ -336,4 +336,7 @@
   <data name="ConnectionBase_Connect_ResolveFailed_fmt" xml:space="preserve">
     <value>Your computer was unable to resolve hostname {0}.  If necessary, add an entry to %SystemRoot%\system32\drivers\etc\hosts, or flush your DNS resolver cache, and try again.</value>
   </data>
+  <data name="BnetClient_Validate_KeyOwnerNull" xml:space="preserve">
+    <value>IBattleNetSettings.CdKeyOwner was null or zero-length.</value>
+  </data>
 </root>

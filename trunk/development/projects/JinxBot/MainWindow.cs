@@ -23,13 +23,13 @@ namespace JinxBot
 {
     public partial class MainWindow : Form
     {
-        private Dictionary<ClientProfile, ProfileDocument> m_activeProfiles;
+        private Dictionary<ClientProfile, JinxBotClient> m_activeClients;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            m_activeProfiles = new Dictionary<ClientProfile, ProfileDocument>();
+            m_activeClients = new Dictionary<ClientProfile, JinxBotClient>();
 
             JinxBotConfiguration.Instance.ProfileAdded += new EventHandler(Instance_ProfileAdded);
             JinxBotConfiguration.Instance.ProfileRemoved += new EventHandler(Instance_ProfileRemoved);
@@ -78,18 +78,17 @@ namespace JinxBot
             ClientProfile cp = (sender as ToolStripMenuItem).Tag as ClientProfile;
             if (cp != null)
             {
-                if (m_activeProfiles.ContainsKey(cp))
+                if (m_activeClients.ContainsKey(cp))
                 {
-                    m_activeProfiles[cp].Show();
+                    m_activeClients[cp].ProfileDocument.Show();
                 }
                 else
                 {
-                    BattleNetClient bnc = new BattleNetClient(cp);
-                    bnc.CommandQueue = new TimedMessageQueue();
-                    ProfileResourceProvider.RegisterProvider(bnc);
-                    ProfileDocument profile = new ProfileDocument(bnc);
-                    m_activeProfiles.Add(cp, profile);
-                    profile.Show(this.dock);
+                    JinxBotClient client = new JinxBotClient(cp);
+                    client.Client.Connected += client_Connected;
+                    client.Client.Disconnected += client_Disconnected;
+                    m_activeClients.Add(cp, client);
+                    client.ProfileDocument.Show(this.dock);
                 }
             }
         }
@@ -133,6 +132,48 @@ namespace JinxBot
             }
         }
 
+        private delegate void SyncDel();
+
+        private void client_Connected(object sender, EventArgs e)
+        {
+            BattleNetClient client = sender as BattleNetClient;
+            if (client == null) return;
+            ProfileDocument profileDoc = this.dock.ActiveDocument as ProfileDocument;
+            if (profileDoc == null) return;
+            if (profileDoc.Client == client)
+            {
+                SyncDel go = delegate
+                {
+                    this.connectToolStripMenuItem1.Enabled = false;
+                    this.disconnectToolStripMenuItem.Enabled = true;
+                };
+                if (InvokeRequired)
+                    BeginInvoke(go);
+                else
+                    go();
+            }
+        }
+
+        private void client_Disconnected(object sender, EventArgs e)
+        {
+            BattleNetClient client = sender as BattleNetClient;
+            if (client == null) return;
+            ProfileDocument profileDoc = this.dock.ActiveDocument as ProfileDocument;
+            if (profileDoc == null) return;
+            if (profileDoc.Client == client)
+            {
+                SyncDel go = delegate
+                {
+                    this.connectToolStripMenuItem1.Enabled = true;
+                    this.disconnectToolStripMenuItem.Enabled = false;
+                };
+                if (InvokeRequired)
+                    BeginInvoke(go);
+                else
+                    go();
+            }
+        }
+
         private void newProfileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             CreateProfileWizard cpw = new CreateProfileWizard();
@@ -166,7 +207,11 @@ namespace JinxBot
                 ClientProfile profile = pd.Client.Settings as ClientProfile;
                 pd.Close();
 
-                m_activeProfiles.Remove(profile);
+                JinxBotClient client = m_activeClients[profile];
+                client.Client.Disconnected -= client_Disconnected;
+                client.Client.Connected -= client_Connected;
+
+                m_activeClients.Remove(profile);
             }
         }
 

@@ -264,8 +264,11 @@ namespace BNSharp.Net
                 {
                     if (IsConnected)
                     {
-                        Close();
-                        OnError("A read error occurred on the connection.", se);
+                        ThreadPool.QueueUserWorkItem(delegate
+                        {
+                            Close();
+                            OnError("A read error occurred on the connection.", se);
+                        });
                     }
                     return null;
                 }

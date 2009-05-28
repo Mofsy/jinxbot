@@ -260,6 +260,7 @@ namespace BNSharp.BattleNet
             m_uniqueUN = null;
             m_w3srv = null;
             m_valString = null;
+            m_closing = false;
 
             ResetFriendsState();
             ResetClanState();
@@ -1119,6 +1120,8 @@ namespace BNSharp.BattleNet
         #region utility methods
         partial void InitializeListenState()
         {
+            m_closing = false;
+
             m_namesToUsers.Clear();
             m_profileRequests.Clear();
 
@@ -1163,7 +1166,10 @@ namespace BNSharp.BattleNet
 
         void SendSidNull(object sender, System.Timers.ElapsedEventArgs e)
         {
-            Send(new BncsPacket((byte)BncsPacketId.Null));
+            if (IsConnected)
+                Send(new BncsPacket((byte)BncsPacketId.Null));
+            else
+                m_tmr.Stop();
         }
 
         private Priority DeterminePriority(BncsPacketId bncsPacketId)
@@ -1209,9 +1215,9 @@ namespace BNSharp.BattleNet
         private void StopParsingAndListening()
         {
             m_parser.Abort();
-            m_listener.Abort();
             m_tmr.Stop();
             m_adTmr.Stop();
+            m_listener.Abort();
         }
 
         private void StartListening()

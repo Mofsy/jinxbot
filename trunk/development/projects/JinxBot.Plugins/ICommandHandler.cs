@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using BNSharp.BattleNet;
+using System.Security.Principal;
 
 namespace JinxBot.Plugins
 {
@@ -26,12 +27,59 @@ namespace JinxBot.Plugins
         /// <para>Well-behaved JinxBot command handling plugins should not handle the command and then return <see langword="false" />.  However,
         /// to allow multiple commands of the same name, the plugin should verify that the argument list is what is expected before handling and 
         /// returning <see langword="true" />.</para>
+        /// <para>The commanding user is represented via the <paramref name="commander"/> parameter.  The use of the <see>IPrincipal</see>
+        /// interface allows the command handler to check whether the commander has the authority by using the <see cref="IPrincipal.IsInRole">IsInRole</see>
+        /// method.</para>
+        /// <example>
+        /// <para>For example, assume MyndFyre has issued a !ban brew command:</para>
+        /// <code language="csharp">
+        /// <![CDATA[
+        /// public bool HandleCommand(IPrincipal commander, string command, string[] parameters)
+        /// {
+        ///     if (command.Equals("ban", StringComparison.OrdinalIgnoreCase)
+        ///     {
+        ///         if (parameters.Count > 0 && !string.IsNullOrEmpty(parameters[0]))
+        ///         {
+        ///             if (commander.IsInRole("O"))
+        ///             {
+        ///                 IPrincipal userToBan = client.Database.FindUser(parameters[0]);
+        ///                 if (!userToBan.IsInRole("P")) // protected flag
+        ///                 {
+        ///                     client.SendMessage(string.Concat("/ban ", parameters[0]));
+        ///                     return true;
+        ///                 }
+        ///             }
+        ///         }
+        ///     }
+        ///     return false;
+        /// }
+        /// ]]>
+        /// </code>
+        /// <code language="VB">
+        /// <![CDATA[
+        /// Public Function HandleCommand(ByVal command As IPrincipal, ByVal command As String, ByVal parameters() As String) As Boolean
+        ///     If command.Equals("ban", StringComparison.OrdinalIgnoreCase)
+        ///         If parameters.Count > 0 And Not String.IsNullOrEmpty(parameters(0))
+        ///             If commander.IsInRole("O")
+        ///                 Dim userToBan As IPrincipal = client.Database.FindUser(parameters(0))
+        ///                 If Not userToBan.IsInRole("P") ' Protected flag
+        ///                     client.SendMessage(String.Concat("/ban ", parameters(0)))
+        ///                     Return True
+        ///                 End If
+        ///             End If
+        ///         End If
+        ///     End If
+        ///     Return False
+        /// End Function
+        /// ]]>
+        /// </code>
+        /// </example>
         /// </remarks>
-        bool HandleCommand(ChatUser commander, string command, string[] parameters);
+        bool HandleCommand(IPrincipal commander, string command, string[] parameters);
 
         /// <summary>
         /// Gets an enumerable list of strings that constitute the commands supported by this plugin, and their descriptions.
         /// </summary>
-        IEnumerable<string> CommandHelp { get; }
+        IEnumerable<string> GetCommandHelp(IPrincipal commander);
     }
 }

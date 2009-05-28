@@ -86,6 +86,8 @@ namespace BNSharp.BattleNet
                 throw new ConfigurationErrorsException(Strings.BnetClient_Validate_UsernameNull);
             if (string.IsNullOrEmpty(settings.Password))
                 throw new ConfigurationErrorsException(Strings.BnetClient_Validate_PasswordNull);
+            if (string.IsNullOrEmpty(settings.CdKeyOwner))
+                throw new ConfigurationErrorsException(Strings.BnetClient_Validate_KeyOwnerNull);
             if (!Enum.IsDefined(typeof(PingType), settings.PingMethod))
                 throw new ConfigurationErrorsException(Strings.BnetClient_Validate_PingTypeInvalid);
 
