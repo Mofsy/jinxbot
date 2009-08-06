@@ -522,6 +522,14 @@ namespace BNSharp.BattleNet
         {
             get { return m_channelName; }
         }
+
+        /// <summary>
+        /// Gets the unique username of the current user.
+        /// </summary>
+        public string UniqueUsername
+        {
+            get { return m_uniqueUN; }
+        }
         #endregion
     }
 }
