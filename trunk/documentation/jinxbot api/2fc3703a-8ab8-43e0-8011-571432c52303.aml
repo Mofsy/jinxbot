@@ -60,6 +60,11 @@
     	<content>
     <list class="bullet">
         <listItem>BN# no longer forces a disconnect when the server fails to prove that it is a legitimate server.</listItem>
+        <listItem>The <codeEntityReference>T:BNSharp.BattleNet.BattleNetClient</codeEntityReference> class has added the 
+        <codeEntityReference>T:BNSharp.Plugins.IBattleNetEventSource</codeEntityReference> interface.  This interface
+        does not add any new functionality; however, it does enable classes to source Battle.net events
+        that are not the BattleNetClient class, and for those sourced events to be consumed
+        in the same way.</listItem>
         <listItem>Fixed an issue in which a disconnect (for instance, due to Warden or certain instances when a CD key was in use) would not bubble the 
         disconnecting event.</listItem>
     </list>

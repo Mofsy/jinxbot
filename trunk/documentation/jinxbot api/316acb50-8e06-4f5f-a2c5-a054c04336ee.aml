@@ -7,7 +7,10 @@
     </summary>
     -->
     <introduction>
-      <para>Required introduction</para>
+      <para>JinxBot utilizes BN# as the core back-end connectivity API 
+      for connecting to Battle.net.  All JinxBot client profiles 
+      expose a <see cref="T:BNSharp.BattleNet.BattleNetClient">BattleNetClient</see>
+      to plugins for use during interaction.</para>
     </introduction>
     <inThisSection>
       <content>

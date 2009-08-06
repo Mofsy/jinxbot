@@ -54,7 +54,7 @@
     <Compile Include="AutoUpdates\Fileset.cs" />
     <Compile Include="AutoUpdates\InstallableFile.cs" />
     <Compile Include="Data\IJinxBotDatabase.cs" />
-    <Compile Include="Data\IJinxBotIdentity.cs" />
+    <Compile Include="Data\IJinxBotMeta.cs" />
     <Compile Include="Data\IJinxBotPrincipal.cs" />
     <Compile Include="ICommandHandler.cs" />
     <Compile Include="IEventListener.cs" />
@@ -62,6 +62,7 @@
     <Compile Include="IJinxBotPlugin.cs" />
     <Compile Include="IMultiClientPlugin.cs" />
     <Compile Include="IPacketHandlerPlugin.cs" />
+    <Compile Include="IPluginUpdateManifest.cs" />
     <Compile Include="ISingleClientPlugin.cs" />
     <Compile Include="JinxBotPluginAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -71,6 +72,7 @@
     <Compile Include="UI\IChatTab.cs" />
     <Compile Include="UI\ICustomListBoxItemRenderer.cs" />
     <Compile Include="UI\IIconProvider.cs" />
+    <Compile Include="UI\IMainWindow.cs" />
     <Compile Include="UI\IProfileDocument.cs" />
   </ItemGroup>
   <ItemGroup>

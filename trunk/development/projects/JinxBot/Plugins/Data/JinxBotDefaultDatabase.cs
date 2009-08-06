@@ -7,16 +7,28 @@ namespace JinxBot.Plugins.Data
 {
     internal class JinxBotDefaultDatabase : IJinxBotDatabase
     {
+        private string m_defaultNamespace;
+
         #region IJinxBotDatabase Members
+
+        public void InitializeConnection(string defaultNamespace, bool isDiablo2)
+        {
+            m_defaultNamespace = defaultNamespace;
+        }
 
         public IEnumerable<IJinxBotPrincipal> FindUsers(string matchPattern)
         {
-            return new IJinxBotPrincipal[0];
+            yield break;
+        }
+
+        public IJinxBotPrincipal FindExact(global::BNSharp.BattleNet.ChatUser user)
+        {
+            return new JinxBotDefaultPrincipal(user, m_defaultNamespace);
         }
 
         public IEnumerable<IJinxBotPrincipal> FindUsersInRole(string role)
         {
-            return new IJinxBotPrincipal[0];
+            throw new NotImplementedException();
         }
 
         public void AddUsersToRole(IEnumerable<IJinxBotPrincipal> users, string role)

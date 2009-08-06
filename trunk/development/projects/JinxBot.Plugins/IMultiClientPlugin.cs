@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using JinxBot.Plugins.UI;
 
 namespace JinxBot.Plugins
 {
@@ -18,6 +19,25 @@ namespace JinxBot.Plugins
         /// 
         /// </summary>
         /// <param name="configurationWindowManager"></param>
-        void CreatePluginWindows(object configurationWindowManager);
+        void CreatePluginWindows(IMainWindow configurationWindowManager);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="configurationWindowManager"></param>
+        void DestroyPluginWindows(IMainWindow configurationWindowManager);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="client"></param>
+        void AddClient(IJinxBotClient client);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="client"></param>
+        void RemoveClient(IJinxBotClient client);
+
     }
 }

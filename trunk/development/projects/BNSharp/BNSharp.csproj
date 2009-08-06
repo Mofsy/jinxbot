@@ -198,6 +198,7 @@
     <Compile Include="Net\DefaultPacketPriorityProvider.cs" />
     <Compile Include="Net\ThinProxiedConnectionBase.cs" />
     <Compile Include="Plugins\DefaultCommandQueue.cs" />
+    <Compile Include="Plugins\IBattleNetEventSource.cs" />
     <Compile Include="Plugins\ICommandQueue.cs" />
     <Compile Include="Plugins\IBattleNetEvents.cs" />
     <Compile Include="Plugins\IPacketPriorityProvider.cs" />

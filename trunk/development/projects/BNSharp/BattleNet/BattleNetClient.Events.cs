@@ -5,10 +5,11 @@ using System.Threading;
 using BNSharp.BattleNet;
 using BNSharp.BattleNet.Clans;
 using BNSharp.BattleNet.Friends;
+using BNSharp.Plugins;
 
 namespace BNSharp.BattleNet
 {
-    partial class BattleNetClient
+    partial class BattleNetClient : IBattleNetEventSource
     {
         partial void ReportException(Exception ex, params KeyValuePair<string, object>[] notes);
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]

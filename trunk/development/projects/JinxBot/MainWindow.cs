@@ -18,10 +18,11 @@ using JinxBot.Reliability;
 using JinxBot.Plugins.UI;
 using BNSharp.BattleNet;
 using JinxBot.Plugins.BNSharp;
+using JinxBot.Controls.Docking;
 
 namespace JinxBot
 {
-    public partial class MainWindow : Form
+    public partial class MainWindow : Form, IMainWindow
     {
         private Dictionary<ClientProfile, JinxBotClient> m_activeClients;
 
@@ -39,6 +40,8 @@ namespace JinxBot
             //GlobalErrorHandler.ErrorLog.Hide();
 
             //this.menuStrip1.Renderer = new JinxBotMenuRenderer();
+
+            PluginFactory.MainWindow = this;
         }
 
         protected override void OnLoad(EventArgs e)
@@ -201,15 +204,14 @@ namespace JinxBot
             ProfileDocument pd = this.dock.ActiveDocument as ProfileDocument;
             if (pd != null)
             {
-                if (pd.Client.IsConnected)
-                    pd.Client.Close();
-
                 ClientProfile profile = pd.Client.Settings as ClientProfile;
-                pd.Close();
 
                 JinxBotClient client = m_activeClients[profile];
                 client.Client.Disconnected -= client_Disconnected;
                 client.Client.Connected -= client_Connected;
+                client.Close();
+
+                pd.Close();
 
                 m_activeClients.Remove(profile);
             }
@@ -273,5 +275,19 @@ namespace JinxBot
                 tab.VoidView = enableVoidViewToolStripMenuItem.Checked;
             }
         }
+
+        #region IMainWindow Members
+
+        public void AddDocument(DockableDocument mainWindowDocument)
+        {
+            mainWindowDocument.Show(this.dock);
+        }
+
+        public void RemoveDocument(DockableDocument mainWindowDocument)
+        {
+            mainWindowDocument.Hide();
+        }
+
+        #endregion
     }
 }
