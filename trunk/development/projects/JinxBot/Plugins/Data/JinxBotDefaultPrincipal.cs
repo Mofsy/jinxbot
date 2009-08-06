@@ -27,12 +27,12 @@ namespace JinxBot.Plugins.Data
 
             m_userName = m.Groups[ACCTNAME].Value;
             if (m.Groups[GATEWAY].Success)
-                m_gateway = m.Groups[GATEWAY];
+                m_gateway = m.Groups[GATEWAY].Value;
             else
                 m_gateway = defaultGateway;
 
             if (m.Groups[CHARNAME].Success)
-                m_charName = m.Groups[CHARNAME];
+                m_charName = m.Groups[CHARNAME].Value;
         }
 
         #region IJinxBotPrincipal Members

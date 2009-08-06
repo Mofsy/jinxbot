@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using BNSharp.BattleNet;
 using System.Security.Principal;
+using JinxBot.Plugins.Data;
 
 namespace JinxBot.Plugins
 {
@@ -34,7 +35,7 @@ namespace JinxBot.Plugins
         /// <para>For example, assume MyndFyre has issued a !ban brew command:</para>
         /// <code language="csharp">
         /// <![CDATA[
-        /// public bool HandleCommand(IPrincipal commander, string command, string[] parameters)
+        /// public bool HandleCommand(IJinxBotPrincipal commander, string command, string[] parameters)
         /// {
         ///     if (command.Equals("ban", StringComparison.OrdinalIgnoreCase)
         ///     {
@@ -42,7 +43,7 @@ namespace JinxBot.Plugins
         ///         {
         ///             if (commander.IsInRole("O"))
         ///             {
-        ///                 IPrincipal userToBan = client.Database.FindUser(parameters[0]);
+        ///                 IJinxBotPrincipal userToBan = client.Database.FindUser(parameters[0]);
         ///                 if (!userToBan.IsInRole("P")) // protected flag
         ///                 {
         ///                     client.SendMessage(string.Concat("/ban ", parameters[0]));
@@ -57,11 +58,11 @@ namespace JinxBot.Plugins
         /// </code>
         /// <code language="VB">
         /// <![CDATA[
-        /// Public Function HandleCommand(ByVal command As IPrincipal, ByVal command As String, ByVal parameters() As String) As Boolean
+        /// Public Function HandleCommand(ByVal command As IJinxBotPrincipal, ByVal command As String, ByVal parameters() As String) As Boolean
         ///     If command.Equals("ban", StringComparison.OrdinalIgnoreCase)
         ///         If parameters.Count > 0 And Not String.IsNullOrEmpty(parameters(0))
         ///             If commander.IsInRole("O")
-        ///                 Dim userToBan As IPrincipal = client.Database.FindUser(parameters(0))
+        ///                 Dim userToBan As IJinxBotPrincipal = client.Database.FindUser(parameters(0))
         ///                 If Not userToBan.IsInRole("P") ' Protected flag
         ///                     client.SendMessage(String.Concat("/ban ", parameters(0)))
         ///                     Return True
@@ -75,11 +76,16 @@ namespace JinxBot.Plugins
         /// </code>
         /// </example>
         /// </remarks>
-        bool HandleCommand(IPrincipal commander, string command, string[] parameters);
+        bool HandleCommand(IJinxBotPrincipal commander, string command, string[] parameters);
 
         /// <summary>
         /// Gets an enumerable list of strings that constitute the commands supported by this plugin, and their descriptions.
         /// </summary>
-        IEnumerable<string> GetCommandHelp(IPrincipal commander);
+        /// <param name="commander">Specifies the commander using the plugin.</param>
+        /// <remarks>
+        /// <para>It is recommended that commands that the user can't fill are not returned.  For example, if
+        /// a user cannot use the <c>ban</c> command, then help for that command should not be included.</para>
+        /// </remarks>
+        IEnumerable<string> GetCommandHelp(IJinxBotPrincipal commander);
     }
 }
