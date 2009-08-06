@@ -12,7 +12,7 @@ namespace JinxBot.Plugins
     internal sealed class PluginInfo
     {
         private Type m_type;
-        private string m_name, m_desc, m_author;
+        private string m_name, m_desc, m_author, m_mcName;
         private Version m_ver;
 
         public PluginInfo(JinxBotPluginAttribute attr, Type t)
@@ -27,9 +27,20 @@ namespace JinxBot.Plugins
             m_ver = new Version(attr.Version);
         }
 
+        public PluginInfo(JinxBotPluginAttribute attr, Type t, string multiClientName) 
+            : this(attr, t)
+        {
+            m_mcName = multiClientName;
+        }
+
         public string Name
         {
             get { return m_name; }
+        }
+
+        public string MultiClientName
+        {
+            get { return m_mcName; }
         }
 
         public string Description

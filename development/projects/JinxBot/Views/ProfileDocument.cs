@@ -170,7 +170,7 @@ namespace JinxBot.Views
 
         public void Disconnect()
         {
-            if (m_connectingThread.IsAlive)
+            if (m_connectingThread != null && m_connectingThread.IsAlive)
             {
                 m_connectingThread.Abort();
             }

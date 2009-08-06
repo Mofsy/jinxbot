@@ -10,6 +10,10 @@ namespace JinxBot.Plugins
     /// <summary>
     /// When implemented, allows a plugin to handle startup and shutdown, and persist settings.
     /// </summary>
+    /// <remarks>
+    /// <para>All JinxBot plugins are required to implement this plugin at minimum.  It provides no functionality
+    /// other than </para>
+    /// </remarks>
     public interface IJinxBotPlugin : IDisposable
     {
         /// <summary>
@@ -42,9 +46,12 @@ namespace JinxBot.Plugins
         /// </summary>
         /// <remarks>
         /// <para>During initialization and plugin discovery, JinxBot prompts all located plugins to determine whether they should be updated.  A plugin
-        /// that does not support this capability should simply return <see langword="false" /> in all cases.</para>
+        /// that does not support this capability should simply return <see langword="null" /> in all cases.</para>
+        /// <para>JinxBot Beta 1 will not support automatic updates.  For this release, all plugins should 
+        /// return <see langword="null" />.</para>
         /// </remarks>
-        /// <returns><see langword="true" /> if the plugin should be updated; otherwise <see langword="false" />.</returns>
-        bool CheckForUpdates();
+        /// <returns>An object reference implementing <see>IPluginUpdateManifest</see> if updates are required;
+        /// otherwise <see langword="null" />.</returns>
+        IPluginUpdateManifest CheckForUpdates();
     }
 }

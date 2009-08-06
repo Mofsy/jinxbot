@@ -9,7 +9,7 @@ namespace JinxBot.Configuration
     [Serializable]
     public class ProfilePluginConfiguration
     {
-        [XmlAttribute]
+        [XmlElement("Name")]
         public string Name
         {
             get; set; 

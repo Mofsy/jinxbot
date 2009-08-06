@@ -46,7 +46,7 @@ namespace JinxBot.Plugins.ChatLog
 
         private void EnumerateLoggedChats()
         {
-            throw new NotImplementedException();
+            
         }
 
         public void Shutdown(IDictionary<string, string> settings)

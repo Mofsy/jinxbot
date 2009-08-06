@@ -61,6 +61,7 @@
     <Compile Include="Configuration\DependencyConfiguration.cs" />
     <Compile Include="Configuration\GlobalsConfigurationSection.cs" />
     <Compile Include="Configuration\IconProviderConfiguration.cs" />
+    <Compile Include="Configuration\MultiClientPluginConfiguration.cs" />
     <Compile Include="Configuration\PingStyle.cs" />
     <Compile Include="Configuration\PluginConfiguration.cs" />
     <Compile Include="Configuration\ProfilePluginConfiguration.cs" />
@@ -87,8 +88,8 @@
     </Compile>
     <Compile Include="Plugins\BNSharp\Socks4ProxyConnector.cs" />
     <Compile Include="Plugins\BNSharp\TimedMessageQueue.cs" />
+    <Compile Include="Plugins\CommandTranslator.cs" />
     <Compile Include="Plugins\Data\JinxBotDefaultDatabase.cs" />
-    <Compile Include="Plugins\Data\JinxBotDefaultIdentity.cs" />
     <Compile Include="Plugins\Data\JinxBotDefaultPrincipal.cs" />
     <Compile Include="Plugins\PluginFactory.cs" />
     <Compile Include="Plugins\PluginInfo.cs" />
@@ -324,6 +325,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\test\JinxBot.Plugins.Tests\JinxBot.Plugins.Tests.csproj">
+      <Project>{825505D0-8CF0-4AA0-841B-B9B91009C937}</Project>
+      <Name>JinxBot.Plugins.Tests</Name>
+    </ProjectReference>
     <ProjectReference Include="..\BNSharp\BNSharp.csproj">
       <Project>{2D02D43C-BC3B-41D2-9226-4E215939107F}</Project>
       <Name>BNSharp</Name>

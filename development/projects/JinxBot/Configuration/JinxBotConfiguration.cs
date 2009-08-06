@@ -77,6 +77,38 @@ namespace JinxBot.Configuration
             set { m_profiles = value; }
         }
 
+        private MultiClientPluginConfiguration[] m_mcpConfigs;
+
+        [XmlArray(ElementName = "MultiClientPluginSettings")]
+        [XmlArrayItem("MultiClientProfileConfiguration")]
+        public MultiClientPluginConfiguration[] MultiClientPluginSettings
+        {
+            get
+            {
+                if (object.ReferenceEquals(m_mcpConfigs, null))
+                    m_mcpConfigs = new MultiClientPluginConfiguration[0];
+                return m_mcpConfigs;
+            }
+            set
+            {
+                m_mcpConfigs = value;
+            }
+        }
+
+        public void AddMultiClientPluginConfiguration(MultiClientPluginConfiguration config)
+        {
+            List<MultiClientPluginConfiguration> configs = new List<MultiClientPluginConfiguration>(MultiClientPluginSettings);
+            configs.Add(config);
+            MultiClientPluginSettings = configs.ToArray();
+        }
+
+        public void RemoveMultiClientPluginConfiguration(MultiClientPluginConfiguration config)
+        {
+            var configs = new List<MultiClientPluginConfiguration>(MultiClientPluginSettings);
+            configs.Remove(config);
+            MultiClientPluginSettings = configs.ToArray();
+        }
+
         /// <summary>
         /// Adds a profile to the configuration.
         /// </summary>
