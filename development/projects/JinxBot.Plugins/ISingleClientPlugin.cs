@@ -27,11 +27,11 @@ namespace JinxBot.Plugins
         /// Instructs the plugin to register for events from the client.
         /// </summary>
         /// <param name="profileClient">The related client.</param>
-        void RegisterEvents(BattleNetClient profileClient);
+        void RegisterEvents(IJinxBotClient profileClient);
         /// <summary>
         /// Instructs the plugin to unregister for events from the client.
         /// </summary>
         /// <param name="profileClient">The related client.</param>
-        void UnregisterEvents(BattleNetClient profileClient);
+        void UnregisterEvents(IJinxBotClient profileClient);
     }
 }
