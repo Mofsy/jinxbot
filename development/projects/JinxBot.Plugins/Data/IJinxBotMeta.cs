@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace JinxBot.Plugins.Data
 {
@@ -19,9 +20,14 @@ namespace JinxBot.Plugins.Data
     public interface IJinxBotMeta
     {
         /// <summary>
-        /// Gets the match pattern to check.
+        /// Gets the match pattern to check as specified by the user who created the meta.
         /// </summary>
-        string MatchPattern { get; }
+        string InputString { get; }
+
+        /// <summary>
+        /// Gets a reference to a regular expression to test whether an account name matches the user's meta.
+        /// </summary>
+        Regex Matcher { get; }
 
         /// <summary>
         /// Gets an enumerable list of roles.

@@ -100,11 +100,75 @@ namespace JinxBot.Plugins.Data
         /// <seealso cref="59c4110e-6f5b-4c1d-bbd0-027c906d751b"/>
         void RemoveRoleFromUser(IJinxBotPrincipal user, string role);
 
+        /// <summary>
+        /// Adds a role to a specified metauser.
+        /// </summary>
+        /// <param name="matchPattern">The match pattern to recognize.</param>
+        /// <param name="role">The role to add.</param>
+        /// <remarks>
+        /// <para>Valid meta match patterns can include:</para>
+        /// <list type="table">
+        ///     <listheader>
+        ///         <term>Character</term>
+        ///         <description>Meaning</description>
+        ///     </listheader>
+        ///     <item>
+        ///         <term><c>*</c></term>
+        ///         <description>Specifies zero or more of any characters.</description>
+        ///     </item>
+        ///     <item>
+        ///         <term><c>?</c></term>
+        ///         <description>Exactly one of any character.</description>
+        ///     </item>
+        ///     <item>
+        ///         <term><c>\*</c></term>
+        ///         <description>Matches a single asterisk in the actual name.</description>
+        ///     </item>
+        ///     <item>
+        ///         <term><c>\?</c></term>
+        ///         <description>Matches a single question mark in the actual name.</description>
+        ///     </item>
+        /// </list>
+        /// </remarks>
         void AddRoleToMeta(string matchPattern, string role);
 
+        /// <summary>
+        /// Removes a role from a specified metauser.
+        /// </summary>
+        /// <param name="matchPattern">The match pattern to recognize.</param>
+        /// <param name="role">The role to remove.</param>
+        /// <remarks>
+        /// <para>Valid meta match patterns can include:</para>
+        /// <list type="table">
+        ///     <listheader>
+        ///         <term>Character</term>
+        ///         <description>Meaning</description>
+        ///     </listheader>
+        ///     <item>
+        ///         <term><c>*</c></term>
+        ///         <description>Specifies zero or more of any characters.</description>
+        ///     </item>
+        ///     <item>
+        ///         <term><c>?</c></term>
+        ///         <description>Exactly one of any character.</description>
+        ///     </item>
+        ///     <item>
+        ///         <term><c>\*</c></term>
+        ///         <description>Matches a single asterisk in the actual name.</description>
+        ///     </item>
+        ///     <item>
+        ///         <term><c>\?</c></term>
+        ///         <description>Matches a single question mark in the actual name.</description>
+        ///     </item>
+        /// </list>
+        /// </remarks>
         void RemoveRoleFromMeta(string matchPattern, string role);
 
-
+        /// <summary>
+        /// Gets an enumerable list of roles defined as part of the database.
+        /// </summary>
+        /// <seealso cref="IJinxBotRole"/>
+        IEnumerable<IJinxBotRole> DefinedRoles { get; }
 
         /// <summary>
         /// Clears all users from the database.

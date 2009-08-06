@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Diagnostics;
 using System.Globalization;
 using System.Security.Principal;
+using JinxBot.Plugins.Data;
 
 namespace JinxBot.Plugins
 {
@@ -62,7 +63,7 @@ namespace JinxBot.Plugins
             {
                 Array.Copy(commandParts, 1, parameters, 0, parameters.Length);
             }
-            IPrincipal commander = m_client.Database.FindUsers(e.Username).FirstOrDefault();
+            IJinxBotPrincipal commander = m_client.Database.FindUsers(e.Username).FirstOrDefault();
             if (commander != null)
             {
                 foreach (ICommandHandler handler in m_client.CommandHandlers)

@@ -13,7 +13,7 @@ namespace JinxBot.Plugins.Data
 
         public void InitializeConnection(string defaultNamespace, bool isDiablo2)
         {
-            m_defaultNamespace = defaultNamespace;
+            
         }
 
         public IEnumerable<IJinxBotPrincipal> FindUsers(string matchPattern)
@@ -28,10 +28,25 @@ namespace JinxBot.Plugins.Data
 
         public IEnumerable<IJinxBotPrincipal> FindUsersInRole(string role)
         {
-            throw new NotImplementedException();
+            yield break;
         }
 
-        public void AddUsersToRole(IEnumerable<IJinxBotPrincipal> users, string role)
+        public void AddUserToRole(IJinxBotPrincipal user, string role)
+        {
+            
+        }
+
+        public void RemoveRoleFromUser(IJinxBotPrincipal user, string role)
+        {
+            
+        }
+
+        public void AddRoleToMeta(string matchPattern, string role)
+        {
+            
+        }
+
+        public void RemoveRoleFromMeta(string matchPattern, string role)
         {
             
         }
@@ -41,7 +56,40 @@ namespace JinxBot.Plugins.Data
             
         }
 
-        public void Save()
+        public IEnumerable<IJinxBotRole> DefinedRoles
+        {
+            get { yield break; }
+        }
+
+        #endregion
+
+        #region IJinxBotPlugin Members
+
+        public void Startup(IDictionary<string, string> settings)
+        {
+            
+        }
+
+        public void Shutdown(IDictionary<string, string> settings)
+        {
+            
+        }
+
+        public object GetSettingsObject()
+        {
+            return new object();
+        }
+
+        public IPluginUpdateManifest CheckForUpdates()
+        {
+            return null;
+        }
+
+        #endregion
+
+        #region IDisposable Members
+
+        public void Dispose()
         {
             
         }
