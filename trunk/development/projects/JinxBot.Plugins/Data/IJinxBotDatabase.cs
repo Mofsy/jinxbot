@@ -165,6 +165,20 @@ namespace JinxBot.Plugins.Data
         void RemoveRoleFromMeta(string matchPattern, string role);
 
         /// <summary>
+        /// Adds a role translator to the database service.
+        /// </summary>
+        /// <param name="translator">The new translator to use.</param>
+        /// <seealso cref="IRoleTranslator" />
+        void AddRoleTranslator(IRoleTranslator translator);
+
+        /// <summary>
+        /// Removes a role translator from use.
+        /// </summary>
+        /// <param name="translator">The translator to no longer use.</param>
+        /// <seealso cref="IRoleTranslator" />
+        void RemoveRoleTranslator(IRoleTranslator translator);
+
+        /// <summary>
         /// Gets an enumerable list of roles defined as part of the database.
         /// </summary>
         /// <seealso cref="IJinxBotRole"/>
