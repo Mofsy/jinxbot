@@ -19,6 +19,9 @@ using System.Drawing.Imaging;
 using System.Diagnostics;
 using Icon = JinxBot.Configuration.WebIconList.Icon;
 using System.Runtime.Serialization;
+using Microsoft.WindowsAPICodePack.Taskbar;
+using System.Threading;
+using JinxBot.Windows7;
 
 namespace JinxBot.Wizards
 {
@@ -31,33 +34,13 @@ namespace JinxBot.Wizards
 
         private void FirstRunWizard_Load(object sender, EventArgs e)
         {
-            BnFtpVersion1Request req = new BnFtpVersion1Request(Product.StarcraftRetail.ProductCode, "icons.bni", null);
-            string path = Path.GetTempFileName();
-            req.LocalFileName = path;
-            try
-            {
-                req.ExecuteRequest();
-
-                BniFileParser bni = new BniFileParser(path);
-                this.pbIconsBni.Image = bni.AllIcons[18].Image;
-            }
-            catch { }
+            
 
         }
 
         private void llWhyDownloadIcons_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             System.Diagnostics.Process.Start("http://www.jinxbot.net/wiki/index.php?title=Downloading_user_list_images");
-        }
-
-        private void label3_Click(object sender, EventArgs e)
-        {
-            this.rbUseBnetWebsiteIcons.Checked = true;
-        }
-
-        private void label2_Click(object sender, EventArgs e)
-        {
-            this.rbUseIconsBni.Checked = true;
         }
 
         private void rbUseIconsBni_CheckedChanged(object sender, EventArgs e)
@@ -82,41 +65,42 @@ namespace JinxBot.Wizards
 
         private void bwDownload_DoWork(object sender, DoWorkEventArgs e)
         {
-            if (rbUseBnetWebsiteIcons.Checked)
+            if (TaskbarManager.IsPlatformSupported)
             {
-                WebIconList iconsList = null;
+                BeginInvoke((ThreadStart)delegate() { TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Normal, Handle); });
+            }
 
-                string xml = DataResources.WebIconsList;
-                using (StringReader sr = new StringReader(xml))
-                using (XmlTextReader xtr = new XmlTextReader(sr))
+            bwDownload.ReportProgress(0, "icons.bni");
+
+            BnFtpVersion1Request req = new BnFtpVersion1Request("STAR", "icons.bni", null);
+            req.LocalFileName = Path.Combine(JinxBotConfiguration.ApplicationDataPath, "icons.bni");
+            req.FilePartDownloaded += new DownloadStatusEventHandler(req_FilePartDownloaded);
+            req.ExecuteRequest();
+            JumpListIconManager.CreateJumpListImages(req.LocalFileName);
+
+            WebIconList iconsList = null;
+
+            string xml = DataResources.WebIconsList;
+            using (StringReader sr = new StringReader(xml))
+            using (XmlTextReader xtr = new XmlTextReader(sr))
+            {
+                try
                 {
-                    try
-                    {
-                        XmlSerializer ser = new XmlSerializer(typeof(WebIconList));
-                        iconsList = ser.Deserialize(xtr) as WebIconList;
-                    }
-                    catch (Exception)
-                    {
-                        // TODO: Log the exception.
-                        MessageBox.Show("There was an error loading the icons list.", "Error Downloading Icons", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        iconsList = new WebIconList() { Icons = new WebIconList.Icon[0] };
-                    }
+                    XmlSerializer ser = new XmlSerializer(typeof(WebIconList));
+                    iconsList = ser.Deserialize(xtr) as WebIconList;
                 }
-
-                for (int i = 0; i < iconsList.Icons.Length; i++)
+                catch (Exception)
                 {
-                    bwDownload.ReportProgress(i * 100 / iconsList.Icons.Length, iconsList.Icons[i].Uri);
-                    DownloadFile(iconsList.Icons[i]);
+                    // TODO: Log the exception.
+                    MessageBox.Show("There was an error loading the icons list.", "Error Downloading Icons", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    iconsList = new WebIconList() { Icons = new WebIconList.Icon[0] };
                 }
             }
-            else
-            {
-                bwDownload.ReportProgress(0, "icons.bni");
 
-                BnFtpVersion1Request req = new BnFtpVersion1Request("STAR", "icons.bni", null);
-                req.LocalFileName = Path.Combine(JinxBotConfiguration.ApplicationDataPath, "icons.bni");
-                req.FilePartDownloaded += new DownloadStatusEventHandler(req_FilePartDownloaded);
-                req.ExecuteRequest();
+            for (int i = 0; i < iconsList.Icons.Length; i++)
+            {
+                bwDownload.ReportProgress(i * 100 / iconsList.Icons.Length, iconsList.Icons[i].Uri);
+                DownloadFile(iconsList.Icons[i]);
             }
         }
 
@@ -125,14 +109,17 @@ namespace JinxBot.Wizards
             string localPath = Path.Combine(JinxBotConfiguration.ApplicationDataPath, "Icons");
             if (!Directory.Exists(localPath))
                 Directory.CreateDirectory(localPath);
-
-            string animationLocalPath = Path.Combine(localPath, icon.LocalAnimationName);
+            string targetDirectory = localPath;
 
             string temporaryPath = Path.GetTempFileName();
             localPath = Path.Combine(localPath, icon.LocalName);
             WebClient client = new WebClient();
-            client.DownloadFile(icon.AnimationUri, animationLocalPath);
             client.DownloadFile(icon.Uri, temporaryPath);
+            if (icon.LocalAnimationName != null)
+            {
+                string animationLocalPath = Path.Combine(targetDirectory, icon.LocalAnimationName);
+                client.DownloadFile(icon.AnimationUri, animationLocalPath);
+            }
 
             using (Image source = Image.FromFile(temporaryPath))
             using (Image target = new Bitmap(64, 44, PixelFormat.Format32bppArgb))
@@ -206,11 +193,19 @@ namespace JinxBot.Wizards
             this.pb.Value = e.ProgressPercentage;
             if (e.UserState != null)
                 this.lblFileName.Text = e.UserState as string;
+            if (TaskbarManager.IsPlatformSupported)
+            {
+                TaskbarManager.Instance.SetProgressValue(e.ProgressPercentage, 100, Handle);
+            }
         }
 
         private void bwDownload_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             this.wizardControl1.CurrentStepIndex++;
+            if (TaskbarManager.IsPlatformSupported)
+            {
+                BeginInvoke((ThreadStart)delegate() { TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.NoProgress, Handle); });
+            }
         }
 
         private void wizardControl1_FinishButtonClick(object sender, EventArgs e)

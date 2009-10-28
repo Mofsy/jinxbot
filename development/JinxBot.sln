@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JinxBot.Test.Configuration"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JinxBot.Plugins.Tests", "test\JinxBot.Plugins.Tests\JinxBot.Plugins.Tests.csproj", "{825505D0-8CF0-4AA0-841B-B9B91009C937}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JinxBot.Windows7.JumplistIntegration", "test\JinxBot.Windows7.JumplistIntegration\JinxBot.Windows7.JumplistIntegration.csproj", "{C84649FB-B864-4571-A98C-B470E6BF3F26}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = JinxBot.vsmdi
@@ -125,6 +127,21 @@ Global
 		{825505D0-8CF0-4AA0-841B-B9B91009C937}.Release|Any CPU.Build.0 = Release|Any CPU
 		{825505D0-8CF0-4AA0-841B-B9B91009C937}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{825505D0-8CF0-4AA0-841B-B9B91009C937}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{C84649FB-B864-4571-A98C-B470E6BF3F26}.Debug|.NET.ActiveCfg = Debug|Any CPU
+		{C84649FB-B864-4571-A98C-B470E6BF3F26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C84649FB-B864-4571-A98C-B470E6BF3F26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C84649FB-B864-4571-A98C-B470E6BF3F26}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{C84649FB-B864-4571-A98C-B470E6BF3F26}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{C84649FB-B864-4571-A98C-B470E6BF3F26}.Default|.NET.ActiveCfg = Debug|Any CPU
+		{C84649FB-B864-4571-A98C-B470E6BF3F26}.Default|Any CPU.ActiveCfg = Debug|Any CPU
+		{C84649FB-B864-4571-A98C-B470E6BF3F26}.Default|Any CPU.Build.0 = Debug|Any CPU
+		{C84649FB-B864-4571-A98C-B470E6BF3F26}.Default|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{C84649FB-B864-4571-A98C-B470E6BF3F26}.Default|Mixed Platforms.Build.0 = Debug|Any CPU
+		{C84649FB-B864-4571-A98C-B470E6BF3F26}.Release|.NET.ActiveCfg = Release|Any CPU
+		{C84649FB-B864-4571-A98C-B470E6BF3F26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C84649FB-B864-4571-A98C-B470E6BF3F26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C84649FB-B864-4571-A98C-B470E6BF3F26}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{C84649FB-B864-4571-A98C-B470E6BF3F26}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

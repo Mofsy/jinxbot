@@ -23,6 +23,8 @@
     <WarningLevel>4</WarningLevel>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <CodeAnalysisRules>-Microsoft.Design#CA1057;-Microsoft.Design#CA1054;-Microsoft.Design#CA1056;-Microsoft.Design#CA1055</CodeAnalysisRules>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,11 +35,28 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.WindowsAPICodePack, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\dependencies\Microsoft.WindowsAPICodePack.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.Shell, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\dependencies\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Runtime.Serialization">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.ServiceModel">
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Xml.Linq">
@@ -51,6 +70,9 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
     <Reference Include="WizardBase, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\dependencies\WizardBase.dll</HintPath>
@@ -58,9 +80,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClientProfile.cs" />
+    <Compile Include="Configuration\ConfigurationLoader.cs" />
     <Compile Include="Configuration\DependencyConfiguration.cs" />
     <Compile Include="Configuration\GlobalsConfigurationSection.cs" />
     <Compile Include="Configuration\IconProviderConfiguration.cs" />
+    <Compile Include="Configuration\IJinxBotSingleInstanceService.cs" />
+    <Compile Include="Configuration\InstanceManagementClient.cs" />
+    <Compile Include="Configuration\InstanceManagementService.cs" />
+    <Compile Include="Configuration\JinxBotConfigurationErrorException.cs" />
     <Compile Include="Configuration\MultiClientPluginConfiguration.cs" />
     <Compile Include="Configuration\PingStyle.cs" />
     <Compile Include="Configuration\PluginConfiguration.cs" />
@@ -69,6 +96,7 @@
     <Compile Include="Configuration\WebIconList.cs" />
     <Compile Include="Configuration\IconType.cs" />
     <Compile Include="Configuration\JinxBotConfiguration.cs" />
+    <Compile Include="Configuration\XDocConfigurationReader.cs" />
     <Compile Include="DataResources.Designer.cs" />
     <Compile Include="Design\BattleNetServerTypeConverter.cs" />
     <Compile Include="Design\BinFileBrowserTypeEditor.cs" />
@@ -94,13 +122,13 @@
     <Compile Include="Plugins\PluginFactory.cs" />
     <Compile Include="Plugins\PluginInfo.cs" />
     <Compile Include="Plugins\ProfilePluginManager.cs" />
-    <Compile Include="Plugins\WardenPacketHandler.cs" />
     <Compile Include="Reliability\GlobalErrorHandler.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="UnsafeNativeMethods.cs" />
     <Compile Include="Views\ChannelSelect.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -311,6 +339,10 @@
     <Compile Include="WebProtocols\PluggableProtocolRequest.cs" />
     <Compile Include="WebProtocols\PluggableProtocolResponse.cs" />
     <Compile Include="WebProtocols\TraceHelper.cs" />
+    <Compile Include="Windows7\IJumpListWindowTarget.cs" />
+    <Compile Include="Windows7\JumpListIconManager.cs" />
+    <Compile Include="Windows7\JumpListManager.cs" />
+    <Compile Include="Windows7\ThumbnailPreviewManager.cs" />
     <Compile Include="Wizards\CreateProfileWizard.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -325,10 +357,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\test\JinxBot.Plugins.Tests\JinxBot.Plugins.Tests.csproj">
-      <Project>{825505D0-8CF0-4AA0-841B-B9B91009C937}</Project>
-      <Name>JinxBot.Plugins.Tests</Name>
-    </ProjectReference>
     <ProjectReference Include="..\BNSharp\BNSharp.csproj">
       <Project>{2D02D43C-BC3B-41D2-9226-4E215939107F}</Project>
       <Name>BNSharp</Name>
