@@ -32,15 +32,7 @@
             this.wizardControl1 = new WizardBase.WizardControl();
             this.startStep1 = new WizardBase.StartStep();
             this.stepDefineIcons = new WizardBase.IntermediateStep();
-            this.pbIconsBni = new System.Windows.Forms.PictureBox();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.rbUseBnetWebsiteIcons = new System.Windows.Forms.RadioButton();
             this.llWhyDownloadIcons = new System.Windows.Forms.LinkLabel();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.rbUseIconsBni = new System.Windows.Forms.RadioButton();
             this.stepDownloading = new WizardBase.IntermediateStep();
             this.lblFileName = new System.Windows.Forms.Label();
             this.pb = new System.Windows.Forms.ProgressBar();
@@ -54,9 +46,8 @@
             this.finishStep1 = new WizardBase.FinishStep();
             this.label9 = new System.Windows.Forms.Label();
             this.bwDownload = new System.ComponentModel.BackgroundWorker();
+            this.label1 = new System.Windows.Forms.Label();
             this.stepDefineIcons.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbIconsBni)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.stepDownloading.SuspendLayout();
             this.stepAllowData.SuspendLayout();
             this.finishStep1.SuspendLayout();
@@ -64,7 +55,7 @@
             // 
             // wizardControl1
             // 
-            this.wizardControl1.BackButtonEnabled = true;
+            this.wizardControl1.BackButtonEnabled = false;
             this.wizardControl1.BackButtonVisible = false;
             this.wizardControl1.CancelButtonEnabled = false;
             this.wizardControl1.CancelButtonVisible = true;
@@ -103,72 +94,14 @@
             // stepDefineIcons
             // 
             this.stepDefineIcons.BindingImage = ((System.Drawing.Image)(resources.GetObject("stepDefineIcons.BindingImage")));
-            this.stepDefineIcons.Controls.Add(this.pbIconsBni);
-            this.stepDefineIcons.Controls.Add(this.pictureBox1);
-            this.stepDefineIcons.Controls.Add(this.label3);
-            this.stepDefineIcons.Controls.Add(this.label4);
-            this.stepDefineIcons.Controls.Add(this.rbUseBnetWebsiteIcons);
-            this.stepDefineIcons.Controls.Add(this.llWhyDownloadIcons);
-            this.stepDefineIcons.Controls.Add(this.label2);
             this.stepDefineIcons.Controls.Add(this.label1);
-            this.stepDefineIcons.Controls.Add(this.rbUseIconsBni);
+            this.stepDefineIcons.Controls.Add(this.llWhyDownloadIcons);
             this.stepDefineIcons.ForeColor = System.Drawing.SystemColors.ControlText;
             this.stepDefineIcons.Name = "stepDefineIcons";
             this.stepDefineIcons.Subtitle = "This step allows you to define how JinxBot gets its images for the user lists.";
             this.stepDefineIcons.SubtitleAppearence = ((WizardBase.TextAppearence)(resources.GetObject("stepDefineIcons.SubtitleAppearence")));
             this.stepDefineIcons.Title = "Configure View Images";
             this.stepDefineIcons.TitleAppearence = ((WizardBase.TextAppearence)(resources.GetObject("stepDefineIcons.TitleAppearence")));
-            // 
-            // pbIconsBni
-            // 
-            this.pbIconsBni.Location = new System.Drawing.Point(25, 139);
-            this.pbIconsBni.Name = "pbIconsBni";
-            this.pbIconsBni.Size = new System.Drawing.Size(56, 28);
-            this.pbIconsBni.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pbIconsBni.TabIndex = 8;
-            this.pbIconsBni.TabStop = false;
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.ImageLocation = "http://www.battle.net/war3/images/battle.net/icons/tier1-orc.gif";
-            this.pictureBox1.Location = new System.Drawing.Point(25, 235);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(55, 38);
-            this.pictureBox1.TabIndex = 7;
-            this.pictureBox1.TabStop = false;
-            // 
-            // label3
-            // 
-            this.label3.Location = new System.Drawing.Point(145, 245);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(311, 43);
-            this.label3.TabIndex = 6;
-            this.label3.Text = "This option will download a rich set of icons from the Battle.net web site.  Thes" +
-                "e look like the WarCraft III Battle.net interface.  They take approximately 1mb " +
-                "of disk space.";
-            this.label3.Click += new System.EventHandler(this.label3_Click);
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(143, 225);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(330, 13);
-            this.label4.TabIndex = 5;
-            this.label4.Text = "Download the product icons from the Battle.net web site.";
-            this.label4.Click += new System.EventHandler(this.label3_Click);
-            // 
-            // rbUseBnetWebsiteIcons
-            // 
-            this.rbUseBnetWebsiteIcons.AutoSize = true;
-            this.rbUseBnetWebsiteIcons.Location = new System.Drawing.Point(118, 246);
-            this.rbUseBnetWebsiteIcons.Name = "rbUseBnetWebsiteIcons";
-            this.rbUseBnetWebsiteIcons.Size = new System.Drawing.Size(14, 13);
-            this.rbUseBnetWebsiteIcons.TabIndex = 4;
-            this.rbUseBnetWebsiteIcons.TabStop = true;
-            this.rbUseBnetWebsiteIcons.UseVisualStyleBackColor = true;
-            this.rbUseBnetWebsiteIcons.CheckedChanged += new System.EventHandler(this.rbUseIconsBni_CheckedChanged);
             // 
             // llWhyDownloadIcons
             // 
@@ -181,37 +114,6 @@
             this.llWhyDownloadIcons.Text = "Why do I need to do this?";
             this.llWhyDownloadIcons.VisitedLinkColor = System.Drawing.Color.Blue;
             this.llWhyDownloadIcons.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.llWhyDownloadIcons_LinkClicked);
-            // 
-            // label2
-            // 
-            this.label2.Location = new System.Drawing.Point(147, 146);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(311, 53);
-            this.label2.TabIndex = 2;
-            this.label2.Text = resources.GetString("label2.Text");
-            this.label2.Click += new System.EventHandler(this.label2_Click);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(145, 126);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(173, 13);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Use a Starcraft icons.bni file.";
-            this.label1.Click += new System.EventHandler(this.label2_Click);
-            // 
-            // rbUseIconsBni
-            // 
-            this.rbUseIconsBni.AutoSize = true;
-            this.rbUseIconsBni.Location = new System.Drawing.Point(120, 147);
-            this.rbUseIconsBni.Name = "rbUseIconsBni";
-            this.rbUseIconsBni.Size = new System.Drawing.Size(14, 13);
-            this.rbUseIconsBni.TabIndex = 0;
-            this.rbUseIconsBni.TabStop = true;
-            this.rbUseIconsBni.UseVisualStyleBackColor = true;
-            this.rbUseIconsBni.CheckedChanged += new System.EventHandler(this.rbUseIconsBni_CheckedChanged);
             // 
             // stepDownloading
             // 
@@ -338,6 +240,14 @@
             this.bwDownload.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.bwDownload_RunWorkerCompleted);
             this.bwDownload.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.bwDownload_ProgressChanged);
             // 
+            // label1
+            // 
+            this.label1.Location = new System.Drawing.Point(33, 82);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(484, 132);
+            this.label1.TabIndex = 4;
+            this.label1.Text = resources.GetString("label1.Text");
+            // 
             // FirstRunWizard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -349,8 +259,6 @@
             this.Load += new System.EventHandler(this.FirstRunWizard_Load);
             this.stepDefineIcons.ResumeLayout(false);
             this.stepDefineIcons.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbIconsBni)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.stepDownloading.ResumeLayout(false);
             this.stepDownloading.PerformLayout();
             this.stepAllowData.ResumeLayout(false);
@@ -368,15 +276,7 @@
         private WizardBase.IntermediateStep stepDefineIcons;
         private WizardBase.FinishStep finishStep1;
         private WizardBase.IntermediateStep stepDownloading;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.RadioButton rbUseIconsBni;
         private System.Windows.Forms.LinkLabel llWhyDownloadIcons;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.RadioButton rbUseBnetWebsiteIcons;
-        private System.Windows.Forms.PictureBox pbIconsBni;
-        private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label lblFileName;
         private System.Windows.Forms.ProgressBar pb;
         private System.ComponentModel.BackgroundWorker bwDownload;
@@ -388,5 +288,6 @@
         private System.Windows.Forms.RadioButton rbDisallowUsage;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label1;
     }
 }

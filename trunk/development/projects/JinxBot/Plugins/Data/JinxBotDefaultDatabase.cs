@@ -95,5 +95,20 @@ namespace JinxBot.Plugins.Data
         }
 
         #endregion
+
+        #region IJinxBotDatabase Members
+
+
+        public void AddRoleTranslator(IRoleTranslator translator)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveRoleTranslator(IRoleTranslator translator)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
     }
 }

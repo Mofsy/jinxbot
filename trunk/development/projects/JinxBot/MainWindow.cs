@@ -19,12 +19,17 @@ using JinxBot.Plugins.UI;
 using BNSharp.BattleNet;
 using JinxBot.Plugins.BNSharp;
 using JinxBot.Controls.Docking;
+using Microsoft.WindowsAPICodePack.Taskbar;
+using JinxBot.Windows7;
+using System.Threading;
 
 namespace JinxBot
 {
-    public partial class MainWindow : Form, IMainWindow
+    public partial class MainWindow : Form, IMainWindow, IJumpListWindowTarget
     {
         private Dictionary<ClientProfile, JinxBotClient> m_activeClients;
+
+        private string[] m_programArgs;
 
         public MainWindow()
         {
@@ -42,6 +47,14 @@ namespace JinxBot
             //this.menuStrip1.Renderer = new JinxBotMenuRenderer();
 
             PluginFactory.MainWindow = this;
+            
+            InstanceManagementService.HostIMS(this);
+        }
+
+        public MainWindow(string[] args)
+            : this()
+        {
+            m_programArgs = args;
         }
 
         protected override void OnLoad(EventArgs e)
@@ -59,6 +72,7 @@ namespace JinxBot
         private void RebindProfiles()
         {
             ClearProfilesList();
+
             foreach (ClientProfile p in JinxBotConfiguration.Instance.Profiles)
             {
                 ToolStripMenuItem tsmi = new ToolStripMenuItem(p.ProfileName);
@@ -66,6 +80,8 @@ namespace JinxBot
                 tsmi.Click += new EventHandler(tsmi_Click);
                 this.profilesToolStripMenuItem.DropDownItems.Add(tsmi);
             }
+
+            JumpListManager.RefreshJumpList(JinxBotConfiguration.Instance.Profiles);
         }
 
         private void ClearProfilesList()
@@ -79,6 +95,11 @@ namespace JinxBot
         void tsmi_Click(object sender, EventArgs e)
         {
             ClientProfile cp = (sender as ToolStripMenuItem).Tag as ClientProfile;
+            LoadOrDisplayProfile(cp);
+        }
+
+        private void LoadOrDisplayProfile(ClientProfile cp)
+        {
             if (cp != null)
             {
                 if (m_activeClients.ContainsKey(cp))
@@ -92,6 +113,8 @@ namespace JinxBot
                     client.Client.Disconnected += client_Disconnected;
                     m_activeClients.Add(cp, client);
                     client.ProfileDocument.Show(this.dock);
+
+                    ThumbnailPreviewManager.AddThumbnail(client.ProfileDocument);
                 }
             }
         }
@@ -118,8 +141,10 @@ namespace JinxBot
             }
         }
 
-        private void MainWindow_Load(object sender, EventArgs e)
+        protected override void OnShown(EventArgs e)
         {
+            base.OnShown(e);
+
             RebindProfiles();
 
             if (!JinxBotConfiguration.ConfigurationFileExists)
@@ -133,6 +158,19 @@ namespace JinxBot
                 CreateProfileWizard cpw = new CreateProfileWizard();
                 cpw.ShowDialog(this);
             }
+
+            ThumbnailPreviewManager.Initialize(this);
+
+            if (m_programArgs != null && m_programArgs.Length > 0)
+            {
+                (this as IJumpListWindowTarget).HandleJumpListCall(m_programArgs);
+                m_programArgs = null;
+            }
+        }
+
+        private void MainWindow_Load(object sender, EventArgs e)
+        {
+            
         }
 
         private delegate void SyncDel();
@@ -235,11 +273,14 @@ namespace JinxBot
             {
                 GlobalErrorHandler.ErrorLog.Hide();
                 displayErrorLogToolStripMenuItem.Checked = false;
+
+                ThumbnailPreviewManager.RemoveThumbnail(GlobalErrorHandler.ErrorLog);
             }
             else
             {
                 GlobalErrorHandler.ErrorLog.Show(this.dock);
                 displayErrorLogToolStripMenuItem.Checked = true;
+                ThumbnailPreviewManager.AddThumbnail(GlobalErrorHandler.ErrorLog);
             }
         }
 
@@ -286,6 +327,34 @@ namespace JinxBot
         public void RemoveDocument(DockableDocument mainWindowDocument)
         {
             mainWindowDocument.Hide();
+        }
+
+        #endregion
+
+        #region IJumpListWindowTarget Members
+
+        void IJumpListWindowTarget.HandleJumpListCall(string[] param)
+        {
+            string p = param[0];
+            if (p.StartsWith("--load-profile-"))
+            {
+                int profileIndex = int.Parse(p.Substring(p.LastIndexOf('-') + 1));
+                ClientProfile profile = JinxBotConfiguration.Instance.Profiles[profileIndex];
+
+                var ts = (ThreadStart)(() => LoadOrDisplayProfile(profile));
+                if (InvokeRequired)
+                    BeginInvoke(ts);
+                else
+                    ts();
+            }
+            else if (p.Equals("--new-profile"))
+            {
+                var ts = (ThreadStart)(() => newProfileToolStripMenuItem_Click(this, EventArgs.Empty));
+                if (InvokeRequired)
+                    BeginInvoke(ts);
+                else
+                    ts();
+            }
         }
 
         #endregion
