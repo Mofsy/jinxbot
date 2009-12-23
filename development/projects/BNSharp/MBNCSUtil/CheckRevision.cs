@@ -20,6 +20,7 @@ conditions.
 
 
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Diagnostics;
 using System.Net;
@@ -27,6 +28,7 @@ using System.Text;
 using BNSharp.MBNCSUtil.Util;
 using System.Globalization;
 using System.Security.Permissions;
+using System.Collections.Generic;
 
 namespace BNSharp.MBNCSUtil
 {
@@ -107,7 +109,8 @@ namespace BNSharp.MBNCSUtil
         /// <returns>The checksum value.</returns>
         /// <exception cref="ArgumentNullException">Thrown if the <i>valueString</i> or <i>files</i> parameters are <b>null</b>
         /// (<b>Nothing</b> in Visual Basic).</exception>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown if the <i>files</i> parameter is not a 3-string array.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="files" /> is not a 3-string array, or if  
+        /// <paramref name="mpqNumber" /> is outside of the range of 0 to 7, inclusive.</exception>
         /// <exception cref="FileNotFoundException">Thrown if one of the specified game files is not found.</exception>
         /// <exception cref="IOException">Thrown in the event of a general I/O error.</exception>
         /// <remarks>
@@ -194,7 +197,60 @@ namespace BNSharp.MBNCSUtil
                 throw new ArgumentNullException("files", Resources.crFileListNull);
             if (files.Length != 3)
                 throw new ArgumentOutOfRangeException("files", files, Resources.crFileListInvalid);
+            if (mpqNumber < 0 || mpqNumber > 7)
+                throw new ArgumentOutOfRangeException("mpqNumber", mpqNumber, "MPQ number must be between 0 and 7, inclusive.");
 
+            if (AlwaysUseSlowCheck)
+            {
+                return SlowCheckRevision(valueString, files, mpqNumber);
+            }
+            else
+            {
+                switch (OptimizationStrategy)
+                {
+                    case CheckRevisionOptimizationStrategy.LoadFilesOnDemand:
+                        return SlowCheckRevision(valueString, files, mpqNumber);
+                    case CheckRevisionOptimizationStrategy.PreloadAndPersistFiles:
+                    case CheckRevisionOptimizationStrategy.PreloadAllFilesAndClearAfterUse:
+                        return ExecutePreloadedRevisionCheck(valueString, files, mpqNumber);
+                    default:
+                        throw new InvalidOperationException("Optimization strategy is an unsupported value.");
+
+                } 
+            }
+        }
+
+        private static int ExecutePreloadedRevisionCheck(
+            string valueString,
+            string[] files,
+            int mpqNumber)
+        {
+            uint A, B, C;
+            List<string> formulas = new List<string>();
+
+            CheckRevisionFormulaTracker.InitializeValues(valueString, formulas, out A, out B, out C);
+
+            A ^= hashcodes[mpqNumber];
+
+            Stream dataStream = CheckRevisionPreloadTracker.GetFiles(files);
+
+            int result = DoCheckRevisionCompiled(A, B, C, formulas, dataStream);
+
+            if (OptimizationStrategy == CheckRevisionOptimizationStrategy.PreloadAllFilesAndClearAfterUse)
+            {
+                dataStream.Dispose();
+                dataStream = null;
+            }
+
+            return result;
+        }
+
+        // This method always assumes the inputs have been sanity-checked.
+        private static int SlowCheckRevision(
+            string valueString,
+            string[] files,
+            int mpqNumber)
+        {
             uint[] values = new uint[4];
 
             int[] opValueDest = new int[4];
@@ -250,7 +306,7 @@ namespace BNSharp.MBNCSUtil
                     while (currentFile.Position < currentFile.Length)
                     {
                         long currentFilePosition = 0;
-                        long amountToRead = Math.Min(currentFile.Length - currentFilePosition, 1024);
+                        long amountToRead = Math.Min(currentFile.Length - currentFile.Position, 1024);
                         currentFile.Read(currentOperandBuffer, 0, (int)amountToRead);
 
                         if (amountToRead < 1024)
@@ -264,6 +320,7 @@ namespace BNSharp.MBNCSUtil
                                 }
                             }
                         }
+                        CheckRevisionFormulaTracker.FileAppendBytes("c:\\projects\\baseline.bin", currentOperandBuffer);
 
                         for (int j = 0; j < 1024; j += 4)
                         {
@@ -300,6 +357,28 @@ namespace BNSharp.MBNCSUtil
             }
 
             return unchecked((int)values[2]);
+        }
+
+        // This method assumes all parameters have been sanity checked
+        private static int DoCheckRevisionCompiled(
+            uint A, 
+            uint B, 
+            uint C, 
+            IEnumerable<string> crevFormulas,
+            Stream completeDataStream)
+        {
+            StandardCheckRevisionImplementation impl = CheckRevisionFormulaTracker.GetImplementation(crevFormulas);
+
+            using (BinaryReader br = new BinaryReader(completeDataStream))
+            {
+                uint S;
+                while (br.BaseStream.Position < br.BaseStream.Length)
+                {
+                    S = br.ReadUInt32();
+                    impl(ref A, ref B, ref C, ref S);
+                }
+            }
+            return unchecked((int)C);
         }
 
         /// <summary>
@@ -447,6 +526,78 @@ namespace BNSharp.MBNCSUtil
             return (byte)ver;
              * */
         }
+
+        /// <summary>
+        /// Gets or sets whether to use the slow revision check.
+        /// </summary>
+        /// <remarks>
+        /// <para>By default, the revision check operation for non-Lockdown clients uses dynamic compilation based on 
+        /// the standard format of the revision check formula (<c>A=x B=y C=z 4 A=A?S B=B?C C=C?A A=A?B</c>).  If there
+        /// is a compatibility problem, clients can disable the use of dynamic compilation by setting this property
+        /// to <see langword="true" />.</para>
+        /// <para>In the current version of MBNCSUtil and BN#, setting this property to <see langword="true" /> has the effect of causing the
+        /// revision check process to use the <see cref="CheckRevisionOptimizationStrategy.LoadFilesOnDemand">LoadFilesOnDemand</see> 
+        /// <see cref="OptimizationStrategy">optimization strategy</see>, regardless of the value of that property, to ensure 100% compatibility with
+        /// the older version of the revision check formulas.  Future versions will vary according to that property.</para>
+        /// </remarks>
+        [DefaultValue(false)]
+        public static bool AlwaysUseSlowCheck
+        {
+            get;
+            set;
+        }
+
+        private static CheckRevisionOptimizationStrategy _optimizationStrategy = CheckRevisionOptimizationStrategy.PreloadAllFilesAndClearAfterUse;
+        /// <summary>
+        /// Gets or sets the optimization strategy used by the revision check file loader.
+        /// </summary>
+        /// <remarks>
+        /// <para>For more information about the differences between the optimization strategies, see 
+        /// <see>CheckRevisionOptimizationStrategy</see>.</para>
+        /// <para>By default, this is set to <see>CheckRevisionOptimizationStrategy.PreloadAllFilesAndClearAfterUse</see>.
+        /// </para>
+        /// </remarks>
+        [DefaultValue(CheckRevisionOptimizationStrategy.PreloadAllFilesAndClearAfterUse)]
+        public static CheckRevisionOptimizationStrategy OptimizationStrategy
+        {
+            get { return _optimizationStrategy; }
+            set
+            {
+                if (!Enum.IsDefined(typeof(CheckRevisionOptimizationStrategy), value))
+                    throw new InvalidEnumArgumentException("value", (int)value, typeof(CheckRevisionOptimizationStrategy));
+                _optimizationStrategy = value;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Specifies the optimization strategy that <see>CheckRevision</see> should use when loading files from disk.
+    /// </summary>
+    public enum CheckRevisionOptimizationStrategy
+    {
+        /// <summary>
+        /// Reads all the files and inserts the appropriate padding before executing the revision check, allowing the 
+        /// operation to execute in a single pass without (generally) needing to hit the disk.  This is the default 
+        /// optimization strategy, and will use about 11mb of memory transitionally during the operation of the check,
+        /// but will free it following the check.
+        /// </summary>
+        PreloadAllFilesAndClearAfterUse,
+        /// <summary>
+        /// Reads all of the files and inserts the appropriate padding before executing the revision check, based on a 
+        /// combination of the names of the files that are being used.  This allows the operation to execute in a single
+        /// pass without needing to hit the disk.  When the revision check is completed, the file data are retained so 
+        /// that future calls don't need to recombine the file data.  For clients that use classic revision check, this
+        /// means that files will take about 11mb each.  For clients that use lockdown, because the lockdown file is part
+        /// of the hashed file data, this may be up to about 200mb.  This strategy is probably ideal for applications 
+        /// similar to BNLS that need to focus on serving revision check requests, and not for general client use.
+        /// </summary>
+        PreloadAndPersistFiles,
+        /// <summary>
+        /// Reads files one kilobyte at a time, as the revision check needs the file data to be read in.  This is probably 
+        /// the slowest optimization strategy, but it probably will hit the disk more than once during the operation.
+        /// It also uses the least amount of memory.
+        /// </summary>
+        LoadFilesOnDemand
     }
 }
 
