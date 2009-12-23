@@ -126,6 +126,10 @@
     <Compile Include="BattleNet\UserProfileRequest.cs" />
     <Compile Include="BattleNet\UserProfileKeys.cs" />
     <Compile Include="ErrorType.cs" />
+    <Compile Include="MBNCSUtil\Util\CheckRevisionCompiler.cs" />
+    <Compile Include="MBNCSUtil\Util\CheckRevisionFormulaTracker.cs" />
+    <Compile Include="MBNCSUtil\Util\CheckRevisionPreloadTracker.cs" />
+    <Compile Include="MBNCSUtil\Util\StandardCheckRevisionImplementation.cs" />
     <Compile Include="MBNCSUtil\Util\WardenCrypt.cs" />
     <Compile Include="MBNCSUtil\Util\WardenRandom.cs" />
     <Compile Include="MBNCSUtil\WardenEncryptionContext.cs" />
