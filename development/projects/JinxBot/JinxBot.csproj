@@ -97,6 +97,8 @@
     <Compile Include="Configuration\IconType.cs" />
     <Compile Include="Configuration\JinxBotConfiguration.cs" />
     <Compile Include="Configuration\XDocConfigurationReader.cs" />
+    <Compile Include="Configuration\XNodeExtensions.cs" />
+    <Compile Include="Configuration\XProperty.cs" />
     <Compile Include="DataResources.Designer.cs" />
     <Compile Include="Design\BattleNetServerTypeConverter.cs" />
     <Compile Include="Design\BinFileBrowserTypeEditor.cs" />
@@ -323,6 +325,7 @@
       <DependentUpon>RecordDisplay.cs</DependentUpon>
     </Compile>
     <Compile Include="Views\ToolTipPropertySet.cs" />
+    <Compile Include="Views\UiIconProvider.cs" />
     <Compile Include="Views\WarcraftProfileDisplayDocument.cs">
       <SubType>Form</SubType>
     </Compile>

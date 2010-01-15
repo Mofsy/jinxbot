@@ -19,6 +19,7 @@ namespace JinxBot.Views
 {
     public partial class ProfileDocument : DockableDocument, IChatTab, IProfileDocument
     {
+        #region fields
         private ChatDocument m_chat;
         private FriendsList m_friends;
         private ChannelList m_channel;
@@ -27,7 +28,11 @@ namespace JinxBot.Views
         private BattleNetClient m_client;
         private Dictionary<string, int> m_assemblyNamesToErrors;
         private List<DockableDocument> m_documents;
+        private Uri m_ssUri;
+        private Thread m_connectingThread;
+        #endregion
 
+        #region constructors
         public ProfileDocument()
         {
             InitializeComponent();
@@ -47,8 +52,6 @@ namespace JinxBot.Views
                 //WardenPacketHandler module = new WardenPacketHandler(client);
                 //m_client.WardenHandler = module;
             }
-
-            //m_client.ProxyConnector = new JinxBot.Plugins.BNSharp.Socks4ProxyConnector(client.Settings as ClientProfile);
 
             client.EventExceptionThrown += new EventExceptionEventHandler(client_EventExceptionThrown);
 
@@ -91,6 +94,7 @@ namespace JinxBot.Views
 
             m_channel.VoidView = this.VoidView;
         }
+        #endregion
 
         void client_EventExceptionThrown(object sender, EventExceptionEventArgs e)
         {
@@ -114,7 +118,6 @@ namespace JinxBot.Views
             get { return m_client; }
         }
 
-        private Uri m_ssUri;
         public Uri StylesheetUri
         {
             get { return m_ssUri; }
@@ -148,7 +151,6 @@ namespace JinxBot.Views
             }
         }
 
-        private Thread m_connectingThread;
         public void BeginConnecting()
         {
             m_chat.AddChat(new ChatNode("Connecting...", CssClasses.Connected));
@@ -194,6 +196,7 @@ namespace JinxBot.Views
         {
             base.OnFormClosed(e);
 
+            Disconnect();
             m_client.Dispose();
         }
 

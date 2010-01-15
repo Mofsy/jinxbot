@@ -29,6 +29,7 @@
       <Topic id="5d5b487d-c6e9-4550-a0d2-892222c8d7e8" visible="True" title="How to: Handle Warden" />
       <Topic id="ba4bc2ff-7c0c-4cd3-b981-d249d3e519e1" visible="True" title="How to: Change Packet Handling Priorities" />
       <Topic id="e73e0be0-1291-4565-bdd1-ed61bc80f879" visible="True" title="How to: Implement Flood Prevention Queuing" />
+      <Topic id="da38e63e-9663-410f-b8b9-3daede91ff74" visible="True" title="How to: Implement Proxy Server Connectors" tocTitle="How to: Implement Proxy Server Connectors" />
     </Topic>
   </Topic>
 </Topics>

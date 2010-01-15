@@ -52,7 +52,7 @@ namespace BNSharp.MBNCSUtil.Util
 
             if (!StdArgumentList.ContainsKey(dest) || !StdArgumentList.ContainsKey(opA) || !StdArgumentList.ContainsKey(opB)
                 || !Operators.ContainsKey(op))
-                throw new ArgumentOutOfRangeException("formula", formula, "Unsupported or unrecognized operator in revision check formula.");
+                throw new ArgumentOutOfRangeException("formula", formula, "Unsupported or unrecognized operand or operator in revision check formula.");
 
             generator.Emit(StdArgumentList[dest]);
             generator.Emit(StdArgumentList[opA]);

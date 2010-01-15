@@ -27,10 +27,14 @@ namespace JinxBot
 {
     public partial class MainWindow : Form, IMainWindow, IJumpListWindowTarget
     {
+        private delegate void SyncDel();
+
+        #region fields
         private Dictionary<ClientProfile, JinxBotClient> m_activeClients;
-
         private string[] m_programArgs;
+        #endregion
 
+        #region constructors
         public MainWindow()
         {
             InitializeComponent();
@@ -56,89 +60,14 @@ namespace JinxBot
         {
             m_programArgs = args;
         }
+        #endregion
 
+        #region Initialization logic
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
 
             GlobalErrorHandler.ErrorLog.Hide();
-        }
-
-        void Instance_ProfileRemoved(object sender, EventArgs e)
-        {
-            RebindProfiles();
-        }
-
-        private void RebindProfiles()
-        {
-            ClearProfilesList();
-
-            foreach (ClientProfile p in JinxBotConfiguration.Instance.Profiles)
-            {
-                ToolStripMenuItem tsmi = new ToolStripMenuItem(p.ProfileName);
-                tsmi.Tag = p;
-                tsmi.Click += new EventHandler(tsmi_Click);
-                this.profilesToolStripMenuItem.DropDownItems.Add(tsmi);
-            }
-
-            JumpListManager.RefreshJumpList(JinxBotConfiguration.Instance.Profiles);
-        }
-
-        private void ClearProfilesList()
-        {
-            while (profilesToolStripMenuItem.DropDownItems.Count > 2)
-            {
-                profilesToolStripMenuItem.DropDownItems.RemoveAt(2);
-            }
-        }
-
-        void tsmi_Click(object sender, EventArgs e)
-        {
-            ClientProfile cp = (sender as ToolStripMenuItem).Tag as ClientProfile;
-            LoadOrDisplayProfile(cp);
-        }
-
-        private void LoadOrDisplayProfile(ClientProfile cp)
-        {
-            if (cp != null)
-            {
-                if (m_activeClients.ContainsKey(cp))
-                {
-                    m_activeClients[cp].ProfileDocument.Show();
-                }
-                else
-                {
-                    JinxBotClient client = new JinxBotClient(cp);
-                    client.Client.Connected += client_Connected;
-                    client.Client.Disconnected += client_Disconnected;
-                    m_activeClients.Add(cp, client);
-                    client.ProfileDocument.Show(this.dock);
-
-                    ThumbnailPreviewManager.AddThumbnail(client.ProfileDocument);
-                }
-            }
-        }
-
-        void Instance_ProfileAdded(object sender, EventArgs e)
-        {
-            RebindProfiles();
-        }
-
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
-
-        private void connectToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ProfileDocument pd = this.dock.ActiveDocument as ProfileDocument;
-            if (pd != null)
-            {
-                pd.BeginConnecting();
-
-                this.connectToolStripMenuItem1.Enabled = false;
-                this.disconnectToolStripMenuItem.Enabled = true;
-            }
         }
 
         protected override void OnShown(EventArgs e)
@@ -170,10 +99,93 @@ namespace JinxBot
 
         private void MainWindow_Load(object sender, EventArgs e)
         {
-            
+
+        }
+        #endregion
+
+        #region Rebind of profiles list
+        private void RebindProfiles()
+        {
+            ClearProfilesList();
+
+            foreach (ClientProfile p in JinxBotConfiguration.Instance.Profiles)
+            {
+                ToolStripMenuItem tsmi = new ToolStripMenuItem(p.ProfileName);
+                tsmi.Tag = p;
+                tsmi.Click += new EventHandler(tsmi_Click);
+                tsmi.Image = UiIconProvider.GetIconForClient(p.Client);
+                this.profilesToolStripMenuItem.DropDownItems.Add(tsmi);
+            }
+
+            JumpListManager.RefreshJumpList(JinxBotConfiguration.Instance.Profiles);
         }
 
-        private delegate void SyncDel();
+        private void ClearProfilesList()
+        {
+            while (profilesToolStripMenuItem.DropDownItems.Count > 2)
+            {
+                profilesToolStripMenuItem.DropDownItems.RemoveAt(2);
+            }
+        }
+
+        void Instance_ProfileRemoved(object sender, EventArgs e)
+        {
+            RebindProfiles();
+        }
+
+        void Instance_ProfileAdded(object sender, EventArgs e)
+        {
+            RebindProfiles();
+        }
+        #endregion
+
+        #region Display profile
+        void tsmi_Click(object sender, EventArgs e)
+        {
+            ClientProfile cp = (sender as ToolStripMenuItem).Tag as ClientProfile;
+            LoadOrDisplayProfile(cp);
+        }
+
+        private void LoadOrDisplayProfile(ClientProfile cp)
+        {
+            if (cp != null)
+            {
+                if (m_activeClients.ContainsKey(cp))
+                {
+                    m_activeClients[cp].ProfileDocument.Show();
+                }
+                else
+                {
+                    JinxBotClient client = new JinxBotClient(cp);
+                    client.Client.Connected += client_Connected;
+                    client.Client.Disconnected += client_Disconnected;
+                    m_activeClients.Add(cp, client);
+                    client.ProfileDocument.Show(this.dock);
+
+                    ThumbnailPreviewManager.AddThumbnail(client.ProfileDocument);
+                }
+            }
+        }
+        #endregion
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void connectToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ProfileDocument pd = this.dock.ActiveDocument as ProfileDocument;
+            if (pd != null)
+            {
+                pd.BeginConnecting();
+
+                this.connectToolStripMenuItem1.Enabled = false;
+                this.disconnectToolStripMenuItem.Enabled = true;
+            }
+        }
+
+
 
         private void client_Connected(object sender, EventArgs e)
         {
