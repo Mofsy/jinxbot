@@ -92,45 +92,48 @@ namespace BNSharp.BattleNet
             Product productToUse = Product.GetByProductCode(settings.Client);
             if (productToUse == null)
                 errors |= BattleNetSettingsErrors.InvalidEmulationClient;
-            else if (!productToUse.CanConnect)
-                errors |= BattleNetSettingsErrors.InvalidEmulationClient;
-            if (string.IsNullOrEmpty(settings.CdKey1))
-                errors |= BattleNetSettingsErrors.PrimaryCdKeyMissingOrInvalid;
             else
             {
-                try
-                {
-                    CdKey test = new CdKey(settings.CdKey1);
-                    if (!test.IsValid)
-                        errors |= BattleNetSettingsErrors.PrimaryCdKeyMissingOrInvalid;
-                }
-                catch
-                {
+                if (!productToUse.CanConnect)
+                    errors |= BattleNetSettingsErrors.InvalidEmulationClient;
+                if (string.IsNullOrEmpty(settings.CdKey1))
                     errors |= BattleNetSettingsErrors.PrimaryCdKeyMissingOrInvalid;
-                }
-            }
-            if (productToUse.NeedsTwoKeys && string.IsNullOrEmpty(settings.CdKey2))
-                errors |= BattleNetSettingsErrors.SecondaryCdKeyMissingOrInvalid;
-            else
-            {
-                if (productToUse.NeedsTwoKeys)
+                else
                 {
                     try
                     {
-                        CdKey test2 = new CdKey(settings.CdKey2);
-                        if (!test2.IsValid)
-                            errors |= BattleNetSettingsErrors.SecondaryCdKeyMissingOrInvalid;
+                        CdKey test = new CdKey(settings.CdKey1);
+                        if (!test.IsValid)
+                            errors |= BattleNetSettingsErrors.PrimaryCdKeyMissingOrInvalid;
                     }
                     catch
                     {
-                        errors |= BattleNetSettingsErrors.SecondaryCdKeyMissingOrInvalid;
+                        errors |= BattleNetSettingsErrors.PrimaryCdKeyMissingOrInvalid;
                     }
                 }
-            }
-            if (productToUse.NeedsLockdown)
-            {
-                if (string.IsNullOrEmpty(settings.ImageFile) || !File.Exists(settings.ImageFile))
-                    errors |= BattleNetSettingsErrors.LockdownFileMissingOrNotFound;
+                if (productToUse.NeedsTwoKeys && string.IsNullOrEmpty(settings.CdKey2))
+                    errors |= BattleNetSettingsErrors.SecondaryCdKeyMissingOrInvalid;
+                else
+                {
+                    if (productToUse.NeedsTwoKeys)
+                    {
+                        try
+                        {
+                            CdKey test2 = new CdKey(settings.CdKey2);
+                            if (!test2.IsValid)
+                                errors |= BattleNetSettingsErrors.SecondaryCdKeyMissingOrInvalid;
+                        }
+                        catch
+                        {
+                            errors |= BattleNetSettingsErrors.SecondaryCdKeyMissingOrInvalid;
+                        }
+                    }
+                }
+                if (productToUse.NeedsLockdown)
+                {
+                    if (string.IsNullOrEmpty(settings.ImageFile) || !File.Exists(settings.ImageFile))
+                        errors |= BattleNetSettingsErrors.LockdownFileMissingOrNotFound;
+                }
             }
 
             if (errors != BattleNetSettingsErrors.None)

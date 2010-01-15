@@ -56,54 +56,54 @@ namespace BNSharp
         /// Indicates that the game executable file (<see cref="IBattleNetSettings.GameFile3">the GameExe
         /// property</see>) was not specified or did not exist.
         /// </summary>
-        GameExeMissingOrNotFound,
+        GameExeMissingOrNotFound = 1,
         /// <summary>
         /// Indicates that the second game file (<see cref="IBattleNetSettings.GameFile3">the GameFile2
         /// property</see>) was not specified or did not exist.
         /// </summary>
-        GameFile2MissingOrNotFound,
+        GameFile2MissingOrNotFound = 2 ,
         /// <summary>
         /// Indicates that the third game file (<see cref="IBattleNetSettings.GameFile3">the GameFile3
         /// property</see>) was not specified or did not exist.
         /// </summary>
-        GameFile3MissingOrNotFound,
+        GameFile3MissingOrNotFound = 4,
         /// <summary>
         /// Indicates that the username (<see cref="IBattleNetSettings.Username">the Username
         /// property</see>) was null or empty.
         /// </summary>
-        UserNameNull,
+        UserNameNull = 8,
         /// <summary>
         /// Indicates that the emulated ping response (<see cref="IBattleNetSettings.PingType">the
         /// PingType property</see>) was not one of the known values of the <see>PingType</see> 
         /// enumeration.
         /// </summary>
-        InvalidPingType,
+        InvalidPingType = 16,
         /// <summary>
         /// Indicates that the client specified (<see cref="IBattleNetSettings.Client">the Client
         /// property</see>) was not valid for emulation; the only valid values are presently
         /// <c>STAR</c>, <c>SEXP</c>, <c>D2DV</c>, <c>D2XP</c>, <c>W2BN</c>, <c>WAR3</c>, and <c>W3XP</c>.
         /// </summary>
-        InvalidEmulationClient,
+        InvalidEmulationClient = 32,
         /// <summary>
         /// Indicates that the primary CD key (<see cref="IBattleNetSettings.CdKey1">the CdKey1
         /// property</see>) was not specified or was invalid.
         /// </summary>
-        PrimaryCdKeyMissingOrInvalid,
+        PrimaryCdKeyMissingOrInvalid = 64,
         /// <summary>
         /// Indicates that the secondary CD key (<see cref="IBattleNetSettings.CdKey2">the CdKey2 
         /// property</see>) was not specified or was invalid, but was required for the selected client.
         /// </summary>
-        SecondaryCdKeyMissingOrInvalid,
+        SecondaryCdKeyMissingOrInvalid = 128,
         /// <summary>
         /// Indicates that the lockdown file (<see cref="IBattleNetSettings.ImageFile">the ImageFile 
         /// property</see> was not specified or did not exist.
         /// </summary>
-        LockdownFileMissingOrNotFound,
+        LockdownFileMissingOrNotFound = 256,
         /// <summary>
         /// Indicates that the gateway's server name (<see cref="IBattleNetSettings.Gateway">the 
         /// Gateway property</see>, then the <see cref="BNSharp.BattleNet.Gateway.ServerHost">ServerHost
         /// property</see>) was null or empty.
         /// </summary>
-        InvalidGatewayServer,
+        InvalidGatewayServer = 512,
     }
 }

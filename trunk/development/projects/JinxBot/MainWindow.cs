@@ -22,6 +22,7 @@ using JinxBot.Controls.Docking;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using JinxBot.Windows7;
 using System.Threading;
+using BNSharp;
 
 namespace JinxBot
 {
@@ -156,13 +157,21 @@ namespace JinxBot
                 }
                 else
                 {
-                    JinxBotClient client = new JinxBotClient(cp);
-                    client.Client.Connected += client_Connected;
-                    client.Client.Disconnected += client_Disconnected;
-                    m_activeClients.Add(cp, client);
-                    client.ProfileDocument.Show(this.dock);
+                    try
+                    {
+                        JinxBotClient client = new JinxBotClient(cp);
+                        client.Client.Connected += client_Connected;
+                        client.Client.Disconnected += client_Disconnected;
+                        m_activeClients.Add(cp, client);
+                        client.ProfileDocument.Show(this.dock);
 
-                    ThumbnailPreviewManager.AddThumbnail(client.ProfileDocument);
+                        ThumbnailPreviewManager.AddThumbnail(client.ProfileDocument);
+                    }
+                    catch (BattleNetSettingsErrorsException ex)
+                    {
+                        ProfileLoadErrorDialog dlg = new ProfileLoadErrorDialog(ex);
+                        dlg.ShowDialog();
+                    }
                 }
             }
         }
