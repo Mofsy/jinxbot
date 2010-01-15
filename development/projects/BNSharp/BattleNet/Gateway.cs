@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Runtime.Serialization;
 using System.ComponentModel;
+using System.Globalization;
 
 namespace BNSharp.BattleNet
 {
@@ -70,6 +71,7 @@ namespace BNSharp.BattleNet
             if (port <= 0 || port > ushort.MaxValue)
                 throw new ArgumentOutOfRangeException("port", port, "Valid values for the port parameter are 1 to 65535.");
 
+            m_name = name;
             m_oldClientSuffix = oldClientSuffix;
             m_war3Suffix = war3ClientSuffix;
             m_serverName = serverName;
@@ -121,5 +123,11 @@ namespace BNSharp.BattleNet
             get { return m_name; }
         }
         #endregion
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return string.Format(CultureInfo.CurrentUICulture, "\"{0}\", {1}:{2}", m_name, m_serverName, m_port);
+        }
     }
 }

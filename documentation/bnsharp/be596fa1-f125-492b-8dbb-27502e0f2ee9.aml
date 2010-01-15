@@ -29,56 +29,63 @@
         <title>New Features</title>
         <content>
             <list type="bullet">
-                <item>
+                <listItem>
                     Support for proxying connections has been enabled.  Proxy support is not included directly in BN#; developers need to implement
                     support for it themselves.  For more information, see the Wiki article <a href="http://www.jinxbot.net/wiki/index.php?title=Proxy_support_in_BNSharp" target="_blank">Proxy support in BN#</a>.
-                </item>
-                <item>Support for UTF-8 characters in chat messages has been added.</item>
-                <item>Built-in support has been added for ad messages.</item>
-                <item>
+                </listItem>
+                <listItem>Support for UTF-8 characters in chat messages has been added.</listItem>
+                <listItem>Built-in support has been added for ad messages.</listItem>
+                <listItem>
                     Support has been added to set an account's e-mail address during login, or to change
                     login credentials during the login process.  To do so, the client no longer automatically
                     disconnects for invalid login credentials; instead, you can use the <b>ContinueLogin</b>
                     method once the credentials have been changed.
-                </item>
-                <item>
+                </listItem>
+                <listItem>
                     Some support for sanity checking has been implemented in the constructor for
                     <b>BattleNetClient</b>.  It either will throw <see>FileNotFoundException</see> or
                     <see>ConfigurationErrorsException</see>; for more information, see the documentation
                     for the constructor.
-                </item>
-                <item>
+                </listItem>
+                <listItem>
                     Command queuing now has support; to implement it, see the <see cref="BNSharp.Plugins.ICommandQueue">ICommandQueue interface</see>
                     and the wiki article <a href="http://www.jinxbot.net/wiki/index.php?title=Command_queuing">Command queuing</a>.
-                </item>
-                <item>Added a method to support binary channel join.</item>
-                <item>Added support for joining a predefined home channel upon logging in, instead of joining the default product channel.</item>
-                <item>
+                </listItem>
+                <listItem>Added a method to support binary channel join.</listItem>
+                <listItem>Added support for joining a predefined home channel upon logging in, instead of joining the default product channel.</listItem>
+                <listItem>
                     The ability to change the server on ConnectionBase without reinstantiating the class has been added.  To use it, an overload
                     of the Connect method has been added, accepting a name (or IP) and a port.
-                </item>
-                <item>
+                </listItem>
+                <listItem>
                     Support for Warcraft III profiles and clan information lookups has been added.  It is
                     still experimental but generally OK.
-                </item>
-                <item>
+                </listItem>
+                <listItem>
                     Added a new field to the PingType enumeration, ReplyBeforeVersioning.  When enabled, this will cause a BattleNetClient to wait for
                     500ms after the arrival of 0x50 (AuthInfo) for a Ping packet to arrive, and will reply to that first.  This will most likely offer faster
                     ping times as the process will not have to wait for the revision check to complete.
-                </item>
-                <item>
+                </listItem>
+                <listItem>
                     The ErrorEventArgs class now has a new member, the Reason property.  The Reason property exposes an enumeration of type ErrorType
                     that indicates to the program the reason for the disconnect, allowing developers to handle the error as they see fit.
-                </item>
-                <item>
+                </listItem>
+                <listItem>
                     A new class, <see cref="T:BNSharp.BattleNet.Gateway">Gateway</see>, has been added to support information about
                     a Battle.net gateway, including its interpretations of username suffixes.
-                </item>
-                <item>
+                </listItem>
+                <listItem>
                     The way in which version-checking has been implemented has been redone (part of MBNCSUtil).  BN# now dynamically
                     compiles the revision check formula into executable code.  This change only affects non-Lockdown clients.  For more
                     information, see <see cref="M:BNSharp.MBNCSUtil.CheckRevision.AlwaysUseSlowCheck">CheckRevision.AlwaysUseSlowCheck</see>.
-                </item>
+                </listItem>
+                <listItem>
+                    BN# now validates some of the settings provided to it during initialization of a new
+                    <see cref="M:BNSharp.BattleNet.BattleNetClient..ctor(BNSharp.IBattleNetSettings">BattleNetClient</see>.  
+                    This initialization checks a number of components and, if any are erroneous, will throw
+                    a <see cref="M:BNSharp.BattleNetSettingsErrorsException">BattleNetSettingsErrorsException</see>, 
+                    reporting all detected errors.
+                </listItem>
             </list>           
         </content>
     </section>
@@ -93,16 +100,16 @@
                 </para>
             </alert>
             <list type="bullet">
-                <item>
+                <listItem>
                     The <see cref="T:BNSharp.BattleNet.BattleNetClient">BattleNetClient</see> class has been moved out of the <see cref="N:BNSharp.Net">BNSharp.Net</see>
                     namespace into the more-appropriate <see cref="N:BNSharp.BattleNet">BNSharp.BattleNet</see> namespace.
-                </item>
-                <item>
+                </listItem>
+                <listItem>
                     The <see cref="T:BNSharp.IBattleNetSettings">IBattleNetSettings</see> interface has gained the <see cref="M:BNSharp.IBattleNetSettings.HomeChannel">HomeChannel property</see>.
                     Implementing classes will need to provide a concrete implementation, even if it is simply to return a null value.  In addition, the
                     <see cref="M:BNSharp.IBattleNetSettings.Server">Server</see> and <see cref="M:BNSharp.IBattleNetSettings.Port">Port properties</see> have been
                     deprecated in favor of using the <see cref="M:BNSharp.IBattleNetSettings.Gateway">Gatway property</see>.
-                </item>
+                </listItem>
             </list>
 
         </content>
@@ -112,11 +119,11 @@
         <title>Non-Breaking Changes/Bug Fixes</title>
         <content>
             <list type="bullet">
-                <item>BN# no longer forces a disconnect when the server fails to prove that it is a legitimate server.</item>
-                <item>
+                <listItem>BN# no longer forces a disconnect when the server fails to prove that it is a legitimate server.</listItem>
+                <listItem>
                     Fixed an issue in which a disconnect (for instance, due to Warden or certain instances when a CD key was in use) would not bubble the
                     disconnecting event.
-                </item>
+                </listItem>
             </list>
         </content>
     </section>

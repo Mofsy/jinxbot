@@ -52,6 +52,7 @@
     <Compile Include="AccountCreationEventArgs.cs" />
     <Compile Include="AccountCreationFailedEventArgs.cs" />
     <Compile Include="BaseEventArgs.cs" />
+    <Compile Include="BattleNetSettingsErrorsException.cs" />
     <Compile Include="BattleNet\AdChangedEventArgs.cs" />
     <Compile Include="BattleNet\BattleNetClient.WarcraftProfiles.cs" />
     <Compile Include="BattleNet\Clans\ClanRankChangeEventArgs.cs" />

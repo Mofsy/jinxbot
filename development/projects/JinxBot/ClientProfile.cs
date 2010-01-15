@@ -19,6 +19,7 @@ namespace JinxBot
         public ClientProfile()
         {
             this.Gateway = Gateway.USEast;
+            this.PluginSettings = new ProfilePluginConfiguration[0];
         }
 
         #region IBattleNetSettings Members
@@ -140,30 +141,30 @@ namespace JinxBot
             set;
         }
 
-        [Name("Server")]
-        [Category("Emulation")]
-        [Description("Specifies the Battle.net server to which you want to connect.")]
-        [Browsable(true)]
-        [XmlIgnore]
-        [TypeConverter(typeof(BattleNetServerTypeConverter))]
-        internal Server BattleNetServer
-        {
-            get
-            {
-                return new Server(Gateway.ServerHost, Gateway.ServerPort);
-            }
-            set
-            {
-                if (!object.ReferenceEquals(null, value))
-                {
-                    this.Gateway = new Gateway(value.Host, "", "", value.Host, value.Port);
-                }
-                else
-                {
-                    this.Gateway = null;
-                }
-            }
-        }
+        //[Name("Server")]
+        //[Category("Emulation")]
+        //[Description("Specifies the Battle.net server to which you want to connect.")]
+        //[Browsable(true)]
+        //[XmlIgnore]
+        //[TypeConverter(typeof(BattleNetServerTypeConverter))]
+        //internal Server BattleNetServer
+        //{
+        //    get
+        //    {
+        //        return new Server(Gateway.ServerHost, Gateway.ServerPort);
+        //    }
+        //    set
+        //    {
+        //        if (!object.ReferenceEquals(null, value))
+        //        {
+        //            this.Gateway = new Gateway(value.Host, "", "", value.Host, value.Port);
+        //        }
+        //        else
+        //        {
+        //            this.Gateway = null;
+        //        }
+        //    }
+        //}
 
         [Browsable(false)]
         [XmlElement("ServerUri")]
@@ -188,6 +189,7 @@ namespace JinxBot
         [Category("Emulation")]
         [Description("Specifies the Battle.net Gateway to which you want to connect.")]
         [TypeConverter(typeof(ExpandableObjectConverter))]
+        [Editor(typeof(GatewayTypeEditor), typeof(UITypeEditor))]
         public Gateway Gateway
         {
             get;

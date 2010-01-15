@@ -22,15 +22,16 @@ namespace JinxBot.Configuration
 
         private static string GetAppDataPath()
         {
-            string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            string jinxBotAppDataPath = Path.Combine(appDataPath, "JinxBot");
-            if (!Directory.Exists(jinxBotAppDataPath))
-                Directory.CreateDirectory(jinxBotAppDataPath);
-            return jinxBotAppDataPath;
+            return JinxBotConfiguration.GetAppDataPath();
         }
 
         internal static JinxBotConfiguration LoadConfiguration()
         {
+            if (!JinxBotConfiguration.ConfigurationFileExists)
+            {
+                return new JinxBotConfiguration();
+            }
+
             using (FileStream fs = new FileStream(GetConfigFilePath(), FileMode.Open, FileAccess.Read, FileShare.Read))
             using (StreamReader sr = new StreamReader(fs))
             {
@@ -73,9 +74,9 @@ namespace JinxBot.Configuration
         {
             return new JinxBotConfiguration
             {
-                Globals = GlobalsConfigurationSection.Load(document.Element("Globals")),
+                Globals = GlobalsConfigurationSection.Load(document.Root.Element("Globals")),
                 Version = version,
-                Profiles = document.Element("Profiles").Elements("ClientProfile").As(
+                Profiles = document.Root.Element("Profiles").Elements("ClientProfile").As(
                     cp => new ClientProfile
                     {
                         Client = cp.Property("Client").Value,
@@ -112,7 +113,7 @@ namespace JinxBot.Configuration
                                     }).ToArray(),
                             }).ToArray()
                     }).ToArray(),
-                MultiClientPluginSettings = document.Element("MultiClientPluginSettings").Elements("MultiClientProfileConfiguration").As(
+                MultiClientPluginSettings = document.Root.Element("MultiClientPluginSettings").Elements("MultiClientProfileConfiguration").As(
                     mcp => new MultiClientPluginConfiguration
                     {
                         PluginName = mcp.Property("PluginName").Value,
