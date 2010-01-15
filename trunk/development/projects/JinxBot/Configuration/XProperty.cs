@@ -12,6 +12,8 @@ namespace JinxBot.Configuration
         private XAttribute m_attr;
         private XElement m_elem;
 
+        public XProperty() { }
+
         public XProperty(XAttribute attribute)
         {
             m_attr = attribute;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
+using System.Globalization;
 
 namespace JinxBot.Design
 {
@@ -18,7 +19,7 @@ namespace JinxBot.Design
         }
 
         public override object ConvertFrom(ITypeDescriptorContext context,
-            System.Globalization.CultureInfo culture, object value)
+            CultureInfo culture, object value)
         {
             if (value != null || value.GetType() != typeof(string))
             {

@@ -79,6 +79,13 @@
                     compiles the revision check formula into executable code.  This change only affects non-Lockdown clients.  For more
                     information, see <see cref="M:BNSharp.MBNCSUtil.CheckRevision.AlwaysUseSlowCheck">CheckRevision.AlwaysUseSlowCheck</see>.
                 </item>
+                <item>
+                    BN# now validates some of the settings provided to it during initialization of a new
+                    <see cref="M:BNSharp.BattleNet.BattleNetClient..ctor(BNSharp.IBattleNetSettings">BattleNetClient</see>.  
+                    This initialization checks a number of components and, if any are erroneous, will throw
+                    a <see cref="M:BNSharp.BattleNetSettingsErrorsException">BattleNetSettingsErrorsException</see>, 
+                    reporting all detected errors.
+                </item>
             </list>           
         </content>
     </section>

@@ -50,10 +50,8 @@ namespace BNSharp.BattleNet
         /// Creates a new <see>BattleNetClient</see> with the specified settings.
         /// </summary>
         /// <param name="settings">An object containing the settings for a Battle.net connection.</param>
-        /// <exception cref="NullReferenceException">Thrown if <paramref name="settings"/> is <see langword="null" />.</exception>
-        /// <exception cref="FileNotFoundException">Thrown if <paramref name="settings" /> points the client to a file that does not exist.</exception>
-        /// <exception cref="ConfigurationErrorsException">Thrown if <paramref name="settings"/> contains inconsistent settings.  For more information, 
-        /// check the specific status message.</exception>
+        /// <exception cref="BattleNetSettingsErrorsException">Thrown if required parameters of the 
+        /// <paramref name="settings"/> object are invalid.</exception>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
         public BattleNetClient(IBattleNetSettings settings)
             : base(settings.Server, settings.Port)
@@ -76,33 +74,67 @@ namespace BNSharp.BattleNet
 
         private static void ValidateSettings(IBattleNetSettings settings)
         {
+            BattleNetSettingsErrors errors = BattleNetSettingsErrors.None;
+
             if (!File.Exists(settings.GameExe))
-                throw new FileNotFoundException(Strings.BnetClient_Validate_GameExeDNE);
+                errors |= BattleNetSettingsErrors.GameExeMissingOrNotFound;
             if (!File.Exists(settings.GameFile2))
-                throw new FileNotFoundException(Strings.BnetClient_Validate_GameFile2DNE);
+                errors |= BattleNetSettingsErrors.GameFile2MissingOrNotFound;
             if (!File.Exists(settings.GameFile3))
-                throw new FileNotFoundException(Strings.BnetClient_Validate_GameFile3DNE);
+                errors |= BattleNetSettingsErrors.GameFile3MissingOrNotFound;
             if (string.IsNullOrEmpty(settings.Username))
-                throw new ConfigurationErrorsException(Strings.BnetClient_Validate_UsernameNull);
-            if (string.IsNullOrEmpty(settings.Password))
-                throw new ConfigurationErrorsException(Strings.BnetClient_Validate_PasswordNull);
-            if (string.IsNullOrEmpty(settings.CdKeyOwner))
-                throw new ConfigurationErrorsException(Strings.BnetClient_Validate_KeyOwnerNull);
+                errors |= BattleNetSettingsErrors.UserNameNull;
             if (!Enum.IsDefined(typeof(PingType), settings.PingMethod))
-                throw new ConfigurationErrorsException(Strings.BnetClient_Validate_PingTypeInvalid);
+                errors |= BattleNetSettingsErrors.InvalidPingType;
+            if (string.IsNullOrEmpty(settings.Gateway.ServerHost))
+                errors |= BattleNetSettingsErrors.InvalidGatewayServer;
 
             Product productToUse = Product.GetByProductCode(settings.Client);
             if (productToUse == null)
-                throw new ConfigurationErrorsException(Strings.BnetClient_Validate_InvalidClientType);
-            if (!productToUse.CanConnect)
-                throw new ConfigurationErrorsException(Strings.BnetClient_Validate_ClientTypeCantConnect);
+                errors |= BattleNetSettingsErrors.InvalidEmulationClient;
+            else if (!productToUse.CanConnect)
+                errors |= BattleNetSettingsErrors.InvalidEmulationClient;
             if (string.IsNullOrEmpty(settings.CdKey1))
-                throw new ConfigurationErrorsException(Strings.BnetClient_Validate_CdKey1Null);
+                errors |= BattleNetSettingsErrors.PrimaryCdKeyMissingOrInvalid;
+            else
+            {
+                try
+                {
+                    CdKey test = new CdKey(settings.CdKey1);
+                    if (!test.IsValid)
+                        errors |= BattleNetSettingsErrors.PrimaryCdKeyMissingOrInvalid;
+                }
+                catch
+                {
+                    errors |= BattleNetSettingsErrors.PrimaryCdKeyMissingOrInvalid;
+                }
+            }
             if (productToUse.NeedsTwoKeys && string.IsNullOrEmpty(settings.CdKey2))
-                throw new ConfigurationErrorsException(Strings.BnetClient_Validate_CdKey2Null);
-            if (productToUse.NeedsLockdown && !File.Exists(settings.ImageFile))
-                throw new FileNotFoundException(Strings.BnetClient_Validate_GameImageFileDNE);
+                errors |= BattleNetSettingsErrors.SecondaryCdKeyMissingOrInvalid;
+            else
+            {
+                if (productToUse.NeedsTwoKeys)
+                {
+                    try
+                    {
+                        CdKey test2 = new CdKey(settings.CdKey2);
+                        if (!test2.IsValid)
+                            errors |= BattleNetSettingsErrors.SecondaryCdKeyMissingOrInvalid;
+                    }
+                    catch
+                    {
+                        errors |= BattleNetSettingsErrors.SecondaryCdKeyMissingOrInvalid;
+                    }
+                }
+            }
+            if (productToUse.NeedsLockdown)
+            {
+                if (string.IsNullOrEmpty(settings.ImageFile) || !File.Exists(settings.ImageFile))
+                    errors |= BattleNetSettingsErrors.LockdownFileMissingOrNotFound;
+            }
 
+            if (errors != BattleNetSettingsErrors.None)
+                throw new BattleNetSettingsErrorsException(errors);
         }
         #endregion
 

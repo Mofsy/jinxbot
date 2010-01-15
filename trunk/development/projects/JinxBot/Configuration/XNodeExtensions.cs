@@ -18,7 +18,7 @@ namespace JinxBot.Configuration
             if (attr != null)
                 return new XProperty(attr);
 
-            return null;
+            return new XProperty();
         }
 
         public static IEnumerable<XProperty> Properties(this XElement parentNode)

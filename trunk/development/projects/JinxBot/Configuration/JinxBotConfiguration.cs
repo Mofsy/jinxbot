@@ -347,7 +347,7 @@ namespace JinxBot.Configuration
             return configFilePath;
         }
 
-        private static string GetAppDataPath()
+        internal static string GetAppDataPath()
         {
             string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             string jinxBotAppDataPath = Path.Combine(appDataPath, "JinxBot");
