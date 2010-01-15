@@ -18,8 +18,7 @@ namespace JinxBot
     {
         public ClientProfile()
         {
-            this.Server = "useast.battle.net";
-            this.Port = 6112;
+            this.Gateway = Gateway.USEast;
         }
 
         #region IBattleNetSettings Members
@@ -151,37 +150,48 @@ namespace JinxBot
         {
             get
             {
-                return new Server(Server, Port);
+                return new Server(Gateway.ServerHost, Gateway.ServerPort);
             }
             set
             {
                 if (!object.ReferenceEquals(null, value))
                 {
-                    Server = value.Host;
-                    Port = value.Port;
+                    this.Gateway = new Gateway(value.Host, "", "", value.Host, value.Port);
                 }
                 else
                 {
-                    Server = null;
-                    Port = 0;
+                    this.Gateway = null;
                 }
             }
         }
 
         [Browsable(false)]
         [XmlElement("ServerUri")]
-        public string Server
+        [Obsolete]
+        string IBattleNetSettings.Server
         {
-            get;
-            set;
+            get { return Gateway.ServerHost; }
+            set { }
         }
 
         [Browsable(false)]
         [XmlElement("ServerPort")]
-        public int Port
+        [Obsolete]
+        int IBattleNetSettings.Port
+        {
+            get { return Gateway.ServerPort; }
+            set { }
+        }
+
+        [Browsable(true)]
+        [XmlIgnore]
+        [Category("Emulation")]
+        [Description("Specifies the Battle.net Gateway to which you want to connect.")]
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public Gateway Gateway
         {
             get;
-            set;
+            set; 
         }
 
         [Browsable(true)]

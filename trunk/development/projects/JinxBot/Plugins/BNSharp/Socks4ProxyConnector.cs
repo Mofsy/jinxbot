@@ -29,10 +29,10 @@ namespace JinxBot.Plugins.BNSharp
             DataBuffer init = new DataBuffer();
             init.InsertByte(4);
             init.InsertByte(1);
-            byte[] port = BitConverter.GetBytes(m_profile.Port);
+            byte[] port = BitConverter.GetBytes(m_profile.Gateway.ServerPort);
             init.InsertByte(port[1]);
             init.InsertByte(port[0]);
-            init.InsertByteArray(m_con.ResolveEndPoint(m_profile.Server, m_profile.Port).Address.GetAddressBytes());
+            init.InsertByteArray(m_con.ResolveEndPoint(m_profile.Gateway.ServerHost, m_profile.Gateway.ServerPort).Address.GetAddressBytes());
             init.InsertCString("test@test.com");
 
             m_con.Send(init.UnderlyingBuffer, 0, init.Count);

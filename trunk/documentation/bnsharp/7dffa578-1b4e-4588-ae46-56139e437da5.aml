@@ -7,16 +7,20 @@
     </summary>
     -->
     <introduction>
-      <para>Required introduction</para>
+      <para>BN# allows for alternative behaviors to be implemented as part of its API through various points of extension.
+      BN# does not implement any kind of mechanism of plugin discovery, initialization, or otherwise on its own, nor does it
+      (by default) implement any kind of quality control.</para>
+      <alert class="important">
+      	<para>Modifying the behaviors of BN# through the extensibility mechanisms provided is intrinsically an unsafe 
+      	process.  While a lot of effort has gone in to ensuring that these implementations would cause as little impact
+      	as possible, in some situations it's not possible.  Be aware of the notifications, when overriding default BN#
+      	behavior inspect the source code to verify that it's not going to have an impact, and test extensively to ensure
+      	that your application is functioning as expected.</para>
+      </alert>
     </introduction>
-    <keywords>
-      <content>
-        <para>Keyword content</para>
-      </content>
-    </keywords>
     <namespaces>
       <content>
-        <para>Namespaces content</para>
+        <para><codeEntityReference qualifyHint="true">N:BNSharp.Plugins</codeEntityReference></para>
       </content>
     </namespaces>
     <!-- <relatedTechnologies>Optional related technologies info</relatedTechnologies> -->

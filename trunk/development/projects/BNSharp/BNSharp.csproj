@@ -56,6 +56,7 @@
     <Compile Include="BattleNet\BattleNetClient.WarcraftProfiles.cs" />
     <Compile Include="BattleNet\Clans\ClanRankChangeEventArgs.cs" />
     <Compile Include="BattleNet\Clans\ClanRankChangeStatus.cs" />
+    <Compile Include="BattleNet\Gateway.cs" />
     <Compile Include="BattleNet\JoinMethod.cs" />
     <Compile Include="BattleNet\Stats\ArrangedTeamRecord.cs" />
     <Compile Include="BattleNet\Stats\ArrangedTeamType.cs" />

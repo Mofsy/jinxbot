@@ -90,4 +90,11 @@
             </PluginSettings>
         </ClientProfile>
     </Profiles>
+    <MultiClientPluginSettings>
+        <MultiClientProfileConfiguration PluginName="[vL] Moderation">
+            <Settings>
+                <Setting Name="FastRejoinBan" Value="True" />
+            </Settings>
+        </MultiClientProfileConfiguration>
+    </MultiClientPluginSettings>
 </JinxBotConfiguration>

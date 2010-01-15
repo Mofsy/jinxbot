@@ -219,6 +219,13 @@ namespace BNSharp
         /// <summary>
         /// Gets or sets the name or IP address of the server used to connect.
         /// </summary>
+        /// <remarks>
+        /// <alert class="important">
+        ///     <para>The Port property has been deprecated in BN# Beta 3 in favor of the <see>Gateway</see> property.  Its value
+        ///     is now ignored.</para>
+        /// </alert>
+        /// </remarks>
+        [Obsolete("The Server property has been deprecated in BN# Beta 3 in favor of the Gateway property.  For more information, see the BNSharp.BattleNet.Gateway class.", false)]
         string Server
         {
             get;
@@ -229,9 +236,23 @@ namespace BNSharp
         /// Gets or sets the port that should be used to connect.
         /// </summary>
         /// <remarks>
+        /// <alert class="important">
+        ///     <para>The Port property has been deprecated in BN# Beta 3 in favor of the <see>Gateway</see> property.  Its value
+        ///     is now ignored.</para>
+        /// </alert>
         /// <para>The default port for Battle.net is 6112.</para>
         /// </remarks>
+        [Obsolete("The Port property has been deprecated in BN# Beta 3 in favor of the Gatway property.  For more information, see the BNSharp.BattleNet.Gateway class.", false)]
         int Port
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Gets or sets the Gateway that should be used to connect to the server.
+        /// </summary>
+        Gateway Gateway
         {
             get;
             set;

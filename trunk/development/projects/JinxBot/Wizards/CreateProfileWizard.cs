@@ -28,7 +28,7 @@ namespace JinxBot.Wizards
         {
             if (string.IsNullOrEmpty(m_cp.ProfileName))
             {
-                m_cp.ProfileName = string.Format(CultureInfo.CurrentCulture, "{0} on {1} ({2})", m_cp.Username, m_cp.Server, Product.GetByProductCode(m_cp.Client).Name);
+                m_cp.ProfileName = string.Format(CultureInfo.CurrentCulture, "{0} on {1} ({2})", m_cp.Username, m_cp.Gateway.Name, Product.GetByProductCode(m_cp.Client).Name);
             }
             JinxBotConfiguration.Instance.AddProfile(m_cp);
             JinxBotConfiguration.Instance.Save();
