@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using BNSharp;
 using JinxBot.Configuration;
+using System.IO;
 
 namespace JinxBot.Views
 {
@@ -17,7 +18,7 @@ namespace JinxBot.Views
         {
             InitializeComponent();
 
-            this.label2.Text = JinxBotConfiguration.ApplicationDataPath;
+            this.label2.Text = Path.Combine(JinxBotConfiguration.ApplicationDataPath, "Settings.xml");
         }
 
         public ProfileLoadErrorDialog(BattleNetSettingsErrorsException ex)
@@ -37,8 +38,13 @@ namespace JinxBot.Views
 
         private string FormatError(BattleNetSettingsErrors errorBeingTested)
         {
-            // TODO: Return more informational error than this.
-            return errorBeingTested.ToString();
+            string item = Resources.ResourceManager.GetString("BattleNetSettingsErrors_" + errorBeingTested.ToString());
+            if (string.IsNullOrEmpty(item))
+                item = errorBeingTested.ToString();
+
+            item = "\u2022 " + item + Environment.NewLine;
+
+            return item;
         }
     }
 }

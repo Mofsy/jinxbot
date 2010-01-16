@@ -117,6 +117,39 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="BattleNetSettingsErrors_GameExeMissingOrNotFound" xml:space="preserve">
+    <value>The game's executable file (for versioning) was not found.  This file is generally called something like "Starcraft.exe", "Warcraft II BNE.exe", "Game.exe", or "War3.exe".  This setting is specified in the &lt;GameExePath&gt; node in the &lt;ClientProfile&gt; of your configuration file.</value>
+  </data>
+  <data name="BattleNetSettingsErrors_GameFile2MissingOrNotFound" xml:space="preserve">
+    <value>The second game file (for versioning) was not found or wasn't specified.  This file is usually called "storm.dll" or "bnclient.dll".  This setting is specified in the &lt;StormDllPath&gt; node in the &lt;ClientProfile&gt; of your configuration file.</value>
+  </data>
+  <data name="BattleNetSettingsErrors_GameFile3MissingOrNotFound" xml:space="preserve">
+    <value>The third game file (for versioning) was not found or wasn't specified.  This file is usually called "battle.snp", "game.dll", or "d2client.snp".  This setting is specified in the &lt;BattleSnpPath&gt; node in the &lt;ClientProfile&gt; of your configuration file.</value>
+  </data>
+  <data name="BattleNetSettingsErrors_InvalidEmulationClient" xml:space="preserve">
+    <value>The client chosen for emulation was invalid.  The only valid values are: STAR (for Starcraft), SEXP (for Starcraft: Brood War), W2BN (for Warcraft II: Battle.net Edition), D2DV (for Diablo II), D2XP (for Diablo II: Lord of Destruction), WAR3 (for Warcraft III: the Reign of Chaos), and W3XP (for Warcraft III: the Frozen Throne).  This setting is specified in the &lt;Client&gt; node in the &lt;ClientProfile&gt; of your configuration file.</value>
+  </data>
+  <data name="BattleNetSettingsErrors_InvalidGatewayServer" xml:space="preserve">
+    <value>The selected server gateway was invalid.  The server gateway must include a hostname or IP address and a valid port.  This setting is specified in the &lt;Gateway&gt; node in the &lt;ClientProfile&gt; of your configuration file.</value>
+  </data>
+  <data name="BattleNetSettingsErrors_InvalidPingType" xml:space="preserve">
+    <value>The ping type specified was not valid.  This setting is specified in the &lt;Ping&gt; node in the &lt;ClientProfile&gt; of your configuration file.</value>
+  </data>
+  <data name="BattleNetSettingsErrors_LockdownFileMissingOrNotFound" xml:space="preserve">
+    <value>The lockdown image file (used for versioning) was not found or wasn't specified, but was required for the selected emulation client.  This file is usually called "star.bin" or "w2bn.bin".  This setting is specified in the &lt;LockdownImagePath&gt; node in the &lt;ClientProfile&gt; of your configuration file.</value>
+  </data>
+  <data name="BattleNetSettingsErrors_None" xml:space="preserve">
+    <value>No errors were detected.</value>
+  </data>
+  <data name="BattleNetSettingsErrors_PrimaryCdKeyMissingOrInvalid" xml:space="preserve">
+    <value>The main CD key was not specified or was invalid.  JinxBot can only process valid 13-, 16-, or 26-character CD keys.  This setting is specified in the &lt;PrimaryCdKey&gt; node in the &lt;ClientProfile&gt; of your configuration file.</value>
+  </data>
+  <data name="BattleNetSettingsErrors_SecondaryCdKeyMissingOrInvalid" xml:space="preserve">
+    <value>The secondary CD key was not specified or was invalid, but was required for the selected emulation client.  JinxBot can only process valid 13-, 16-, or 26-character CD keys.  This setting is specified in the &lt;SecondaryCdKey&gt; node in the &lt;ClientProfile&gt; of your configuration file.</value>
+  </data>
+  <data name="BattleNetSettingsErrors_UserNameNull" xml:space="preserve">
+    <value>You didn't specify a username.  This setting is specified in the &lt;Username&gt; node in the &lt;ClientProfile&gt; of your configuration file.</value>
+  </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="WebIconsList" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\WebIconsList.xml;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
