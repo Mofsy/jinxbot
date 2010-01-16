@@ -89,6 +89,11 @@ namespace BNSharp.BattleNet
             if (string.IsNullOrEmpty(settings.Gateway.ServerHost))
                 errors |= BattleNetSettingsErrors.InvalidGatewayServer;
 
+            if (settings.CdKeyOwner == null)
+                settings.CdKeyOwner = string.Empty;
+            if (settings.Password == null)
+                settings.Password = string.Empty;
+
             Product productToUse = Product.GetByProductCode(settings.Client);
             if (productToUse == null)
                 errors |= BattleNetSettingsErrors.InvalidEmulationClient;
