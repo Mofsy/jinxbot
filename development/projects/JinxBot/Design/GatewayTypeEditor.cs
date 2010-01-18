@@ -9,7 +9,7 @@ using BNSharp.BattleNet;
 
 namespace JinxBot.Design
 {
-    internal class GatewayTypeEditor : UITypeEditor
+    internal sealed class GatewayTypeEditor : UITypeEditor
     {
         public override UITypeEditorEditStyle GetEditStyle(
             ITypeDescriptorContext context)

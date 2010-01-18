@@ -338,6 +338,16 @@ namespace JinxBot
             }
         }
 
+        
+        /// <inheritdoc />
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            // Prevent managed debugging aids from catching an RCW Free race
+            GlobalErrorHandler.ErrorLog.IsAppClosing = true;
+
+            base.OnClosing(e);
+        }
+
         #region IMainWindow Members
 
         public void AddDocument(DockableDocument mainWindowDocument)

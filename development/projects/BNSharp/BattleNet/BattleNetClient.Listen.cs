@@ -681,7 +681,7 @@ namespace BNSharp.BattleNet
                     string dllName = m_versioningFilename.Replace(".mpq", ".dll");
 
                     BnFtpVersion1Request req = new BnFtpVersion1Request(m_settings.Client, m_versioningFilename, null);
-                    req.Server = m_settings.Server;
+                    req.Server = m_settings.Gateway.ServerHost;
                     req.LocalFileName = Path.Combine(Path.GetTempPath(), m_versioningFilename);
                     req.ExecuteRequest();
 
@@ -1191,14 +1191,6 @@ namespace BNSharp.BattleNet
         }
         #endregion
         #region shortcuts
-        [Obsolete("The CloseWithError(string) method is deprecated.  Use the CloseWithError(string, ErrorType) variant instead.", true)]
-        private void CloseWithError(string p)
-        {
-            throw new NotSupportedException();
-            //OnError(new ErrorEventArgs(p, true));
-            //Close();
-        }
-
         private void CloseWithError(string message, ErrorType error)
         {
             OnError(new ErrorEventArgs(error, message, true));

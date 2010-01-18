@@ -35,6 +35,7 @@ namespace BNSharp
         /// <param name="disconnecting">Whether it is causing the client to disconnect.</param>
         public ErrorEventArgs(ErrorType reason, string error, bool disconnecting)
         {
+            m_reason = reason;
             m_err = error;
             m_disc = disconnecting;
         }

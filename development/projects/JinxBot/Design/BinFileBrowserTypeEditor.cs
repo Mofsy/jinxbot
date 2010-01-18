@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace JinxBot.Design
 {
-    internal class BinFileBrowserTypeEditor : UITypeEditor
+    internal sealed class BinFileBrowserTypeEditor : UITypeEditor
     {
         private OpenFileDialog m_fileDlg;
 

@@ -11,7 +11,7 @@ using System.Globalization;
 
 namespace JinxBot.Views.Stats
 {
-    public partial class RecordDisplay : UserControl
+    internal partial class RecordDisplay : UserControl
     {
         public RecordDisplay()
         {

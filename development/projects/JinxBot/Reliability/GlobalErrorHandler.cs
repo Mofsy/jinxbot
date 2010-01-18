@@ -19,8 +19,12 @@ namespace JinxBot.Reliability
 
         public static void ReportEventException(string profileName, EventExceptionEventArgs args)
         {
-            ErrorLog.AddError(string.Format(CultureInfo.CurrentCulture, "Error in {0}:", profileName));
-            ErrorLog.AddError(args.ToString("v"));
+            try
+            {
+                ErrorLog.AddError(string.Format(CultureInfo.CurrentCulture, "Error in {0}:", profileName));
+                ErrorLog.AddError(args.ToString("v"));
+            }
+            catch { }
         }
 
         public static void Initialize()

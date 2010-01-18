@@ -124,7 +124,7 @@ namespace BNSharp.Net
         /// <param name="state">Any user object that is desired to be passed back to the connection completed callback.  This will be represented
         /// through the <see>ConnectCompletedResult.State</see> property.</param>
         /// <param name="callback">The method to call when the connection has completed.</param>
-        public void ConnectAsync(object state, ConnectCompletedCallback callback)
+        public virtual void ConnectAsync(object state, ConnectCompletedCallback callback)
         {
             WaitCallback ts = delegate
                              {

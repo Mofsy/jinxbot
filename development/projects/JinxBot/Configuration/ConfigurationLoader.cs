@@ -98,6 +98,7 @@ namespace JinxBot.Configuration
                         TriggerCharacter = cp.Property("Trigger").Value,
                         VoidView = cp.Property("VoidView").AsBool(),
                         IconProviderType = cp.Property("IconStyle").Value,
+                        SimulateClient = cp.Property("Simulate").AsBool(),
                         PluginSettings = cp.Element("PluginSettings").Elements("Plugin").As(
                             ps => new ProfilePluginConfiguration
                             {

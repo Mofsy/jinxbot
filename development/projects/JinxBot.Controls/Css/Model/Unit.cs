@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace JinxBot.Controls.CSS
 {
@@ -71,7 +72,7 @@ namespace JinxBot.Controls.CSS
             {
                 return "";
             }
-            return u.ToString().ToLower();
+            return u.ToString().ToLower(CultureInfo.InvariantCulture);
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Diagnostics;
 
 namespace JinxBot.Views.Chat
 {
-    public partial class CustomDrawnListBox : ListBox
+    internal partial class CustomDrawnListBox : ListBox
     {
         private Dictionary<Type, ICustomListBoxItemRenderer> m_renderers;
 

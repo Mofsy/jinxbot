@@ -43,7 +43,7 @@ namespace BNSharp.BattleNet
             if (e == null)
                 return;
 
-            ParseData data = e.EventData as ParseData;
+            ParseData data = e.EventData;
             if (data != null && data.Data != null)
             {
                 if (data.Data.Length == BattleNetClientResources.IncomingBufferPool.BufferLength)

@@ -7,6 +7,7 @@ using System.Globalization;
 
 namespace JinxBot.Design
 {
+    [Obsolete]
     internal class ServerTypeConverter : ExpandableObjectConverter
     {
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)

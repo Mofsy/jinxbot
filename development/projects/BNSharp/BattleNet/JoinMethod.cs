@@ -10,6 +10,10 @@ namespace BNSharp.BattleNet
     public enum JoinMethod
     {
         /// <summary>
+        /// Specifies the default channel join.
+        /// </summary>
+        Default,
+        /// <summary>
         /// Joins the channel only if it is not empty.
         /// </summary>
         NoCreate,

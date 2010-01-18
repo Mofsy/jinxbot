@@ -8,7 +8,8 @@ using JinxBot.Configuration;
 
 namespace JinxBot.Plugins
 {
-    public class ProfilePluginManager
+    [Obsolete]
+    internal class ProfilePluginManager
     {
         private ClientProfile m_profile;
         private BattleNetClient m_client;

@@ -9,6 +9,7 @@ namespace JinxBot.Design
 {
     [Serializable]
     [TypeConverter(typeof(ServerTypeConverter))]
+    [Obsolete]
     internal sealed class Server
     {
         public Server() { }

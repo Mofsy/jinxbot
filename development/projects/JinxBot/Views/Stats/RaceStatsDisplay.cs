@@ -11,7 +11,7 @@ using System.Globalization;
 
 namespace JinxBot.Views.Stats
 {
-    public partial class RaceStatsDisplay : UserControl
+    internal partial class RaceStatsDisplay : UserControl
     {
         private class Row
         {

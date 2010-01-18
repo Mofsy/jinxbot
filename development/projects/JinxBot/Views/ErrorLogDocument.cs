@@ -5,7 +5,7 @@ using JinxBot.Plugins.UI;
 
 namespace JinxBot.Views
 {
-    public partial class ErrorLogDocument : DockableDocument, IChatTab
+    internal partial class ErrorLogDocument : DockableDocument, IChatTab
     {
         public ErrorLogDocument()
         {
@@ -14,7 +14,16 @@ namespace JinxBot.Views
 
         public void AddError(string message)
         {
-            display.AddChat(new ChatNode(message, CssClasses.Error));
+            if (!IsAppClosing)
+            {
+                display.AddChat(new ChatNode(message, CssClasses.Error));
+            }
+        }
+
+        public bool IsAppClosing
+        {
+            get;
+            set;
         }
 
         #region IChatTab Members

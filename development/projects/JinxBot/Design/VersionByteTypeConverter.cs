@@ -7,7 +7,7 @@ using System.Globalization;
 
 namespace JinxBot.Design
 {
-    internal class VersionByteTypeConverter : TypeConverter
+    internal sealed class VersionByteTypeConverter : TypeConverter
     {
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
         {

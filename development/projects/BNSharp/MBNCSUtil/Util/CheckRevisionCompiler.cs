@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Reflection.Emit;
+using System.Reflection;
+using System.Security.Permissions;
 
 namespace BNSharp.MBNCSUtil.Util
 {
@@ -30,7 +32,7 @@ namespace BNSharp.MBNCSUtil.Util
         {
             Type parameterType = typeof(uint).MakeByRefType();
 
-            DynamicMethod method = new DynamicMethod(formulaName, typeof(void), new Type[] { parameterType, parameterType, parameterType, parameterType });
+            DynamicMethod method = new DynamicMethod(formulaName, typeof(void), new Type[] { parameterType, parameterType, parameterType, parameterType }, Assembly.GetExecutingAssembly().ManifestModule);
             ILGenerator generator = method.GetILGenerator();
 
             foreach (string formula in formulas)

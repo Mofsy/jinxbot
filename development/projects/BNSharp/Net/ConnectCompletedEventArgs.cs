@@ -10,8 +10,15 @@ namespace BNSharp.Net
     [Serializable]
     public class ConnectCompletedResult
     {
-        internal ConnectCompletedResult()
+        internal ConnectCompletedResult() { }
+
+        /// <summary>
+        /// Creates a new <see>ConnectCompletedResult</see>.
+        /// </summary>
+        public ConnectCompletedResult(object state, bool succeeded)
         {
+            State = state;
+            Succeeded = succeeded;
         }
 
         /// <summary>
