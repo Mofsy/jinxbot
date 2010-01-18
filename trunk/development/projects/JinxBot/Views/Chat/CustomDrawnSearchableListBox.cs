@@ -7,7 +7,7 @@ using System.Collections;
 
 namespace JinxBot.Views.Chat
 {
-    internal class CustomDrawnSearchableListBox : CustomDrawnListBox
+    internal sealed class CustomDrawnSearchableListBox : CustomDrawnListBox
     {
         #region Searching text box class
         private class SearchingTextBox : TextBox
@@ -338,7 +338,7 @@ namespace JinxBot.Views.Chat
                 _searchBox.Visible = false;
         }
 
-        protected virtual void OnFilteringItem(ItemFilteringEventArgs e)
+        private void OnFilteringItem(ItemFilteringEventArgs e)
         {
             if (FilteringItem != null)
                 FilteringItem(this, e);
@@ -355,7 +355,6 @@ namespace JinxBot.Views.Chat
                     _searchBox.Visible = true;
                     _searchBox.Focus();
                 }
-                //_searchBox.RoutMessage(ref m);
                 return;
             }
             else if (m.Msg == (int)WM.Char || m.Msg == (int)WM.SysChar)

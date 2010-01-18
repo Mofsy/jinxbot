@@ -5,7 +5,7 @@ using System.Text;
 
 namespace JinxBot.Views.Chat
 {
-    public class ItemFilteringEventArgs : EventArgs
+    internal class ItemFilteringEventArgs : EventArgs
     {
         private object _item;
         private string _filter;

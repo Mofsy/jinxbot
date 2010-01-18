@@ -11,7 +11,7 @@ using System.Globalization;
 
 namespace JinxBot.Views.Stats
 {
-    public partial class ArrangedTeamDisplay : UserControl
+    internal partial class ArrangedTeamDisplay : UserControl
     {
         public ArrangedTeamDisplay()
         {

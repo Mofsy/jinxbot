@@ -13,7 +13,7 @@ using BNSharp.BattleNet;
 
 namespace JinxBot.Views.Chat
 {
-    public class ChannelListBoxItemRenderer : ICustomListBoxItemRenderer, IDisposable
+    internal sealed class ChannelListBoxItemRenderer : ICustomListBoxItemRenderer, IDisposable
     {
         private IIconProvider m_provider;
         private Bitmap m_pingImg;

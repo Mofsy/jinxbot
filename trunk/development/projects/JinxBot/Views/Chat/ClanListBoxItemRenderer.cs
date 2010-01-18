@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace JinxBot.Views.Chat
 {
-    public class ClanListBoxItemRenderer : ICustomListBoxItemRenderer
+    internal sealed class ClanListBoxItemRenderer : ICustomListBoxItemRenderer
     {
         private IIconProvider m_provider;
         public ClanListBoxItemRenderer()

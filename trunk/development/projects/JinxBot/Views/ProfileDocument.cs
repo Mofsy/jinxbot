@@ -17,12 +17,13 @@ using System.Threading;
 
 namespace JinxBot.Views
 {
-    public partial class ProfileDocument : DockableDocument, IChatTab, IProfileDocument
+    internal partial class ProfileDocument : DockableDocument, IChatTab, IProfileDocument
     {
         #region fields
         private ChatDocument m_chat;
         private FriendsList m_friends;
         private ChannelList m_channel;
+        private ChannelSelect m_channelSelector;
         private ClanList m_clan;
         private NewsList m_news;
         private BattleNetClient m_client;
@@ -30,6 +31,7 @@ namespace JinxBot.Views
         private List<DockableDocument> m_documents;
         private Uri m_ssUri;
         private Thread m_connectingThread;
+        private JinxBotClient m_jbClient;
         #endregion
 
         #region constructors
@@ -40,7 +42,7 @@ namespace JinxBot.Views
             m_documents = new List<DockableDocument>();
         }
 
-        public ProfileDocument(BattleNetClient client)
+        private ProfileDocument(BattleNetClient client)
             : this()
         {
             m_client = client;
@@ -94,11 +96,27 @@ namespace JinxBot.Views
 
             m_channel.VoidView = this.VoidView;
         }
+
+        internal ProfileDocument(JinxBotClient profileClient)
+            : this(profileClient.Client)
+        {
+            m_jbClient = profileClient;
+
+            m_channelSelector = new ChannelSelect(profileClient);
+            m_channelSelector.Show(this.dock);
+        }
         #endregion
 
         void client_EventExceptionThrown(object sender, EventExceptionEventArgs e)
         {
-            GlobalErrorHandler.ReportEventException(this.Text, e);
+            try
+            {
+                GlobalErrorHandler.ReportEventException(m_jbClient.Settings.ProfileName, e);
+            }
+            catch (System.ComponentModel.Win32Exception w3e)
+            {
+                Debug.WriteLine(w3e.ToString(), "Not understood exception");
+            }
             string assemblyFullName = e.FaultingMethod.Method.DeclaringType.Assembly.FullName;
             if (m_assemblyNamesToErrors.ContainsKey(assemblyFullName))
             {

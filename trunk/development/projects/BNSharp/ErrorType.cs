@@ -10,6 +10,10 @@ namespace BNSharp
     public enum ErrorType
     {
         /// <summary>
+        /// No error occurred.
+        /// </summary>
+        None = 0,
+        /// <summary>
         /// No additional error cause is available.
         /// </summary>
         General = 1,

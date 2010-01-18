@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Xml.Serialization;
+using System.Globalization;
 
 namespace JinxBot.Controls.CSS
 {
@@ -126,11 +127,11 @@ term<out Term trm> =			(. trm = new Term();
             }
             else if (type == TermType.Unicode)
             {
-                txt.AppendFormat("U\\{0}", val.ToUpper());
+                txt.AppendFormat("U\\{0}", val.ToUpper(CultureInfo.InvariantCulture));
             }
             else if (type == TermType.Hex)
             {
-                txt.Append(val.ToUpper());
+                txt.Append(val.ToUpper(CultureInfo.InvariantCulture));
             }
             else
             {
@@ -266,7 +267,7 @@ term<out Term trm> =			(. trm = new Term();
             string hex = "000000";
             if (type == TermType.Hex)
             {
-                if ((val.Length == 7 || val.Length == 4) && val.StartsWith("#"))
+                if ((val.Length == 7 || val.Length == 4) && val.StartsWith("#", StringComparison.InvariantCulture))
                 {
                     hex = val.Substring(1);
                 }

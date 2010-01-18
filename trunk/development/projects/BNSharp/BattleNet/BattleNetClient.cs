@@ -54,7 +54,7 @@ namespace BNSharp.BattleNet
         /// <paramref name="settings"/> object are invalid.</exception>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1506:AvoidExcessiveClassCoupling")]
         public BattleNetClient(IBattleNetSettings settings)
-            : base(settings.Server, settings.Port)
+            : base(settings.Gateway.ServerHost, settings.Gateway.ServerPort)
         {
             ValidateSettings(settings);
 
@@ -537,7 +537,7 @@ namespace BNSharp.BattleNet
         /// </summary>
         /// <param name="accountName">The name of the user for whom to request information.</param>
         /// <param name="profile">The profile request, which should contain the keys to request.</param>
-        public void RequestUserProfile(string accountName, UserProfileRequest profile)
+        public virtual void RequestUserProfile(string accountName, UserProfileRequest profile)
         {
             BncsPacket pck = new BncsPacket((byte)BncsPacketId.ReadUserData);
             pck.InsertInt32(1);
@@ -558,17 +558,33 @@ namespace BNSharp.BattleNet
         /// <summary>
         /// Gets the name of the current channel.
         /// </summary>
+        /// <exception cref="ArgumentNullException">Thrown if this property is set to a null or empty string.</exception>
         public string ChannelName
         {
             get { return m_channelName; }
+            protected set
+            {
+                if (string.IsNullOrEmpty(value))
+                    throw new ArgumentNullException("value");
+
+                m_channelName = value;
+            }
         }
 
         /// <summary>
         /// Gets the unique username of the current user.
         /// </summary>
+        /// <exception cref="ArgumentNullException">Thrown if this property is set to a null or empty string.</exception>
         public string UniqueUsername
         {
             get { return m_uniqueUN; }
+            protected set
+            {
+                if (string.IsNullOrEmpty(value))
+                    throw new ArgumentNullException("value");
+
+                m_uniqueUN = value;
+            }
         }
         #endregion
     }

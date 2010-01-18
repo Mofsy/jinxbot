@@ -10,6 +10,7 @@ using JinxBot.Views;
 using JinxBot.Plugins.BNSharp;
 using JinxBot.Configuration;
 using BNSharp.Plugins;
+using JinxBot.Util;
 
 namespace JinxBot
 {
@@ -29,15 +30,17 @@ namespace JinxBot
         {
             m_activePlugins = new Dictionary<ProfilePluginConfiguration, IJinxBotPlugin>();
 
-            m_client = new BattleNetClient(profile);
+            if (profile.SimulateClient)
+                m_client = new SimulatedBattleNetClient(profile);
+            else
+                m_client = new BattleNetClient(profile);
+
             m_profile = profile;
             m_resourceProvider = ProfileResourceProvider.RegisterProvider(m_client);
-            m_window = new ProfileDocument(m_client);
-
             m_cmdTranslator = new CommandTranslator(this);
 
             bool hasSetCommandQueue = false;
-            
+
             // initialize plugins
             m_commandHandlers = new List<ICommandHandler>();
             foreach (ProfilePluginConfiguration pluginConfig in profile.PluginSettings)
@@ -52,6 +55,9 @@ namespace JinxBot
 
             if (m_database == null)
                 m_database = new JinxBotDefaultDatabase();
+            
+            // finally, initialize ui
+            m_window = new ProfileDocument(this);
         }
 
         private bool ProcessPlugin(bool hasSetCommandQueue, ProfilePluginConfiguration pluginConfig)
@@ -137,6 +143,11 @@ namespace JinxBot
                 foreach (ICommandHandler handler in m_commandHandlers)
                     yield return handler;
             }
+        }
+
+        internal ClientProfile Settings
+        {
+            get { return m_profile; }
         }
         #endregion
     }

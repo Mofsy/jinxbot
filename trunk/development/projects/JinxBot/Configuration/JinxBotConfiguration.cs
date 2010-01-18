@@ -218,6 +218,8 @@ namespace JinxBot.Configuration
                         new XElement("IncludeIconsInChat", cp.IncludeIconsInChat),
                         new XComment("IconStyle should correspond to the name of one of the IconProviders in the Globals section."),
                         new XElement("IconStyle", cp.IconProviderType),
+                        new XComment(" Simulate should be set to true or false, and should only be used by developers. "),
+                        new XElement("Simulate", cp.SimulateClient),
                         new XElement("PluginSettings",
                             new XComment("Plugin settings should only be managed by users who know what they're doing, or through the application."),
                             from ps in cp.PluginSettings

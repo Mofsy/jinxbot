@@ -18,7 +18,7 @@ using System.Globalization;
 
 namespace JinxBot.Views
 {
-    public partial class ChannelList : DockableToolWindow
+    internal partial class ChannelList : DockableToolWindow
     {
         private BattleNetClient m_client;
         private Timer m_voidViewTimer;

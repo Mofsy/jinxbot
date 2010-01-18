@@ -20,7 +20,7 @@ namespace JinxBot.Views.Chat
     /// <summary>
     /// Implements the <see>IIconProvider</see> interface for use with icons.bni.
     /// </summary>
-    public class BniIconProvider : IIconProvider, IDisposable
+    internal sealed class BniIconProvider : IIconProvider, IDisposable
     {
         private bool m_valid;
         private BniFileParser m_bni;
@@ -82,7 +82,7 @@ namespace JinxBot.Views.Chat
         /// Disposes the object, cleaning up unmanaged and optionally managed resources.
         /// </summary>
         /// <param name="disposing">Whether to clean managed resources.</param>
-        protected virtual void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (disposing)
             {

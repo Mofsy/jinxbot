@@ -8,6 +8,7 @@ using System.Diagnostics;
 
 namespace JinxBot.Design
 {
+    [Obsolete]
     internal sealed class BattleNetServerTypeConverter : ServerTypeConverter
     {
         public override TypeConverter.StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)

@@ -20,7 +20,7 @@ using JinxBot.Plugins.UI;
 
 namespace JinxBot.Views.Chat
 {
-    internal class WebIconProvider : IIconProvider
+    internal sealed class WebIconProvider : IIconProvider
     {
         private Dictionary<ClanRank, Image> m_ranksToImages;
         private Dictionary<UserFlags, Image> m_flagsToImages;

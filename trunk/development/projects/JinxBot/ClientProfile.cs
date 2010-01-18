@@ -287,6 +287,14 @@ namespace JinxBot
             set;
         }
 
+        [Browsable(false)]
+        [DefaultValue(false)]
+        internal bool SimulateClient
+        {
+            get;
+            set;
+        }
+
         [Browsable(true)]
         [Name("Icons Included in Chat")]
         [Category("User Interface")]

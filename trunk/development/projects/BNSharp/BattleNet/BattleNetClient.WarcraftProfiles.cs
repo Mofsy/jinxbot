@@ -21,7 +21,7 @@ namespace BNSharp.BattleNet
         /// <param name="username">The name of the user to request.</param>
         /// <param name="getFrozenThroneProfile"><see langword="true" /> to get the Frozen Throne profile;
         /// <see langword="false" /> to get the Reign of Chaos profile.</param>
-        public void RequestWarcraft3Profile(string username, bool getFrozenThroneProfile)
+        public virtual void RequestWarcraft3Profile(string username, bool getFrozenThroneProfile)
         {
             Product pr = getFrozenThroneProfile ? Product.Warcraft3Expansion : Product.Warcraft3Retail;
 
@@ -43,7 +43,7 @@ namespace BNSharp.BattleNet
         /// <param name="user">The user for whom to request a profile.</param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="user"/> does 
         /// not on Warcraft III: The Reign of Chaos or The Frozen Throne.</exception>
-        public void RequestWarcraft3Profile(ChatUser user)
+        public virtual void RequestWarcraft3Profile(ChatUser user)
         {
             if (user.Stats.Product != Product.Warcraft3Expansion && user.Stats.Product != Product.Warcraft3Retail)
                 throw new ArgumentOutOfRangeException("user", user.Stats.Product, "Cannot request Warcraft 3 Profile statistics for the specified product.");

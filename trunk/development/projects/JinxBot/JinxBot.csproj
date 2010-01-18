@@ -133,6 +133,7 @@
     </Compile>
     <Compile Include="UnsafeNativeMethods.cs" />
     <Compile Include="Util\EnumerableExtensions.cs" />
+    <Compile Include="Util\SimulatedBattleNetClient.cs" />
     <Compile Include="Views\ChannelSelect.cs">
       <SubType>Form</SubType>
     </Compile>

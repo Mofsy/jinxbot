@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace JinxBot.Views.Chat
 {
-    public class FriendListBoxItemRenderer : ICustomListBoxItemRenderer
+    internal sealed class FriendListBoxItemRenderer : ICustomListBoxItemRenderer
     {
         private IIconProvider m_provider;
         internal FriendListBoxItemRenderer()

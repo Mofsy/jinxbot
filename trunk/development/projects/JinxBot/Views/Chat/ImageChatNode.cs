@@ -13,7 +13,7 @@ namespace JinxBot.Views.Chat
     /// Represents a chat node that renders an image.
     /// </summary>
     [ChatNodeRenderer(typeof(ImageChatNodeRenderer))]
-    public class ImageChatNode : ChatNode
+    internal class ImageChatNode : ChatNode
     {
         private string m_imgName;
         

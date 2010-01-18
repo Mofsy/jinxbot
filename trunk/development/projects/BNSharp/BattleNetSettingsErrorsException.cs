@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Runtime.Serialization;
+using System.Security.Permissions;
 
 namespace BNSharp
 {
@@ -9,6 +10,7 @@ namespace BNSharp
     /// Contains error information raised when a new <see>BattleNetClient</see> is constructed with 
     /// invalid settings.
     /// </summary>
+    [Serializable]
     public sealed class BattleNetSettingsErrorsException : Exception
     {
         private BattleNetSettingsErrors m_errors;
@@ -19,6 +21,7 @@ namespace BNSharp
             m_errors = errors;
         }
 
+        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
         private BattleNetSettingsErrorsException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
@@ -34,6 +37,7 @@ namespace BNSharp
         }
 
         /// <inheritdoc />
+        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             base.GetObjectData(info, context);
@@ -73,8 +77,8 @@ namespace BNSharp
         /// </summary>
         UserNameNull = 8,
         /// <summary>
-        /// Indicates that the emulated ping response (<see cref="IBattleNetSettings.PingType">the
-        /// PingType property</see>) was not one of the known values of the <see>PingType</see> 
+        /// Indicates that the emulated ping response (<see cref="IBattleNetSettings.PingMethod">the
+        /// PingMethod property</see>) was not one of the known values of the <see>PingType</see> 
         /// enumeration.
         /// </summary>
         InvalidPingType = 16,

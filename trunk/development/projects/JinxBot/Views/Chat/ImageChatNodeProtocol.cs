@@ -9,7 +9,7 @@ using System.Reflection;
 namespace JinxBot.Views.Chat
 {
     [Guid("2D7B8E47-2142-433b-B9AB-3E6DA48D7415")]
-    internal class ImageChatNodeProtocol : PluggableProtocolHandler
+    internal sealed class ImageChatNodeProtocol : PluggableProtocolHandler
     {
         public const string Schema = "cnimage";
 
