@@ -1,0 +1,157 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="BattleNetSettingsErrors_GameExeMissingOrNotFound" xml:space="preserve">
+    <value>The game's executable file (for versioning) was not found.  This file is generally called something like "Starcraft.exe", "Warcraft II BNE.exe", "Game.exe", or "War3.exe".  This setting is specified in the &lt;GameExePath&gt; node in the &lt;ClientProfile&gt; of your configuration file.</value>
+  </data>
+  <data name="BattleNetSettingsErrors_GameFile2MissingOrNotFound" xml:space="preserve">
+    <value>The second game file (for versioning) was not found or wasn't specified.  This file is usually called "storm.dll" or "bnclient.dll".  This setting is specified in the &lt;StormDllPath&gt; node in the &lt;ClientProfile&gt; of your configuration file.</value>
+  </data>
+  <data name="BattleNetSettingsErrors_GameFile3MissingOrNotFound" xml:space="preserve">
+    <value>The third game file (for versioning) was not found or wasn't specified.  This file is usually called "battle.snp", "game.dll", or "d2client.snp".  This setting is specified in the &lt;BattleSnpPath&gt; node in the &lt;ClientProfile&gt; of your configuration file.</value>
+  </data>
+  <data name="BattleNetSettingsErrors_InvalidEmulationClient" xml:space="preserve">
+    <value>The client chosen for emulation was invalid.  The only valid values are: STAR (for Starcraft), SEXP (for Starcraft: Brood War), W2BN (for Warcraft II: Battle.net Edition), D2DV (for Diablo II), D2XP (for Diablo II: Lord of Destruction), WAR3 (for Warcraft III: the Reign of Chaos), and W3XP (for Warcraft III: the Frozen Throne).  This setting is specified in the &lt;Client&gt; node in the &lt;ClientProfile&gt; of your configuration file.</value>
+  </data>
+  <data name="BattleNetSettingsErrors_InvalidGatewayServer" xml:space="preserve">
+    <value>The selected server gateway was invalid.  The server gateway must include a hostname or IP address and a valid port.  This setting is specified in the &lt;Gateway&gt; node in the &lt;ClientProfile&gt; of your configuration file.</value>
+  </data>
+  <data name="BattleNetSettingsErrors_InvalidPingType" xml:space="preserve">
+    <value>The ping type specified was not valid.  This setting is specified in the &lt;Ping&gt; node in the &lt;ClientProfile&gt; of your configuration file.</value>
+  </data>
+  <data name="BattleNetSettingsErrors_LockdownFileMissingOrNotFound" xml:space="preserve">
+    <value>The lockdown image file (used for versioning) was not found or wasn't specified, but was required for the selected emulation client.  This file is usually called "star.bin" or "w2bn.bin".  This setting is specified in the &lt;LockdownImagePath&gt; node in the &lt;ClientProfile&gt; of your configuration file.</value>
+  </data>
+  <data name="BattleNetSettingsErrors_None" xml:space="preserve">
+    <value>No errors were detected.</value>
+  </data>
+  <data name="BattleNetSettingsErrors_PrimaryCdKeyMissingOrInvalid" xml:space="preserve">
+    <value>The main CD key was not specified or was invalid.  JinxBot can only process valid 13-, 16-, or 26-character CD keys.  This setting is specified in the &lt;PrimaryCdKey&gt; node in the &lt;ClientProfile&gt; of your configuration file.</value>
+  </data>
+  <data name="BattleNetSettingsErrors_SecondaryCdKeyMissingOrInvalid" xml:space="preserve">
+    <value>The secondary CD key was not specified or was invalid, but was required for the selected emulation client.  JinxBot can only process valid 13-, 16-, or 26-character CD keys.  This setting is specified in the &lt;SecondaryCdKey&gt; node in the &lt;ClientProfile&gt; of your configuration file.</value>
+  </data>
+  <data name="BattleNetSettingsErrors_UserNameNull" xml:space="preserve">
+    <value>You didn't specify a username.  This setting is specified in the &lt;Username&gt; node in the &lt;ClientProfile&gt; of your configuration file.</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="WebIconsList" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\WebIconsList.xml;System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+</root>

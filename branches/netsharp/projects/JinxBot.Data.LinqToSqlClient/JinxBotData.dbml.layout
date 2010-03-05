@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ordesignerObjectsDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 11, 8.5" name="JinxBotData">
+  <DataContextMoniker Name="/JinxBotDataDataContext" />
+  <nestedChildShapes>
+    <classShape Id="b7f89250-f229-4eed-b3df-dc388fb957ca" absoluteBounds="1, 0.5, 2, 2.5401025390625">
+      <DataClassMoniker Name="/JinxBotDataDataContext/ClientSession" />
+      <nestedChildShapes>
+        <elementListCompartment Id="7c5f37dc-8fff-43ea-b097-2983172d0d08" absoluteBounds="1.0149999999999997, 0.96, 1.9700000000000002, 1.9801025390625" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="ce270a42-a190-4f1c-8bf4-47dc450136a0" absoluteBounds="5.375, 0.75, 2, 1.5785953776041666">
+      <DataClassMoniker Name="/JinxBotDataDataContext/SessionPacket" />
+      <nestedChildShapes>
+        <elementListCompartment Id="e3834614-a8a5-4595-a8d2-463c64e14bba" absoluteBounds="5.3900000000000006, 1.21, 1.9700000000000002, 1.0185953776041665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <associationConnector edgePoints="[(3 : 1.53929768880208); (5.375 : 1.53929768880208)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+      <AssociationMoniker Name="/JinxBotDataDataContext/ClientSession/ClientSession_SessionPacket" />
+      <nodes>
+        <classShapeMoniker Id="b7f89250-f229-4eed-b3df-dc388fb957ca" />
+        <classShapeMoniker Id="ce270a42-a190-4f1c-8bf4-47dc450136a0" />
+      </nodes>
+    </associationConnector>
+  </nestedChildShapes>
+</ordesignerObjectsDiagram>

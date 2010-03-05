@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/BNSharp.BattleNet.Clans" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/BNSharp.BattleNet.Clans" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://localhost:28432/Web/JinxBotWebApplication.svc?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/BNSharp" />
+  <xs:import schemaLocation="http://localhost:28432/Web/JinxBotWebApplication.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+  <xs:import schemaLocation="http://localhost:28432/Web/JinxBotWebApplication.svc?xsd=xsd9" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+  <xs:complexType name="ClanMembershipEventArgs">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q1="http://schemas.datacontract.org/2004/07/BNSharp" base="q1:BaseEventArgs">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Rank" type="tns:ClanRank" />
+          <xs:element minOccurs="0" name="Tag" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="ClanMembershipEventArgs" nillable="true" type="tns:ClanMembershipEventArgs" />
+  <xs:simpleType name="ClanRank">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Initiate" />
+      <xs:enumeration value="Peon" />
+      <xs:enumeration value="Grunt" />
+      <xs:enumeration value="Shaman" />
+      <xs:enumeration value="Chieftan" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="ClanRank" nillable="true" type="tns:ClanRank" />
+  <xs:simpleType name="ClanChieftanChangeResult">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Success" />
+      <xs:enumeration value="ClanTooYoung">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">2</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Declined">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">4</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="Failed">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">5</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="NotAuthorized">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">7</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+      <xs:enumeration value="NoSuchUser">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">8</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="ClanChieftanChangeResult" nillable="true" type="tns:ClanChieftanChangeResult" />
+  <xs:complexType name="ClanCandidatesSearchEventArgs">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q2="http://schemas.datacontract.org/2004/07/BNSharp" base="q2:BaseEventArgs">
+        <xs:sequence>
+          <xs:element xmlns:q3="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="CandidateNames" nillable="true" type="q3:ArrayOfstring" />
+          <xs:element minOccurs="0" name="Status" type="tns:ClanCandidatesSearchStatus" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="ClanCandidatesSearchEventArgs" nillable="true" type="tns:ClanCandidatesSearchEventArgs" />
+  <xs:simpleType name="ClanCandidatesSearchStatus">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Success" />
+      <xs:enumeration value="ClanTagTaken" />
+      <xs:enumeration value="AlreadyInClan" />
+      <xs:enumeration value="InvalidTag" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="ClanCandidatesSearchStatus" nillable="true" type="tns:ClanCandidatesSearchStatus" />
+  <xs:complexType name="ClanFormationEventArgs">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q4="http://schemas.datacontract.org/2004/07/BNSharp" base="q4:BaseEventArgs">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Declined" type="xs:boolean" />
+          <xs:element xmlns:q5="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="FailedAccounts" nillable="true" type="q5:ArrayOfstring" />
+          <xs:element minOccurs="0" name="Succeeded" type="xs:boolean" />
+          <xs:element minOccurs="0" name="Unavailable" type="xs:boolean" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="ClanFormationEventArgs" nillable="true" type="tns:ClanFormationEventArgs" />
+  <xs:complexType name="ClanDisbandEventArgs">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q6="http://schemas.datacontract.org/2004/07/BNSharp" base="q6:BaseEventArgs">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Succeeded" type="xs:boolean" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="ClanDisbandEventArgs" nillable="true" type="tns:ClanDisbandEventArgs" />
+  <xs:complexType name="ClanChieftanChangeEventArgs">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q7="http://schemas.datacontract.org/2004/07/BNSharp" base="q7:BaseEventArgs">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Result" type="tns:ClanChieftanChangeResult" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="ClanChieftanChangeEventArgs" nillable="true" type="tns:ClanChieftanChangeEventArgs" />
+  <xs:complexType name="ClanRankChangeEventArgs">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q8="http://schemas.datacontract.org/2004/07/BNSharp" base="q8:BaseEventArgs">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="MemberResponsible" nillable="true" type="tns:ClanMember" />
+          <xs:element minOccurs="0" name="NewRank" type="tns:ClanRank" />
+          <xs:element minOccurs="0" name="PreviousRank" type="tns:ClanRank" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="ClanRankChangeEventArgs" nillable="true" type="tns:ClanRankChangeEventArgs" />
+  <xs:complexType name="ClanMember">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Location" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="OnlineStatus" type="tns:ClanMemberStatus" />
+      <xs:element minOccurs="0" name="Rank" type="tns:ClanRank" />
+      <xs:element minOccurs="0" name="Username" nillable="true" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ClanMember" nillable="true" type="tns:ClanMember" />
+  <xs:simpleType name="ClanMemberStatus">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Offline" />
+      <xs:enumeration value="Online" />
+      <xs:enumeration value="InChannel" />
+      <xs:enumeration value="InPublicGame" />
+      <xs:enumeration value="InPrivateGame">
+        <xs:annotation>
+          <xs:appinfo>
+            <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">5</EnumerationValue>
+          </xs:appinfo>
+        </xs:annotation>
+      </xs:enumeration>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="ClanMemberStatus" nillable="true" type="tns:ClanMemberStatus" />
+  <xs:complexType name="ClanMemberStatusEventArgs">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q9="http://schemas.datacontract.org/2004/07/BNSharp" base="q9:BaseEventArgs">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Member" nillable="true" type="tns:ClanMember" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="ClanMemberStatusEventArgs" nillable="true" type="tns:ClanMemberStatusEventArgs" />
+  <xs:complexType name="ClanMemberListEventArgs">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q10="http://schemas.datacontract.org/2004/07/BNSharp" base="q10:BaseEventArgs">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Members" nillable="true" type="tns:ArrayOfClanMember" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="ClanMemberListEventArgs" nillable="true" type="tns:ClanMemberListEventArgs" />
+  <xs:complexType name="ArrayOfClanMember">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ClanMember" nillable="true" type="tns:ClanMember" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfClanMember" nillable="true" type="tns:ArrayOfClanMember" />
+  <xs:complexType name="ClanFormationInvitationEventArgs">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q11="http://schemas.datacontract.org/2004/07/BNSharp" base="q11:BaseEventArgs">
+        <xs:sequence>
+          <xs:element xmlns:q12="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="InvitedUsers" nillable="true" type="q12:ArrayOfstring" />
+          <xs:element minOccurs="0" name="Inviter" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="RequestID" type="xs:int" />
+          <xs:element minOccurs="0" name="Tag" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="ClanFormationInvitationEventArgs" nillable="true" type="tns:ClanFormationInvitationEventArgs" />
+</xs:schema>

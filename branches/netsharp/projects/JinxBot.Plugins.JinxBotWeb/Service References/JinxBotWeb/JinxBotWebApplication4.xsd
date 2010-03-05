@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/JinxBot.Plugins.JinxBotWeb" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/JinxBot.Plugins.JinxBotWeb" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://localhost:28432/Web/JinxBotWebApplication.svc?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/BNSharp" />
+  <xs:complexType name="ClientEvent">
+    <xs:sequence>
+      <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/BNSharp" minOccurs="0" name="EventData" nillable="true" type="q1:BaseEventArgs" />
+      <xs:element minOccurs="0" name="EventType" type="tns:ClientEventType" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ClientEvent" nillable="true" type="tns:ClientEvent" />
+  <xs:simpleType name="ClientEventType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="ChannelDidNotExist" />
+      <xs:enumeration value="ChannelListReceived" />
+      <xs:enumeration value="ChannelFull" />
+      <xs:enumeration value="ChannelRestricted" />
+      <xs:enumeration value="ClientCheckFailed" />
+      <xs:enumeration value="ClientCheckPassed" />
+      <xs:enumeration value="CommandSent" />
+      <xs:enumeration value="Connected" />
+      <xs:enumeration value="Disconnected" />
+      <xs:enumeration value="EnteredChat" />
+      <xs:enumeration value="Error" />
+      <xs:enumeration value="Information" />
+      <xs:enumeration value="InformationReceived" />
+      <xs:enumeration value="JoinedChannel" />
+      <xs:enumeration value="LoginFailed" />
+      <xs:enumeration value="LoginSucceeded" />
+      <xs:enumeration value="MessageSent" />
+      <xs:enumeration value="ServerBroadcast" />
+      <xs:enumeration value="ServerError" />
+      <xs:enumeration value="UserEmoted" />
+      <xs:enumeration value="UserFlags" />
+      <xs:enumeration value="UserJoined" />
+      <xs:enumeration value="UserLeft" />
+      <xs:enumeration value="UserShown" />
+      <xs:enumeration value="UserSpoke" />
+      <xs:enumeration value="WardenUnhandled" />
+      <xs:enumeration value="WhisperReceived" />
+      <xs:enumeration value="WhisperSent" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="ClientEventType" nillable="true" type="tns:ClientEventType" />
+  <xs:complexType name="ArrayOfClientEvent">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ClientEvent" nillable="true" type="tns:ClientEvent" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfClientEvent" nillable="true" type="tns:ArrayOfClientEvent" />
+</xs:schema>

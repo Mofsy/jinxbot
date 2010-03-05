@@ -1,0 +1,409 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{AB0945C2-7421-4D55-98AE-AB28B813E59D}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>JinxBot</RootNamespace>
+    <AssemblyName>JinxBot</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <CodeAnalysisRules>-Microsoft.Design#CA1057;-Microsoft.Design#CA1054;-Microsoft.Design#CA1056;-Microsoft.Design#CA1055</CodeAnalysisRules>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.WindowsAPICodePack, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\dependencies\Microsoft.WindowsAPICodePack.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.Shell, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\dependencies\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="PresentationFramework">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.ServiceModel">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WizardBase, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\dependencies\WizardBase.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ClientProfile.cs" />
+    <Compile Include="Configuration\ConfigurationLoader.cs" />
+    <Compile Include="Configuration\DependencyConfiguration.cs" />
+    <Compile Include="Configuration\GlobalsConfigurationSection.cs" />
+    <Compile Include="Configuration\IconProviderConfiguration.cs" />
+    <Compile Include="Configuration\IJinxBotSingleInstanceService.cs" />
+    <Compile Include="Configuration\InstanceManagementClient.cs" />
+    <Compile Include="Configuration\InstanceManagementService.cs" />
+    <Compile Include="Configuration\JinxBotConfigurationErrorException.cs" />
+    <Compile Include="Configuration\MultiClientPluginConfiguration.cs" />
+    <Compile Include="Configuration\PingStyle.cs" />
+    <Compile Include="Configuration\PluginConfiguration.cs" />
+    <Compile Include="Configuration\ProfilePluginConfiguration.cs" />
+    <Compile Include="Configuration\ProfilePluginSettingConfiguration.cs" />
+    <Compile Include="Configuration\WebIconList.cs" />
+    <Compile Include="Configuration\IconType.cs" />
+    <Compile Include="Configuration\JinxBotConfiguration.cs" />
+    <Compile Include="Configuration\XDocConfigurationReader.cs" />
+    <Compile Include="Configuration\XNodeExtensions.cs" />
+    <Compile Include="Configuration\XProperty.cs" />
+    <Compile Include="DataResources.Designer.cs" />
+    <Compile Include="Design\BattleNetServerTypeConverter.cs" />
+    <Compile Include="Design\BinFileBrowserTypeEditor.cs" />
+    <Compile Include="Design\DllFileBrowserTypeEditor.cs" />
+    <Compile Include="Design\ExeFileBrowserTypeEditor.cs" />
+    <Compile Include="Design\GatewayTypeEditor.cs" />
+    <Compile Include="Design\IconSelectionTypeConverter.cs" />
+    <Compile Include="Design\ProductStringTypeConverter.cs" />
+    <Compile Include="Design\Server.cs" />
+    <Compile Include="Design\ServerTypeConverter.cs" />
+    <Compile Include="Design\VersionByteTypeConverter.cs" />
+    <Compile Include="JinxBotClient.cs" />
+    <Compile Include="MainWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainWindow.Designer.cs">
+      <DependentUpon>MainWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Plugins\BNSharp\Socks4ProxyConnector.cs" />
+    <Compile Include="Plugins\BNSharp\TimedMessageQueue.cs" />
+    <Compile Include="Plugins\CommandTranslator.cs" />
+    <Compile Include="Plugins\Data\JinxBotDefaultDatabase.cs" />
+    <Compile Include="Plugins\Data\JinxBotDefaultPrincipal.cs" />
+    <Compile Include="Plugins\PluginFactory.cs" />
+    <Compile Include="Plugins\PluginInfo.cs" />
+    <Compile Include="Plugins\ProfilePluginManager.cs" />
+    <Compile Include="Reliability\GlobalErrorHandler.cs" />
+    <Compile Include="Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="UnsafeNativeMethods.cs" />
+    <Compile Include="Util\EnumerableExtensions.cs" />
+    <Compile Include="Util\SimulatedBattleNetClient.cs" />
+    <Compile Include="Views\ChannelSelect.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\ChannelSelect.Designer.cs">
+      <DependentUpon>ChannelSelect.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ChannelToolTipRenderer.cs" />
+    <Compile Include="Views\Chat\BniIconProvider.cs" />
+    <Compile Include="Views\Chat\BuiltInPlugins.cs" />
+    <Compile Include="Views\Chat\ChannelListBoxItemRenderer.cs" />
+    <Compile Include="Views\Chat\ClanListBoxItemRenderer.cs" />
+    <Compile Include="Views\Chat\CssChatClasses.cs" />
+    <Compile Include="Views\Chat\CustomDrawnListBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Views\Chat\CustomDrawnListBox.Designer.cs">
+      <DependentUpon>CustomDrawnListBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Chat\CustomDrawnSearchableListBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Views\Chat\FriendListBoxItemRenderer.cs" />
+    <Compile Include="Views\Chat\ImageChatNode.cs" />
+    <Compile Include="Views\Chat\ImageChatNodeProtocol.cs" />
+    <Compile Include="Views\Chat\ImageChatNodeRenderer.cs" />
+    <Compile Include="Views\Chat\ItemFilteringEventArgs.cs" />
+    <Compile Include="Views\Chat\NativeMethods.cs" />
+    <Compile Include="Views\Chat\WebIconProvider.cs" />
+    <Compile Include="Views\Chat\WM.cs" />
+    <Compile Include="Views\ErrorLogDocument.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\ErrorLogDocument.Designer.cs">
+      <DependentUpon>ErrorLogDocument.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\GatewayDesigner.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\GatewayDesigner.Designer.cs">
+      <DependentUpon>GatewayDesigner.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\NewsList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\NewsList.Designer.cs">
+      <DependentUpon>NewsList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\PluginBrowser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\PluginBrowser.Designer.cs">
+      <DependentUpon>PluginBrowser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ProfileLoadErrorDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\ProfileLoadErrorDialog.Designer.cs">
+      <DependentUpon>ProfileLoadErrorDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ProfileResourceProvider.cs" />
+    <Compile Include="Views\ProfileSettingsEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\ProfileSettingsEditor.Designer.cs">
+      <DependentUpon>ProfileSettingsEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="DataResources.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainWindow.resx">
+      <DependentUpon>MainWindow.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\ChannelList.resx">
+      <DependentUpon>ChannelList.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\ChannelSelect.resx">
+      <DependentUpon>ChannelSelect.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\ClanList.resx">
+      <DependentUpon>ClanList.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\ErrorLogDocument.resx">
+      <DependentUpon>ErrorLogDocument.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\GatewayDesigner.resx">
+      <DependentUpon>GatewayDesigner.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\NewsList.resx">
+      <DependentUpon>NewsList.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\ProfileLoadErrorDialog.resx">
+      <DependentUpon>ProfileLoadErrorDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\ProfileSettingsEditor.resx">
+      <DependentUpon>ProfileSettingsEditor.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\ChatDocument.resx">
+      <DependentUpon>ChatDocument.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\FriendsList.resx">
+      <DependentUpon>FriendsList.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\ProfileDocument.resx">
+      <DependentUpon>ProfileDocument.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Stats\ArrangedTeamDisplay.resx">
+      <DependentUpon>ArrangedTeamDisplay.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Stats\RaceStatsDisplay.resx">
+      <DependentUpon>RaceStatsDisplay.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\Stats\RecordDisplay.resx">
+      <DependentUpon>RecordDisplay.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Views\WarcraftProfileDisplayDocument.resx">
+      <DependentUpon>WarcraftProfileDisplayDocument.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Wizards\CreateProfileWizard.resx">
+      <DependentUpon>CreateProfileWizard.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Wizards\FirstRunWizard.resx">
+      <DependentUpon>FirstRunWizard.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <None Include="App.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="Views\ChannelList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\ChannelList.Designer.cs">
+      <DependentUpon>ChannelList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ChatDocument.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\ChatDocument.Designer.cs">
+      <DependentUpon>ChatDocument.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ClanList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\ClanList.Designer.cs">
+      <DependentUpon>ClanList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\FriendsList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\FriendsList.Designer.cs">
+      <DependentUpon>FriendsList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ProfileDocument.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\ProfileDocument.Designer.cs">
+      <DependentUpon>ProfileDocument.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Stats\ArrangedTeamDisplay.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Stats\ArrangedTeamDisplay.Designer.cs">
+      <DependentUpon>ArrangedTeamDisplay.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Stats\RaceStatsDisplay.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Stats\RaceStatsDisplay.Designer.cs">
+      <DependentUpon>RaceStatsDisplay.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Stats\RecordDisplay.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Views\Stats\RecordDisplay.Designer.cs">
+      <DependentUpon>RecordDisplay.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ToolTipPropertySet.cs" />
+    <Compile Include="Views\UiIconProvider.cs" />
+    <Compile Include="Views\WarcraftProfileDisplayDocument.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\WarcraftProfileDisplayDocument.Designer.cs">
+      <DependentUpon>WarcraftProfileDisplayDocument.cs</DependentUpon>
+    </Compile>
+    <Compile Include="WebProtocols\AbortEvent.cs" />
+    <Compile Include="WebProtocols\NativeMethods.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="WebProtocols\NonAdminComRegistration.cs" />
+    <Compile Include="WebProtocols\PluggableProtocolHandler.cs" />
+    <Compile Include="WebProtocols\PluggableProtocolRegistrationServices.cs" />
+    <Compile Include="WebProtocols\PluggableProtocolRequest.cs" />
+    <Compile Include="WebProtocols\PluggableProtocolResponse.cs" />
+    <Compile Include="WebProtocols\TraceHelper.cs" />
+    <Compile Include="Windows7\IJumpListWindowTarget.cs" />
+    <Compile Include="Windows7\JumpListIconManager.cs" />
+    <Compile Include="Windows7\JumpListManager.cs" />
+    <Compile Include="Windows7\ThumbnailPreviewManager.cs" />
+    <Compile Include="Wizards\CreateProfileWizard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Wizards\CreateProfileWizard.Designer.cs">
+      <DependentUpon>CreateProfileWizard.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Wizards\FirstRunWizard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Wizards\FirstRunWizard.Designer.cs">
+      <DependentUpon>FirstRunWizard.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BNSharp\BNSharp.csproj">
+      <Project>{2D02D43C-BC3B-41D2-9226-4E215939107F}</Project>
+      <Name>BNSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\JinxBot.Controls\JinxBot.Controls.csproj">
+      <Project>{48E3907C-69BB-48C1-817D-6E5B4BE51EF6}</Project>
+      <Name>JinxBot.Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\JinxBot.Plugins\JinxBot.Plugins.csproj">
+      <Project>{9C13A2E5-2A06-4BD9-BED0-F93E9BB03D31}</Project>
+      <Name>JinxBot.Plugins</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Configuration\SampleConfig.xml" />
+    <Content Include="Resources\WebIconsList.xml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

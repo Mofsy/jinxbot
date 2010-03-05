@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:tns="JinxBotWebServer" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" targetNamespace="JinxBotWebServer" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="JinxBotWebServer/Imports">
+      <xsd:import schemaLocation="http://localhost:28432/Web/JinxBotWebApplication.svc?xsd=xsd0" namespace="JinxBotWebServer" />
+      <xsd:import schemaLocation="http://localhost:28432/Web/JinxBotWebApplication.svc?xsd=xsd1" namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xsd:import schemaLocation="http://localhost:28432/Web/JinxBotWebApplication.svc?xsd=xsd2" namespace="http://schemas.datacontract.org/2004/07/JinxBot.Plugins.JinxBotWeb" />
+      <xsd:import schemaLocation="http://localhost:28432/Web/JinxBotWebApplication.svc?xsd=xsd3" namespace="http://schemas.datacontract.org/2004/07/BNSharp" />
+      <xsd:import schemaLocation="http://localhost:28432/Web/JinxBotWebApplication.svc?xsd=xsd4" namespace="http://schemas.datacontract.org/2004/07/System" />
+      <xsd:import schemaLocation="http://localhost:28432/Web/JinxBotWebApplication.svc?xsd=xsd5" namespace="http://schemas.datacontract.org/2004/07/BNSharp.BattleNet.Stats" />
+      <xsd:import schemaLocation="http://localhost:28432/Web/JinxBotWebApplication.svc?xsd=xsd6" namespace="http://schemas.datacontract.org/2004/07/BNSharp.BattleNet" />
+      <xsd:import schemaLocation="http://localhost:28432/Web/JinxBotWebApplication.svc?xsd=xsd7" namespace="http://schemas.datacontract.org/2004/07/BNSharp.BattleNet.Friends" />
+      <xsd:import schemaLocation="http://localhost:28432/Web/JinxBotWebApplication.svc?xsd=xsd8" namespace="http://schemas.datacontract.org/2004/07/BNSharp.BattleNet.Clans" />
+      <xsd:import schemaLocation="http://localhost:28432/Web/JinxBotWebApplication.svc?xsd=xsd9" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="IJinxBotWebApplication_PostEvent_InputMessage">
+    <wsdl:part name="parameters" element="tns:PostEvent" />
+  </wsdl:message>
+  <wsdl:message name="IJinxBotWebApplication_PostEvent_OutputMessage">
+    <wsdl:part name="parameters" element="tns:PostEventResponse" />
+  </wsdl:message>
+  <wsdl:message name="IJinxBotWebApplication_PostEvents_InputMessage">
+    <wsdl:part name="parameters" element="tns:PostEvents" />
+  </wsdl:message>
+  <wsdl:message name="IJinxBotWebApplication_PostEvents_OutputMessage">
+    <wsdl:part name="parameters" element="tns:PostEventsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IJinxBotWebApplication_CreateChannel_InputMessage">
+    <wsdl:part name="parameters" element="tns:CreateChannel" />
+  </wsdl:message>
+  <wsdl:message name="IJinxBotWebApplication_CreateChannel_OutputMessage">
+    <wsdl:part name="parameters" element="tns:CreateChannelResponse" />
+  </wsdl:message>
+  <wsdl:message name="IJinxBotWebApplication_LoginChannel_InputMessage">
+    <wsdl:part name="parameters" element="tns:LoginChannel" />
+  </wsdl:message>
+  <wsdl:message name="IJinxBotWebApplication_LoginChannel_OutputMessage">
+    <wsdl:part name="parameters" element="tns:LoginChannelResponse" />
+  </wsdl:message>
+  <wsdl:message name="IJinxBotWebApplication_SetChannelName_InputMessage">
+    <wsdl:part name="parameters" element="tns:SetChannelName" />
+  </wsdl:message>
+  <wsdl:message name="IJinxBotWebApplication_SetChannelName_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SetChannelNameResponse" />
+  </wsdl:message>
+  <wsdl:portType name="IJinxBotWebApplication">
+    <wsdl:operation name="PostEvent">
+      <wsdl:input wsaw:Action="JinxBotWebServer/IJinxBotWebApplication/PostEvent" message="tns:IJinxBotWebApplication_PostEvent_InputMessage" />
+      <wsdl:output wsaw:Action="JinxBotWebServer/IJinxBotWebApplication/PostEventResponse" message="tns:IJinxBotWebApplication_PostEvent_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="PostEvents">
+      <wsdl:input wsaw:Action="JinxBotWebServer/IJinxBotWebApplication/PostEvents" message="tns:IJinxBotWebApplication_PostEvents_InputMessage" />
+      <wsdl:output wsaw:Action="JinxBotWebServer/IJinxBotWebApplication/PostEventsResponse" message="tns:IJinxBotWebApplication_PostEvents_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="CreateChannel">
+      <wsdl:input wsaw:Action="JinxBotWebServer/IJinxBotWebApplication/CreateChannel" message="tns:IJinxBotWebApplication_CreateChannel_InputMessage" />
+      <wsdl:output wsaw:Action="JinxBotWebServer/IJinxBotWebApplication/CreateChannelResponse" message="tns:IJinxBotWebApplication_CreateChannel_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="LoginChannel">
+      <wsdl:input wsaw:Action="JinxBotWebServer/IJinxBotWebApplication/LoginChannel" message="tns:IJinxBotWebApplication_LoginChannel_InputMessage" />
+      <wsdl:output wsaw:Action="JinxBotWebServer/IJinxBotWebApplication/LoginChannelResponse" message="tns:IJinxBotWebApplication_LoginChannel_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SetChannelName">
+      <wsdl:input wsaw:Action="JinxBotWebServer/IJinxBotWebApplication/SetChannelName" message="tns:IJinxBotWebApplication_SetChannelName_InputMessage" />
+      <wsdl:output wsaw:Action="JinxBotWebServer/IJinxBotWebApplication/SetChannelNameResponse" message="tns:IJinxBotWebApplication_SetChannelName_OutputMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+</wsdl:definitions>
