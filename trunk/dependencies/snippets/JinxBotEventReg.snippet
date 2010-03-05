@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets  xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+    <CodeSnippet Format="1.0.0">
+        <Header>
+            <Title>JinxBot Event Registration Update</Title>
+            <Shortcut>reg</Shortcut>
+            <Description>Code snippet for updating a JinxBot event registration.</Description>
+            <Author>MyndFyre</Author>
+            <SnippetTypes>
+                <SnippetType>Expansion</SnippetType>
+            </SnippetTypes>
+        </Header>
+        <Snippet>
+            <Declarations>
+                <Literal>
+                    <ID>eventtype</ID>
+                    <ToolTip>
+                        The type name component for the delegate and event arguments used by this event.  For example,
+                        you might enter "EnteredChat" for EnteredChatEventHandler and EnteredChatEventArgs.
+                    </ToolTip>
+                    <Default>EventType</Default>
+                </Literal>
+            </Declarations>
+            <Code Language="csharp">
+                <![CDATA[add
+            {
+                Register$eventtype$Notification(Priority.Normal, value);
+            }
+            remove
+            {
+                Unregister$eventtype$Notification(Priority.Normal, value);
+            }]]>
+            </Code>
+        </Snippet>
+    </CodeSnippet>
+</CodeSnippets>

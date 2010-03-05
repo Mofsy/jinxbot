@@ -592,7 +592,7 @@ namespace BNSharp.MBNCSUtil
             bw.Write(values[2]);
             bw.Write(values[3]);
             ms.Seek(2, SeekOrigin.Begin);
-            val1 = SWAP4(br.ReadUInt32() & 0xffffff00);
+            val1 = SWAP4(br.ReadUInt32() & 0xffffff03); // patch submitted by Hdx
 
             val2 = new byte[10];
             MemoryStream val2ms = new MemoryStream(val2, true);

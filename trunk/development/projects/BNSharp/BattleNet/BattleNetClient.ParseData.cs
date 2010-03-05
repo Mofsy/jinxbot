@@ -38,12 +38,17 @@ namespace BNSharp.BattleNet
             public byte[] Data;
         }
 
-        partial void FreeArgumentResources(BaseEventArgs e)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
+        void FreeArgumentResources(EventArgs e)
         {
             if (e == null)
                 return;
 
-            ParseData data = e.EventData;
+            BaseEventArgs args = e as BaseEventArgs;
+            if (args == null)
+                return;
+
+            ParseData data = args.EventData;
             if (data != null && data.Data != null)
             {
                 if (data.Data.Length == BattleNetClientResources.IncomingBufferPool.BufferLength)

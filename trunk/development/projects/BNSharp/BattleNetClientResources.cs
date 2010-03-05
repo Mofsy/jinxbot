@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using BNSharp.Net;
 using BNSharp.BattleNet;
+using BNSharp.Security;
 
 namespace BNSharp
 {
@@ -22,6 +23,8 @@ namespace BNSharp
 
         private const int INCOMING_BUFFERS_PER_CLIENT = 25;
         private const int OUTGOING_BUFFERS_PER_CLIENT = 10;
+
+        private static EventDispatcher s_sharedDispatcher = new EventDispatcher();
 
         /// <summary>
         /// Gets the <see>BufferPool</see> used for incoming packets.
@@ -59,6 +62,17 @@ namespace BNSharp
             s_activeClients.Remove(client);
             s_incoming.DecreaseBufferCount(INCOMING_BUFFERS_PER_CLIENT);
             s_outgoing.DecreaseBufferCount(OUTGOING_BUFFERS_PER_CLIENT);
+        }
+
+        /// <summary>
+        /// Acquires the shared event dispatcher used to dispatch normal- and low-priority events for
+        /// client implementations.
+        /// </summary>
+        /// <returns>The shared <see>EventDispatcher</see>.</returns>
+        internal static EventDispatcher AcquireDispatcher()
+        {
+            ImmediateCallerIsOfTypePermission<BattleNetClient>.Demand();
+            return s_sharedDispatcher;
         }
     }
 }
