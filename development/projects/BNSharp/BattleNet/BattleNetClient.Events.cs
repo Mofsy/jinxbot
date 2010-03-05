@@ -9,136 +9,24 @@ using BNSharp.Plugins;
 
 namespace BNSharp.BattleNet
 {
-    partial class BattleNetClient : IBattleNetEventSource
+    partial class BattleNetClient 
     {
         partial void ReportException(Exception ex, params KeyValuePair<string, object>[] notes);
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic")]
-        partial void FreeArgumentResources(BaseEventArgs e);
 
-        #region Invokehelper
-        private delegate void Invokee<T>(Priority p, T args) where T : EventArgs;
-        private class InvokeHelperBase
-        {
-            public virtual void Invoke(Priority p) { }
-        }
-        private class InvokeHelper<T> : InvokeHelperBase where T : EventArgs
-        { 
-            public Invokee<T> Target;
-            public T Arguments;
 
-            public override void Invoke(Priority p)
-            {
-                Target(p, Arguments);
-            }
-        }
-        #endregion
         /* 
          * This part of the class contains the implementation and registration parts of all of the events.  It is implemented
          * rapidly by using code snippets and then using the #region directive to hide the code.
          */
 
-        private Queue<InvokeHelperBase> e_medPriorityEvents = new Queue<InvokeHelperBase>();
-        private Queue<InvokeHelperBase> e_lowPriorityEvents = new Queue<InvokeHelperBase>();
+        private EventDispatcher m_dispatch = BattleNetClientResources.AcquireDispatcher();
 
-        #region Threads
-        private Thread e_medPriorityTd;
-        private Thread e_lowPriorityTd;
-        private EventWaitHandle e_medBlocker = new EventWaitHandle(false, EventResetMode.AutoReset);
-        private EventWaitHandle e_lowBlocker = new EventWaitHandle(false, EventResetMode.AutoReset);
-
-        private void CreateEventThreads()
+        private InvokeHelper<T> CreateEventDispatchHelper<T>(Invokee<T> invokee, T arguments) 
+            where T : EventArgs
         {
-            e_medPriorityTd = new Thread(new ThreadStart(__MedPriorityEventWatcher));
-            e_medPriorityTd.Priority = ThreadPriority.BelowNormal;
-            e_medPriorityTd.IsBackground = true;
-            e_medPriorityTd.Start();
-
-            e_lowPriorityTd = new Thread(new ThreadStart(__LowPriorityEventWatcher));
-            e_lowPriorityTd.Priority = ThreadPriority.Lowest;
-            e_lowPriorityTd.IsBackground = true;
-            e_lowPriorityTd.Start();
+            return new InvokeHelper<T>(invokee, arguments, FreeArgumentResources);
         }
 
-        private void __MedPriorityEventWatcher()
-        {
-            try
-            {
-                while (true)
-                {
-                    e_medBlocker.Reset();
-
-                    while (e_medPriorityEvents.Count == 0)
-                    {
-                        e_lowBlocker.Set();
-                        e_medBlocker.WaitOne();
-                    }
-
-                    if (e_medPriorityEvents.Count > 0)
-                    {
-                        InvokeHelperBase helper = e_medPriorityEvents.Dequeue();
-                        if (helper != null) 
-                            helper.Invoke(Priority.Normal);
-                    }
-                }
-            }
-            catch (ThreadAbortException)
-            {
-                // exit gracefully
-            }
-        }
-
-        private void __LowPriorityEventWatcher()
-        {
-            try
-            {
-                while (true)
-                {
-                    e_lowBlocker.Reset();
-
-                    while (e_lowPriorityEvents.Count == 0 || e_medPriorityEvents.Count > 0)
-                        e_lowBlocker.WaitOne();
-
-                    if (e_lowPriorityEvents.Count > 0)
-                    {
-                        InvokeHelperBase helper = e_lowPriorityEvents.Dequeue();
-                        if (helper != null)
-                            helper.Invoke(Priority.Low);
-                    }
-                }
-            }
-            catch (ThreadAbortException)
-            {
-                // exit gracefully
-            }
-        }
-
-        private void CloseEventThreads()
-        {
-            if (e_medPriorityTd != null)
-            {
-                e_medPriorityTd.Abort();
-                e_medPriorityTd = null;
-            }
-
-            if (e_lowPriorityTd != null)
-            {
-                e_lowPriorityTd.Abort();
-                e_lowPriorityTd = null;
-            }
-
-            if (e_medBlocker != null)
-            {
-                e_medBlocker.Close();
-                e_medBlocker = null;
-            }
-
-            if (e_lowBlocker != null)
-            {
-                e_lowBlocker.Close();
-                e_lowBlocker = null;
-            }
-        }
-        #endregion
 
         #region chat events (0x0f)
         #region user events
@@ -167,21 +55,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__UserJoined)
-                {
-                    if (!__UserJoined.ContainsKey(Priority.Normal))
-                    {
-                        __UserJoined.Add(Priority.Normal, new List<UserEventHandler>());
-                    }
-                }
-                __UserJoined[Priority.Normal].Add(value);
+                RegisterUserJoinedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__UserJoined.ContainsKey(Priority.Normal))
-                {
-                    __UserJoined[Priority.Normal].Remove(value);
-                }
+                UnregisterUserJoinedNotification(Priority.Normal, value);
             }
         }
 
@@ -281,16 +159,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<UserEventArgs> { Arguments = e, Target = new Invokee<UserEventArgs>(__InvokeUserJoined) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<UserEventArgs> { Arguments = e, Target = new Invokee<UserEventArgs>(__InvokeUserJoined) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeUserJoined, e));
             }
         }
         #endregion
@@ -320,21 +189,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__UserLeft)
-                {
-                    if (!__UserLeft.ContainsKey(Priority.Normal))
-                    {
-                        __UserLeft.Add(Priority.Normal, new List<UserEventHandler>());
-                    }
-                }
-                __UserLeft[Priority.Normal].Add(value);
+                RegisterUserLeftNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__UserLeft.ContainsKey(Priority.Normal))
-                {
-                    __UserLeft[Priority.Normal].Remove(value);
-                }
+                UnregisterUserLeftNotification(Priority.Normal, value);
             }
         }
 
@@ -434,16 +293,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<UserEventArgs> { Arguments = e, Target = new Invokee<UserEventArgs>(__InvokeUserLeft) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<UserEventArgs> { Arguments = e, Target = new Invokee<UserEventArgs>(__InvokeUserLeft) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeUserLeft, e));
             }
         }
         #endregion
@@ -473,21 +323,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__UserShown)
-                {
-                    if (!__UserShown.ContainsKey(Priority.Normal))
-                    {
-                        __UserShown.Add(Priority.Normal, new List<UserEventHandler>());
-                    }
-                }
-                __UserShown[Priority.Normal].Add(value);
+                RegisterUserShownNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__UserShown.ContainsKey(Priority.Normal))
-                {
-                    __UserShown[Priority.Normal].Remove(value);
-                }
+                UnregisterUserShownNotification(Priority.Normal, value);
             }
         }
 
@@ -587,16 +427,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<UserEventArgs> { Arguments = e, Target = new Invokee<UserEventArgs>(__InvokeUserShown) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<UserEventArgs> { Arguments = e, Target = new Invokee<UserEventArgs>(__InvokeUserShown) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeUserShown, e));
             }
         }
         #endregion
@@ -626,21 +457,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__UserFlagsChanged)
-                {
-                    if (!__UserFlagsChanged.ContainsKey(Priority.Normal))
-                    {
-                        __UserFlagsChanged.Add(Priority.Normal, new List<UserEventHandler>());
-                    }
-                }
-                __UserFlagsChanged[Priority.Normal].Add(value);
+                RegisterUserFlagsChangedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__UserFlagsChanged.ContainsKey(Priority.Normal))
-                {
-                    __UserFlagsChanged[Priority.Normal].Remove(value);
-                }
+                UnregisterUserFlagsChangedNotification(Priority.Normal, value);
             }
         }
 
@@ -740,16 +561,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<UserEventArgs> { Arguments = e, Target = new Invokee<UserEventArgs>(__InvokeUserFlagsChanged) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<UserEventArgs> { Arguments = e, Target = new Invokee<UserEventArgs>(__InvokeUserFlagsChanged) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeUserFlagsChanged, e));
             }
         }
         #endregion
@@ -781,21 +593,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__ServerBroadcast)
-                {
-                    if (!__ServerBroadcast.ContainsKey(Priority.Normal))
-                    {
-                        __ServerBroadcast.Add(Priority.Normal, new List<ServerChatEventHandler>());
-                    }
-                }
-                __ServerBroadcast[Priority.Normal].Add(value);
+                RegisterServerBroadcastNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__ServerBroadcast.ContainsKey(Priority.Normal))
-                {
-                    __ServerBroadcast[Priority.Normal].Remove(value);
-                }
+                UnregisterServerBroadcastNotification(Priority.Normal, value);
             }
         }
 
@@ -895,16 +697,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ServerChatEventArgs> { Arguments = e, Target = new Invokee<ServerChatEventArgs>(__InvokeServerBroadcast) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ServerChatEventArgs> { Arguments = e, Target = new Invokee<ServerChatEventArgs>(__InvokeServerBroadcast) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeServerBroadcast, e));
             }
         }
         #endregion
@@ -934,21 +727,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__JoinedChannel)
-                {
-                    if (!__JoinedChannel.ContainsKey(Priority.Normal))
-                    {
-                        __JoinedChannel.Add(Priority.Normal, new List<ServerChatEventHandler>());
-                    }
-                }
-                __JoinedChannel[Priority.Normal].Add(value);
+                RegisterJoinedChannelNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__JoinedChannel.ContainsKey(Priority.Normal))
-                {
-                    __JoinedChannel[Priority.Normal].Remove(value);
-                }
+                UnregisterJoinedChannelNotification(Priority.Normal, value);
             }
         }
 
@@ -1048,16 +831,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ServerChatEventArgs> { Arguments = e, Target = new Invokee<ServerChatEventArgs>(__InvokeJoinedChannel) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ServerChatEventArgs> { Arguments = e, Target = new Invokee<ServerChatEventArgs>(__InvokeJoinedChannel) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeJoinedChannel, e));
             }
         }
         #endregion
@@ -1087,21 +861,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__ChannelWasFull)
-                {
-                    if (!__ChannelWasFull.ContainsKey(Priority.Normal))
-                    {
-                        __ChannelWasFull.Add(Priority.Normal, new List<ServerChatEventHandler>());
-                    }
-                }
-                __ChannelWasFull[Priority.Normal].Add(value);
+                RegisterChannelWasFullNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__ChannelWasFull.ContainsKey(Priority.Normal))
-                {
-                    __ChannelWasFull[Priority.Normal].Remove(value);
-                }
+                UnregisterChannelWasFullNotification(Priority.Normal, value);
             }
         }
 
@@ -1201,16 +965,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ServerChatEventArgs> { Arguments = e, Target = new Invokee<ServerChatEventArgs>(__InvokeChannelWasFull) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ServerChatEventArgs> { Arguments = e, Target = new Invokee<ServerChatEventArgs>(__InvokeChannelWasFull) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeChannelWasFull, e));
             }
         }
         #endregion
@@ -1240,21 +995,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__ChannelDidNotExist)
-                {
-                    if (!__ChannelDidNotExist.ContainsKey(Priority.Normal))
-                    {
-                        __ChannelDidNotExist.Add(Priority.Normal, new List<ServerChatEventHandler>());
-                    }
-                }
-                __ChannelDidNotExist[Priority.Normal].Add(value);
+                RegisterChannelDidNotExistNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__ChannelDidNotExist.ContainsKey(Priority.Normal))
-                {
-                    __ChannelDidNotExist[Priority.Normal].Remove(value);
-                }
+                UnregisterChannelDidNotExistNotification(Priority.Normal, value);
             }
         }
 
@@ -1354,16 +1099,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ServerChatEventArgs> { Arguments = e, Target = new Invokee<ServerChatEventArgs>(__InvokeChannelDidNotExist) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ServerChatEventArgs> { Arguments = e, Target = new Invokee<ServerChatEventArgs>(__InvokeChannelDidNotExist) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeChannelDidNotExist, e));
             }
         }
         #endregion
@@ -1393,21 +1129,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__ChannelWasRestricted)
-                {
-                    if (!__ChannelWasRestricted.ContainsKey(Priority.Normal))
-                    {
-                        __ChannelWasRestricted.Add(Priority.Normal, new List<ServerChatEventHandler>());
-                    }
-                }
-                __ChannelWasRestricted[Priority.Normal].Add(value);
+                RegisterChannelWasRestrictedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__ChannelWasRestricted.ContainsKey(Priority.Normal))
-                {
-                    __ChannelWasRestricted[Priority.Normal].Remove(value);
-                }
+                UnregisterChannelWasRestrictedNotification(Priority.Normal, value);
             }
         }
 
@@ -1507,16 +1233,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ServerChatEventArgs> { Arguments = e, Target = new Invokee<ServerChatEventArgs>(__InvokeChannelWasRestricted) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ServerChatEventArgs> { Arguments = e, Target = new Invokee<ServerChatEventArgs>(__InvokeChannelWasRestricted) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeChannelWasRestricted, e));
             }
         }
         #endregion
@@ -1546,21 +1263,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__InformationReceived)
-                {
-                    if (!__InformationReceived.ContainsKey(Priority.Normal))
-                    {
-                        __InformationReceived.Add(Priority.Normal, new List<ServerChatEventHandler>());
-                    }
-                }
-                __InformationReceived[Priority.Normal].Add(value);
+                RegisterInformationReceivedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__InformationReceived.ContainsKey(Priority.Normal))
-                {
-                    __InformationReceived[Priority.Normal].Remove(value);
-                }
+                UnregisterInformationReceivedNotification(Priority.Normal, value);
             }
         }
 
@@ -1660,16 +1367,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ServerChatEventArgs> { Arguments = e, Target = new Invokee<ServerChatEventArgs>(__InvokeInformationReceived) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ServerChatEventArgs> { Arguments = e, Target = new Invokee<ServerChatEventArgs>(__InvokeInformationReceived) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeInformationReceived, e));
             }
         }
         #endregion
@@ -1699,21 +1397,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__ServerErrorReceived)
-                {
-                    if (!__ServerErrorReceived.ContainsKey(Priority.Normal))
-                    {
-                        __ServerErrorReceived.Add(Priority.Normal, new List<ServerChatEventHandler>());
-                    }
-                }
-                __ServerErrorReceived[Priority.Normal].Add(value);
+                RegisterServerErrorReceivedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__ServerErrorReceived.ContainsKey(Priority.Normal))
-                {
-                    __ServerErrorReceived[Priority.Normal].Remove(value);
-                }
+                UnregisterServerErrorReceivedNotification(Priority.Normal, value);
             }
         }
 
@@ -1813,16 +1501,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ServerChatEventArgs> { Arguments = e, Target = new Invokee<ServerChatEventArgs>(__InvokeServerErrorReceived) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ServerChatEventArgs> { Arguments = e, Target = new Invokee<ServerChatEventArgs>(__InvokeServerErrorReceived) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeServerErrorReceived, e));
             }
         }
         #endregion
@@ -1855,21 +1534,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__WhisperSent)
-                {
-                    if (!__WhisperSent.ContainsKey(Priority.Normal))
-                    {
-                        __WhisperSent.Add(Priority.Normal, new List<ChatMessageEventHandler>());
-                    }
-                }
-                __WhisperSent[Priority.Normal].Add(value);
+                RegisterWhisperSentNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__WhisperSent.ContainsKey(Priority.Normal))
-                {
-                    __WhisperSent[Priority.Normal].Remove(value);
-                }
+                UnregisterWhisperSentNotification(Priority.Normal, value);
             }
         }
 
@@ -1969,16 +1638,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ChatMessageEventArgs> { Arguments = e, Target = new Invokee<ChatMessageEventArgs>(__InvokeWhisperSent) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ChatMessageEventArgs> { Arguments = e, Target = new Invokee<ChatMessageEventArgs>(__InvokeWhisperSent) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeWhisperSent, e));
             }
         }
         #endregion
@@ -2008,21 +1668,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__WhisperReceived)
-                {
-                    if (!__WhisperReceived.ContainsKey(Priority.Normal))
-                    {
-                        __WhisperReceived.Add(Priority.Normal, new List<ChatMessageEventHandler>());
-                    }
-                }
-                __WhisperReceived[Priority.Normal].Add(value);
+                RegisterWhisperReceivedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__WhisperReceived.ContainsKey(Priority.Normal))
-                {
-                    __WhisperReceived[Priority.Normal].Remove(value);
-                }
+                UnregisterWhisperReceivedNotification(Priority.Normal, value);
             }
         }
 
@@ -2122,16 +1772,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ChatMessageEventArgs> { Arguments = e, Target = new Invokee<ChatMessageEventArgs>(__InvokeWhisperReceived) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ChatMessageEventArgs> { Arguments = e, Target = new Invokee<ChatMessageEventArgs>(__InvokeWhisperReceived) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeWhisperReceived, e));
             }
         }
         #endregion
@@ -2161,21 +1802,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__UserSpoke)
-                {
-                    if (!__UserSpoke.ContainsKey(Priority.Normal))
-                    {
-                        __UserSpoke.Add(Priority.Normal, new List<ChatMessageEventHandler>());
-                    }
-                }
-                __UserSpoke[Priority.Normal].Add(value);
+                RegisterUserSpokeNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__UserSpoke.ContainsKey(Priority.Normal))
-                {
-                    __UserSpoke[Priority.Normal].Remove(value);
-                }
+                UnregisterUserSpokeNotification(Priority.Normal, value);
             }
         }
 
@@ -2275,16 +1906,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ChatMessageEventArgs> { Arguments = e, Target = new Invokee<ChatMessageEventArgs>(__InvokeUserSpoke) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ChatMessageEventArgs> { Arguments = e, Target = new Invokee<ChatMessageEventArgs>(__InvokeUserSpoke) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeUserSpoke, e));
             }
         }
         #endregion
@@ -2314,21 +1936,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__UserEmoted)
-                {
-                    if (!__UserEmoted.ContainsKey(Priority.Normal))
-                    {
-                        __UserEmoted.Add(Priority.Normal, new List<ChatMessageEventHandler>());
-                    }
-                }
-                __UserEmoted[Priority.Normal].Add(value);
+                RegisterUserEmotedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__UserEmoted.ContainsKey(Priority.Normal))
-                {
-                    __UserEmoted[Priority.Normal].Remove(value);
-                }
+                UnregisterUserEmotedNotification(Priority.Normal, value);
             }
         }
 
@@ -2428,16 +2040,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ChatMessageEventArgs> { Arguments = e, Target = new Invokee<ChatMessageEventArgs>(__InvokeUserEmoted) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ChatMessageEventArgs> { Arguments = e, Target = new Invokee<ChatMessageEventArgs>(__InvokeUserEmoted) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeUserEmoted, e));
             }
         }
         #endregion
@@ -2471,21 +2074,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__MessageSent)
-                {
-                    if (!__MessageSent.ContainsKey(Priority.Normal))
-                    {
-                        __MessageSent.Add(Priority.Normal, new List<ChatMessageEventHandler>());
-                    }
-                }
-                __MessageSent[Priority.Normal].Add(value);
+                RegisterMessageSentNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__MessageSent.ContainsKey(Priority.Normal))
-                {
-                    __MessageSent[Priority.Normal].Remove(value);
-                }
+                UnregisterMessageSentNotification(Priority.Normal, value);
             }
         }
 
@@ -2585,16 +2178,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ChatMessageEventArgs> { Arguments = e, Target = new Invokee<ChatMessageEventArgs>(__InvokeMessageSent) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ChatMessageEventArgs> { Arguments = e, Target = new Invokee<ChatMessageEventArgs>(__InvokeMessageSent) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeMessageSent, e));
             }
         }
         #endregion
@@ -2626,21 +2210,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__CommandSent)
-                {
-                    if (!__CommandSent.ContainsKey(Priority.Normal))
-                    {
-                        __CommandSent.Add(Priority.Normal, new List<InformationEventHandler>());
-                    }
-                }
-                __CommandSent[Priority.Normal].Add(value);
+                RegisterCommandSentNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__CommandSent.ContainsKey(Priority.Normal))
-                {
-                    __CommandSent[Priority.Normal].Remove(value);
-                }
+                UnregisterCommandSentNotification(Priority.Normal, value);
             }
         }
 
@@ -2740,16 +2314,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<InformationEventArgs> { Arguments = e, Target = new Invokee<InformationEventArgs>(__InvokeCommandSent) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<InformationEventArgs> { Arguments = e, Target = new Invokee<InformationEventArgs>(__InvokeCommandSent) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeCommandSent, e));
             }
         }
         #endregion
@@ -2782,21 +2347,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__ClientCheckPassed)
-                {
-                    if (!__ClientCheckPassed.ContainsKey(Priority.Normal))
-                    {
-                        __ClientCheckPassed.Add(Priority.Normal, new List<EventHandler>());
-                    }
-                }
-                __ClientCheckPassed[Priority.Normal].Add(value);
+                RegisterClientCheckPassedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__ClientCheckPassed.ContainsKey(Priority.Normal))
-                {
-                    __ClientCheckPassed[Priority.Normal].Remove(value);
-                }
+                UnregisterClientCheckPassedNotification(Priority.Normal, value);
             }
         }
 
@@ -2896,16 +2451,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<BaseEventArgs> { Arguments = e, Target = new Invokee<BaseEventArgs>(__InvokeClientCheckPassed) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<BaseEventArgs> { Arguments = e, Target = new Invokee<BaseEventArgs>(__InvokeClientCheckPassed) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeClientCheckPassed, e));
             }
         }
         #endregion
@@ -2935,21 +2481,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__ClientCheckFailed)
-                {
-                    if (!__ClientCheckFailed.ContainsKey(Priority.Normal))
-                    {
-                        __ClientCheckFailed.Add(Priority.Normal, new List<ClientCheckFailedEventHandler>());
-                    }
-                }
-                __ClientCheckFailed[Priority.Normal].Add(value);
+                RegisterClientCheckFailedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__ClientCheckFailed.ContainsKey(Priority.Normal))
-                {
-                    __ClientCheckFailed[Priority.Normal].Remove(value);
-                }
+                UnregisterClientCheckFailedNotification(Priority.Normal, value);
             }
         }
 
@@ -3049,16 +2585,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ClientCheckFailedEventArgs> { Arguments = e, Target = new Invokee<ClientCheckFailedEventArgs>(__InvokeClientCheckFailed) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ClientCheckFailedEventArgs> { Arguments = e, Target = new Invokee<ClientCheckFailedEventArgs>(__InvokeClientCheckFailed) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeClientCheckFailed, e));
             }
         }
         #endregion
@@ -3092,21 +2619,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__LoginSucceeded)
-                {
-                    if (!__LoginSucceeded.ContainsKey(Priority.Normal))
-                    {
-                        __LoginSucceeded.Add(Priority.Normal, new List<EventHandler>());
-                    }
-                }
-                __LoginSucceeded[Priority.Normal].Add(value);
+                RegisterLoginSucceededNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__LoginSucceeded.ContainsKey(Priority.Normal))
-                {
-                    __LoginSucceeded[Priority.Normal].Remove(value);
-                }
+                UnregisterLoginSucceededNotification(Priority.Normal, value);
             }
         }
 
@@ -3206,16 +2723,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<EventArgs> { Arguments = e, Target = new Invokee<EventArgs>(__InvokeLoginSucceeded) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<EventArgs> { Arguments = e, Target = new Invokee<EventArgs>(__InvokeLoginSucceeded) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeLoginSucceeded, e));
             }
         }
         #endregion
@@ -3245,21 +2753,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__LoginFailed)
-                {
-                    if (!__LoginFailed.ContainsKey(Priority.Normal))
-                    {
-                        __LoginFailed.Add(Priority.Normal, new List<LoginFailedEventHandler>());
-                    }
-                }
-                __LoginFailed[Priority.Normal].Add(value);
+                RegisterLoginFailedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__LoginFailed.ContainsKey(Priority.Normal))
-                {
-                    __LoginFailed[Priority.Normal].Remove(value);
-                }
+                UnregisterLoginFailedNotification(Priority.Normal, value);
             }
         }
 
@@ -3359,16 +2857,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<LoginFailedEventArgs> { Arguments = e, Target = new Invokee<LoginFailedEventArgs>(__InvokeLoginFailed) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<LoginFailedEventArgs> { Arguments = e, Target = new Invokee<LoginFailedEventArgs>(__InvokeLoginFailed) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeLoginFailed, e));
             }
         }
         #endregion
@@ -3398,21 +2887,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__EnteredChat)
-                {
-                    if (!__EnteredChat.ContainsKey(Priority.Normal))
-                    {
-                        __EnteredChat.Add(Priority.Normal, new List<EnteredChatEventHandler>());
-                    }
-                }
-                __EnteredChat[Priority.Normal].Add(value);
+                RegisterEnteredChatNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__EnteredChat.ContainsKey(Priority.Normal))
-                {
-                    __EnteredChat[Priority.Normal].Remove(value);
-                }
+                UnregisterEnteredChatNotification(Priority.Normal, value);
             }
         }
 
@@ -3512,16 +2991,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<EnteredChatEventArgs> { Arguments = e, Target = new Invokee<EnteredChatEventArgs>(__InvokeEnteredChat) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<EnteredChatEventArgs> { Arguments = e, Target = new Invokee<EnteredChatEventArgs>(__InvokeEnteredChat) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeEnteredChat, e));
             }
         }
         #endregion
@@ -3551,21 +3021,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__AccountCreated)
-                {
-                    if (!__AccountCreated.ContainsKey(Priority.Normal))
-                    {
-                        __AccountCreated.Add(Priority.Normal, new List<AccountCreationEventHandler>());
-                    }
-                }
-                __AccountCreated[Priority.Normal].Add(value);
+                RegisterAccountCreatedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__AccountCreated.ContainsKey(Priority.Normal))
-                {
-                    __AccountCreated[Priority.Normal].Remove(value);
-                }
+                UnregisterAccountCreatedNotification(Priority.Normal, value);
             }
         }
 
@@ -3665,16 +3125,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<AccountCreationEventArgs> { Arguments = e, Target = new Invokee<AccountCreationEventArgs>(__InvokeAccountCreated) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<AccountCreationEventArgs> { Arguments = e, Target = new Invokee<AccountCreationEventArgs>(__InvokeAccountCreated) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeAccountCreated, e));
             }
         }
         #endregion
@@ -3704,21 +3155,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__AccountCreationFailed)
-                {
-                    if (!__AccountCreationFailed.ContainsKey(Priority.Normal))
-                    {
-                        __AccountCreationFailed.Add(Priority.Normal, new List<AccountCreationFailedEventHandler>());
-                    }
-                }
-                __AccountCreationFailed[Priority.Normal].Add(value);
+                RegisterAccountCreationFailedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__AccountCreationFailed.ContainsKey(Priority.Normal))
-                {
-                    __AccountCreationFailed[Priority.Normal].Remove(value);
-                }
+                UnregisterAccountCreationFailedNotification(Priority.Normal, value);
             }
         }
 
@@ -3792,7 +3233,12 @@ namespace BNSharp.BattleNet
         /// <seealso cref="AccountCreationFailed" />
         protected virtual void OnAccountCreationFailed(AccountCreationFailedEventArgs e)
         {
-            foreach (AccountCreationFailedEventHandler eh in __AccountCreationFailed[Priority.High])
+            __InvokeAccountCreationFailed(Priority.High, e);
+        }
+
+        private void __InvokeAccountCreationFailed(Priority p, AccountCreationFailedEventArgs e)
+        {
+            foreach (AccountCreationFailedEventHandler eh in __AccountCreationFailed[p])
             {
                 try
                 {
@@ -3804,56 +3250,17 @@ namespace BNSharp.BattleNet
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "AccountCreationFailed"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (AccountCreationFailedEventHandler eh in __AccountCreationFailed[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "AccountCreationFailed"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (AccountCreationFailedEventHandler eh in __AccountCreationFailed[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "AccountCreationFailed"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e as BaseEventArgs);
-                });
-            });
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeAccountCreationFailed, e));
+            }
         }
         #endregion
         #endregion
@@ -3884,21 +3291,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__ChannelListReceived)
-                {
-                    if (!__ChannelListReceived.ContainsKey(Priority.Normal))
-                    {
-                        __ChannelListReceived.Add(Priority.Normal, new List<ChannelListEventHandler>());
-                    }
-                }
-                __ChannelListReceived[Priority.Normal].Add(value);
+                RegisterChannelListReceivedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__ChannelListReceived.ContainsKey(Priority.Normal))
-                {
-                    __ChannelListReceived[Priority.Normal].Remove(value);
-                }
+                UnregisterChannelListReceivedNotification(Priority.Normal, value);
             }
         }
 
@@ -3998,16 +3395,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ChannelListEventArgs> { Arguments = e, Target = new Invokee<ChannelListEventArgs>(__InvokeChannelListReceived) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ChannelListEventArgs> { Arguments = e, Target = new Invokee<ChannelListEventArgs>(__InvokeChannelListReceived) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeChannelListReceived, e));
             }
         }
         #endregion
@@ -4037,21 +3425,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__Error)
-                {
-                    if (!__Error.ContainsKey(Priority.Normal))
-                    {
-                        __Error.Add(Priority.Normal, new List<ErrorEventHandler>());
-                    }
-                }
-                __Error[Priority.Normal].Add(value);
+                RegisterErrorNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__Error.ContainsKey(Priority.Normal))
-                {
-                    __Error[Priority.Normal].Remove(value);
-                }
+                UnregisterErrorNotification(Priority.Normal, value);
             }
         }
 
@@ -4151,16 +3529,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ErrorEventArgs> { Arguments = e, Target = new Invokee<ErrorEventArgs>(__InvokeError) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ErrorEventArgs> { Arguments = e, Target = new Invokee<ErrorEventArgs>(__InvokeError) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeError, e));
             }
         }
         #endregion
@@ -4190,21 +3559,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__Information)
-                {
-                    if (!__Information.ContainsKey(Priority.Normal))
-                    {
-                        __Information.Add(Priority.Normal, new List<InformationEventHandler>());
-                    }
-                }
-                __Information[Priority.Normal].Add(value);
+                RegisterInformationNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__Information.ContainsKey(Priority.Normal))
-                {
-                    __Information[Priority.Normal].Remove(value);
-                }
+                UnregisterInformationNotification(Priority.Normal, value);
             }
         }
 
@@ -4304,16 +3663,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<InformationEventArgs> { Arguments = e, Target = new Invokee<InformationEventArgs>(__InvokeInformation) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<InformationEventArgs> { Arguments = e, Target = new Invokee<InformationEventArgs>(__InvokeInformation) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeInformation, e));
             }
         }
         #endregion
@@ -4346,21 +3696,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__Connected)
-                {
-                    if (!__Connected.ContainsKey(Priority.Normal))
-                    {
-                        __Connected.Add(Priority.Normal, new List<EventHandler>());
-                    }
-                }
-                __Connected[Priority.Normal].Add(value);
+                RegisterConnectedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__Connected.ContainsKey(Priority.Normal))
-                {
-                    __Connected[Priority.Normal].Remove(value);
-                }
+                UnregisterConnectedNotification(Priority.Normal, value);
             }
         }
 
@@ -4460,16 +3800,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<EventArgs> { Arguments = e, Target = new Invokee<EventArgs>(__InvokeConnected) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<EventArgs> { Arguments = e, Target = new Invokee<EventArgs>(__InvokeConnected) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeConnected, e));
             }
         }
         #endregion
@@ -4499,21 +3830,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__Disconnected)
-                {
-                    if (!__Disconnected.ContainsKey(Priority.Normal))
-                    {
-                        __Disconnected.Add(Priority.Normal, new List<EventHandler>());
-                    }
-                }
-                __Disconnected[Priority.Normal].Add(value);
+                RegisterDisconnectedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__Disconnected.ContainsKey(Priority.Normal))
-                {
-                    __Disconnected[Priority.Normal].Remove(value);
-                }
+                UnregisterDisconnectedNotification(Priority.Normal, value);
             }
         }
 
@@ -4613,16 +3934,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<EventArgs> { Arguments = e, Target = new Invokee<EventArgs>(__InvokeDisconnected) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<EventArgs> { Arguments = e, Target = new Invokee<EventArgs>(__InvokeDisconnected) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeDisconnected, e));
             }
         }
 
@@ -4651,21 +3963,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__AdChanged)
-                {
-                    if (!__AdChanged.ContainsKey(Priority.Normal))
-                    {
-                        __AdChanged.Add(Priority.Normal, new List<AdChangedEventHandler>());
-                    }
-                }
-                __AdChanged[Priority.Normal].Add(value);
+                RegisterAdChangedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__AdChanged.ContainsKey(Priority.Normal))
-                {
-                    __AdChanged[Priority.Normal].Remove(value);
-                }
+                UnregisterAdChangedNotification(Priority.Normal, value);
             }
         }
 
@@ -4765,16 +4067,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<AdChangedEventArgs> { Arguments = e, Target = new Invokee<AdChangedEventArgs>(__InvokeAdChanged) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<AdChangedEventArgs> { Arguments = e, Target = new Invokee<AdChangedEventArgs>(__InvokeAdChanged) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeAdChanged, e));
             }
         }
 
@@ -4810,21 +4103,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__WardenUnhandled)
-                {
-                    if (!__WardenUnhandled.ContainsKey(Priority.Normal))
-                    {
-                        __WardenUnhandled.Add(Priority.Normal, new List<EventHandler>());
-                    }
-                }
-                __WardenUnhandled[Priority.Normal].Add(value);
+                RegisterWardenUnhandledNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__WardenUnhandled.ContainsKey(Priority.Normal))
-                {
-                    __WardenUnhandled[Priority.Normal].Remove(value);
-                }
+                UnregisterWardenUnhandledNotification(Priority.Normal, value);
             }
         }
 
@@ -4898,7 +4181,12 @@ namespace BNSharp.BattleNet
         /// <seealso cref="WardenUnhandled" />
         protected virtual void OnWardenUnhandled(EventArgs e)
         {
-            foreach (EventHandler eh in __WardenUnhandled[Priority.High])
+            __InvokeWardenUnhandled(Priority.High, e);
+        }
+
+        private void __InvokeWardenUnhandled(Priority p, EventArgs e)
+        {
+            foreach (EventHandler eh in __WardenUnhandled[p])
             {
                 try
                 {
@@ -4910,56 +4198,17 @@ namespace BNSharp.BattleNet
                         ex,
                         new KeyValuePair<string, object>("delegate", eh),
                         new KeyValuePair<string, object>("Event", "WardenUnhandled"),
-                        new KeyValuePair<string, object>("param: priority", Priority.High),
+                        new KeyValuePair<string, object>("param: priority", p),
                         new KeyValuePair<string, object>("param: this", this),
                         new KeyValuePair<string, object>("param: e", e)
                         );
                 }
             }
 
-            ThreadPool.QueueUserWorkItem((WaitCallback)delegate
+            if (p == Priority.High)
             {
-                foreach (EventHandler eh in __WardenUnhandled[Priority.Normal])
-                {
-                    try
-                    {
-                        eh(this, e);
-                    }
-                    catch (Exception ex)
-                    {
-                        ReportException(
-                            ex,
-                            new KeyValuePair<string, object>("delegate", eh),
-                            new KeyValuePair<string, object>("Event", "WardenUnhandled"),
-                            new KeyValuePair<string, object>("param: priority", Priority.Normal),
-                            new KeyValuePair<string, object>("param: this", this),
-                            new KeyValuePair<string, object>("param: e", e)
-                            );
-                    }
-                }
-                ThreadPool.QueueUserWorkItem((WaitCallback)delegate
-                {
-                    foreach (EventHandler eh in __WardenUnhandled[Priority.Low])
-                    {
-                        try
-                        {
-                            eh(this, e);
-                        }
-                        catch (Exception ex)
-                        {
-                            ReportException(
-                                ex,
-                                new KeyValuePair<string, object>("delegate", eh),
-                                new KeyValuePair<string, object>("Event", "WardenUnhandled"),
-                                new KeyValuePair<string, object>("param: priority", Priority.Low),
-                                new KeyValuePair<string, object>("param: this", this),
-                                new KeyValuePair<string, object>("param: e", e)
-                                );
-                        }
-                    }
-                    FreeArgumentResources(e as BaseEventArgs);
-                });
-            });
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeWardenUnhandled, e));
+            }
         }
         #endregion
 		
@@ -4990,21 +4239,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__ServerNews)
-                {
-                    if (!__ServerNews.ContainsKey(Priority.Normal))
-                    {
-                        __ServerNews.Add(Priority.Normal, new List<ServerNewsEventHandler>());
-                    }
-                }
-                __ServerNews[Priority.Normal].Add(value);
+                RegisterServerNewsNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__ServerNews.ContainsKey(Priority.Normal))
-                {
-                    __ServerNews[Priority.Normal].Remove(value);
-                }
+                UnregisterServerNewsNotification(Priority.Normal, value);
             }
         }
 
@@ -5104,16 +4343,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ServerNewsEventArgs> { Arguments = e, Target = new Invokee<ServerNewsEventArgs>(__InvokeServerNews) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ServerNewsEventArgs> { Arguments = e, Target = new Invokee<ServerNewsEventArgs>(__InvokeServerNews) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeServerNews, e));
             }
         }
         #endregion
@@ -5144,21 +4374,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__ClanMemberListReceived)
-                {
-                    if (!__ClanMemberListReceived.ContainsKey(Priority.Normal))
-                    {
-                        __ClanMemberListReceived.Add(Priority.Normal, new List<ClanMemberListEventHandler>());
-                    }
-                }
-                __ClanMemberListReceived[Priority.Normal].Add(value);
+                RegisterClanMemberListReceivedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__ClanMemberListReceived.ContainsKey(Priority.Normal))
-                {
-                    __ClanMemberListReceived[Priority.Normal].Remove(value);
-                }
+                UnregisterClanMemberListReceivedNotification(Priority.Normal, value);
             }
         }
 
@@ -5258,16 +4478,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ClanMemberListEventArgs> { Arguments = e, Target = new Invokee<ClanMemberListEventArgs>(__InvokeClanMemberListReceived) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ClanMemberListEventArgs> { Arguments = e, Target = new Invokee<ClanMemberListEventArgs>(__InvokeClanMemberListReceived) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeClanMemberListReceived, e));
             }
         }
         #endregion
@@ -5297,21 +4508,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__ClanMemberStatusChanged)
-                {
-                    if (!__ClanMemberStatusChanged.ContainsKey(Priority.Normal))
-                    {
-                        __ClanMemberStatusChanged.Add(Priority.Normal, new List<ClanMemberStatusEventHandler>());
-                    }
-                }
-                __ClanMemberStatusChanged[Priority.Normal].Add(value);
+                RegisterClanMemberStatusChangedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__ClanMemberStatusChanged.ContainsKey(Priority.Normal))
-                {
-                    __ClanMemberStatusChanged[Priority.Normal].Remove(value);
-                }
+                UnregisterClanMemberStatusChangedNotification(Priority.Normal, value);
             }
         }
 
@@ -5411,16 +4612,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ClanMemberStatusEventArgs> { Arguments = e, Target = new Invokee<ClanMemberStatusEventArgs>(__InvokeClanMemberStatusChanged) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ClanMemberStatusEventArgs> { Arguments = e, Target = new Invokee<ClanMemberStatusEventArgs>(__InvokeClanMemberStatusChanged) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeClanMemberStatusChanged, e));
             }
         }
         #endregion
@@ -5450,21 +4642,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__ClanMemberQuit)
-                {
-                    if (!__ClanMemberQuit.ContainsKey(Priority.Normal))
-                    {
-                        __ClanMemberQuit.Add(Priority.Normal, new List<ClanMemberStatusEventHandler>());
-                    }
-                }
-                __ClanMemberQuit[Priority.Normal].Add(value);
+                RegisterClanMemberQuitNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__ClanMemberQuit.ContainsKey(Priority.Normal))
-                {
-                    __ClanMemberQuit[Priority.Normal].Remove(value);
-                }
+                UnregisterClanMemberQuitNotification(Priority.Normal, value);
             }
         }
 
@@ -5564,16 +4746,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ClanMemberStatusEventArgs> { Arguments = e, Target = new Invokee<ClanMemberStatusEventArgs>(__InvokeClanMemberQuit) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ClanMemberStatusEventArgs> { Arguments = e, Target = new Invokee<ClanMemberStatusEventArgs>(__InvokeClanMemberQuit) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeClanMemberQuit, e));
             }
         }
         #endregion
@@ -5603,21 +4776,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__ClanMemberRemoved)
-                {
-                    if (!__ClanMemberRemoved.ContainsKey(Priority.Normal))
-                    {
-                        __ClanMemberRemoved.Add(Priority.Normal, new List<ClanMemberStatusEventHandler>());
-                    }
-                }
-                __ClanMemberRemoved[Priority.Normal].Add(value);
+                RegisterClanMemberRemovedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__ClanMemberRemoved.ContainsKey(Priority.Normal))
-                {
-                    __ClanMemberRemoved[Priority.Normal].Remove(value);
-                }
+                UnregisterClanMemberRemovedNotification(Priority.Normal, value);
             }
         }
 
@@ -5717,16 +4880,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ClanMemberStatusEventArgs> { Arguments = e, Target = new Invokee<ClanMemberStatusEventArgs>(__InvokeClanMemberRemoved) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ClanMemberStatusEventArgs> { Arguments = e, Target = new Invokee<ClanMemberStatusEventArgs>(__InvokeClanMemberRemoved) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeClanMemberRemoved, e));
             }
         }
         #endregion
@@ -5756,21 +4910,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__ClanMessageOfTheDay)
-                {
-                    if (!__ClanMessageOfTheDay.ContainsKey(Priority.Normal))
-                    {
-                        __ClanMessageOfTheDay.Add(Priority.Normal, new List<InformationEventHandler>());
-                    }
-                }
-                __ClanMessageOfTheDay[Priority.Normal].Add(value);
+                RegisterClanMessageOfTheDayNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__ClanMessageOfTheDay.ContainsKey(Priority.Normal))
-                {
-                    __ClanMessageOfTheDay[Priority.Normal].Remove(value);
-                }
+                UnregisterClanMessageOfTheDayNotification(Priority.Normal, value);
             }
         }
 
@@ -5870,16 +5014,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<InformationEventArgs> { Arguments = e, Target = new Invokee<InformationEventArgs>(__InvokeClanMessageOfTheDay) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<InformationEventArgs> { Arguments = e, Target = new Invokee<InformationEventArgs>(__InvokeClanMessageOfTheDay) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeClanMessageOfTheDay, e));
             }
         }
         #endregion
@@ -5909,21 +5044,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__ClanMemberRankChanged)
-                {
-                    if (!__ClanMemberRankChanged.ContainsKey(Priority.Normal))
-                    {
-                        __ClanMemberRankChanged.Add(Priority.Normal, new List<ClanMemberRankChangeEventHandler>());
-                    }
-                }
-                __ClanMemberRankChanged[Priority.Normal].Add(value);
+                RegisterClanMemberRankChangedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__ClanMemberRankChanged.ContainsKey(Priority.Normal))
-                {
-                    __ClanMemberRankChanged[Priority.Normal].Remove(value);
-                }
+                UnregisterClanMemberRankChangedNotification(Priority.Normal, value);
             }
         }
 
@@ -6023,16 +5148,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ClanMemberRankChangeEventArgs> { Arguments = e, Target = new Invokee<ClanMemberRankChangeEventArgs>(__InvokeClanMemberRankChanged) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ClanMemberRankChangeEventArgs> { Arguments = e, Target = new Invokee<ClanMemberRankChangeEventArgs>(__InvokeClanMemberRankChanged) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeClanMemberRankChanged, e));
             }
         }
         #endregion
@@ -6062,21 +5178,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__ClanMembershipReceived)
-                {
-                    if (!__ClanMembershipReceived.ContainsKey(Priority.Normal))
-                    {
-                        __ClanMembershipReceived.Add(Priority.Normal, new List<ClanMembershipEventHandler>());
-                    }
-                }
-                __ClanMembershipReceived[Priority.Normal].Add(value);
+                RegisterClanMembershipReceivedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__ClanMembershipReceived.ContainsKey(Priority.Normal))
-                {
-                    __ClanMembershipReceived[Priority.Normal].Remove(value);
-                }
+                UnregisterClanMembershipReceivedNotification(Priority.Normal, value);
             }
         }
 
@@ -6176,16 +5282,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ClanMembershipEventArgs> { Arguments = e, Target = new Invokee<ClanMembershipEventArgs>(__InvokeClanMembershipReceived) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ClanMembershipEventArgs> { Arguments = e, Target = new Invokee<ClanMembershipEventArgs>(__InvokeClanMembershipReceived) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeClanMembershipReceived, e));
             }
         }
         #endregion
@@ -6215,21 +5312,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__ClanCandidatesSearchCompleted)
-                {
-                    if (!__ClanCandidatesSearchCompleted.ContainsKey(Priority.Normal))
-                    {
-                        __ClanCandidatesSearchCompleted.Add(Priority.Normal, new List<ClanCandidatesSearchEventHandler>());
-                    }
-                }
-                __ClanCandidatesSearchCompleted[Priority.Normal].Add(value);
+                RegisterClanCandidatesSearchCompletedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__ClanCandidatesSearchCompleted.ContainsKey(Priority.Normal))
-                {
-                    __ClanCandidatesSearchCompleted[Priority.Normal].Remove(value);
-                }
+                UnregisterClanCandidatesSearchCompletedNotification(Priority.Normal, value);
             }
         }
 
@@ -6329,16 +5416,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ClanCandidatesSearchEventArgs> { Arguments = e, Target = new Invokee<ClanCandidatesSearchEventArgs>(__InvokeClanCandidatesSearchCompleted) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ClanCandidatesSearchEventArgs> { Arguments = e, Target = new Invokee<ClanCandidatesSearchEventArgs>(__InvokeClanCandidatesSearchCompleted) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeClanCandidatesSearchCompleted, e));
             }
         }
         #endregion
@@ -6368,21 +5446,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__ClanFormationCompleted)
-                {
-                    if (!__ClanFormationCompleted.ContainsKey(Priority.Normal))
-                    {
-                        __ClanFormationCompleted.Add(Priority.Normal, new List<ClanFormationEventHandler>());
-                    }
-                }
-                __ClanFormationCompleted[Priority.Normal].Add(value);
+                RegisterClanFormationCompletedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__ClanFormationCompleted.ContainsKey(Priority.Normal))
-                {
-                    __ClanFormationCompleted[Priority.Normal].Remove(value);
-                }
+                UnregisterClanFormationCompletedNotification(Priority.Normal, value);
             }
         }
 
@@ -6482,16 +5550,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ClanFormationEventArgs> { Arguments = e, Target = new Invokee<ClanFormationEventArgs>(__InvokeClanFormationCompleted) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ClanFormationEventArgs> { Arguments = e, Target = new Invokee<ClanFormationEventArgs>(__InvokeClanFormationCompleted) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeClanFormationCompleted, e));
             }
         }
         #endregion
@@ -6521,21 +5580,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__ClanFormationInvitationReceived)
-                {
-                    if (!__ClanFormationInvitationReceived.ContainsKey(Priority.Normal))
-                    {
-                        __ClanFormationInvitationReceived.Add(Priority.Normal, new List<ClanFormationInvitationEventHandler>());
-                    }
-                }
-                __ClanFormationInvitationReceived[Priority.Normal].Add(value);
+                RegisterClanFormationInvitationReceivedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__ClanFormationInvitationReceived.ContainsKey(Priority.Normal))
-                {
-                    __ClanFormationInvitationReceived[Priority.Normal].Remove(value);
-                }
+                UnregisterClanFormationInvitationReceivedNotification(Priority.Normal, value);
             }
         }
 
@@ -6635,16 +5684,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ClanFormationInvitationEventArgs> { Arguments = e, Target = new Invokee<ClanFormationInvitationEventArgs>(__InvokeClanFormationInvitationReceived) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ClanFormationInvitationEventArgs> { Arguments = e, Target = new Invokee<ClanFormationInvitationEventArgs>(__InvokeClanFormationInvitationReceived) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeClanFormationInvitationReceived, e));
             }
         }
         #endregion
@@ -6674,21 +5714,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__ClanDisbandCompleted)
-                {
-                    if (!__ClanDisbandCompleted.ContainsKey(Priority.Normal))
-                    {
-                        __ClanDisbandCompleted.Add(Priority.Normal, new List<ClanDisbandEventHandler>());
-                    }
-                }
-                __ClanDisbandCompleted[Priority.Normal].Add(value);
+                RegisterClanDisbandCompletedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__ClanDisbandCompleted.ContainsKey(Priority.Normal))
-                {
-                    __ClanDisbandCompleted[Priority.Normal].Remove(value);
-                }
+                UnregisterClanDisbandCompletedNotification(Priority.Normal, value);
             }
         }
 
@@ -6788,16 +5818,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ClanDisbandEventArgs> { Arguments = e, Target = new Invokee<ClanDisbandEventArgs>(__InvokeClanDisbandCompleted) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ClanDisbandEventArgs> { Arguments = e, Target = new Invokee<ClanDisbandEventArgs>(__InvokeClanDisbandCompleted) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeClanDisbandCompleted, e));
             }
         }
         #endregion
@@ -6827,21 +5848,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__ClanChangeChieftanCompleted)
-                {
-                    if (!__ClanChangeChieftanCompleted.ContainsKey(Priority.Normal))
-                    {
-                        __ClanChangeChieftanCompleted.Add(Priority.Normal, new List<ClanChieftanChangeEventHandler>());
-                    }
-                }
-                __ClanChangeChieftanCompleted[Priority.Normal].Add(value);
+                RegisterClanChangeChieftanCompletedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__ClanChangeChieftanCompleted.ContainsKey(Priority.Normal))
-                {
-                    __ClanChangeChieftanCompleted[Priority.Normal].Remove(value);
-                }
+                UnregisterClanChangeChieftanCompletedNotification(Priority.Normal, value);
             }
         }
 
@@ -6941,16 +5952,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ClanChieftanChangeEventArgs> { Arguments = e, Target = new Invokee<ClanChieftanChangeEventArgs>(__InvokeClanChangeChieftanCompleted) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ClanChieftanChangeEventArgs> { Arguments = e, Target = new Invokee<ClanChieftanChangeEventArgs>(__InvokeClanChangeChieftanCompleted) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeClanChangeChieftanCompleted, e));
             }
         }
         #endregion
@@ -6980,21 +5982,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__ClanInvitationReceived)
-                {
-                    if (!__ClanInvitationReceived.ContainsKey(Priority.Normal))
-                    {
-                        __ClanInvitationReceived.Add(Priority.Normal, new List<ClanInvitationEventHandler>());
-                    }
-                }
-                __ClanInvitationReceived[Priority.Normal].Add(value);
+                RegisterClanInvitationReceivedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__ClanInvitationReceived.ContainsKey(Priority.Normal))
-                {
-                    __ClanInvitationReceived[Priority.Normal].Remove(value);
-                }
+                UnregisterClanInvitationReceivedNotification(Priority.Normal, value);
             }
         }
 
@@ -7094,16 +6086,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ClanInvitationEventArgs> { Arguments = e, Target = new Invokee<ClanInvitationEventArgs>(__InvokeClanInvitationReceived) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ClanInvitationEventArgs> { Arguments = e, Target = new Invokee<ClanInvitationEventArgs>(__InvokeClanInvitationReceived) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeClanInvitationReceived, e));
             }
         }
         #endregion
@@ -7133,21 +6116,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__LeftClan)
-                {
-                    if (!__LeftClan.ContainsKey(Priority.Normal))
-                    {
-                        __LeftClan.Add(Priority.Normal, new List<LeftClanEventHandler>());
-                    }
-                }
-                __LeftClan[Priority.Normal].Add(value);
+                RegisterLeftClanNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__LeftClan.ContainsKey(Priority.Normal))
-                {
-                    __LeftClan[Priority.Normal].Remove(value);
-                }
+                UnregisterLeftClanNotification(Priority.Normal, value);
             }
         }
 
@@ -7247,16 +6220,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<LeftClanEventArgs> { Arguments = e, Target = new Invokee<LeftClanEventArgs>(__InvokeLeftClan) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<LeftClanEventArgs> { Arguments = e, Target = new Invokee<LeftClanEventArgs>(__InvokeLeftClan) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeLeftClan, e));
             }
         }
         #endregion
@@ -7286,21 +6250,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__ClanInvitationResponseReceived)
-                {
-                    if (!__ClanInvitationResponseReceived.ContainsKey(Priority.Normal))
-                    {
-                        __ClanInvitationResponseReceived.Add(Priority.Normal, new List<ClanInvitationResponseEventHandler>());
-                    }
-                }
-                __ClanInvitationResponseReceived[Priority.Normal].Add(value);
+                RegisterClanInvitationResponseReceivedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__ClanInvitationResponseReceived.ContainsKey(Priority.Normal))
-                {
-                    __ClanInvitationResponseReceived[Priority.Normal].Remove(value);
-                }
+                UnregisterClanInvitationResponseReceivedNotification(Priority.Normal, value);
             }
         }
 
@@ -7400,16 +6354,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ClanInvitationResponseEventArgs> { Arguments = e, Target = new Invokee<ClanInvitationResponseEventArgs>(__InvokeClanInvitationResponseReceived) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ClanInvitationResponseEventArgs> { Arguments = e, Target = new Invokee<ClanInvitationResponseEventArgs>(__InvokeClanInvitationResponseReceived) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeClanInvitationResponseReceived, e));
             }
         }
         #endregion
@@ -7439,21 +6384,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__ClanRemovalResponse)
-                {
-                    if (!__ClanRemovalResponse.ContainsKey(Priority.Normal))
-                    {
-                        __ClanRemovalResponse.Add(Priority.Normal, new List<ClanRemovalResponseEventHandler>());
-                    }
-                }
-                __ClanRemovalResponse[Priority.Normal].Add(value);
+                RegisterClanRemovalResponseNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__ClanRemovalResponse.ContainsKey(Priority.Normal))
-                {
-                    __ClanRemovalResponse[Priority.Normal].Remove(value);
-                }
+                UnregisterClanRemovalResponseNotification(Priority.Normal, value);
             }
         }
 
@@ -7553,16 +6488,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ClanRemovalResponseEventArgs> { Arguments = e, Target = new Invokee<ClanRemovalResponseEventArgs>(__InvokeClanRemovalResponse) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ClanRemovalResponseEventArgs> { Arguments = e, Target = new Invokee<ClanRemovalResponseEventArgs>(__InvokeClanRemovalResponse) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeClanRemovalResponse, e));
             }
         }
         #endregion
@@ -7592,21 +6518,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__ClanRankChangeResponseReceived)
-                {
-                    if (!__ClanRankChangeResponseReceived.ContainsKey(Priority.Normal))
-                    {
-                        __ClanRankChangeResponseReceived.Add(Priority.Normal, new List<ClanRankChangeEventHandler>());
-                    }
-                }
-                __ClanRankChangeResponseReceived[Priority.Normal].Add(value);
+                RegisterClanRankChangeResponseReceivedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__ClanRankChangeResponseReceived.ContainsKey(Priority.Normal))
-                {
-                    __ClanRankChangeResponseReceived[Priority.Normal].Remove(value);
-                }
+                UnregisterClanRankChangeResponseReceivedNotification(Priority.Normal, value);
             }
         }
 
@@ -7706,16 +6622,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<ClanRankChangeEventArgs> { Arguments = e, Target = new Invokee<ClanRankChangeEventArgs>(__InvokeClanRankChangeResponseReceived) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<ClanRankChangeEventArgs> { Arguments = e, Target = new Invokee<ClanRankChangeEventArgs>(__InvokeClanRankChangeResponseReceived) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeClanRankChangeResponseReceived, e));
             }
         }
         #endregion
@@ -7749,21 +6656,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__FriendListReceived)
-                {
-                    if (!__FriendListReceived.ContainsKey(Priority.Normal))
-                    {
-                        __FriendListReceived.Add(Priority.Normal, new List<FriendListReceivedEventHandler>());
-                    }
-                }
-                __FriendListReceived[Priority.Normal].Add(value);
+                RegisterFriendListReceivedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__FriendListReceived.ContainsKey(Priority.Normal))
-                {
-                    __FriendListReceived[Priority.Normal].Remove(value);
-                }
+                UnregisterFriendListReceivedNotification(Priority.Normal, value);
             }
         }
 
@@ -7863,16 +6760,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<FriendListReceivedEventArgs> { Arguments = e, Target = new Invokee<FriendListReceivedEventArgs>(__InvokeFriendListReceived) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<FriendListReceivedEventArgs> { Arguments = e, Target = new Invokee<FriendListReceivedEventArgs>(__InvokeFriendListReceived) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeFriendListReceived, e));
             }
         }
         #endregion
@@ -7902,21 +6790,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__FriendUpdated)
-                {
-                    if (!__FriendUpdated.ContainsKey(Priority.Normal))
-                    {
-                        __FriendUpdated.Add(Priority.Normal, new List<FriendUpdatedEventHandler>());
-                    }
-                }
-                __FriendUpdated[Priority.Normal].Add(value);
+                RegisterFriendUpdatedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__FriendUpdated.ContainsKey(Priority.Normal))
-                {
-                    __FriendUpdated[Priority.Normal].Remove(value);
-                }
+                UnregisterFriendUpdatedNotification(Priority.Normal, value);
             }
         }
 
@@ -8016,16 +6894,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<FriendUpdatedEventArgs> { Arguments = e, Target = new Invokee<FriendUpdatedEventArgs>(__InvokeFriendUpdated) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<FriendUpdatedEventArgs> { Arguments = e, Target = new Invokee<FriendUpdatedEventArgs>(__InvokeFriendUpdated) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeFriendUpdated, e));
             }
         }
         #endregion
@@ -8055,21 +6924,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__FriendAdded)
-                {
-                    if (!__FriendAdded.ContainsKey(Priority.Normal))
-                    {
-                        __FriendAdded.Add(Priority.Normal, new List<FriendAddedEventHandler>());
-                    }
-                }
-                __FriendAdded[Priority.Normal].Add(value);
+                RegisterFriendAddedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__FriendAdded.ContainsKey(Priority.Normal))
-                {
-                    __FriendAdded[Priority.Normal].Remove(value);
-                }
+                UnregisterFriendAddedNotification(Priority.Normal, value);
             }
         }
 
@@ -8169,16 +7028,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<FriendAddedEventArgs> { Arguments = e, Target = new Invokee<FriendAddedEventArgs>(__InvokeFriendAdded) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<FriendAddedEventArgs> { Arguments = e, Target = new Invokee<FriendAddedEventArgs>(__InvokeFriendAdded) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeFriendAdded, e));
             }
         }
         #endregion
@@ -8208,21 +7058,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__FriendRemoved)
-                {
-                    if (!__FriendRemoved.ContainsKey(Priority.Normal))
-                    {
-                        __FriendRemoved.Add(Priority.Normal, new List<FriendRemovedEventHandler>());
-                    }
-                }
-                __FriendRemoved[Priority.Normal].Add(value);
+                RegisterFriendRemovedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__FriendRemoved.ContainsKey(Priority.Normal))
-                {
-                    __FriendRemoved[Priority.Normal].Remove(value);
-                }
+                UnregisterFriendRemovedNotification(Priority.Normal, value);
             }
         }
 
@@ -8322,16 +7162,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<FriendRemovedEventArgs> { Arguments = e, Target = new Invokee<FriendRemovedEventArgs>(__InvokeFriendRemoved) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<FriendRemovedEventArgs> { Arguments = e, Target = new Invokee<FriendRemovedEventArgs>(__InvokeFriendRemoved) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeFriendRemoved, e));
             }
         }
         #endregion
@@ -8361,21 +7192,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__FriendMoved)
-                {
-                    if (!__FriendMoved.ContainsKey(Priority.Normal))
-                    {
-                        __FriendMoved.Add(Priority.Normal, new List<FriendMovedEventHandler>());
-                    }
-                }
-                __FriendMoved[Priority.Normal].Add(value);
+                RegisterFriendMovedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__FriendMoved.ContainsKey(Priority.Normal))
-                {
-                    __FriendMoved[Priority.Normal].Remove(value);
-                }
+                UnregisterFriendMovedNotification(Priority.Normal, value);
             }
         }
 
@@ -8475,16 +7296,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<FriendMovedEventArgs> { Arguments = e, Target = new Invokee<FriendMovedEventArgs>(__InvokeFriendMoved) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<FriendMovedEventArgs> { Arguments = e, Target = new Invokee<FriendMovedEventArgs>(__InvokeFriendMoved) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeFriendMoved, e));
             }
         }
         #endregion
@@ -8516,21 +7328,11 @@ namespace BNSharp.BattleNet
         {
             add
             {
-                lock (__UserProfileReceived)
-                {
-                    if (!__UserProfileReceived.ContainsKey(Priority.Normal))
-                    {
-                        __UserProfileReceived.Add(Priority.Normal, new List<UserProfileEventHandler>());
-                    }
-                }
-                __UserProfileReceived[Priority.Normal].Add(value);
+                RegisterUserProfileReceivedNotification(Priority.Normal, value);
             }
             remove
             {
-                if (__UserProfileReceived.ContainsKey(Priority.Normal))
-                {
-                    __UserProfileReceived[Priority.Normal].Remove(value);
-                }
+                UnregisterUserProfileReceivedNotification(Priority.Normal, value);
             }
         }
 
@@ -8630,16 +7432,7 @@ namespace BNSharp.BattleNet
 
             if (p == Priority.High)
             {
-                e_medPriorityEvents.Enqueue(new InvokeHelper<UserProfileEventArgs> { Arguments = e, Target = new Invokee<UserProfileEventArgs>(__InvokeUserProfileReceived) });
-                e_medBlocker.Set();
-            }
-            else if (p == Priority.Normal)
-            {
-                e_lowPriorityEvents.Enqueue(new InvokeHelper<UserProfileEventArgs> { Arguments = e, Target = new Invokee<UserProfileEventArgs>(__InvokeUserProfileReceived) });
-            }
-            else // if (p == Priority.Low)
-            {
-                FreeArgumentResources(e as BaseEventArgs);
+                m_dispatch.EnqueueEvent(CreateEventDispatchHelper(__InvokeUserProfileReceived, e));
             }
         }
         #endregion

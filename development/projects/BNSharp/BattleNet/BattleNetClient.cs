@@ -65,8 +65,6 @@ namespace BNSharp.BattleNet
 
             InitializeParseDictionaries();
 
-            CreateEventThreads();
-
             m_queue = new DefaultCommandQueue();
             m_messageReadyCallback = SendCallbackImpl;
             m_queue.MessageReady += m_messageReadyCallback;
@@ -264,8 +262,6 @@ namespace BNSharp.BattleNet
                     m_adTmr.Dispose();
                     m_adTmr = null;
                 }
-
-                CloseEventThreads();
             }
         }
 
