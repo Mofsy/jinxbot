@@ -468,13 +468,13 @@ namespace JinxBot.Views
         private ServerChatEventHandler __ChannelWasRestricted;
         void ChannelWasRestricted(object sender, ServerChatEventArgs e)
         {
-            chat.AddChat(new ChatNode(e.Text, CssClasses.ChannelRestricted));
+            chat.AddChat(new ChatNode("Could not join ", CssClasses.Error), new ChatNode(e.Text, CssClasses.ChannelRestricted), new ChatNode(" because it was restricted.", CssClasses.Error));
         }
 
         private ServerChatEventHandler __ChannelWasFull;
         void ChannelWasFull(object sender, ServerChatEventArgs e)
         {
-            chat.AddChat(new ChatNode(e.Text, CssClasses.ChannelFull));
+            chat.AddChat(new ChatNode("Could not join ", CssClasses.Error), new ChatNode(e.Text, CssClasses.ChannelFull), new ChatNode(" because it was full.", CssClasses.Error));
         }
 
         private ChannelListEventHandler __ChannelListReceived;
@@ -529,6 +529,11 @@ namespace JinxBot.Views
         {
             IEnumerable<ChatNode> nodeList = nodes;
             chat.AddChat(nodeList);
+        }
+
+        public void AddChat(IEnumerable<ChatNode> nodes)
+        {
+            chat.AddChat(nodes);
         }
     }
 }

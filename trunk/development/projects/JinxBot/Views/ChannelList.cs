@@ -15,6 +15,7 @@ using Timer = System.Timers.Timer;
 using System.Timers;
 using BNSharp.BattleNet.Stats;
 using System.Globalization;
+using BNSharp.BattleNet.Clans;
 
 namespace JinxBot.Views
 {
@@ -23,6 +24,8 @@ namespace JinxBot.Views
         private BattleNetClient m_client;
         private Timer m_voidViewTimer;
         private Dictionary<ChatUser, ToolTipPropertySet> m_tips;
+        private bool m_isInClan;
+
         private static Dictionary<Product, Color> ProductTipColors = new Dictionary<Product, Color>
         {
             { Product.ChatClient, Color.DarkGray },
@@ -51,8 +54,7 @@ namespace JinxBot.Views
             m_voidViewTimer.AutoReset = true;
 
             m_tips = new Dictionary<ChatUser, ToolTipPropertySet>();
-        }
-        
+        }        
 
         public ChannelList(BattleNetClient client)
             : this()
@@ -79,6 +81,17 @@ namespace JinxBot.Views
             m_client.RegisterUserShownNotification(Priority.Low, __UserShown);
             m_client.RegisterJoinedChannelNotification(Priority.Low, __JoinedChannel);
             m_client.RegisterDisconnectedNotification(Priority.Low, __Disconnected);
+            m_client.RegisterClanMembershipReceivedNotification(Priority.Low, ClanMembershipStatusChanged);
+        }
+
+        void ClanMembershipStatusChanged(object sender, ClanMembershipEventArgs e)
+        {
+            m_isInClan = !string.IsNullOrEmpty(e.Tag);
+            Invokee result = () => beginFormingANewClanToolStripMenuItem.Enabled = !m_isInClan;
+            if (InvokeRequired)
+                Invoke(result);
+            else
+                result();
         }
 
         private EventHandler __Disconnected;
@@ -115,6 +128,23 @@ namespace JinxBot.Views
         {
             this.listBox1.Items.Clear();
             UpdateUserCount();
+
+            if (m_client.Settings.Client == Product.Warcraft3Retail.ProductCode ||
+                m_client.Settings.Client == Product.Warcraft3Expansion.ProductCode)
+            {
+                beginFormingANewClanToolStripMenuItem.Enabled = !m_isInClan;
+            }
+            else
+            {
+                beginFormingANewClanToolStripMenuItem.Enabled = false;
+            }
+
+            squelchUserToolStripMenuItem.Enabled = false;
+            kickUserToolStripMenuItem.Enabled = false;
+            banUserToolStripMenuItem.Enabled = false;
+            inviteUserToClanToolStripMenuItem.Enabled = false;
+            addUserAsAFriendToolStripMenuItem.Enabled = false;
+            lookUpUserProfileToolStripMenuItem.Enabled = false;
         }
 
         private void UpdateUserCount()
@@ -405,6 +435,33 @@ namespace JinxBot.Views
         private void listBox1_MouseHover(object sender, EventArgs e)
         {
 
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (listBox1.SelectedIndex == -1)
+            {
+                squelchUserToolStripMenuItem.Enabled = false;
+                kickUserToolStripMenuItem.Enabled = false;
+                banUserToolStripMenuItem.Enabled = false;
+                inviteUserToClanToolStripMenuItem.Enabled = false;
+                addUserAsAFriendToolStripMenuItem.Enabled = false;
+                lookUpUserProfileToolStripMenuItem.Enabled = false;
+            }
+            else
+            {
+                squelchUserToolStripMenuItem.Enabled = true;
+                kickUserToolStripMenuItem.Enabled = true;
+                banUserToolStripMenuItem.Enabled = true;
+                inviteUserToClanToolStripMenuItem.Enabled = true;
+                addUserAsAFriendToolStripMenuItem.Enabled = true;
+                lookUpUserProfileToolStripMenuItem.Enabled = true;
+            }
+        }
+
+        private void beginFormingANewClanToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            m_client.BeginClanCandidatesSearch("HFGA");
         }
     }
 }

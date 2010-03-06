@@ -345,6 +345,11 @@ namespace JinxBot
             // Prevent managed debugging aids from catching an RCW Free race
             GlobalErrorHandler.ErrorLog.IsAppClosing = true;
 
+            foreach (var item in m_activeClients)
+            {
+                item.Value.Close();
+            }
+
             base.OnClosing(e);
         }
 

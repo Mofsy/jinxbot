@@ -90,7 +90,8 @@ namespace JinxBot.Plugins
             return plugin;
         }
 
-        public static void ClosePluginInstance(ProfilePluginConfiguration config, IJinxBotPlugin pluginInstance)
+        public static void ClosePluginInstance(ProfilePluginConfiguration config, 
+            IJinxBotPlugin pluginInstance)
         {
             lock (m_lock)
             {
