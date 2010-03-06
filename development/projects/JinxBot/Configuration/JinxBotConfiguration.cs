@@ -231,8 +231,9 @@ namespace JinxBot.Configuration
                                 new XElement("Settings", 
                                     from set in ps.Settings
                                     select new XElement("Setting", 
-                                        new XAttribute("Name", set.Name), set.Value)
-                                        )
+                                        new XAttribute("Name", set.Name), 
+                                        new XAttribute("Value", set.Value)
+                                        ) )
                                     )
                                 )            
                     ) // end <ClientProfile>
@@ -244,12 +245,13 @@ namespace JinxBot.Configuration
                         new XElement("Settings",
                             from set in mcps.Settings
                             select new XElement("Setting", 
-                                new XAttribute("Name", set.Name), set.Value)
-                                )
+                                new XAttribute("Name", set.Name), 
+                                new XAttribute("Value", set.Value)
+                                ) )
                         )
                 ) // end <MultiClientPluginSettings>
             )); // end <JinxBotConfiguration>
-            using (FileStream fs = new FileStream(GetConfigFilePath(), FileMode.OpenOrCreate, FileAccess.Write, FileShare.None))
+            using (FileStream fs = new FileStream(GetConfigFilePath(), FileMode.Create, FileAccess.Write, FileShare.None))
             using (StreamWriter sw = new StreamWriter(fs, Encoding.UTF8))
             using (XmlTextWriter xtw = new XmlTextWriter(sw))
             {

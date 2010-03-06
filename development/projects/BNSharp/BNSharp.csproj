@@ -225,6 +225,9 @@
     </Compile>
     <Compile Include="UserEventArgs.cs" />
     <Compile Include="UserFlags.cs" />
+    <Compile Include="Util\LinkedList.cs" />
+    <Compile Include="Util\ObjectPool.cs" />
+    <Compile Include="Util\Queue.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MBNCSUtil\Resources.resx">

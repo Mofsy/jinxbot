@@ -46,6 +46,7 @@ namespace JinxBot.Controls
         private Dictionary<Type, ChatNodeRenderer> m_renderers;
         private AddChatCallback AddChatImplementation;
         private HtmlElement m_enterTextElement, m_scrollToElement;
+        private bool m_docReady;
         #endregion
         #region property backers
         private Color m_tsColor = Color.Gray;
@@ -53,6 +54,8 @@ namespace JinxBot.Controls
         private string m_timestampFormat = "[{0}.{1:d2}.{2:d2}]";
         private int m_parasToKeep = 300;
         private Uri m_stylesUri;
+
+        private List<List<ChatNode>> m_notReadyYetNodes = new List<List<ChatNode>>();
         #endregion
         #endregion
 
@@ -66,6 +69,9 @@ namespace JinxBot.Controls
             InitializeComponent();
             this.AddChatImplementation = new AddChatCallback(AddChatImpl);
             display.DocumentText = string.Format(CultureInfo.InvariantCulture, HTML, scriptInitializer);
+
+            m_renderers = new Dictionary<Type, ChatNodeRenderer>();
+            InitializeRenderer(typeof(ChatNode), typeof(ChatNodeRenderer));
         }
 
         private void InitializeExternals()
@@ -118,10 +124,17 @@ namespace JinxBot.Controls
             this.m_enterTextElement = display.Document.GetElementById("enterText");
             this.m_scrollToElement = display.Document.GetElementById("scrollTo");
 
-            //PrintDom(display.Document.DomDocument as IHTMLDocument2);
+            foreach (List<ChatNode> nodes in m_notReadyYetNodes)
+            {
+                if (InvokeRequired)
+                    BeginInvoke(AddChatImplementation, nodes);
+                else
+                    AddChatImpl(nodes);
+            }
 
-            m_renderers = new Dictionary<Type, ChatNodeRenderer>();
-            InitializeRenderer(typeof(ChatNode), typeof(ChatNodeRenderer));
+            m_docReady = true;
+
+            //PrintDom(display.Document.DomDocument as IHTMLDocument2);
 
             IHTMLDocument doc = display.Document.DomDocument as IHTMLDocument;
             
@@ -186,16 +199,23 @@ namespace JinxBot.Controls
         // Checks to see if Invoke is required to add the chat nodes to the window.
         private void AddChatPrivate(List<ChatNode> nodes)
         {
-            for (int i = 0; i < nodes.Count; i++)
+            if (!m_docReady)
             {
-                if (nodes[i] == null)
-                    throw new ArgumentNullException("nodes");
+                m_notReadyYetNodes.Add(nodes);
             }
-
-            if (InvokeRequired)
-                BeginInvoke(AddChatImplementation, nodes);
             else
-                AddChatImplementation(nodes);
+            {
+                for (int i = 0; i < nodes.Count; i++)
+                {
+                    if (nodes[i] == null)
+                        throw new ArgumentNullException("nodes");
+                }
+
+                if (InvokeRequired)
+                    BeginInvoke(AddChatImplementation, nodes);
+                else
+                    AddChatImplementation(nodes);
+            }
         }
 
         // Actually adds the nodes to the chat window.

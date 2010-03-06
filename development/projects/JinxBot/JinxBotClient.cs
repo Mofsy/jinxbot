@@ -41,6 +41,12 @@ namespace JinxBot
 
             bool hasSetCommandQueue = false;
 
+            if (m_database == null)
+                m_database = new JinxBotDefaultDatabase();
+
+            // finally, initialize ui
+            m_window = new ProfileDocument(this);
+
             // initialize plugins
             m_commandHandlers = new List<ICommandHandler>();
             foreach (ProfilePluginConfiguration pluginConfig in profile.PluginSettings)
@@ -52,12 +58,6 @@ namespace JinxBot
             {
                 m_client.CommandQueue = new TimedMessageQueue();
             }
-
-            if (m_database == null)
-                m_database = new JinxBotDefaultDatabase();
-            
-            // finally, initialize ui
-            m_window = new ProfileDocument(this);
         }
 
         private bool ProcessPlugin(bool hasSetCommandQueue, ProfilePluginConfiguration pluginConfig)
@@ -87,6 +87,14 @@ namespace JinxBot
             IMultiClientPlugin mcp = plugin as IMultiClientPlugin;
             if (mcp != null)
                 mcp.AddClient(this);
+            else
+            {
+                ISingleClientPlugin scp = plugin as ISingleClientPlugin;
+                if (scp != null)
+                {
+                    scp.RegisterEvents(this);
+                }
+            }
 
             return hasSetCommandQueue;
         }
@@ -105,7 +113,13 @@ namespace JinxBot
                 if (mcp != null)
                     mcp.RemoveClient(this);
 
+                ISingleClientPlugin scp = plugin as ISingleClientPlugin;
+                if (scp != null)
+                    scp.UnregisterEvents(this);
+
                 PluginFactory.ClosePluginInstance(config, plugin);
+
+                JinxBotConfiguration.Instance.Save();
             }
         }
 

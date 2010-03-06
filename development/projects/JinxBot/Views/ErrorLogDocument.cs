@@ -2,6 +2,7 @@
 using JinxBot.Controls;
 using JinxBot.Views.Chat;
 using JinxBot.Plugins.UI;
+using System.Collections.Generic;
 
 namespace JinxBot.Views
 {
@@ -24,6 +25,11 @@ namespace JinxBot.Views
         {
             get;
             set;
+        }
+
+        void IChatTab.AddChat(IEnumerable<ChatNode> nodes)
+        {
+            display.AddChat(nodes);
         }
 
         #region IChatTab Members

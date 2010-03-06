@@ -153,6 +153,11 @@ namespace JinxBot.Views
             }
         }
 
+        public void AddChat(IEnumerable<ChatNode> nodes)
+        {
+            m_chat.AddChat(nodes);
+        }
+
         public bool VoidView
         {
             get
