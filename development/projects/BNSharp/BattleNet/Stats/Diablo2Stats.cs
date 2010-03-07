@@ -73,50 +73,53 @@ namespace BNSharp.BattleNet.Stats
             if (m.Success)
             {
                 m_userName = string.Concat("*", m.Groups["Username"].Value);
-
-                m_isRealm = true;
-                m_realm = dr.ReadTerminatedString(',', Encoding.ASCII);
-                m_charName = dr.ReadTerminatedString(',', Encoding.ASCII);
-
-                byte[] characterData = dr.ReadByteArray(33);
-                /*
-0000   ff 0f 74 00 01 00 00 00 00 00 00 00 8c 00 00 00  ..t.............
-0010   00 00 00 00 0d f0 ad ba 0d f0 ad ba 53 63 72 65  ............Scre
-0020   65 6e 53 68 6f 6f 74 40 55 53 45 61 73 74 2a 44  enShoot@USEast*D
-0030   72 2e 4d 61 72 73 68 61 6c 6c 00 50 58 32 44 55  r.Marshall.PX2DU
-0040   53 45 61 73 74 2c 53 63 72 65 65 6e 53 68 6f 6f  SEast,ScreenShoo
-0050   74 2c>84 80 39 ff ff ff ff 0f ff 5d ff ff ff*04  t,..9......]....
-0060   4d ff ff ff ff ff ff ff ff ff ff 56*a8*9a ff ff  M..........V....
-0070   ff ff ff<00                                      ....
-                 * */
-                m_class = (Diablo2CharacterClass)characterData[13];
-                if (m_class < Diablo2CharacterClass.Amazon || m_class > Diablo2CharacterClass.Assassin)
-                    m_class = Diablo2CharacterClass.Unknown;
-
-                m_isMale = !(m_class == Diablo2CharacterClass.Amazon || m_class == Diablo2CharacterClass.Assassin ||
-                                m_class == Diablo2CharacterClass.Sorceress);
-
-                m_level = characterData[25];
-
-                byte flags = characterData[26];
-                m_isHardcore = ((flags & 4) == 4);
-                m_isDead = ((flags & 8) == 8);
-                m_isExpCharacter = ((flags & 32) == 32);
-                m_isLadder = ((flags & 64) == 64);
-
-                byte completedActs = (byte)((characterData[27] & 0x3e) >> 2);
-                if (m_isExpCharacter)
+                try
                 {
-                    m_difficulty = (Diablo2DifficultyLevel)(completedActs / 5);
-                    m_numActsCompleted = (completedActs % 5);
-                    m_hasCompletedGame = (m_numActsCompleted == 5);
+                    m_isRealm = true;
+                    m_realm = dr.ReadTerminatedString(',', Encoding.ASCII);
+                    m_charName = dr.ReadTerminatedString(',', Encoding.ASCII);
+
+                    byte[] characterData = dr.ReadByteArray(33);
+                    /*
+    0000   ff 0f 74 00 01 00 00 00 00 00 00 00 8c 00 00 00  ..t.............
+    0010   00 00 00 00 0d f0 ad ba 0d f0 ad ba 53 63 72 65  ............Scre
+    0020   65 6e 53 68 6f 6f 74 40 55 53 45 61 73 74 2a 44  enShoot@USEast*D
+    0030   72 2e 4d 61 72 73 68 61 6c 6c 00 50 58 32 44 55  r.Marshall.PX2DU
+    0040   53 45 61 73 74 2c 53 63 72 65 65 6e 53 68 6f 6f  SEast,ScreenShoo
+    0050   74 2c>84 80 39 ff ff ff ff 0f ff 5d ff ff ff*04  t,..9......]....
+    0060   4d ff ff ff ff ff ff ff ff ff ff 56*a8*9a ff ff  M..........V....
+    0070   ff ff ff<00                                      ....
+                     * */
+                    m_class = (Diablo2CharacterClass)characterData[13];
+                    if (m_class < Diablo2CharacterClass.Amazon || m_class > Diablo2CharacterClass.Assassin)
+                        m_class = Diablo2CharacterClass.Unknown;
+
+                    m_isMale = !(m_class == Diablo2CharacterClass.Amazon || m_class == Diablo2CharacterClass.Assassin ||
+                                    m_class == Diablo2CharacterClass.Sorceress);
+
+                    m_level = characterData[25];
+
+                    byte flags = characterData[26];
+                    m_isHardcore = ((flags & 4) == 4);
+                    m_isDead = ((flags & 8) == 8);
+                    m_isExpCharacter = ((flags & 32) == 32);
+                    m_isLadder = ((flags & 64) == 64);
+
+                    byte completedActs = (byte)((characterData[27] & 0x3e) >> 2);
+                    if (m_isExpCharacter)
+                    {
+                        m_difficulty = (Diablo2DifficultyLevel)(completedActs / 5);
+                        m_numActsCompleted = (completedActs % 5);
+                        m_hasCompletedGame = (m_numActsCompleted == 5);
+                    }
+                    else
+                    {
+                        m_difficulty = (Diablo2DifficultyLevel)(completedActs / 4);
+                        m_numActsCompleted = (completedActs % 4);
+                        m_hasCompletedGame = (m_numActsCompleted == 4);
+                    }
                 }
-                else
-                {
-                    m_difficulty = (Diablo2DifficultyLevel)(completedActs / 4);
-                    m_numActsCompleted = (completedActs % 4);
-                    m_hasCompletedGame = (m_numActsCompleted == 4);
-                }
+                catch (ArgumentOutOfRangeException) { }
             }
             else
             {
