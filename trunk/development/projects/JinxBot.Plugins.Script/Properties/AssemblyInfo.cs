@@ -1,18 +1,16 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System;
-using System.Resources;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("BN# - Beta 3")]
-[assembly: AssemblyDescription("A library for simplifying connections to Battle.net.")]
+[assembly: AssemblyTitle("JinxBot.Plugins.Script")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("The JinxBot Project")]
-[assembly: AssemblyProduct("BN#")]
-[assembly: AssemblyCopyright("Copyright © 2008-2009")]
+[assembly: AssemblyCompany("Microsoft")]
+[assembly: AssemblyProduct("JinxBot.Plugins.Script")]
+[assembly: AssemblyCopyright("Copyright © Microsoft 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -22,7 +20,7 @@ using System.Resources;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("40f38f74-c13b-4655-8b1c-f611af666c22")]
+[assembly: Guid("f6140114-0dfa-4942-9d25-815adb9aa4dc")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -34,8 +32,5 @@ using System.Resources;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.10.11.02")]
-[assembly: AssemblyFileVersion("0.10.11.02")]
-
-[assembly: CLSCompliant(true)]
-[assembly: NeutralResourcesLanguageAttribute("en-US")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]

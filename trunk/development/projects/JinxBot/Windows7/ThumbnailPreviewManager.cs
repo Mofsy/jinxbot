@@ -32,14 +32,16 @@ namespace JinxBot.Windows7
             thumb.TabbedThumbnailActivated += (s, e) => doc.Show();
             m_manager.AddThumbnailPreview(thumb);
             Bitmap bmp = new Bitmap(doc.Width, doc.Height, PixelFormat.Format32bppArgb);
-            doc.DrawToBitmap(bmp, doc.Bounds);
+            //doc.DrawToBitmap(bmp, doc.Bounds);
+            doc.Controls[0].DrawToBitmap(bmp, doc.Controls[0].Bounds);
             m_previews[doc] = bmp;
             thumb.TabbedThumbnailBitmapRequested += 
                 (s, e) => 
                 {
                     doc.Show();
                     Bitmap newBmp = new Bitmap(doc.Width, doc.Height, PixelFormat.Format32bppArgb);
-                    doc.DrawToBitmap(bmp, doc.Bounds);
+                    //doc.DrawToBitmap(bmp, doc.Bounds);
+                    doc.Controls[0].DrawToBitmap(newBmp, doc.Controls[0].Bounds);
                     e.SetImage(newBmp);
                     e.Handled = true;
                 };

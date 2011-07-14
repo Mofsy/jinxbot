@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MBNCSUtil", "MBNCSUtil\MBNCSUtil.csproj", "{F66D19F8-4F97-4E87-9E18-444ECF289A83}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mbnftp", "mbnftp\mbnftp.csproj", "{231771E9-F168-488E-A39D-3B9F8472CB4A}"

@@ -7,7 +7,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{cdf6b58f-71f8-4d08-994b-37d8e5c53e15}</ProjectGuid>
-    <SHFBSchemaVersion>1.8.0.0</SHFBSchemaVersion>
+    <SHFBSchemaVersion>1.9.0.0</SHFBSchemaVersion>
     <!-- AssemblyName, Name, and RootNamespace are not used by SHFB but Visual
          Studio adds them anyway -->
     <AssemblyName>Documentation</AssemblyName>
@@ -30,7 +30,7 @@
     </WorkingPath>
     <BuildLogFile>
     </BuildLogFile>
-    <HelpFileFormat>Help1xAndWebsite</HelpFileFormat>
+    <HelpFileFormat>HtmlHelp1, Website</HelpFileFormat>
     <FrameworkVersion>2.0.50727</FrameworkVersion>
     <Preliminary>True</Preliminary>
     <HelpTitle>BN# - The Managed Battle.net Client Library [ Beta 3 ]</HelpTitle>
@@ -42,57 +42,29 @@
     <PresentationStyle>jinxbot-vs2005</PresentationStyle>
     <NamingMethod>MemberName</NamingMethod>
     <ComponentConfigurations>
-      <ComponentConfig id="Cached MSDN URL References" enabled="True">
+      <ComponentConfig id="Cached MSDN URL References" enabled="False">
         <component id="Cached MSDN URL References" type="SandcastleBuilder.Components.CachedResolveReferenceLinksComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
           <cache filename="{@AppDataFolder}Cache\MsdnUrl.cache" />
           <targets base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" type="{@SDKLinks}" />
           <targets files="reflection.xml" type="{@ProjectLinks}" />
         </component>
       </ComponentConfig>
-      <ComponentConfig id="Cached Reflection Index Data" enabled="True">
-        <component id="Cached Reflection Index Data" type="SandcastleBuilder.Components.CachedCopyFromIndexComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
-          <index name="reflection" value="/reflection/apis/api" key="@id" cache="10">
-            <cache base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" cacheFile="{@AppDataFolder}Cache\Reflection.cache" />
-            <data files="reflection.xml" />
-          </index>
-          <copy name="reflection" source="*" target="/document/reference" />
-        </component>
-      </ComponentConfig>
-      <ComponentConfig id="Cached Framework Comments Index Data" enabled="True">
-        <component id="Cached Framework Comments Index Data" type="SandcastleBuilder.Components.CachedCopyFromIndexComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
-          <index name="comments" value="/doc/members/member" key="@name" cache="100">
+<ComponentConfig id="Cached Reflection Index Data" enabled="True"><component id="Cached Reflection Index Data" type="SandcastleBuilder.Components.CachedCopyFromIndexComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll"><index name="reflection" value="/reflection/apis/api" key="@id" cache="10"><cache base="{@SandcastlePath}Data\Reflection" recurse="true" files="*.xml" cacheFile="{@AppDataFolder}Cache\Reflection.cache" /><data files="reflection.xml" /></index><copy name="reflection" source="*" target="/document/reference" /></component></ComponentConfig>
+<ComponentConfig id="Cached Framework Comments Index Data" enabled="True"><component id="Cached Framework Comments Index Data" type="SandcastleBuilder.Components.CachedCopyFromIndexComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll"><index name="comments" value="/doc/members/member" key="@name" cache="100">
 {@CachedFrameworkCommentList}
 {@CommentFileList}
-            </index>
-          <copy name="comments" source="*" target="/document/comments" />
-        </component>
-      </ComponentConfig>
-      <ComponentConfig id="IntelliSense Component" enabled="True">
-        <component id="IntelliSense Component" type="SandcastleBuilder.Components.IntelliSenseComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
-          <!-- Output options (optional)
+            </index><copy name="comments" source="*" target="/document/comments" /></component></ComponentConfig>
+<ComponentConfig id="IntelliSense Component" enabled="True"><component id="IntelliSense Component" type="SandcastleBuilder.Components.IntelliSenseComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll"><!-- Output options (optional)
                  Attributes:
                     Include Namespaces (false by default)
                     Namespaces filename ("Namespaces" if not specified or empty)
-                    Directory (current folder if not specified or empty) -->
-          <output includeNamespaces="false" namespacesFile="Namespaces" folder="{@OutputFolder}" />
-        </component>
-      </ComponentConfig>
-      <ComponentConfig id="Code Block Component" enabled="True">
-        <component id="Code Block Component" type="SandcastleBuilder.Components.CodeBlockComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll">
-          <!-- Base path for relative filenames in source attributes
-                 (optional) -->
-          <basePath value="{@ProjectFolder}" />
-          <!-- Connect to language filter (optional).  If omitted,
-                 language filtering is enabled by default. -->
-          <languageFilter value="true" />
-          <!-- Allow missing source files (Optional).  If omitted,
+                    Directory (current folder if not specified or empty) --><output includeNamespaces="false" namespacesFile="Namespaces" folder="{@OutputFolder}" /></component></ComponentConfig>
+<ComponentConfig id="Code Block Component" enabled="True"><component id="Code Block Component" type="SandcastleBuilder.Components.CodeBlockComponent" assembly="{@SHFBFolder}SandcastleBuilder.Components.dll"><!-- Base path for relative filenames in source attributes
+                 (optional) --><basePath value="{@ProjectFolder}" /><!-- Connect to language filter (optional).  If omitted,
+                 language filtering is enabled by default. --><languageFilter value="true" /><!-- Allow missing source files (Optional).  If omitted,
                  it will generate errors if referenced source files
-                 are missing. -->
-          <allowMissingSource value="false" />
-          <!-- Remove region markers from imported code blocks.  If omitted,
-                 region markers in imported code blocks are left alone. -->
-          <removeRegionMarkers value="false" />
-          <!-- Code colorizer options (required).
+                 are missing. --><allowMissingSource value="false" /><!-- Remove region markers from imported code blocks.  If omitted,
+                 region markers in imported code blocks are left alone. --><removeRegionMarkers value="false" /><!-- Code colorizer options (required).
                  Attributes:
                     Language syntax configuration file (required)
                     XSLT style file (required)
@@ -102,18 +74,14 @@
                     Enable outlining (optional)
                     Keep XML comment "see" tags within the code (optional)
                     Tab size override (optional, 0 = Use syntax file setting)
-                    Use language name as default title (optional) -->
-          <colorizer syntaxFile="{@SHFBFolder}Colorizer\highlight.xml" styleFile="{@SHFBFolder}Colorizer\highlight.xsl" copyImageUrl="../icons/CopyCode.gif" language="cs" numberLines="false" outlining="false" keepSeeTags="false" tabSize="0" defaultTitle="true" />
-        </component>
-      </ComponentConfig>
-    </ComponentConfigurations>
+                    Use language name as default title (optional) --><colorizer syntaxFile="{@SHFBFolder}Colorizer\highlight.xml" styleFile="{@SHFBFolder}Colorizer\highlight.xsl" copyImageUrl="../icons/CopyCode.gif" language="cs" numberLines="false" outlining="false" keepSeeTags="false" tabSize="0" defaultTitle="true" /></component></ComponentConfig></ComponentConfigurations>
     <DocumentationSources>
       <DocumentationSource sourceFile="..\..\development\projects\BNSharp\bin\Debug\BNSharp.dll" />
       <DocumentationSource sourceFile="..\..\development\projects\BNSharp\bin\Debug\BNSharp.xml" />
     </DocumentationSources>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="(global)" isDocumented="False" />
-<NamespaceSummaryItem name="BNSharp" isDocumented="True">&lt;summary&gt;
+      <NamespaceSummaryItem name="BNSharp" isDocumented="True">&lt;summary&gt;
     &lt;introduction address="intro"&gt;
         &lt;para&gt;
             BN# is a utility library designed to simplify the creation of Battle.net client applications by
@@ -135,21 +103,21 @@
         &lt;/para&gt;
     &lt;/introduction&gt;
 &lt;/summary&gt;</NamespaceSummaryItem>
-<NamespaceSummaryItem name="BNSharp.BattleNet" isDocumented="True">&lt;summary&gt;
+      <NamespaceSummaryItem name="BNSharp.BattleNet" isDocumented="True">&lt;summary&gt;
         The BNSharp.BattleNet namespace contains types that have a high degree of domain specificity to Battle.net.
     &lt;/summary&gt;</NamespaceSummaryItem>
-<NamespaceSummaryItem name="BNSharp.BattleNet.Clans" isDocumented="True">&lt;summary&gt;
+      <NamespaceSummaryItem name="BNSharp.BattleNet.Clans" isDocumented="True">&lt;summary&gt;
         The BNSharp.BattleNet.Clans namespace contains types that have a high degree of domain specificity to Battle.net clans.
     &lt;/summary&gt;</NamespaceSummaryItem>
-<NamespaceSummaryItem name="BNSharp.BattleNet.Friends" isDocumented="True">&lt;summary&gt;
+      <NamespaceSummaryItem name="BNSharp.BattleNet.Friends" isDocumented="True">&lt;summary&gt;
         The BNSharp.BattleNet.Friends namespace contains types that have a high degree of domain specificity to Battle.net friends lists and activites.
     &lt;/summary&gt;</NamespaceSummaryItem>
-<NamespaceSummaryItem name="BNSharp.BattleNet.Stats" isDocumented="True">&lt;summary&gt;
+      <NamespaceSummaryItem name="BNSharp.BattleNet.Stats" isDocumented="True">&lt;summary&gt;
         The BNSharp.BattleNet.Stats namespace contains types to facilitate the parsing of user data regarding their statistics such as 
         Battle.net stat strings.  To parse a stat string, see the &lt;see cref="BNSharp.BattleNet.StatsUserStats.Parse"&gt;UserStats.Parse&lt;/see&gt; method,
         which returns an object based on the client in use by the user.
     &lt;/summary&gt;</NamespaceSummaryItem>
-<NamespaceSummaryItem name="BNSharp.MBNCSUtil" isDocumented="True">&lt;summary&gt;
+      <NamespaceSummaryItem name="BNSharp.MBNCSUtil" isDocumented="True">&lt;summary&gt;
     &lt;para&gt;
         VERY IMPORTANT!  If you do not intend to use BN# as a development platform, it is 
         recommended that you use the standard MBNCSUtil library instead of BNSharp.dll.  
@@ -404,7 +372,7 @@
         &lt;/list&gt;
     &lt;/para&gt;
 &lt;/summary&gt;</NamespaceSummaryItem>
-<NamespaceSummaryItem name="BNSharp.MBNCSUtil.Data" isDocumented="True">&lt;summary&gt;
+      <NamespaceSummaryItem name="BNSharp.MBNCSUtil.Data" isDocumented="True">&lt;summary&gt;
     &lt;para&gt;
         The &lt;b&gt;BNSharp.MBNCSUtil.Data&lt;/b&gt; namespace contains the classes necessary to access MPQ support in MBNCSUtil as well as the 
         extraction of images from .BLP, BLP2 (.BLP files found in World of Warcraft), and .BNI files.
@@ -419,7 +387,7 @@
         Disposing an MpqArchive will automatically dispose any MpqFileStream objects that were created by it.
     &lt;/para&gt;
 &lt;/summary&gt;</NamespaceSummaryItem>
-<NamespaceSummaryItem name="BNSharp.MBNCSUtil.Net" isDocumented="True">&lt;summary&gt;
+      <NamespaceSummaryItem name="BNSharp.MBNCSUtil.Net" isDocumented="True">&lt;summary&gt;
     &lt;para&gt;
         The &lt;b&gt;BNSharp.MBNCSUtil.Net&lt;/b&gt; namespace contains the classes necessary to connect to the Battle.net
         proprietary FTP service.
@@ -431,13 +399,13 @@
         class.
     &lt;/para&gt;
 &lt;/summary&gt;</NamespaceSummaryItem>
-<NamespaceSummaryItem name="BNSharp.MBNCSUtil.Util" isDocumented="False" />
-<NamespaceSummaryItem name="BNSharp.Net" isDocumented="True">&lt;summary&gt;
+      <NamespaceSummaryItem name="BNSharp.MBNCSUtil.Util" isDocumented="False" />
+      <NamespaceSummaryItem name="BNSharp.Net" isDocumented="True">&lt;summary&gt;
         The BNSharp.Net namespace contains types that facilitate client connections.  Specifically, the &lt;see&gt;BattleNetClient&lt;/see&gt;
         class may be used as a highly-contained client connection to Battle.net, whereas a &lt;see&gt;ConnectionBase&lt;/see&gt; may be more appropriate for someone
         interested in implementing a new client protocol.
     &lt;/summary&gt;</NamespaceSummaryItem>
-<NamespaceSummaryItem name="BNSharp.Plugins" isDocumented="True">&lt;summary&gt;
+      <NamespaceSummaryItem name="BNSharp.Plugins" isDocumented="True">&lt;summary&gt;
     &lt;para&gt;
         The BNSharp.Plugins namespace contains interfaces that can be implemented to extend intrinsic BN# functionality.
         By implementing these interfaces and then registering the appropriate objects with BN#, many changes to the 
@@ -458,7 +426,8 @@
         &lt;a href="http://www.jinxbot.net/wiki/index.php?title=Custom_packet_handling_with_BNSharp" target="_blank"&gt;Custom packet handling with BN#&lt;/a&gt;.
     &lt;/para&gt;
     &lt;seealso cref="BNSharp.Net.BattleNetClient" /&gt;
-&lt;/summary&gt;</NamespaceSummaryItem></NamespaceSummaries>
+&lt;/summary&gt;</NamespaceSummaryItem>
+    </NamespaceSummaries>
     <FeedbackEMailLinkText>Send Feedback</FeedbackEMailLinkText>
   </PropertyGroup>
   <!-- There are no properties for these two groups but they need to appear in

@@ -357,13 +357,31 @@ namespace BNSharp.MBNCSUtil
             for (int i = m_index, j = length - 1; i < (m_index + length) && j >= 0; i++, j--)
             {
                 b[j] = m_data[i];
-                if (b[j] == padding)
-                    idx0 = j;
             }
-            if (idx0 == -1)
-                idx0 = length;
 
-            string result = Encoding.ASCII.GetString(b, 0, idx0);
+            int startIndex = 0;
+            for (int i = 0; i < b.Length; i++)
+            {
+                if (b[i] == padding)
+                    startIndex++;
+                else
+                    break;
+            }
+
+            int endIndex = b.Length - 1;
+            for (int i = b.Length - 1; i >= 0; i--)
+            {
+                if (b[i] == padding)
+                    endIndex--;
+                else
+                    break;
+            }
+
+            int len = (endIndex - startIndex) + 1;
+            if (len < 0) len = 0;
+            else if (len > b.Length) len = b.Length;
+
+            string result = Encoding.ASCII.GetString(b, startIndex, len);
             return result;
         }
 
@@ -490,7 +508,7 @@ namespace BNSharp.MBNCSUtil
         public bool Seek(int offset)
         {
             bool fOk = false;
-            if (this.m_index + offset < m_data.Length)
+            if (this.m_index + offset <= m_data.Length)
             {
                 m_index += offset;
                 fOk = true;
