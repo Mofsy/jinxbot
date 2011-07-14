@@ -67,7 +67,7 @@ namespace JinxBot.Wizards
         {
             if (TaskbarManager.IsPlatformSupported)
             {
-                BeginInvoke((ThreadStart)delegate() { TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Normal, Handle); });
+                //BeginInvoke((ThreadStart)delegate() { TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.Normal, Handle); });
             }
 
             bwDownload.ReportProgress(0, "icons.bni");

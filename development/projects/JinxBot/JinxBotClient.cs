@@ -11,6 +11,7 @@ using JinxBot.Plugins.BNSharp;
 using JinxBot.Configuration;
 using BNSharp.Plugins;
 using JinxBot.Util;
+using JinxBot.Plugins.Script;
 
 namespace JinxBot
 {
@@ -54,6 +55,15 @@ namespace JinxBot
                 hasSetCommandQueue = ProcessPlugin(hasSetCommandQueue, pluginConfig);
             }
 
+            ProfilePluginConfiguration jsConfig = new ProfilePluginConfiguration
+            {
+                Assembly = "JinxBot.Plugins.Script.dll",
+                Name = "JavaScript Plugin",
+                Settings = new ProfilePluginSettingConfiguration[0],
+                Type = "JinxBot.Plugins.Script.JinxBotJavaScriptPlugin"
+            };
+            hasSetCommandQueue = ProcessPlugin(hasSetCommandQueue, jsConfig);
+
             if (!hasSetCommandQueue)
             {
                 m_client.CommandQueue = new TimedMessageQueue();
@@ -92,6 +102,7 @@ namespace JinxBot
                 ISingleClientPlugin scp = plugin as ISingleClientPlugin;
                 if (scp != null)
                 {
+                    scp.CreatePluginWindows(this.ProfileDocument);
                     scp.RegisterEvents(this);
                 }
             }
@@ -115,12 +126,17 @@ namespace JinxBot
 
                 ISingleClientPlugin scp = plugin as ISingleClientPlugin;
                 if (scp != null)
+                {
                     scp.UnregisterEvents(this);
+                    scp.DestroyPluginWindows(this.ProfileDocument);
+                }
 
                 PluginFactory.ClosePluginInstance(config, plugin);
 
                 JinxBotConfiguration.Instance.Save();
             }
+
+
         }
 
         #region IJinxBotClient Members
