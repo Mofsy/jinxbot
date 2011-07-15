@@ -30,30 +30,14 @@ namespace JinxBot.Controls
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.display = new System.Windows.Forms.WebBrowser();
             this.ctx = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.copyAsPlainTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyAsHTMLTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyAsUBBCForumTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.wpfHost = new System.Windows.Forms.Integration.ElementHost();
+            this.display = new JinxBot.Controls.WpfDisplay();
             this.ctx.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // display
-            // 
-            this.display.AllowNavigation = false;
-            this.display.AllowWebBrowserDrop = false;
-            this.display.ContextMenuStrip = this.ctx;
-            this.display.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.display.IsWebBrowserContextMenuEnabled = false;
-            this.display.Location = new System.Drawing.Point(0, 0);
-            this.display.MinimumSize = new System.Drawing.Size(20, 20);
-            this.display.Name = "display";
-            this.display.ScriptErrorsSuppressed = true;
-            this.display.Size = new System.Drawing.Size(464, 229);
-            this.display.TabIndex = 0;
-            this.display.WebBrowserShortcutsEnabled = false;
-            this.display.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.display_PreviewKeyDown);
-            this.display.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.display_DocumentCompleted);
             // 
             // ctx
             // 
@@ -90,12 +74,22 @@ namespace JinxBot.Controls
             this.copyAsUBBCForumTextToolStripMenuItem.Text = "Copy as &UBBC (Forum) Text";
             this.copyAsUBBCForumTextToolStripMenuItem.Click += new System.EventHandler(this.copyAsUBBCForumTextToolStripMenuItem_Click);
             // 
+            // wpfHost
+            // 
+            this.wpfHost.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.wpfHost.Location = new System.Drawing.Point(0, 0);
+            this.wpfHost.Name = "wpfHost";
+            this.wpfHost.Size = new System.Drawing.Size(464, 229);
+            this.wpfHost.TabIndex = 1;
+            this.wpfHost.Text = "elementHost1";
+            this.wpfHost.Child = this.display;
+            // 
             // DisplayBox
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.Controls.Add(this.display);
+            this.Controls.Add(this.wpfHost);
             this.Name = "DisplayBox";
             this.Size = new System.Drawing.Size(464, 229);
             this.ctx.ResumeLayout(false);
@@ -105,10 +99,11 @@ namespace JinxBot.Controls
 
         #endregion
 
-        private System.Windows.Forms.WebBrowser display;
         private System.Windows.Forms.ContextMenuStrip ctx;
         private System.Windows.Forms.ToolStripMenuItem copyAsPlainTextToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyAsHTMLTextToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyAsUBBCForumTextToolStripMenuItem;
+        private System.Windows.Forms.Integration.ElementHost wpfHost;
+        private WpfDisplay display;
     }
 }

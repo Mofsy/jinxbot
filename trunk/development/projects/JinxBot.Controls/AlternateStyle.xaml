@@ -1,0 +1,146 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:doc="clr-namespace:System.Windows.Documents;assembly=PresentationFramework"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    x:Name="AlternateJinxBotStyle">
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="ChannelName">
+        <Setter Property="Foreground" Value="Lime" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="ChannelJoined">
+        <Setter Property="Foreground" Value="LightSteelBlue" />
+    </Style>
+    <Style TargetType="{x:Type doc:FlowDocument}" x:Key="Body">
+        <Setter Property="Background" Value="#ff333333" />
+        <Setter Property="FontSize" Value="11px" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="FontFamily" Value="Trebuchet MS" />
+    </Style>
+    <Style TargetType="{x:Type doc:Paragraph}" x:Key="Paragraphs">
+        <Setter Property="TextIndent" Value="-10" />
+        <Setter Property="Margin" Value="10,6,0,0" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="timestamp">
+        <Setter Property="Foreground" Value="#ff999999" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="error">
+        <Setter Property="Foreground" Value="Orange" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="userProfileReceivedNotification">
+        <Setter Property="Foreground" Value="Yellow" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="userNameOtherUser">
+        <Setter Property="Foreground" Value="Lime" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="userProfileKey">
+        <Setter Property="Foreground" Value="SlateGray" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="userProfileValue">
+        <Setter Property="Foreground" Value="LightSteelBlue" />
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="whisperHeader">
+        <Setter Property="Foreground" Value="Fuchsia" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="whisperOtherUsername">
+        <Setter Property="Foreground" Value="Fuchsia" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="unhandledWarden">
+        <Setter Property="Foreground" Value="IndianRed" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="whisperText">
+        <Setter Property="Foreground" Value="Fuchsia" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="speakBracketsOtherUser">
+        <Setter Property="Foreground" Value="LightBlue" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="speakOtherUsername">
+        <Setter Property="Foreground" Value="White" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="speakBracketsSelf">
+        <Setter Property="Foreground" Value="#ffcccccc" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="speakSelfUsername">
+        <Setter Property="Foreground" Value="LightBlue" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="speakText">
+        <Setter Property="Foreground" Value="White" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="emoteOtherUsername">
+        <Setter Property="Foreground" Value="Lime" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="emoteSelfUsername">
+        <Setter Property="Foreground" Value="Yellow" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="emoteText">
+        <Setter Property="Foreground" Value="Yellow" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="leftChannel">
+        <Setter Property="Foreground" Value="Yellow" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="joinedChannel">
+        <Setter Property="Foreground" Value="Yellow" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="loginSucceeded">
+        <Setter Property="Foreground" Value="Yellow" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="loginFailed">
+        <Setter Property="Foreground" Value="Red" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="joiningChannel">
+        <Setter Property="Foreground" Value="Yellow" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="channelName">
+        <Setter Property="Foreground" Value="White" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="silentChannel">
+        <Setter Property="Foreground" Value="LightBlue" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="serverInfo">
+        <Setter Property="Foreground" Value="Gray" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="clientInfo">
+        <Setter Property="Foreground" Value="LightSteelBlue" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="errorDisconnecting">
+        <Setter Property="Foreground" Value="OrangeRed" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="enteringChat">
+        <Setter Property="Foreground" Value="Yellow" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="disconnected">
+        <Setter Property="Foreground" Value="Yellow" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="connected">
+        <Setter Property="Foreground" Value="Yellow" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="commandSent">
+        <Setter Property="Foreground" Value="Teal" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="versioningPassed">
+        <Setter Property="Foreground" Value="LimeGreen" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="versioningFailed">
+        <Setter Property="Foreground" Value="OrangeRed" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="channelRestricted">
+        <Setter Property="Foreground" Value="Red" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="channelFull">
+        <Setter Property="Foreground" Value="Red" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="channelDNE">
+        <Setter Property="Foreground" Value="Red" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="channelListHeader">
+        <Setter Property="Foreground" Value="LightSteelBlue" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="channelBullet">
+        <Setter Property="Foreground" Value="Yellow" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="channelListItem">
+        <Setter Property="Foreground" Value="White" />
+    </Style>
+    <Style TargetType="{x:Type doc:TextElement}" x:Key="broadcast">
+        <Setter Property="Foreground" Value="White" />
+    </Style>
+</ResourceDictionary>
