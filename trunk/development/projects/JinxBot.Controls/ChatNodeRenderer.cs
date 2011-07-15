@@ -24,16 +24,22 @@ namespace JinxBot.Controls
 
         }
 
+        public ResourceDictionary ResourceProvider
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Renders the specified chat node to the client.
         /// </summary>
         /// <param name="node">The node to append.</param>
         /// <remarks>
-        /// <para>The return value of this function is a reference to the outermost <see cref="HtmlElement">HtmlElement</see> constructed
+        /// <para>The return value of this function is a reference to the outermost <see cref="Inline">Inline</see> constructed
         /// by this function.  It may create additional inner elements as needed.</para>
         /// </remarks>
         /// <returns>
-        /// Returns an object instance of <see cref="HtmlElement">HtmlElement</see> that can be appended to the HTML document.
+        /// Returns an object instance of <see cref="Inline">Inline</see> that can be appended to the HTML document.
         /// </returns>
         public virtual Inline Render(ChatNode node)
         {
@@ -48,6 +54,7 @@ namespace JinxBot.Controls
                 Run run = new Run();
                 if (node.CssClass != null)
                 {
+                    run.Style = ResourceProvider[node.CssClass] as Style;
                     run.SetResourceReference(FrameworkContentElement.StyleProperty, node.CssClass);
                 }
                 else if (node.Color != GdiColor.Empty)
