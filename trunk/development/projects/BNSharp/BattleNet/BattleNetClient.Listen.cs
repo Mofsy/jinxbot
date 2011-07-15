@@ -378,7 +378,7 @@ namespace BNSharp.BattleNet
             string[] keyValues = new string[numKeys];
             for (int i = 0; i < numKeys; i++)
             {
-                keyValues[i] = dr.ReadCString();
+                keyValues[i] = dr.ReadCString(Encoding.UTF8);
             }
 
             if (m_profileRequests.ContainsKey(requestID))
