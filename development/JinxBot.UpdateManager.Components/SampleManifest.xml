@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<JinxBotUpdateManifest Version="1.0">
+    <Container Name="UpdateStep">
+        <KillAllProcesses ProcessName="jinxbot.exe" />
+        <SetVariable VariableName="SourceDirectory" Value="F:\Projects\JinxBot\trunk\development\projects\JinxBot\bin\Debug" />
+        <SetVariable VariableName="OutputDirectory" Value="{AppLocal}\JinxBot\bin" />
+        <EnsureDirectories>
+            <Path>{OutputDirectory}</Path>
+            <Path>{OutputDirectory}\Plugins</Path>
+        </EnsureDirectories>
+        <CopyAllFiles TargetPath="{OutputDirectory}">
+            <File>JinxBot.exe</File>
+            <File>JinxBot.exe.config</File>
+            <File>BNSharp.dll</File>
+            <File>BNSharp.xml</File>
+            <File>JinxBot.Plugins.dll</File>
+            <File>JinxBot.Plugins.xml</File>
+            <File>JinxBot.Plugins.Script.dll</File>
+            <File>JinxBot.Controls.dll</File>
+            <File>JinxBot.Controls.xml</File>
+            <File>Jurassic.dll</File>
+            <File>Microsoft.WindowsAPICodePack.dll</File>
+            <File>Microsoft.WindowsAPICodePack.Shell.dll</File>
+            <File>WizardBase.dll</File>
+            <File>StandardStyles.xaml</File>
+            <File>AlternateStyle.xaml</File>
+        </CopyAllFiles>
+    </Container>
+    <IfStepSucceeded StepName="UpdateStep" Name="CheckSuccessStep">
+        
+    </IfStepSucceeded>
+    <!--<IfStepFailed StepName="UpdateStep" Name="CheckFailureStep">
+        
+    </IfStepFailed>-->
+</JinxBotUpdateManifest>
