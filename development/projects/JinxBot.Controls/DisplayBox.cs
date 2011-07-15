@@ -61,30 +61,6 @@ namespace JinxBot.Controls
 
         #endregion
 
-        #region event handlers
-        //private void display_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
-        //{
-        //    this.m_enterTextElement = display.Document.GetElementById("enterText");
-        //    this.m_scrollToElement = display.Document.GetElementById("scrollTo");
-
-        //    foreach (List<ChatNode> nodes in m_notReadyYetNodes)
-        //    {
-        //        if (InvokeRequired)
-        //            BeginInvoke(AddChatImplementation, nodes);
-        //        else
-        //            AddChatImpl(nodes);
-        //    }
-
-        //    m_docReady = true;
-
-        //    //PrintDom(display.Document.DomDocument as IHTMLDocument2);
-
-        //    IHTMLDocument doc = display.Document.DomDocument as IHTMLDocument;
-            
-        //    OnDisplayReady(e);
-        //}
-        #endregion
-
         #region methods
         /// <summary>
         /// Adds a chat node to the display.
@@ -223,6 +199,9 @@ namespace JinxBot.Controls
                 fullElement.Inlines.Add(child);
             }
 
+            fullElement.Style = display.Resources["Paragraphs"] as Style;
+            fullElement.SetResourceReference(FrameworkContentElement.StyleProperty, "Paragraphs");
+
             return fullElement;
         }
 
@@ -245,6 +224,7 @@ namespace JinxBot.Controls
                 throw new InvalidCastException("Node type must be derived from ChatNode.");
 
             ChatNodeRenderer renderer = Activator.CreateInstance(rendererType) as ChatNodeRenderer;
+            renderer.ResourceProvider = this.display.Resources;
             m_renderers.Add(nodeType, renderer);
         }
         #endregion
