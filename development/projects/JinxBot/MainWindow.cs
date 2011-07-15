@@ -310,9 +310,7 @@ namespace JinxBot
             IChatTab tab = this.dock.ActiveDocument as IChatTab;
             if (tab != null)
             {
-                string jbControlsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "JinxBot.Controls");
-                string defaultPath = Path.Combine(jbControlsPath, "DefaultStyles.css");
-                Uri styleUri = new Uri(string.Concat("file:///", defaultPath));
+                Uri styleUri = new Uri(Path.Combine(Environment.CurrentDirectory, "StandardStyles.xaml"), UriKind.Absolute);
                 tab.StylesheetUri = styleUri;
             }
         }
@@ -322,9 +320,7 @@ namespace JinxBot
             IChatTab tab = this.dock.ActiveDocument as IChatTab;
             if (tab != null)
             {
-                string jbControlsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "JinxBot.Controls");
-                string defaultPath = Path.Combine(jbControlsPath, "BlizzStyles.css");
-                Uri styleUri = new Uri(string.Concat("file:///", defaultPath));
+                Uri styleUri = new Uri(Path.Combine(Environment.CurrentDirectory, "AlternateStyle.xaml"), UriKind.Absolute);
                 tab.StylesheetUri = styleUri;
             }
         }

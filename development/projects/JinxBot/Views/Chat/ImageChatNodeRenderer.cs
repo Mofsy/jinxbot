@@ -7,6 +7,11 @@ using System.Windows.Forms;
 using System.Globalization;
 using System.Diagnostics;
 using JinxBot.Plugins.UI;
+using System.Windows.Documents;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows;
 
 namespace JinxBot.Views.Chat
 {
@@ -23,33 +28,32 @@ namespace JinxBot.Views.Chat
         /// <returns>
         /// Returns an object instance of <see cref="HtmlElement">HtmlElement</see> that can be appended to the HTML document.
         /// </returns>
-        public override HtmlElement Render(ChatNode node)
+        public override Inline Render(ChatNode node)
         {
             IIconProvider provider = ProfileResourceProvider.GetForClient(null).Icons;
 
             ImageChatNode icn = node as ImageChatNode;
             if (icn != null)
             {
-                HtmlElement img = base.HtmlDomDocument.CreateElement("img");
-                img.SetAttribute("src", string.Concat(ImageChatNodeProtocol.Schema, ":", icn.ImageName));
-                img.SetAttribute("alt", icn.Text);
-                img.SetAttribute("width", provider.IconSize.Width.ToString(CultureInfo.InvariantCulture));
-                img.SetAttribute("height", provider.IconSize.Height.ToString(CultureInfo.InvariantCulture));
+                InlineUIContainer result = new InlineUIContainer();
+                Image img = new Image();
+                img.Source = System.Windows.Interop.Imaging.CreateBitmapSourceFromHBitmap((icn.Image as System.Drawing.Bitmap).GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                img.ToolTip = icn.Text;
+                img.Width = provider.IconSize.Width;
+                img.Height = provider.IconSize.Height;
+
+                result.Child = img;
 
                 if (icn.LinkUri != null)
                 {
-                    HtmlElement hrefSection = CreateLink();
-                    hrefSection.SetAttribute("href", node.LinkUri.ToString());
+                    Hyperlink container = new Hyperlink(result);
+                    container.NavigateUri = node.LinkUri;
+                    container.ToolTip = string.Format(CultureInfo.CurrentUICulture, "Link to {0}", node.LinkUri);
 
-                    hrefSection.SetAttribute("title",
-                        string.Format(CultureInfo.CurrentCulture, "Link to {0}", node.LinkUri.ToString().Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;")));
-
-                    hrefSection.AppendChild(img);
-
-                    return hrefSection;
+                    return container;
                 }
 
-                return img;
+                return result;
             }
             else
             {

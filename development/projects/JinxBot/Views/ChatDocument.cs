@@ -213,8 +213,11 @@ namespace JinxBot.Views
             string imgID = m_prp.Icons.GetImageIdFor(user.Flags, us);
             ChatNode productNode = ChatNode.Empty;
             if (m_profile.IncludeIconsInChat)
+            {
+                Image img = m_prp.Icons.GetImageFor(user.Flags, us);
                 productNode = new ImageChatNode(string.Concat(imgID, ".jpg"),
-                    m_prp.Icons.GetImageFor(user.Flags, us), imgID);
+                    img, imgID);
+            }
 
             switch (us.Product.ProductCode)
             {
@@ -387,7 +390,7 @@ namespace JinxBot.Views
             string imgID = m_prp.Icons.GetImageIdFor(UserFlags.None, UserStats.CreateDefault(clientProduct));
             Image userImg = ProfileResourceProvider.GetForClient(m_client).Icons.GetImageFor(UserFlags.None, UserStats.CreateDefault(clientProduct));
             chat.AddChat(new ChatNode("Entered chat as ", CssClasses.EnteringChat),
-                new ImageChatNode(string.Concat(imgID, ".jpg"), 
+                new ImageChatNode(string.Concat(imgID, ".jpg"),
                     userImg, clientProduct.Name),
                 new ChatNode(e.UniqueUsername, CssClasses.UsernameOther));
             m_userName = e.UniqueUsername;

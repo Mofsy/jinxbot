@@ -7,10 +7,12 @@ using System.Text;
 using System.Windows.Forms;
 using System.Security.Permissions;
 using System.Globalization;
-using mshtml;
 using JinxBot.Controls.Design;
 using System.Threading;
 using System.IO;
+using System.Windows.Documents;
+using System.Windows.Controls;
+using System.Windows;
 
 namespace JinxBot.Controls
 {
@@ -19,24 +21,8 @@ namespace JinxBot.Controls
     /// </summary>
     [SecurityPermission(SecurityAction.Demand, UnmanagedCode = true)]
     [DefaultEvent("DisplayReady")]
-    public partial class DisplayBox : UserControl
+    public partial class DisplayBox : System.Windows.Forms.UserControl
     {
-        private static string scriptInitializer;
-        #region HTML document
-        private const string HTML = @"<!DOCTYPE HTML PUBLIC ""-//W3C//DTD XHTML 1.0 Transitional//EN"">
-<html xmlns=""http://www.w3.org/1999/xhtml"">
-	<head>
-		<title>JinxBot Display Interface</title>
-<!-- Script injection -->
-{0}
-
-	</head>	
-	<body>
-	    <div id=""enterText""></div>
-        <div id=""scrollTo"">&nbsp;</div>
-	</body>
-</html>";
-        #endregion
         #region contained types
         private delegate void AddChatCallback(List<ChatNode> nodes);
         #endregion
@@ -45,8 +31,7 @@ namespace JinxBot.Controls
         #region technical/implementation fields
         private Dictionary<Type, ChatNodeRenderer> m_renderers;
         private AddChatCallback AddChatImplementation;
-        private HtmlElement m_enterTextElement, m_scrollToElement;
-        private bool m_docReady;
+        private bool m_docReady = true;
         #endregion
         #region property backers
         private Color m_tsColor = Color.Gray;
@@ -65,81 +50,39 @@ namespace JinxBot.Controls
         /// </summary>
         public DisplayBox()
         {
-            InitializeExternals();
             InitializeComponent();
             this.AddChatImplementation = new AddChatCallback(AddChatImpl);
-            display.DocumentText = string.Format(CultureInfo.InvariantCulture, HTML, scriptInitializer);
 
             m_renderers = new Dictionary<Type, ChatNodeRenderer>();
             InitializeRenderer(typeof(ChatNode), typeof(ChatNodeRenderer));
+
+            this.StylesheetUri = new Uri(Path.Combine(Environment.CurrentDirectory, "StandardStyles.xaml"), UriKind.Absolute);
         }
 
-        private void InitializeExternals()
-        {
-            string appDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "JinxBot.Controls");
-            if (!Directory.Exists(appDataPath))
-                Directory.CreateDirectory(appDataPath);
-
-            string mootoolsBasePath = Path.Combine(appDataPath, "mootools-base.js");
-            string mootoolsExtensionsPath = Path.Combine(appDataPath, "jinxbot-mootools.js");
-            string defaultStylesPath = Path.Combine(appDataPath, "DefaultStyles.css");
-            if (!File.Exists(mootoolsBasePath) || new FileInfo(mootoolsBasePath).Length != Resources.mootools_core.Length)
-            {
-                File.WriteAllText(mootoolsBasePath, Resources.mootools_core, Encoding.UTF8);
-            }
-
-            if (!File.Exists(mootoolsExtensionsPath) || new FileInfo(mootoolsExtensionsPath).Length != Resources.jinxbot_mootools.Length)
-            {
-                File.WriteAllText(mootoolsExtensionsPath, Resources.jinxbot_mootools, Encoding.UTF8);
-            }
-
-            if (!File.Exists(defaultStylesPath) || new FileInfo(defaultStylesPath).Length != Resources.DefaultStyles_css.Length)
-            {
-                File.WriteAllText(defaultStylesPath, Resources.DefaultStyles_css, Encoding.UTF8);
-            }
-
-            scriptInitializer = string.Format(CultureInfo.InvariantCulture, @"<link type=""text/css"" src=""file:///{2}"" rel=""stylesheet"" />
-<script type=""text/javascript"" src=""file:///{0}"" />
-<script type=""text/javascript"" src=""file:///{1}"" />
-", mootoolsBasePath.Replace(Path.PathSeparator, '/'), mootoolsExtensionsPath.Replace(Path.PathSeparator, '/'),
- defaultStylesPath.Replace(Path.PathSeparator, '/'));
-            scriptInitializer = string.Format(CultureInfo.InvariantCulture, @"
-<script type=""text/javascript"">
-{0}
-
-{1}
-</script>
-<style type=""text/css"">
-{2}
-</style>
-", Resources.mootools_core, Resources.jinxbot_mootools, Resources.DefaultStyles_css);
-            
-            m_stylesUri = new Uri(string.Concat("file:///", defaultStylesPath.Replace(Path.PathSeparator, '/')));
-        }
         #endregion
 
         #region event handlers
-        private void display_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
-        {
-            this.m_enterTextElement = display.Document.GetElementById("enterText");
-            this.m_scrollToElement = display.Document.GetElementById("scrollTo");
+        //private void display_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
+        //{
+        //    this.m_enterTextElement = display.Document.GetElementById("enterText");
+        //    this.m_scrollToElement = display.Document.GetElementById("scrollTo");
 
-            foreach (List<ChatNode> nodes in m_notReadyYetNodes)
-            {
-                if (InvokeRequired)
-                    BeginInvoke(AddChatImplementation, nodes);
-                else
-                    AddChatImpl(nodes);
-            }
+        //    foreach (List<ChatNode> nodes in m_notReadyYetNodes)
+        //    {
+        //        if (InvokeRequired)
+        //            BeginInvoke(AddChatImplementation, nodes);
+        //        else
+        //            AddChatImpl(nodes);
+        //    }
 
-            m_docReady = true;
+        //    m_docReady = true;
 
-            //PrintDom(display.Document.DomDocument as IHTMLDocument2);
+        //    //PrintDom(display.Document.DomDocument as IHTMLDocument2);
 
-            IHTMLDocument doc = display.Document.DomDocument as IHTMLDocument;
+        //    IHTMLDocument doc = display.Document.DomDocument as IHTMLDocument;
             
-            OnDisplayReady(e);
-        }
+        //    OnDisplayReady(e);
+        //}
         #endregion
 
         #region methods
@@ -229,62 +172,61 @@ namespace JinxBot.Controls
                 nodes.InsertRange(0, new ChatNode[] { ts, new ChatNode(" ", Color.Black) });
             }
 
-            HtmlElement element = ParseChatNodesIntoHtmlElement(nodes.ToArray());
-            m_enterTextElement.AppendChild(element);
-
-            ScrollIntoView();
+            Paragraph element = ParseChatNodesIntoParagraph(nodes.ToArray());
+            ThreadStart invokee = delegate
+            {
+                display.Document.Blocks.Add(element);
+                if (display.Viewer.Selection.IsEmpty) 
+                    display.Viewer.FindFirstVisualDescendantOfType<ScrollViewer>().ScrollToBottom();
+            };
+            display.Dispatcher.BeginInvoke(invokee);
 
             UpdateParagraphs();
         }
 
         private void ScrollIntoView()
         {
-            IHTMLDocument2 doc = (IHTMLDocument2)display.Document.DomDocument;
-
-            if (doc.selection != null && doc.selection.type.Equals("None", StringComparison.Ordinal))
-                m_scrollToElement.ScrollIntoView(false);
+            ThreadStart ts = delegate
+            {
+                display.Viewer.FindFirstVisualDescendantOfType<ScrollViewer>().ScrollToBottom();
+            };
+            display.Dispatcher.BeginInvoke(ts);
         }
 
         private void UpdateParagraphs()
         {
             ThreadStart ts = delegate
             {
-                if (m_enterTextElement == null) return;
-
-                if (m_enterTextElement.Children.Count > m_parasToKeep)
+                if (display.Document.Blocks.Count > m_parasToKeep)
                 {
                     int maxChildrenToRemove = m_parasToKeep / 8;
                     int currentChildrenRemoved = 0;
-                    while (currentChildrenRemoved <= maxChildrenToRemove && m_enterTextElement != null && m_enterTextElement.Children.Count > 1)
+                    while (currentChildrenRemoved <= maxChildrenToRemove && display.Document.Blocks.Count > 1)
                     {
-                        IHTMLDOMNode node = (IHTMLDOMNode)m_enterTextElement.DomElement;
-                        node.removeChild((IHTMLDOMNode)m_enterTextElement.FirstChild.DomElement);
+                        display.Document.Blocks.Remove(display.Document.Blocks.FirstBlock);
                         currentChildrenRemoved++;
                     }
                 }
             };
 
-            if (InvokeRequired)
-                BeginInvoke(ts);
-            else
-                ts();
+            display.Dispatcher.BeginInvoke(ts);
         }
         #endregion
 
         #region Parsing logic
-        private HtmlElement ParseChatNodesIntoHtmlElement(ChatNode[] nodes)
+        private Paragraph ParseChatNodesIntoParagraph(ChatNode[] nodes)
         {
-            HtmlElement fullElement = display.Document.CreateElement("p");
+            Paragraph fullElement = new Paragraph();
             foreach (ChatNode node in nodes)
             {
-                HtmlElement childElement = RenderNode(node);
-                fullElement.AppendChild(childElement);
+                Inline child = RenderNode(node);
+                fullElement.Inlines.Add(child);
             }
 
             return fullElement;
         }
 
-        private HtmlElement RenderNode(ChatNode node)
+        private Inline RenderNode(ChatNode node)
         {
             if (!m_renderers.ContainsKey(node.GetType()))
             {
@@ -303,7 +245,6 @@ namespace JinxBot.Controls
                 throw new InvalidCastException("Node type must be derived from ChatNode.");
 
             ChatNodeRenderer renderer = Activator.CreateInstance(rendererType) as ChatNodeRenderer;
-            renderer.HtmlDomDocument = this.display.Document;
             m_renderers.Add(nodeType, renderer);
         }
         #endregion
@@ -418,23 +359,14 @@ namespace JinxBot.Controls
             {
                 if (object.ReferenceEquals(value, null))
                     throw new ArgumentNullException("value");
-                try
+
+                ResourceDictionary dictionary = new ResourceDictionary();
+                dictionary.Source = value;
+
+                foreach (string key in dictionary.Keys)
                 {
-                    m_stylesUri = value;
-                } catch (Exception ex)
-                {
-                    throw new ArgumentException("Could not set the stylesheet to the specified URI.", "value", ex);
+                    display.Resources[key] = dictionary[key];
                 }
-
-                string uri = value.ToString();
-
-                IHTMLDocument2 doc = display.Document.DomDocument as IHTMLDocument2;
-                IHTMLWindow2 window = doc.parentWindow;
-                window.execScript(string.Format(CultureInfo.InvariantCulture, "new Asset.css('{0}');", uri.Replace("'", "\\'")), "javascript");
-
-                this.display.Dock = DockStyle.None;
-                this.display.Size = this.display.Size;
-                this.display.Dock = DockStyle.Fill;
             }
         }
         #endregion
@@ -464,18 +396,7 @@ namespace JinxBot.Controls
         /// </summary>
         public void CopySelectionAsUbbc()
         {
-            IHTMLDocument2 doc = (IHTMLDocument2)display.Document.DomDocument;
 
-            if (doc.selection != null && !doc.selection.type.Equals("None", StringComparison.Ordinal))
-            {
-                IHTMLSelectionObject2 selection = (IHTMLSelectionObject2)doc.selection;
-                IHTMLTxtRangeCollection rangeCollection = (IHTMLTxtRangeCollection)selection.createRangeCollection();
-                foreach (IHTMLTxtRange range in rangeCollection)
-                {
-                    UbbcHtmlConverter converter = new UbbcHtmlConverter();
-                    Clipboard.SetData(DataFormats.Text, converter.Convert(range.htmlText, this));
-                }
-            }
         }
 
         /// <summary>
@@ -483,11 +404,24 @@ namespace JinxBot.Controls
         /// </summary>
         public void CopySelectionAsPlainText()
         {
-            IHTMLDocument2 doc = (IHTMLDocument2)display.Document.DomDocument;
-            if (doc.selection != null && !doc.selection.type.Equals("None", StringComparison.Ordinal))
+            if (display.Viewer.Selection != null)
             {
-                IHTMLTxtRange range = (IHTMLTxtRange)doc.selection.createRange();
-                Clipboard.SetData(DataFormats.Text, range.text);
+                System.Windows.Clipboard.SetText(display.Viewer.Selection.Text, System.Windows.TextDataFormat.Text);
+            }
+        }
+
+        /// <summary>
+        /// Copies the selected text as Rich Text Format.
+        /// </summary>
+        public void CopySelectionAsRtf()
+        {
+            if (display.Viewer.Selection != null)
+            {
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    display.Viewer.Selection.Save(stream, System.Windows.DataFormats.Rtf);
+                    System.Windows.Clipboard.SetData(System.Windows.DataFormats.Rtf, Encoding.UTF8.GetString(stream.ToArray()));
+                }
             }
         }
 
@@ -496,11 +430,13 @@ namespace JinxBot.Controls
         /// </summary>
         public void CopySelectionAsHtml()
         {
-            IHTMLDocument2 doc = (IHTMLDocument2)display.Document.DomDocument;
-            if (doc.selection != null && !doc.selection.type.Equals("None", StringComparison.Ordinal))
+            if (display.Viewer.Selection != null)
             {
-                IHTMLTxtRange range = (IHTMLTxtRange)doc.selection.createRange();
-                range.execCommand("copy", false, null);
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    display.Viewer.Selection.Save(stream, System.Windows.DataFormats.Html);
+                    System.Windows.Clipboard.SetData(System.Windows.DataFormats.Html, Encoding.UTF8.GetString(stream.ToArray()));
+                }
             }
         }
 

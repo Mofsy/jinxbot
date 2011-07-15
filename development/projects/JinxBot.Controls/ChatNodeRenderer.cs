@@ -1,47 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using mshtml;
-using System.Windows.Forms;
-using System.Drawing;
-using System.Security.Permissions;
 using System.Globalization;
+using System.Windows.Documents;
+using System.Drawing;
+using System.Windows;
+using System.Windows.Media;
+using GdiColor = System.Drawing.Color;
+using WpfColor = System.Windows.Media.Color;
 
 namespace JinxBot.Controls
 {
     /// <summary>
     /// Implements a basic renderer for the general chat node.
     /// </summary>
-    [SecurityPermission(SecurityAction.LinkDemand, UnmanagedCode = true)]
-    [SecurityPermission(SecurityAction.InheritanceDemand, UnmanagedCode = true)]
     public class ChatNodeRenderer
     {
-        private HtmlDocument m_domDoc;
         /// <summary>
         /// Creates a new ChatNodeRenderer.
         /// </summary>
         public ChatNodeRenderer()
         {
 
-        }
-
-        /// <summary>
-        /// Gets or sets the DOM document that should be used for creating HTML entities.
-        /// </summary>
-        /// <remarks>
-        /// <para>Because the ChatBox uses an HTML control for the display of complex chat node messages, a renderer may require use
-        /// of the HTML DOM for complex effects.  When a ChatNodeRenderer is created, then, it receives a reference to the HTML DOM
-        /// before it is asked to render a node.</para>
-        /// </remarks>
-        public HtmlDocument HtmlDomDocument
-        {
-            get { return m_domDoc; }
-            set 
-            {
-                Contract.RequireInstance(value, "value");
-
-                m_domDoc = value; 
-            }
         }
 
         /// <summary>
@@ -55,77 +35,50 @@ namespace JinxBot.Controls
         /// <returns>
         /// Returns an object instance of <see cref="HtmlElement">HtmlElement</see> that can be appended to the HTML document.
         /// </returns>
-        public virtual HtmlElement Render(ChatNode node)
+        public virtual Inline Render(ChatNode node)
         {
-            HtmlElement result;
+            Inline result;
 
             if (node == ChatNode.NewLine)
             {
-                HtmlElement lineBreak = this.m_domDoc.CreateElement("br");
-                result = lineBreak;
+                result = new LineBreak();
             } 
             else if (node.LinkUri == null)
             {
-                HtmlElement chatSection = this.m_domDoc.CreateElement("span");
+                Run run = new Run();
                 if (node.CssClass != null)
                 {
-                    chatSection.SetAttribute("className", node.CssClass);
+                    run.SetResourceReference(FrameworkContentElement.StyleProperty, node.CssClass);
                 }
-                else if (node.Color != Color.Empty)
+                else if (node.Color != GdiColor.Empty)
                 {
-                    chatSection.Style = string.Format(CultureInfo.InvariantCulture, "color: #{0:x2}{1:x2}{2:x2};", node.Color.R, node.Color.G, node.Color.B);
+                    run.Foreground = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, node.Color.R, node.Color.G, node.Color.B));
                 }
-                chatSection.InnerText = node.Text;
+                run.Text = node.Text;
 
-                result = chatSection;
+                result = run;
             }
             else // need to make a link.
             {
-                HtmlElement hrefSection = m_domDoc.CreateElement("a");
-                hrefSection.SetAttribute("href", node.LinkUri.ToString());
+                Hyperlink link = new Hyperlink();
+                link.Inlines.Add(new Run(node.Text));
+                link.NavigateUri = node.LinkUri;
 
                 if (node.CssClass != null)
                 {
-                    hrefSection.SetAttribute("className", node.CssClass);
+                    link.SetResourceReference(FrameworkContentElement.StyleProperty, node.CssClass);
                 }
-                else if (node.Color != Color.Empty)
+                else if (node.Color != GdiColor.Empty)
                 {
-                    hrefSection.Style =
-                        string.Format(CultureInfo.InvariantCulture, "color: #{0:x2}{1:x2}{2:x2};", node.Color.R, node.Color.G, node.Color.B);
+                    link.Foreground = new SolidColorBrush(WpfColor.FromArgb(255, node.Color.R, node.Color.G, node.Color.B));
                 }
 
-                hrefSection.SetAttribute("title", 
-                    string.Format(CultureInfo.CurrentCulture, "Link to {0}", node.LinkUri.ToString().Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;")));
+                link.ToolTip = string.Format(CultureInfo.CurrentUICulture, "Link to {0}", node.LinkUri.ToString());
 
-                hrefSection.InnerText = node.Text;
-                hrefSection.Click += new HtmlElementEventHandler(hrefSection_Click);
-
-                result = hrefSection;
+                result = link;
             }
 
             return result;
-        }
-
-        private void hrefSection_Click(object sender, HtmlElementEventArgs e)
-        {
-            OnLinkClicked(sender, e);
-        }
-
-        protected virtual void OnLinkClicked(object sender, HtmlElementEventArgs e)
-        {
-            HtmlElement elem = e.FromElement;
-
-            System.Diagnostics.Process.Start(elem.GetAttribute("href"));
-
-            e.ReturnValue = false;
-        }
-
-        protected virtual HtmlElement CreateLink()
-        {
-            HtmlElement element = HtmlDomDocument.CreateElement("a");
-            element.Click += new HtmlElementEventHandler(hrefSection_Click);
-
-            return element;
         }
     }
 }

@@ -16,6 +16,7 @@ namespace JinxBot.Views.Chat
     internal class ImageChatNode : ChatNode
     {
         private string m_imgName;
+        private Image m_img;
         
         /// <summary>
         /// Creates a new <see>ImageChatNode</see> with the specified parameters.
@@ -32,26 +33,32 @@ namespace JinxBot.Views.Chat
                 throw new ArgumentNullException("img");
 
             m_imgName = imageName;
+            m_img = img;
 
-            lock (img)
-            {
-                if (!ImageChatNodeProtocol.HasRegistered(imageName))
-                {
-                    using (MemoryStream ms = new MemoryStream())
-                    using (EncoderParameters ep = new EncoderParameters(1))
-                    {
-                        ImageCodecInfo ici = (from enc in ImageCodecInfo.GetImageEncoders()
-                                              where enc.MimeType == "image/jpeg"
-                                              select enc).FirstOrDefault();
-                        ep.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 100L);
-                        img.Save(ms, ici, ep);
+            //lock (img)
+            //{
+            //    if (!ImageChatNodeProtocol.HasRegistered(imageName))
+            //    {
+            //        using (MemoryStream ms = new MemoryStream())
+            //        using (EncoderParameters ep = new EncoderParameters(1))
+            //        {
+            //            ImageCodecInfo ici = (from enc in ImageCodecInfo.GetImageEncoders()
+            //                                  where enc.MimeType == "image/jpeg"
+            //                                  select enc).FirstOrDefault();
+            //            ep.Param[0] = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, 100L);
+            //            img.Save(ms, ici, ep);
 
-                        byte[] memory = new byte[ms.Length];
-                        Buffer.BlockCopy(ms.GetBuffer(), 0, memory, 0, memory.Length);
-                        ImageChatNodeProtocol.RegisterImage(imageName, memory);
-                    }
-                }
-            }
+            //            byte[] memory = new byte[ms.Length];
+            //            Buffer.BlockCopy(ms.GetBuffer(), 0, memory, 0, memory.Length);
+            //            ImageChatNodeProtocol.RegisterImage(imageName, memory);
+            //        }
+            //    }
+            //}
+        }
+
+        public Image Image
+        {
+            get { return m_img; }
         }
 
         /// <summary>
