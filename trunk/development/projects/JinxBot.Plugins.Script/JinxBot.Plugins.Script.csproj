@@ -87,7 +87,7 @@
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetDir)JinxBot.Plugins.Script.*" "C:\Users\Robert A. Paveza\AppData\Roaming\JinxBot\Plugins" /y</PostBuildEvent>
+    <PostBuildEvent>xcopy "$(TargetDir)JinxBot.Plugins.Script.*" "C:\Users\Robert\AppData\Roaming\JinxBot\Plugins" /y</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -231,25 +231,25 @@ namespace JinxBot.Controls.Docking
                     Paint(this, e);
             }
 
-            protected override void WndProc(ref Message m)
-            {
-                switch (m.Msg)
-                {
-                    case (int)Msgs.WM_NCCALCSIZE:
-                        // If AutoScroll is set to false, hide the scrollbars when the control
-                        // calculates its non-client area.
-                        if (!AutoScroll)
-                        {
-                            if (!NativeMethods.ShowScrollBar(m.HWnd, (int)JinxBot.Controls.Interop.ScrollBars.SB_BOTH, 0 /*false*/))
-                            {
-                                throw new Win32Exception();
-                            }
-                        }
-                        break;
-                }
+            //protected override void WndProc(ref Message m)
+            //{
+            //    switch (m.Msg)
+            //    {
+            //        case (int)Msgs.WM_NCCALCSIZE:
+            //            // If AutoScroll is set to false, hide the scrollbars when the control
+            //            // calculates its non-client area.
+            //            if (!AutoScroll)
+            //            {
+            //                if (!NativeMethods.ShowScrollBar(m.HWnd, (int)JinxBot.Controls.Interop.ScrollBars.SB_BOTH, 0 /*false*/))
+            //                {
+            //                    throw new Win32Exception();
+            //                }
+            //            }
+            //            break;
+            //    }
 
-                base.WndProc(ref m);
-            }
+            //    base.WndProc(ref m);
+            //}
 
             private void ParentFormHandleCreated(object sender, EventArgs e)
             {

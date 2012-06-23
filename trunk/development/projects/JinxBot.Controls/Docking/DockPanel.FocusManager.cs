@@ -63,6 +63,7 @@ namespace JinxBot.Controls.Docking
                 }
 
                 // Default filter function
+                [DebuggerNonUserCode]
                 public IntPtr CoreHookProc(int code, IntPtr wParam, IntPtr lParam)
                 {
                     if (code < 0)

@@ -78,23 +78,6 @@ namespace BNSharp.MBNCSUtil.Util
             m_obs.Add(rec);
         }
 
-        //public void Sort()
-        //{
-        //    m_obs.Sort(LDHeapRecord.Comparison);
-        //}
-
-        //public IntPtr ToIntPtr()
-        //{
-        //    int byteLength = m_obs.Count * 16;
-        //    IntPtr mem = Marshal.AllocHGlobal(byteLength);
-        //    for (int i = 0; i < m_obs.Count; i++)
-        //    {
-        //        Marshal.Copy(m_obs[i].data, 0, new IntPtr(mem.ToInt64() + (i * 16)), 16);
-        //    }
-
-        //    return mem;
-        //}
-
         public HeapPtr ToPointer()
         {
             int byteLength = m_obs.Count * 16;
