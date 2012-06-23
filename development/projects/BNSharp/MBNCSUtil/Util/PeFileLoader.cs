@@ -91,31 +91,6 @@ namespace BNSharp.MBNCSUtil.Util
             }
         }
 
-        //private unsafe PeFileReader.ImageSectionHeader* GetSection(byte* data, byte* name)
-        //{
-        //    byte* baseaddr;
-        //    int i;
-        //    PeFileReader.DosImageHeader* dosheader;
-        //    PeFileReader.NtHeaders* ntheader;
-        //    PeFileReader.ImageSectionHeader* section;
-
-        //    baseaddr = data;
-        //    dosheader = (PeFileReader.DosImageHeader*)baseaddr;
-        //    ntheader = (PeFileReader.NtHeaders*)(baseaddr + dosheader->e_lfanew);
-        //    // roughly, IMAGE_FIRST_SECTION macro.  0x18 is the offset of the optional header, plus size of optional header.
-        //    section = (PeFileReader.ImageSectionHeader*)(((byte*)ntheader) + 0x18 + ntheader->SizeOfOptionalHeader);
-
-        //    for (i = 0; i < ntheader->NumberOfSections; i++, section++)
-        //    {
-        //        if (!Native.Strcmp(&section->Name, name))
-        //        {
-        //            return section;
-        //        }
-        //    }
-
-        //    return null;
-        //}
-
         private static unsafe void PerformBaseReloc(byte* baseaddr, PeFileReader.NtHeaders* ntheader, int relocOffset)
         {
             int i;

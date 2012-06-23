@@ -41,7 +41,9 @@ namespace JinxBot
                 NonAdminComRegistration.Register<ImageChatNodeProtocol>();
                 ImageChatNodeProtocol.RegisterTemporary();
 
-                Application.Run(new MainWindow(args));
+                var win = new MainWindow(args);
+
+                Application.Run(win);
 
                 ImageChatNodeProtocol.Unregister();
                 NonAdminComRegistration.Unregister<ImageChatNodeProtocol>();
