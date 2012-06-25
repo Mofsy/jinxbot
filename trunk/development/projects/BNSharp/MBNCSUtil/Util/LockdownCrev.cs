@@ -410,13 +410,16 @@ namespace BNSharp.MBNCSUtil.Util
                             }
                             else
                             {
-                                int* heapBuffer = stackalloc int[0x10];
+                                //int* heapBuffer = stackalloc int[0x10];
+                                int* heapBuffer = (int*)Marshal.AllocHGlobal(0x10 * sizeof(int));
                                 Native.Memcpy((void*)heapBuffer, lockdown_memory + memoryOffset, 0x10);
                                 value = (*(int*)ptrMemory - lowerOffset) ^ seed;
                                 LockdownSha1.Update(context, (byte*)&value, 4);
                                 ptrMemory += heapBuffer[1];
                                 index++;
                                 memoryOffset += 4;
+                                Marshal.FreeHGlobal((IntPtr)heapBuffer);
+                                heapBuffer = null;
                             }
                         } while ((ptrMemory - startingMemory) < virtualSize);
                     }

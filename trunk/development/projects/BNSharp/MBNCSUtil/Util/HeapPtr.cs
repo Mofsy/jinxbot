@@ -47,7 +47,7 @@ namespace BNSharp.MBNCSUtil.Util
             switch (method)
             {
                 case AllocMethod.HGlobal:
-                    m_ptr = Marshal.AllocHGlobal(byteLength);
+                    m_ptr = Marshal.AllocCoTaskMem(byteLength);
                     break;
                 case AllocMethod.CoTaskMem:
                     m_ptr = Marshal.AllocCoTaskMem(byteLength);
@@ -94,7 +94,7 @@ namespace BNSharp.MBNCSUtil.Util
             switch (m_method)
             {
                 case AllocMethod.HGlobal:
-                    m_ptr = Marshal.ReAllocHGlobal(m_ptr, new IntPtr(newLength));
+                    m_ptr = Marshal.ReAllocCoTaskMem(m_ptr, newLength);
                     break;
                 case AllocMethod.CoTaskMem:
                     m_ptr = Marshal.ReAllocCoTaskMem(m_ptr, newLength);
@@ -133,7 +133,7 @@ namespace BNSharp.MBNCSUtil.Util
             switch (m_method)
             {
                 case AllocMethod.HGlobal:
-                    Marshal.FreeHGlobal(m_ptr);
+                    Marshal.FreeCoTaskMem(m_ptr);
                     break;
                 case AllocMethod.CoTaskMem:
                     Marshal.FreeCoTaskMem(m_ptr);

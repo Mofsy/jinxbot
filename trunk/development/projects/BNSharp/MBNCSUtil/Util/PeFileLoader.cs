@@ -117,7 +117,7 @@ namespace BNSharp.MBNCSUtil.Util
                         }
                     }
 
-                    relocation = (PeFileReader.ImageBaseRelocation*)(((uint)relocation) + relocation->SizeOfBlock);
+                    relocation = (PeFileReader.ImageBaseRelocation*)(((ulong)relocation) + (ulong)relocation->SizeOfBlock);
                 }
             }
         }
