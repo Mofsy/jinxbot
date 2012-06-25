@@ -93,7 +93,7 @@ namespace JinxBot.LoginService.Controllers
             });
         }
 
-        public ActionResult DoCheckRevision(string productKey, int mpqNumber, string challenge)
+        public ActionResult DoCheckRevision(string productKey, string mpqFile, string challenge)
         {
             Product product = Product.GetByProductCode(productKey);
             if (product == null)
@@ -105,7 +105,7 @@ namespace JinxBot.LoginService.Controllers
                     Parameters = new
                     {
                         productKey = productKey,
-                        mpqNumber = mpqNumber,
+                        mpqFile = mpqFile,
                         challenge = challenge,
                     },
                 });
@@ -121,7 +121,7 @@ namespace JinxBot.LoginService.Controllers
                     Parameters = new
                     {
                         productKey = productKey,
-                        mpqNumber = mpqNumber,
+                        mpqFile = mpqFile,
                         challenge = challenge,
                     },
                 });
@@ -133,6 +133,7 @@ namespace JinxBot.LoginService.Controllers
                 Server.MapPath(string.Format("~/Content/Products/{0}/{1}", productKey, files.GameDll)),
             };
 
+            int mpqNumber = CheckRevision.ExtractMPQNumber(mpqFile);
             int crResult = CheckRevision.DoCheckRevision(challenge, fileList, mpqNumber);
             return Json(new
             {
@@ -141,7 +142,7 @@ namespace JinxBot.LoginService.Controllers
                 Parameters = new
                 {
                     productKey = productKey,
-                    mpqNumber = mpqNumber,
+                    mpqFile = mpqFile,
                     challenge = challenge,
                 },
                 Result = new
@@ -276,7 +277,8 @@ namespace JinxBot.LoginService.Controllers
                 string dllName = lockdownFile.Replace(".mpq", ".dll");
                 if (arch.ContainsFile(dllName))
                 {
-                    arch.SaveToPath(dllName, lockdownResource, false);
+                    arch.SaveToPath(Path.GetFileName(dllName), Server.MapPath("~/Content/Lockdown"), false);
+                    //arch.SaveToPath(Server.MapPath("~/Content/Lockdown"), lockdownResource, false);
                     return true;
                 }
                 else
