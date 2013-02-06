@@ -4,15 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3A10B10E-4258-4460-9641-DFCDEC9CF1C7}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{5430D065-DFA9-4D67-BAB2-8BA61D616646}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BNSharp</RootNamespace>
-    <AssemblyName>BNSharp</AssemblyName>
+    <RootNamespace>jbc</RootNamespace>
+    <AssemblyName>jbc</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -20,13 +21,9 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <FileAlignment>4096</FileAlignment>
-    <CodeAnalysisRuleSet>BasicDesignGuidelineRules.ruleset</CodeAnalysisRuleSet>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
-    <DocumentationFile>bin\Debug\BNSharp.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -44,21 +41,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BattleNet\BattleNetClient.cs" />
-    <Compile Include="BattleNet\Core\CdKeyDecoder.cs" />
-    <Compile Include="Chat\IChannel.cs" />
-    <Compile Include="Chat\IChatUser.cs" />
-    <Compile Include="Chat\ISingleChannelClient.cs" />
-    <Compile Include="Networking\AsyncConnectionBase.cs" />
-    <Compile Include="Networking\ConnectionErrorEventArgs.cs" />
-    <Compile Include="Networking\NetworkBuffer.cs" />
-    <Compile Include="Networking\NetworkBufferStorage.cs" />
-    <Compile Include="Networking\TextOrientedConnectionBase.cs" />
+    <Compile Include="AsyncSourceTest.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Core\" />
-    <Folder Include="Irc\" />
+    <None Include="App.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
