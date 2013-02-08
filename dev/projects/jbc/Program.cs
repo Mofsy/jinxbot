@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BNSharp.BattleNet;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,17 +15,19 @@ namespace jbc
             Console.BufferWidth = 300;
             Console.BufferHeight = 4000;
 
-            AsyncSourceTest src = new AsyncSourceTest();
-            src.UserJoined += (s, e) => { Client_UserJoinedChannel(); };
-            src.UserLeft += (s, e) => { Client_UserLeftChannel(); };
+            var settings = new BattleNetSettings();
+            var client = new BattleNetClient(settings);
 
-            Console.WriteLine("Running on thread ID {0}", Thread.CurrentThread.ManagedThreadId);
-            Client_Connected();
-            Client_JoinedChannel();
+            string lastInput;
+            do
+            {
+                lastInput = Console.ReadLine();
+                if (lastInput != "/quit")
+                {
 
-            src.RunAsync();
-
-            Console.ReadLine();
+                }
+            }
+            while (lastInput != "/quit");
         }
 
         static void PrintTid()
