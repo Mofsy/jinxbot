@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace BNSharp.Chat
 {
+#pragma warning disable 1591
+    // TODO: Document these interfaces
+
     public interface ISingleChannelClient<TChatUser>
         : INotifyPropertyChanged
         where TChatUser : IChatUser
@@ -16,4 +19,11 @@ namespace BNSharp.Chat
 
 
     }
+
+    public interface ISingleChannelClientEventSource<TChatUser>
+        where TChatUser : IChatUser
+    {
+        void OnPropertyChanged(string propertyName);
+    }
+#pragma warning restore 1591
 }

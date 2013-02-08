@@ -17,7 +17,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS;UNSAFE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -45,12 +45,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BattleNet\BattleNetClient.cs" />
+    <Compile Include="BattleNet\ClassicProduct.cs" />
     <Compile Include="BattleNet\Core\CdKeyDecoder.cs" />
+    <Compile Include="BattleNet\Core\XSha1.cs" />
+    <Compile Include="BattleNet\Gateway.cs" />
+    <Compile Include="BattleNet\IBattleNetSettings.cs" />
+    <Compile Include="BattleNet\PingKind.cs" />
     <Compile Include="Chat\IChannel.cs" />
+    <Compile Include="Chat\IChatConnection.cs" />
     <Compile Include="Chat\IChatUser.cs" />
     <Compile Include="Chat\ISingleChannelClient.cs" />
+    <Compile Include="DataFormatter.cs" />
     <Compile Include="Networking\AsyncConnectionBase.cs" />
     <Compile Include="Networking\ConnectionErrorEventArgs.cs" />
+    <Compile Include="Networking\DataBuffer.cs" />
     <Compile Include="Networking\NetworkBuffer.cs" />
     <Compile Include="Networking\NetworkBufferStorage.cs" />
     <Compile Include="Networking\TextOrientedConnectionBase.cs" />

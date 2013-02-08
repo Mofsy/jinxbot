@@ -101,6 +101,11 @@ namespace BNSharp.Networking
         {
             get { return false; }
         }
+
+        internal NetworkBufferStorage NetworkBuffers
+        {
+            get { return _storage; }
+        }
         #endregion
 
         #region ConnectionErrorOccurred event
@@ -263,7 +268,7 @@ namespace BNSharp.Networking
             {
                 try
                 {
-                    totRecv += await stream.ReadAsync(buffer.UnderlyingBuffer, buffer.StartingPosition + totRecv + startIndex, length - totRecv);
+                    totRecv += await stream.ReadAsync(partialDestination.UnderlyingBuffer, partialDestination.StartingPosition + totRecv + startIndex, length - totRecv);
                 }
                 catch (IOException se)
                 {
@@ -277,7 +282,49 @@ namespace BNSharp.Networking
                 }
             }
 
-            return buffer;
+            return partialDestination;
+        }
+
+        /// <summary>
+        /// Sends the specified binary data to the server.
+        /// </summary>
+        /// <param name="data">The data to send.</param>
+        public virtual async Task SendAsync(byte[] data)
+        {
+            await Send(data, 0, data.Length);
+        }
+
+        /// <summary>
+        /// Sends part of the specified binary data to the server.
+        /// </summary>
+        /// <param name="data">The data to send.</param>
+        /// <param name="index">The start index of the data.</param>
+        /// <param name="length">The amount of data to send.</param>
+        public virtual async Task SendAsync(byte[] data, int index, int length)
+        {
+            await _client.GetStream().WriteAsync(data, index, length);
+        }
+
+        /// <summary>
+        /// Sends the specified binary data to the server.  This method automatically releases the network buffer upon completion.
+        /// </summary>
+        /// <param name="data">The data to send.</param>
+        public virtual async Task SendAsync(NetworkBuffer data, int length)
+        {
+            await SendAsync(data.UnderlyingBuffer, 0, length);
+            _storage.Release(data);
+        }
+
+        /// <summary>
+        /// Sends part of the specified binary data to the server.  This method automatically releases the network buffer upon completion.
+        /// </summary>
+        /// <param name="data">The data to send.</param>
+        /// <param name="index">The start index of the data.</param>
+        /// <param name="length">The amount of data to send.</param>
+        public virtual async Task SendAsync(NetworkBuffer data, int index, int length)
+        {
+            await SendAsync(data.UnderlyingBuffer, index, length);
+            _storage.Release(data);
         }
     }
 }

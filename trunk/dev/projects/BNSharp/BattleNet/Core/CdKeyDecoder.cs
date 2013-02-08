@@ -780,7 +780,7 @@ namespace BNSharp.BattleNet.Core
         private void calculateHash(uint clientToken, uint serverToken)
         {
             if (!valid)
-                throw new InvalidOperationException(Resources.invalidCdKeyHashed);
+                throw new InvalidOperationException("The CD key was invalid and the hash could not be calculated.");
 
             MemoryStream ms = new MemoryStream(26);
             BinaryWriter bw = new BinaryWriter(ms);
