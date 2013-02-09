@@ -19,7 +19,7 @@ namespace BNSharp.Networking
         internal NetworkBuffer(byte[] storageBuffer, int startsAt, int length, NetworkBufferStorage parent)
         {
             Debug.Assert(storageBuffer != null);
-            Debug.Assert(storageBuffer.Length < startsAt);
+            Debug.Assert(startsAt < storageBuffer.Length);
             Debug.Assert(startsAt % 8 == 0);
             Debug.Assert(length % 8 == 0);
 

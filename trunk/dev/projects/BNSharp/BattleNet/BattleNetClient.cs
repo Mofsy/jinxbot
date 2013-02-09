@@ -1,10 +1,12 @@
 ﻿using BNSharp.BattleNet.Core;
+using BNSharp.BattleNet.Warden;
 using BNSharp.Chat;
 using BNSharp.Networking;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -123,7 +125,7 @@ namespace BNSharp.BattleNet
                 {
                     pck = new BncsPacket(BncsPacketId.Ping, _storage.Acquire());
                     pck.InsertInt32(new Random().Next());
-                    pck.SendAsync(_connection);
+                    await pck.SendAsync(_connection);
                 }
 
                 Listen();
@@ -131,7 +133,12 @@ namespace BNSharp.BattleNet
             return ok;
         }
 
-        public async void Listen()
+        public void Disconnect()
+        {
+            _connection.Close();
+        }
+
+        private async void Listen()
         {
             while (_connection.IsConnected)
             {
@@ -139,12 +146,13 @@ namespace BNSharp.BattleNet
                 NetworkBuffer result = await _connection.ReceiveAsync(nextPacket, 0, 4);
                 if (result == null) return; // disconnected
                 BncsReader reader = new BncsReader(result);
-                if (length > 4)
+                
+                if (reader.Length > 4)
                 {
-                    result = await _connection.ReceiveAsync(nextPacket, 4, length - 4);
+                    result = await _connection.ReceiveAsync(nextPacket, 4, reader.Length - 4);
                     if (result == null) return; // disconnected
                 }
-                else if (length == 4)
+                else if (reader.Length == 4)
                 {
                     // packet is complete
                 }
@@ -221,6 +229,24 @@ namespace BNSharp.BattleNet
 
         #endregion
 
+        #region ConnectionErrorOccurred event
+        /// <summary>
+        /// When overridden by a derived class, provides error information from the current connection.
+        /// </summary>
+        /// <param name="message">Human-readable information about the error.</param>
+        /// <param name="ex">An internal exception containing the error details.</param>
+        protected virtual void OnConnectionErrorOccurred(string message, Exception ex)
+        {
+            if (ConnectionErrorOccurred != null)
+                ConnectionErrorOccurred(this, new ConnectionErrorEventArgs(message, ex));
+        }
+
+        /// <summary>
+        /// Represents an error that occurred.
+        /// </summary>
+        public event EventHandler<ConnectionErrorEventArgs> ConnectionErrorOccurred;
+        #endregion
+
         #region INotifyPropertyChanged Members
 
         public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
@@ -254,5 +280,7 @@ namespace BNSharp.BattleNet
         }
 
         #endregion
+
+        public IWardenModule WardenHandler { get; set; }
     }
 }

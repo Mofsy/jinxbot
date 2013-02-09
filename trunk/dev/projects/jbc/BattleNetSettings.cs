@@ -1,4 +1,5 @@
 ﻿using BNSharp.BattleNet;
+using BNSharp.BattleNet.Core;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,14 +18,14 @@ namespace jbc
             Console.Write("Password: ");
             Password = Console.ReadLine();
             Console.Write("CD Key: ");
-            CdKey1 = Console.ReadLine();
+            CdKey1 = new CdKey(Console.ReadLine());
 
             Client = ClassicProduct.StarcraftRetail;
             VersionByte = 0xd3;
-            GameExe = File.OpenRead(@"F:\Game Files\STAR\Starcraft.exe");
-            GameFile2 = File.OpenRead(@"F:\Game Files\STAR\Storm.dll");
-            GameFile3 = File.OpenRead(@"F:\Game Files\STAR\Battle.snp");
-            ImageFile = File.OpenRead(@"F:\Game Files\STAR\STAR.bin");
+            GameExe = @"F:\Game Files\STAR\Starcraft.exe";
+            GameFile2 = @"F:\Game Files\STAR\Storm.dll";
+            GameFile3 = @"F:\Game Files\STAR\Battle.snp";
+            ImageFile = @"F:\Game Files\STAR\STAR.bin";
 
             Gateway = Gateway.USEast;
             CdKeyOwner = Username;
@@ -43,37 +44,37 @@ namespace jbc
             set;
         }
 
-        public string CdKey1
+        public CdKey CdKey1
         {
             get;
             set;
         }
 
-        public string CdKey2
+        public CdKey CdKey2
         {
             get;
             set;
         }
 
-        public System.IO.Stream GameExe
+        public string GameExe
         {
             get;
             set;
         }
 
-        public System.IO.Stream GameFile2
+        public string GameFile2
         {
             get;
             set;
         }
 
-        public System.IO.Stream GameFile3
+        public string GameFile3
         {
             get;
             set;
         }
 
-        public System.IO.Stream ImageFile
+        public string ImageFile
         {
             get;
             set;

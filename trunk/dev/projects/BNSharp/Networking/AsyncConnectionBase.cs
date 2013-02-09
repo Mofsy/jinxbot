@@ -266,6 +266,8 @@ namespace BNSharp.Networking
                     return null;
                 }
             }
+
+            return target;
         }
 
         /// <summary>
@@ -334,7 +336,7 @@ namespace BNSharp.Networking
         /// <param name="data">The data to send.</param>
         public virtual async Task SendAsync(byte[] data)
         {
-            await Send(data, 0, data.Length);
+            await SendAsync(data, 0, data.Length);
         }
 
         /// <summary>

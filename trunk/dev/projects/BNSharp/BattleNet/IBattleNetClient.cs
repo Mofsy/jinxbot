@@ -1,4 +1,5 @@
-﻿using BNSharp.Chat;
+﻿using BNSharp.BattleNet.Warden;
+using BNSharp.Chat;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +12,6 @@ namespace BNSharp.BattleNet
         IChatConnection,
         ISingleChannelClient<ChatUser>
     {
+        IWardenModule WardenHandler { get; set; }
     }
 }
