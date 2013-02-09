@@ -13,5 +13,14 @@ namespace BNSharp.BattleNet
         ISingleChannelClient<ChatUser>
     {
         IWardenModule WardenHandler { get; set; }
+
+        event EventHandler ClientCheckPassed;
+        event EventHandler<ClientCheckFailedEventArgs> ClientCheckFailed;
+    }
+
+    public interface IBattleNetClientEventSource
+    {
+        void OnClientCheckPassed();
+        void OnClientCheckFailed(ClientCheckFailedEventArgs args);
     }
 }

@@ -43,10 +43,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BattleNet\BattleNetClient.cs" />
+    <Compile Include="BattleNet\BattleNetClient.Events.cs" />
     <Compile Include="BattleNet\BattleNetClient.Listen.cs" />
+    <Compile Include="BattleNet\ChannelJoinFlags.cs" />
     <Compile Include="BattleNet\ChatUser.cs" />
     <Compile Include="BattleNet\ClassicProduct.cs" />
     <Compile Include="BattleNet\ClassicUserFlags.cs" />
+    <Compile Include="BattleNet\ClientCheckFailedEventArgs.cs" />
+    <Compile Include="BattleNet\ClientCheckFailureCause.cs" />
     <Compile Include="BattleNet\Core\BncsPacket.cs" />
     <Compile Include="BattleNet\Core\BncsPacketId.cs" />
     <Compile Include="BattleNet\Core\BncsReader.cs" />
@@ -61,6 +65,7 @@
     <Compile Include="BattleNet\Core\LockdownSha1.cs" />
     <Compile Include="BattleNet\Core\Native.cs" />
     <Compile Include="BattleNet\Core\NLS.cs" />
+    <Compile Include="BattleNet\Core\OldAuth.cs" />
     <Compile Include="BattleNet\Core\ParseCallback.cs" />
     <Compile Include="BattleNet\Core\PeFileLoader.cs" />
     <Compile Include="BattleNet\Core\PeFileReader.cs" />
@@ -71,6 +76,12 @@
     <Compile Include="BattleNet\Gateway.cs" />
     <Compile Include="BattleNet\IBattleNetClient.cs" />
     <Compile Include="BattleNet\IBattleNetSettings.cs" />
+    <Compile Include="BattleNet\WarcraftCommands.cs" />
+    <Compile Include="Chat\AccountCreationEventArgs.cs" />
+    <Compile Include="Chat\AccountCreationFailedEventArgs.cs" />
+    <Compile Include="Chat\CreationFailureReason.cs" />
+    <Compile Include="Chat\LoginFailedEventArgs.cs" />
+    <Compile Include="Chat\LoginFailureReason.cs" />
     <Compile Include="BattleNet\PingKind.cs" />
     <Compile Include="BattleNet\Stats\DefaultStats.cs" />
     <Compile Include="BattleNet\Stats\UserStats.cs" />

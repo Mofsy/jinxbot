@@ -22,10 +22,10 @@ namespace jbc
 
             Client = ClassicProduct.StarcraftRetail;
             VersionByte = 0xd3;
-            GameExe = @"F:\Game Files\STAR\Starcraft.exe";
-            GameFile2 = @"F:\Game Files\STAR\Storm.dll";
-            GameFile3 = @"F:\Game Files\STAR\Battle.snp";
-            ImageFile = @"F:\Game Files\STAR\STAR.bin";
+            GameExe = @"C:\GameFiles\STAR\Starcraft.exe";
+            GameFile2 = @"C:\GameFiles\STAR\Storm.dll";
+            GameFile3 = @"C:\GameFiles\STAR\Battle.snp";
+            ImageFile = @"C:\GameFiles\STAR\STAR.bin";
 
             Gateway = Gateway.USEast;
             CdKeyOwner = Username;

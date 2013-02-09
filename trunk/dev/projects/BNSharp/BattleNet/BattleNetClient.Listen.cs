@@ -1,5 +1,7 @@
 ﻿using BNSharp.BattleNet.Core;
 using BNSharp.BattleNet.Ftp;
+using BNSharp.Chat;
+using BNSharp.Networking;
 using BNSharp.Storage;
 using System;
 using System.Collections.Generic;
@@ -20,6 +22,7 @@ namespace BNSharp.BattleNet
         private string _versioningFilename, _valString;
         private bool _usingLockdown;
         private byte[] _ldValStr, _ldDigest, _w3srv;
+        private NLS _nls;
 
         private void ResetState()
         {
@@ -171,21 +174,269 @@ namespace BNSharp.BattleNet
 
         private void HandleAuthCheck(BncsReader packet)
         {
-            //uint result = packet.ReadUInt32();
-            //string extraInfo = packet.ReadCString();
+            uint result = packet.ReadUInt32();
+            string extraInfo = packet.ReadCString();
 
-            //if (result == 0)
-            //{
-            //    OnClientCheckPassed(BaseEventArgs.GetEmpty(null));
-            //}
-            //else
-            //{
-            //    OnClientCheckFailed(new ClientCheckFailedEventArgs((ClientCheckFailureCause)result, extraInfo));
-            //    Close();
-            //    return;
-            //}
+            if (result == 0)
+            {
+                OnClientCheckPassed();
+            }
+            else
+            {
+                OnClientCheckFailed(new ClientCheckFailedEventArgs((ClientCheckFailureCause)result, extraInfo));
+                Disconnect();
+                return;
+            }
 
-            //ContinueLogin();
+            ContinueLogin();
+        }
+
+        private async void HandlePing(BncsReader packet)
+        {
+            int ping = packet.ReadInt32();
+
+            NetworkBuffer buffer = _storage.Acquire();
+            BncsPacket response = new BncsPacket(BncsPacketId.Ping, buffer);
+            response.InsertInt32(ping);
+
+            await response.SendAsync(_connection);
+        }
+
+        #region CreateAccount implementations
+        private async void CreateAccountOld()
+        {
+            byte[] passwordHash = OldAuth.HashPassword(_settings.Password);
+            BncsPacket pck = new BncsPacket(BncsPacketId.CreateAccount2, _storage.Acquire());
+            pck.InsertByteArray(passwordHash);
+            pck.InsertCString(_settings.Username);
+
+            await pck.SendAsync(_connection);
+        }
+
+        private async void CreateAccountNLS()
+        {
+            BncsPacket pck = new BncsPacket(BncsPacketId.AuthAccountCreate, _storage.Acquire());
+            _nls = new NLS(_settings.Username, _settings.Password);
+            _nls.CreateAccount(pck);
+
+            await pck.SendAsync(_connection);
+        }
+
+        private void HandleCreateAccount2(BncsReader dr)
+        {
+            int status = dr.ReadInt32();
+            CreationFailureReason reason = CreationFailureReason.Unknown;
+            switch (status)
+            {
+                case 2:
+                    reason = CreationFailureReason.InvalidCharacters; break;
+                case 3:
+                    reason = CreationFailureReason.InvalidWord; break;
+                case 6:
+                    reason = CreationFailureReason.NotEnoughAlphanumerics; break;
+                case 4:
+                default:
+                    reason = CreationFailureReason.AccountAlreadyExists; break;
+            }
+
+            if (status == 0)
+            {
+                AccountCreationEventArgs created = new AccountCreationEventArgs(_settings.Username);
+                OnAccountCreated(created);
+
+                LoginAccountOld();
+            }
+            else
+            {
+                AccountCreationFailedEventArgs failed = new AccountCreationFailedEventArgs(_settings.Username, reason);
+                OnAccountCreationFailed(failed);
+            }
+        }
+        #endregion
+        #region LoginAccount implementations
+
+        private async void LoginAccountNLS()
+        {
+            _nls = new NLS(_settings.Username, _settings.Password);
+
+            BncsPacket pck0x53 = new BncsPacket(BncsPacketId.AuthAccountLogon, _storage.Acquire());
+            _nls.LoginAccount(pck0x53);
+            await pck0x53.SendAsync(_connection);
+        }
+
+        private async void LoginAccountOld()
+        {
+            switch (_settings.Client.ProductCode)
+            {
+                case "W2BN":
+                    BncsPacket pck0x29 = new BncsPacket(BncsPacketId.LogonResponse, _storage.Acquire());
+                    pck0x29.InsertInt32(_clientToken);
+                    pck0x29.InsertInt32(_srvToken);
+                    pck0x29.InsertByteArray(OldAuth.DoubleHashPassword(_settings.Password, _clientToken, _srvToken));
+                    pck0x29.InsertCString(_settings.Username);
+
+                    await pck0x29.SendAsync(_connection);
+                    break;
+                case "STAR":
+                case "SEXP":
+                case "D2DV":
+                case "D2XP":
+                    BncsPacket pck0x3a = new BncsPacket(BncsPacketId.LogonResponse2, _storage.Acquire());
+                    pck0x3a.InsertInt32(_clientToken);
+                    pck0x3a.InsertInt32(_srvToken);
+                    pck0x3a.InsertByteArray(OldAuth.DoubleHashPassword(_settings.Password, _clientToken, _srvToken));
+                    pck0x3a.InsertCString(_settings.Username);
+
+                    await pck0x3a.SendAsync(_connection);
+                    break;
+
+                default:
+                    throw new NotSupportedException(string.Format("Client '{0}' is not supported with old-style account login.", _settings.Client.ProductCode));
+            }
+        }
+        #endregion
+
+        private async void HandleLogonResponse(BncsReader dr)
+        {
+            int status = dr.ReadInt32();
+            if (status == 1)
+            {
+                OnLoginSucceeded();
+                ClassicProduct product = _settings.Client;
+                if (product.UsesUdpPing)
+                {
+                    BncsPacket pck = new BncsPacket(BncsPacketId.UdpPingResponse, _storage.Acquire());
+                    pck.InsertDwordString("bnet");
+                    await pck.SendAsync(_connection);
+                }
+
+                EnterChat();
+            }
+            else
+            {
+                LoginFailedEventArgs args = new LoginFailedEventArgs(LoginFailureReason.InvalidAccountOrPassword, status);
+                OnLoginFailed(args);
+            }
+        }
+
+        private async void HandleLogonResponse2(BncsReader dr)
+        {
+            int success = dr.ReadInt32();
+            if (success == 0)
+            {
+                OnLoginSucceeded();
+                ClassicProduct product = _settings.Client;
+                if (product.UsesUdpPing)
+                {
+                    BncsPacket pck = new BncsPacket(BncsPacketId.UdpPingResponse, _storage.Acquire());
+                    pck.InsertDwordString("bnet");
+                    await pck.SendAsync(_connection);
+                }
+
+                EnterChat();
+            }
+            else
+            {
+                LoginFailureReason reason = LoginFailureReason.Unknown;
+                switch (success)
+                {
+                    case 1: // account DNE
+                        reason = LoginFailureReason.AccountDoesNotExist; break;
+                    case 2: // invalid password
+                        reason = LoginFailureReason.InvalidAccountOrPassword; break;
+                    case 6: // account closed
+                        reason = LoginFailureReason.AccountClosed; break;
+                }
+                LoginFailedEventArgs args = new LoginFailedEventArgs(reason, success, dr.ReadCString());
+                OnLoginFailed(args);
+            }
+        }
+
+        private async void EnterChat()
+        {
+            // this does two things.
+            // in War3 and W3xp both string fields are null, but in older clients, the first string field is 
+            // the username.  And, War3 and W3xp send the SID_NETGAMEPORT packet before entering chat, so we
+            // send that packet, then insert the empty string into the ENTERCHAT packet.  We of course go to 
+            // the other branch that inserts the username into the packet for older clients.
+            // new for War3: it also sends a packet that seems to be required, 0x44 subcommand 2 (get ladder map info)
+            BncsPacket pck = new BncsPacket(BncsPacketId.EnterChat, _storage.Acquire());
+
+            bool isClientWar3 = (_settings.Client.Equals(ClassicProduct.Warcraft3Retail) || _settings.Client.Equals(ClassicProduct.Warcraft3Expansion));
+            bool isClientStar = (_settings.Client.Equals(ClassicProduct.StarcraftRetail) || _settings.Client.Equals(ClassicProduct.StarcraftBroodWar));
+            if (isClientWar3)
+            {
+                BncsPacket pck0x45 = new BncsPacket(BncsPacketId.NetGamePort, _storage.Acquire());
+                pck0x45.InsertInt16(6112);
+                await pck0x45.SendAsync(_connection);
+
+                BncsPacket pckGetLadder = new BncsPacket(BncsPacketId.WarcraftGeneral, _storage.Acquire());
+                pckGetLadder.InsertByte((byte)WarcraftCommands.RequestLadderMap);
+                pckGetLadder.InsertInt32(1); // cookie
+                pckGetLadder.InsertByte(5); // number of types requested
+                //pckGetLadder.InsertDwordString("URL");
+                pckGetLadder.InsertInt32(0x004d4150);
+                pckGetLadder.InsertInt32(0);
+                //pckGetLadder.InsertDwordString("MAP");
+                pckGetLadder.InsertInt32(0x0055524c);
+                pckGetLadder.InsertInt32(0);
+                pckGetLadder.InsertDwordString("TYPE");
+                pckGetLadder.InsertInt32(0);
+                pckGetLadder.InsertDwordString("DESC");
+                pckGetLadder.InsertInt32(0);
+                pckGetLadder.InsertDwordString("LADR");
+                pckGetLadder.InsertInt32(0);
+                await pckGetLadder.SendAsync(_connection);
+
+                pck.InsertCString(string.Empty);
+            }
+            else
+            {
+                pck.InsertCString(_settings.Username);
+            }
+            pck.InsertCString(string.Empty);
+            await pck.SendAsync(_connection);
+
+            if (!isClientWar3)
+            {
+                RequestChannelList();
+
+                BncsPacket pckJoinChannel = new BncsPacket(BncsPacketId.JoinChannel, _storage.Acquire());
+                string client = "Starcraft";
+                switch (_settings.Client.ProductCode)
+                {
+                    case "SEXP":
+                        client = "Brood War";
+                        break;
+                    case "W2BN":
+                        client = "Warcraft II BNE";
+                        break;
+                    case "D2DV":
+                        client = "Diablo II";
+                        break;
+                    case "D2XP":
+                        client = "Lord of Destruction";
+                        break;
+                }
+                pckJoinChannel.InsertInt32((int)ChannelJoinFlags.FirstJoin);
+                pckJoinChannel.InsertCString(client);
+                await pckJoinChannel.SendAsync(_connection);
+            }
+
+            if (isClientWar3 || isClientStar)
+            {
+                pck = new BncsPacket(BncsPacketId.FriendsList, _storage.Acquire());
+                await pck.SendAsync(_connection);
+            }
+
+            //m_tmr.Start();
+        }
+
+        private async void RequestChannelList()
+        {
+            BncsPacket pckChanReq = new BncsPacket(BncsPacketId.GetChannelList, _storage.Acquire());
+            pckChanReq.InsertDwordString(_settings.Client.ProductCode);
+            await pckChanReq.SendAsync(_connection);
         }
     }
 }
