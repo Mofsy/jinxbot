@@ -46,7 +46,15 @@ namespace BNSharp.Networking
         private int _len;
 
         /// <summary>
-        /// Creates a new <b>DataBuffer</b>.
+        /// Creates a new variable-sized DataBuffer.
+        /// </summary>
+        public DataBuffer() 
+        {
+            _ms = new MemoryStream();
+        }
+
+        /// <summary>
+        /// Creates a new <b>DataBuffer</b> backed by a NetworkBuffer.
         /// </summary>
         public DataBuffer(NetworkBuffer targetBuffer)
         {
@@ -494,6 +502,14 @@ namespace BNSharp.Networking
         public NetworkBuffer UnderlyingBuffer
         {
             get { return _target; }
+        }
+
+        /// <summary>
+        /// Gets the underlying stream.
+        /// </summary>
+        public MemoryStream UnderlyingStream
+        {
+            get { return _ms; }
         }
 
         /// <summary>

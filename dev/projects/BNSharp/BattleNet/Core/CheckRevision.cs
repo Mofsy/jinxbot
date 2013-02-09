@@ -25,12 +25,11 @@ using System.IO;
 using System.Diagnostics;
 using System.Net;
 using System.Text;
-using BNSharp.MBNCSUtil.Util;
 using System.Globalization;
 using System.Security.Permissions;
 using System.Collections.Generic;
 
-namespace BNSharp.MBNCSUtil
+namespace BNSharp.BattleNet.Core
 {
     /// <summary>
     /// Encompasses any revision check functionality for all Battle.net games.

@@ -166,13 +166,10 @@ namespace BNSharp.BattleNet
             }
         }
 
-        private void HandleAuthCheck(ParseData data)
+        private void HandleAuthCheck(BncsReader packet)
         {
-            DataReader dr = new DataReader(data.Data);
-            uint result = dr.ReadUInt32();
-            string extraInfo = dr.ReadCString();
-
-            BattleNetClientResources.IncomingBufferPool.FreeBuffer(data.Data);
+            uint result = packet.ReadUInt32();
+            string extraInfo = packet.ReadCString();
 
             if (result == 0)
             {

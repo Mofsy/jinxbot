@@ -11,7 +11,7 @@ namespace BNSharp.Chat
 
     public interface IChatConnection
     {
-        Task ConnectAsync();
+        Task<bool> ConnectAsync();
         void Send(string text);
         void CreateAccount(string accountName, string password);
         void ContinueLogin();

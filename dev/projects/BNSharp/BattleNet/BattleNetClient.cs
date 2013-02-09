@@ -126,6 +126,7 @@ namespace BNSharp.BattleNet
                     pck.SendAsync(_connection);
                 }
 
+                Listen();
             }
             return ok;
         }
