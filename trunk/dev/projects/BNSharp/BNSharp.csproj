@@ -45,12 +45,29 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BattleNet\BattleNetClient.cs" />
+    <Compile Include="BattleNet\BattleNetClient.Listen.cs" />
+    <Compile Include="BattleNet\ChatUser.cs" />
     <Compile Include="BattleNet\ClassicProduct.cs" />
+    <Compile Include="BattleNet\ClassicUserFlags.cs" />
+    <Compile Include="BattleNet\Core\BncsPacket.cs" />
+    <Compile Include="BattleNet\Core\BncsPacketId.cs" />
+    <Compile Include="BattleNet\Core\BncsReader.cs" />
     <Compile Include="BattleNet\Core\CdKeyDecoder.cs" />
+    <Compile Include="BattleNet\Core\CheckRevision.cs" />
+    <Compile Include="BattleNet\Core\CheckRevisionCompiler.cs" />
+    <Compile Include="BattleNet\Core\CheckRevisionFormulaTracker.cs" />
+    <Compile Include="BattleNet\Core\CheckRevisionPreloadTracker.cs" />
+    <Compile Include="BattleNet\Core\ParseCallback.cs" />
     <Compile Include="BattleNet\Core\XSha1.cs" />
+    <Compile Include="BattleNet\Ftp\BnFtpRequestBase.cs" />
+    <Compile Include="BattleNet\Ftp\BnFtpVersion1Request.cs" />
+    <Compile Include="BattleNet\Ftp\BnFtpVersion2Request.cs" />
     <Compile Include="BattleNet\Gateway.cs" />
+    <Compile Include="BattleNet\IBattleNetClient.cs" />
     <Compile Include="BattleNet\IBattleNetSettings.cs" />
     <Compile Include="BattleNet\PingKind.cs" />
+    <Compile Include="BattleNet\Stats\DefaultStats.cs" />
+    <Compile Include="BattleNet\Stats\UserStats.cs" />
     <Compile Include="Chat\IChannel.cs" />
     <Compile Include="Chat\IChatConnection.cs" />
     <Compile Include="Chat\IChatUser.cs" />
@@ -59,6 +76,7 @@
     <Compile Include="Networking\AsyncConnectionBase.cs" />
     <Compile Include="Networking\ConnectionErrorEventArgs.cs" />
     <Compile Include="Networking\DataBuffer.cs" />
+    <Compile Include="Networking\DataReader.cs" />
     <Compile Include="Networking\NetworkBuffer.cs" />
     <Compile Include="Networking\NetworkBufferStorage.cs" />
     <Compile Include="Networking\TextOrientedConnectionBase.cs" />

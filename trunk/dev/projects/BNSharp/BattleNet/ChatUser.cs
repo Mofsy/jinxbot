@@ -38,7 +38,8 @@ namespace BNSharp.BattleNet
         /// </summary>
         public int Ping
         {
-            get; internal set;
+            get;
+            internal set;
         }
 
         /// <summary>
@@ -46,7 +47,8 @@ namespace BNSharp.BattleNet
         /// </summary>
         public ClassicUserFlags Flags
         {
-            get; internal set; 
+            get;
+            internal set;
         }
 
         /// <summary>
@@ -54,7 +56,8 @@ namespace BNSharp.BattleNet
         /// </summary>
         public string Username
         {
-            get; internal set;
+            get;
+            internal set;
         }
 
         /// <summary>
@@ -72,6 +75,9 @@ namespace BNSharp.BattleNet
         /// <seealso cref="DefaultStats"/>
         public UserStats Stats
         {
-            get; internal set;
+            get;
+            internal set;
         }
+
+    }
 }

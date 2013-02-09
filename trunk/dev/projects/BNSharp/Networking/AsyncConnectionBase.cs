@@ -28,11 +28,17 @@ namespace BNSharp.Networking
         /// <param name="server">The URI of the server to connect to.</param>
         /// <param name="port">The port of the server to connect to.</param>
         public AsyncConnectionBase(string server, int port)
+            : this(server, port, 8192, 50)
+        {
+            
+        }
+
+        internal AsyncConnectionBase(string server, int port, int perPacketSize, int bufferSize)
         {
             _server = server;
             _port = port;
 
-            _storage = new NetworkBufferStorage(8192, 50);
+            _storage = new NetworkBufferStorage(perPacketSize, bufferSize);
         }
 
         #region IDisposable Members
@@ -222,6 +228,38 @@ namespace BNSharp.Networking
             {
                 _open = false;
                 _client.Client.Disconnect(true);
+            }
+        }
+
+        internal async Task<byte[]> ReceiveAsync(byte[] target, int startIndex, int count)
+        {
+            if (target == null)
+                throw new ArgumentNullException("target");
+            if (startIndex < 0)
+                throw new ArgumentOutOfRangeException("startIndex", startIndex, "Index must refer to a location within the array.");
+            if (count < 0)
+                throw new ArgumentOutOfRangeException("count", count, "Amount of data to receive must be a nonnegative integer.");
+            if (startIndex + count > target.Length)
+                throw new ArgumentOutOfRangeException("count", count, "Cannot receive past the end of the destination array.");
+
+            int totRecv = 0;
+            var stream = _client.GetStream();
+            while (_open && _client.Connected && totRecv < length)
+            {
+                try
+                {
+                    totRecv += await stream.ReadAsync(target, totRecv + startIndex, count - totRecv);
+                }
+                catch (IOException se)
+                {
+                    if (IsConnected)
+                    {
+                        Close();
+                        OnConnectionErrorOccurred("A read error occurred on the connection.", se);
+                    }
+
+                    return null;
+                }
             }
         }
 

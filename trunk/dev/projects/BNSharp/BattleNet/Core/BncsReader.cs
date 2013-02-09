@@ -46,8 +46,7 @@ namespace BNSharp.BattleNet.Core
         /// <exception cref="InvalidOperationException">Thrown if this reader is not yet initialized.</exception>
         public override int Length
         {
-            get;
-            private set;
+            get { return _len; }
         }
 
         /// <summary>
@@ -74,8 +73,8 @@ namespace BNSharp.BattleNet.Core
             if (this.ReadByte() != 0xff)
                 throw new InvalidDataException("The buffer was invalid.");
             PacketID = (BncsPacketId)this.ReadByte();
-            Length = this.ReadUInt16();
-            if (Length > 8192)
+            _len = this.ReadUInt16();
+            if (_len > 8192)
                 throw new InvalidDataException("The buffer was invalid.");
         }
 
