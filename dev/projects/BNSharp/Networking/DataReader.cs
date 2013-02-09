@@ -38,7 +38,7 @@ namespace BNSharp.Networking
     {
         private NetworkBuffer _buffer;
         private byte[] _data;
-        private int _index;
+        private int _index, _baseIndex, _baseSize;
 
         /// <summary>
         /// Gets a reference to the underlying buffer.
@@ -62,6 +62,7 @@ namespace BNSharp.Networking
                 throw new ArgumentNullException("buffer");
 
             _data = buffer;
+            _baseSize = buffer.Length;
         }
 
         /// <summary>
@@ -75,6 +76,8 @@ namespace BNSharp.Networking
 
             _buffer = buffer;
             _data = buffer.UnderlyingBuffer;
+            _baseIndex = buffer.StartingPosition;
+            _baseSize = buffer.Length;
         }
         #endregion
 
@@ -88,7 +91,7 @@ namespace BNSharp.Networking
         /// <returns>The next boolean value from the data stream.</returns>
         public bool ReadBoolean()
         {
-            return BitConverter.ToInt32(_data, _index) != 0;
+            return BitConverter.ToInt32(_data, _index + _baseIndex) != 0;
         }
 
         /// <summary>
@@ -97,7 +100,7 @@ namespace BNSharp.Networking
         /// <returns>The next byte from the data stream.</returns>
         public byte ReadByte()
         {
-            return _data[_index++];
+            return _data[_baseIndex + _index++];
         }
 
         /// <summary>
@@ -108,7 +111,7 @@ namespace BNSharp.Networking
         public byte[] ReadByteArray(int expectedItems)
         {
             byte[] data = new byte[expectedItems];
-            Buffer.BlockCopy(_data, _index, data, 0, expectedItems);
+            Buffer.BlockCopy(_data, _index + _baseIndex, data, 0, expectedItems);
             _index += expectedItems;
             return data;
         }
@@ -122,15 +125,15 @@ namespace BNSharp.Networking
         /// <returns>The next byte array in the stream, terminated by a value of 0.</returns>
         public byte[] ReadNullTerminatedByteArray()
         {
-            int i = _index;
+            int i = _index + _baseIndex;
 
             while ((i < _data.Length) && (_data[i] != 0))
                 i++;
 
-            byte[] bytes = new byte[i - _index];
-            Buffer.BlockCopy(_data, _index, bytes, 0, bytes.Length);
+            byte[] bytes = new byte[i - (_index + _baseIndex)];
+            Buffer.BlockCopy(_data, _index + _baseIndex, bytes, 0, bytes.Length);
 
-            _index = ++i;
+            _index += bytes.Length;
 
             return bytes;
         }
@@ -141,7 +144,7 @@ namespace BNSharp.Networking
         /// <returns>The next 16-bit value from the data stream.</returns>
         public short ReadInt16()
         {
-            short s = BitConverter.ToInt16(_data, _index);
+            short s = BitConverter.ToInt16(_data, _index + _baseIndex);
             _index += 2;
             return s;
         }
@@ -154,7 +157,7 @@ namespace BNSharp.Networking
         public short[] ReadInt16Array(int expectedItems)
         {
             short[] data = new short[expectedItems];
-            Buffer.BlockCopy(_data, _index, data, 0, expectedItems * 2);
+            Buffer.BlockCopy(_data, _index + _baseIndex, data, 0, expectedItems * 2);
             _index += (expectedItems * 2);
             return data;
         }
@@ -169,7 +172,7 @@ namespace BNSharp.Networking
         [CLSCompliant(false)]
         public ushort ReadUInt16()
         {
-            ushort s = BitConverter.ToUInt16(_data, _index);
+            ushort s = BitConverter.ToUInt16(_data, _index + _baseIndex);
             _index += 2;
             return s;
         }
@@ -186,7 +189,7 @@ namespace BNSharp.Networking
         public ushort[] ReadUInt16Array(int expectedItems)
         {
             ushort[] data = new ushort[expectedItems];
-            Buffer.BlockCopy(_data, _index, data, 0, expectedItems * 2);
+            Buffer.BlockCopy(_data, _index + _baseIndex, data, 0, expectedItems * 2);
             _index += (expectedItems * 2);
             return data;
         }
@@ -197,7 +200,7 @@ namespace BNSharp.Networking
         /// <returns>The next 32-bit value from the data stream.</returns>
         public int ReadInt32()
         {
-            int i = BitConverter.ToInt32(_data, _index);
+            int i = BitConverter.ToInt32(_data, _index + _baseIndex);
             _index += 4;
             return i;
         }
@@ -210,7 +213,7 @@ namespace BNSharp.Networking
         public int[] ReadInt32Array(int expectedItems)
         {
             int[] data = new int[expectedItems];
-            Buffer.BlockCopy(_data, _index, data, 0, expectedItems * 4);
+            Buffer.BlockCopy(_data, _index + _baseIndex, data, 0, expectedItems * 4);
             _index += (expectedItems * 4);
             return data;
         }
@@ -225,7 +228,7 @@ namespace BNSharp.Networking
         [CLSCompliant(false)]
         public uint ReadUInt32()
         {
-            uint i = BitConverter.ToUInt32(_data, _index);
+            uint i = BitConverter.ToUInt32(_data, _index + _baseIndex);
             _index += 4;
             return i;
         }
@@ -242,7 +245,7 @@ namespace BNSharp.Networking
         public uint[] ReadUInt32Array(int expectedItems)
         {
             uint[] data = new uint[expectedItems];
-            Buffer.BlockCopy(_data, _index, data, 0, expectedItems * 4);
+            Buffer.BlockCopy(_data, _index + _baseIndex, data, 0, expectedItems * 4);
             _index += (expectedItems * 4);
             return data;
         }
@@ -253,7 +256,7 @@ namespace BNSharp.Networking
         /// <returns>The next 64-bit value from the data stream.</returns>
         public long ReadInt64()
         {
-            long l = BitConverter.ToInt64(_data, _index);
+            long l = BitConverter.ToInt64(_data, _index + _baseIndex);
             _index += 8;
             return l;
         }
@@ -266,7 +269,7 @@ namespace BNSharp.Networking
         public long[] ReadInt64Array(int expectedItems)
         {
             long[] data = new long[expectedItems];
-            Buffer.BlockCopy(_data, _index, data, 0, expectedItems * 8);
+            Buffer.BlockCopy(_data, _index + _baseIndex, data, 0, expectedItems * 8);
             _index += (expectedItems * 8);
             return data;
         }
@@ -281,7 +284,7 @@ namespace BNSharp.Networking
         [CLSCompliant(false)]
         public ulong ReadUInt64()
         {
-            ulong l = BitConverter.ToUInt64(_data, _index);
+            ulong l = BitConverter.ToUInt64(_data, _index + _baseIndex);
             _index += 8;
             return l;
         }
@@ -298,7 +301,7 @@ namespace BNSharp.Networking
         public ulong[] ReadUInt64Array(int expectedItems)
         {
             ulong[] data = new ulong[expectedItems];
-            Buffer.BlockCopy(_data, _index, data, 0, expectedItems * 8);
+            Buffer.BlockCopy(_data, _index + _baseIndex, data, 0, expectedItems * 8);
             _index += (expectedItems * 8);
             return data;
         }
@@ -309,9 +312,9 @@ namespace BNSharp.Networking
         /// <returns>A byte value (0-255) if the call succeeded, or else -1 if reading past the end of the stream.</returns>
         public int Peek()
         {
-            if (_index >= _data.Length)
+            if ((_index + _baseIndex) >= _data.Length)
                 return -1;
-            return _data[_index];
+            return _data[_index + _baseIndex];
         }
 
         /// <summary>
@@ -321,13 +324,13 @@ namespace BNSharp.Networking
         /// <returns>The next 4-byte string, reversed, from the stream.</returns>
         public string PeekDwordString(byte padding)
         {
-            int length = _data.Length - _index;
+            int length = _data.Length - (_index + _baseIndex);
             if (length > 4)
                 length = 4;
 
             byte[] b = new byte[length];
             int idx0 = -1;
-            for (int i = _index, j = length - 1; i < (_index + length) && j >= 0; i++, j--)
+            for (int i = (_index + _baseIndex), j = length - 1; i < ((_index + _baseIndex) + length) && j >= 0; i++, j--)
             {
                 b[j] = _data[i];
             }
@@ -406,7 +409,7 @@ namespace BNSharp.Networking
         public string ReadPascalString(Encoding enc)
         {
             int len = ReadByte();
-            string s = enc.GetString(_data, _index, len);
+            string s = enc.GetString(_data, _index + _baseIndex, len);
             _index += enc.GetByteCount(s);
             return s;
         }
@@ -428,7 +431,7 @@ namespace BNSharp.Networking
         public string ReadWidePascalString(Encoding enc)
         {
             int len = ReadInt16();
-            string s = enc.GetString(_data, _index, len);
+            string s = enc.GetString(_data, _index + _baseIndex, len);
             _index += enc.GetByteCount(s);
             return s;
         }
@@ -440,7 +443,7 @@ namespace BNSharp.Networking
         {
             get
             {
-                return _data.Length;
+                return _baseSize;
             }
         }
 
@@ -454,7 +457,7 @@ namespace BNSharp.Networking
         /// <returns>A variable-length string with no NULL (0) characters nor the terminator character.</returns>
         public string ReadTerminatedString(char Terminator, Encoding enc)
         {
-            int i = _index;
+            int i = _index + _baseIndex;
             if (enc == Encoding.Unicode || enc == Encoding.BigEndianUnicode)
             {
                 while ((i < _data.Length) && ((i + 1 < _data.Length) && (BitConverter.ToChar(_data, i) != Terminator)))
@@ -466,8 +469,8 @@ namespace BNSharp.Networking
                     i++;
             }
 
-            string s = enc.GetString(_data, _index, i - _index);
-            _index = ++i;
+            string s = enc.GetString(_data, _index + _baseIndex, i - _index - _baseIndex);
+            _index = (++i - _baseIndex);
 
             return s;
         }
@@ -481,7 +484,7 @@ namespace BNSharp.Networking
         public bool Seek(int offset)
         {
             bool fOk = false;
-            if (this._index + offset <= _data.Length)
+            if (this._index + offset <= _baseSize)
             {
                 _index += offset;
                 fOk = true;
@@ -503,7 +506,7 @@ namespace BNSharp.Networking
         /// <returns>A string representing this buffer's contents in hexadecimal notation.</returns>
         public override string ToString()
         {
-            return DataFormatter.Format(_data, 0, Length);
+            return DataFormatter.Format(_data, _baseIndex, _baseSize);
         }
     }
 }

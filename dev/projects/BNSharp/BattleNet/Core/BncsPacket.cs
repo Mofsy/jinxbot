@@ -86,8 +86,8 @@ namespace BNSharp.BattleNet.Core
             NetworkBuffer buffer = base.UnderlyingBuffer;
             byte[] tmp = buffer.UnderlyingBuffer;
             byte[] len = BitConverter.GetBytes((ushort)Count);
-            tmp[2] = len[0];
-            tmp[3] = len[1];
+            tmp[buffer.StartingPosition + 2] = len[0];
+            tmp[buffer.StartingPosition + 3] = len[1];
         }
 
         /// <summary>

@@ -10,6 +10,7 @@ namespace BNSharp.Networking
     /// <summary>
     /// Represents an opaque data buffer used to store network traffic.  
     /// </summary>
+    [DebuggerDisplay("{ToString()}")]
     public class NetworkBuffer
     {
         private byte[] _underlyingBuffer;
@@ -52,10 +53,21 @@ namespace BNSharp.Networking
             get { return _bufferLength; }
         }
 
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            return DataFormatter.Format(_underlyingBuffer, _bufferStart, _bufferLength);
+        }
+
         /// <summary>
         /// Zeroes out the memory in the buffer.
         /// </summary>
-        public unsafe void Clear()
+        public async Task Clear()
+        {
+            await Task.Run(() => { ClearUnsafe(); });
+        }
+
+        private unsafe void ClearUnsafe()
         {
             fixed (byte* ptr = &_underlyingBuffer[_bufferStart])
             {
