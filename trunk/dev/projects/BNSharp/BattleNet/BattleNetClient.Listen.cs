@@ -164,6 +164,8 @@ namespace BNSharp.BattleNet
             {
                 //OnError(new ErrorEventArgs(ErrorType.General, "There was an error while initializing your client.  Refer to the exception message for more information.\n" + ex.ToString(), true));
                 Disconnect();
+
+                Console.WriteLine(ex.ToString());
             }
         }
 

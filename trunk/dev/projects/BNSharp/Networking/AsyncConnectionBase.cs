@@ -356,7 +356,7 @@ namespace BNSharp.Networking
         /// <param name="data">The data to send.</param>
         public virtual async Task SendAsync(NetworkBuffer data, int length)
         {
-            await SendAsync(data.UnderlyingBuffer, 0, length);
+            await SendAsync(data, 0, length);
             _storage.Release(data);
         }
 
@@ -368,7 +368,7 @@ namespace BNSharp.Networking
         /// <param name="length">The amount of data to send.</param>
         public virtual async Task SendAsync(NetworkBuffer data, int index, int length)
         {
-            await SendAsync(data.UnderlyingBuffer, index, length);
+            await SendAsync(data.UnderlyingBuffer, data.StartingPosition + index, length);
             _storage.Release(data);
         }
     }

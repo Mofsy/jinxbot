@@ -111,7 +111,7 @@ namespace BNSharp.BattleNet
                 pck.InsertDwordString("IX86");
                 pck.InsertDwordString(_settings.Client.ProductCode);
                 pck.InsertInt32(_settings.VersionByte);
-                pck.InsertDwordString(ci.TwoLetterISOLanguageName + ri.ThreeLetterISORegionName);
+                pck.InsertDwordString(ci.TwoLetterISOLanguageName + ri.TwoLetterISORegionName);
                 pck.InsertByteArray(_connection.LocalEP.Address.GetAddressBytes());
                 pck.InsertInt32((int)ts.TotalMinutes);
                 pck.InsertInt32(ci.LCID);
@@ -189,26 +189,25 @@ namespace BNSharp.BattleNet
 
         public void Send(string text)
         {
-            throw new NotImplementedException();
+            
         }
 
         public void CreateAccount(string accountName, string password)
         {
-            throw new NotImplementedException();
+            
         }
 
         public void ContinueLogin()
         {
-            throw new NotImplementedException();
+            
         }
 
         public bool IsConnected
         {
-            get { throw new NotImplementedException(); }
+            get { return _connection.IsConnected; }
         }
 
         public event EventHandler Connected;
-
         public event EventHandler Disconnected;
 
         public event EventHandler<string> MessageSent;
@@ -257,17 +256,23 @@ namespace BNSharp.BattleNet
 
         void IChatConnectionEventSource.OnConnected()
         {
-            throw new NotImplementedException();
+            var temp = this.Connected;
+            if (temp != null)
+                temp(this, EventArgs.Empty);
         }
 
         void IChatConnectionEventSource.OnDisconnected()
         {
-            throw new NotImplementedException();
+            var temp = this.Disconnected;
+            if (temp != null)
+                temp(this, EventArgs.Empty);
         }
 
         void IChatConnectionEventSource.OnMessageSent(string message)
         {
-            throw new NotImplementedException();
+            var temp = this.MessageSent;
+            if (temp != null)
+                temp(this, message);
         }
 
         #endregion

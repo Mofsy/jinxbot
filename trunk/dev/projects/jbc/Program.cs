@@ -18,6 +18,8 @@ namespace jbc
             var settings = new BattleNetSettings();
             var client = new BattleNetClient(settings);
 
+            client.ConnectAsync();
+
             string lastInput;
             do
             {

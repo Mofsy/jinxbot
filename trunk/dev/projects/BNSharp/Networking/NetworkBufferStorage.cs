@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace BNSharp.Networking
 {
+    [DebuggerDisplay("{_buffers.Count} buffer(s) available, {_rootBuffer.Length / 1024}KB total buffer size")]
     internal class NetworkBufferStorage
     {
         private byte[] _rootBuffer;
@@ -17,8 +18,8 @@ namespace BNSharp.Networking
 
         internal NetworkBufferStorage(int perBufferSize, int buffersToAlloc)
         {
-            Debug.Assert(perBufferSize > 0);
-            Debug.Assert(buffersToAlloc > 0);
+            //Debug.Assert(perBufferSize > 0);
+            //Debug.Assert(buffersToAlloc > 0);
 
             if (perBufferSize * buffersToAlloc >= 1048576)
                 throw new ArgumentException("Cannot allocate a 1mb or larger buffer storage.");
@@ -35,6 +36,10 @@ namespace BNSharp.Networking
                 NetworkBuffer buffer = new NetworkBuffer(_rootBuffer, i * _size, _size, this);
                 _buffers.Push(buffer);
             }
+
+#if DEBUG
+            ClearOnRelease = true;
+#endif
         }
 
         public bool ClearOnRelease
@@ -53,10 +58,10 @@ namespace BNSharp.Networking
             }
         }
 
-        public void Release(NetworkBuffer buffer)
+        public async void Release(NetworkBuffer buffer)
         {
             if (ClearOnRelease)
-                buffer.Clear();
+                await buffer.Clear();
 
             Debug.Assert(buffer.Parent == this);
 

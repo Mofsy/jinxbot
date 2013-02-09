@@ -63,7 +63,7 @@ namespace BNSharp.Networking
 
             _target = targetBuffer;
             _buffer = targetBuffer.UnderlyingBuffer;
-            _ms = new MemoryStream(_buffer);
+            _ms = new MemoryStream(_buffer, targetBuffer.StartingPosition, targetBuffer.Length, true);
         }
 
         #region Insert methods
