@@ -48,12 +48,12 @@ namespace BNSharp.BattleNet
                 //{ BncsPacketId.GetChannelList, HandleGetChannelList },
                 //{ BncsPacketId.ChatEvent, HandleChatEvent },
                 //{ BncsPacketId.CheckAd, HandleCheckAd },
-                //{ BncsPacketId.Ping, HandlePing },
+                { BncsPacketId.Ping, HandlePing },
                 //{ BncsPacketId.ReadUserData, HandleUserProfileRequest },
-                //{ BncsPacketId.LogonResponse, HandleLogonResponse },
+                { BncsPacketId.LogonResponse, HandleLogonResponse },
                 //{ BncsPacketId.Profile, HandleProfile },
-                //{ BncsPacketId.LogonResponse2, HandleLogonResponse2 },
-                //{ BncsPacketId.CreateAccount2, HandleCreateAccount2 },
+                { BncsPacketId.LogonResponse2, HandleLogonResponse2 },
+                { BncsPacketId.CreateAccount2, HandleCreateAccount2 },
                 //{ BncsPacketId.WarcraftGeneral, HandleWarcraftGeneral },
                 //{ BncsPacketId.NewsInfo, HandleNewsInfo },
                 { BncsPacketId.AuthInfo, HandleAuthInfo },
@@ -194,12 +194,37 @@ namespace BNSharp.BattleNet
 
         public void CreateAccount(string accountName, string password)
         {
-            
+            bool isClientWar3 = (_settings.Client.Equals(ClassicProduct.Warcraft3Retail) || _settings.Client.Equals(ClassicProduct.Warcraft3Expansion));
+            if (isClientWar3)
+            {
+                CreateAccountNLS();
+            }
+            else
+            {
+                CreateAccountOld();
+            }
         }
 
+        /// <summary>
+        /// Allows the client to continue logging in if the login has stopped due to a non-existent username or password.
+        /// </summary>
+        /// <remarks>
+        /// <para>If a <see>LoginFailed</see> event occurs, the client is not automatically disconnected.  The UI can then present an interface
+        /// by which the user may modify the client's <see>Settings</see> instance with proper login information.  Once this has been done, the 
+        /// user may then call this method to attempt to log in again.</para>
+        /// <para>This method does not need to be called after the <see>AccountCreated</see> event.</para>
+        /// </remarks>
         public void ContinueLogin()
         {
-            
+            bool isClientWar3 = (_settings.Client.Equals(ClassicProduct.Warcraft3Retail) || _settings.Client.Equals(ClassicProduct.Warcraft3Expansion));
+            if (isClientWar3)
+            {
+                LoginAccountNLS();
+            }
+            else
+            {
+                LoginAccountOld();
+            }
         }
 
         public bool IsConnected
@@ -211,6 +236,9 @@ namespace BNSharp.BattleNet
         public event EventHandler Disconnected;
 
         public event EventHandler<string> MessageSent;
+
+        public event EventHandler<AccountCreationEventArgs> AccountCreated;
+        public event EventHandler<AccountCreationFailedEventArgs> AccountCreationFailed;
 
         #endregion
 
@@ -254,6 +282,33 @@ namespace BNSharp.BattleNet
 
         #region IChatConnectionEventSource Members
 
+        private void OnAccountCreated(AccountCreationEventArgs args)
+        {
+            ((IChatConnectionEventSource)this).OnAccountCreated(args);
+        }
+
+        void IChatConnectionEventSource.OnAccountCreated(AccountCreationEventArgs args)
+        {
+            var tmp = this.AccountCreated;
+            if (tmp != null) tmp(this, args);
+        }
+
+        private void OnAccountCreationFailed(AccountCreationFailedEventArgs args)
+        {
+            ((IChatConnectionEventSource)this).OnAccountCreationFailed(args);
+        }
+
+        void IChatConnectionEventSource.OnAccountCreationFailed(AccountCreationFailedEventArgs args)
+        {
+            var tmp = this.AccountCreationFailed;
+            if (tmp != null) tmp(this, args);
+        }
+
+        private void OnConnected()
+        {
+            ((IChatConnectionEventSource)this).OnConnected();
+        }
+
         void IChatConnectionEventSource.OnConnected()
         {
             var temp = this.Connected;
@@ -261,11 +316,21 @@ namespace BNSharp.BattleNet
                 temp(this, EventArgs.Empty);
         }
 
+        private void OnDisconnected()
+        {
+            ((IChatConnectionEventSource)this).OnDisconnected();
+        }
+
         void IChatConnectionEventSource.OnDisconnected()
         {
             var temp = this.Disconnected;
             if (temp != null)
                 temp(this, EventArgs.Empty);
+        }
+
+        private void OnMessageSent(string message)
+        {
+            ((IChatConnectionEventSource)this).OnMessageSent(message);
         }
 
         void IChatConnectionEventSource.OnMessageSent(string message)
