@@ -84,9 +84,9 @@ namespace BNSharp.BattleNet.Ftp
         public BnFtpVersion2Request(string fileName, ClassicProduct product, DateTime fileTime, CdKey cdKey, int adId, string adFileExtension)
             : this(fileName, product, fileTime, cdKey)
         {
-            m_ad = true;
-            m_adId = adId;
-            m_adExt = adFileExtension;
+            _ad = true;
+            _adId = adId;
+            _adExt = adFileExtension;
         }
 
         /// <summary>
@@ -179,7 +179,6 @@ namespace BNSharp.BattleNet.Ftp
                 DataReader reader = new DataReader(incomingData);
                 reader.Seek(8); // banner id / extension
                 long fileTime = reader.ReadInt64();
-                this.FileTime = DateTime.FromFileTimeUtc(fileTime);
                 string name = reader.ReadCString();
                 if (string.Compare(name, FileName, StringComparison.OrdinalIgnoreCase) != 0 || FileSize == 0)
                 {
@@ -191,7 +190,7 @@ namespace BNSharp.BattleNet.Ftp
                 if (incomingData == null)
                     throw new IOException("Battle.net did not send the file data.");
 
-                File.WriteAllBytes(LocalFileName, fileData);
+                File.WriteAllBytes(LocalFileName, incomingData);
                 DateTime time = DateTime.FromFileTimeUtc(fileTime);
                 File.SetLastWriteTimeUtc(LocalFileName, time);
             }

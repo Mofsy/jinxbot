@@ -23,6 +23,7 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Globalization;
@@ -74,13 +75,13 @@ namespace BNSharp.BattleNet.Core
         public static int ExtractMPQNumber(string mpqName)
         {
             if (mpqName == null)
-                throw new ArgumentNullException("mpqName", Resources.crMpqNameNull);
+                throw new ArgumentNullException("mpqName");
 
             if (mpqName.ToUpperInvariant().StartsWith("LOCKDOWN", StringComparison.Ordinal))
-                throw new NotSupportedException(Resources.crevExtrMpqNum_NoLockdown);
+                throw new NotSupportedException("Lockdown MPQs are not supported for MPQ number extraction.");
 
             if (mpqName.Length < 7)
-                throw new ArgumentException(Resources.crMpqNameArgShort);
+                throw new ArgumentException("The MPQ name was too short.");
 
             string mpqNameUpper = mpqName.ToUpperInvariant();
             int num = -1;
@@ -187,175 +188,30 @@ namespace BNSharp.BattleNet.Core
         /// </remarks>
         public static int DoCheckRevision(
             string valueString,
-            string[] files,
+            IEnumerable<Stream> files,
             int mpqNumber)
         {
             if (valueString == null)
-                throw new ArgumentNullException("valueString", Resources.crValstringNull);
+                throw new ArgumentNullException("valueString");
             if (files == null)
-                throw new ArgumentNullException("files", Resources.crFileListNull);
-            if (files.Length != 3)
-                throw new ArgumentOutOfRangeException("files", files, Resources.crFileListInvalid);
+                throw new ArgumentNullException("files");
+            if (files.Count() != 3)
+                throw new ArgumentOutOfRangeException("files", files, "The file list is invalid.");
             if (mpqNumber < 0 || mpqNumber > 7)
                 throw new ArgumentOutOfRangeException("mpqNumber", mpqNumber, "MPQ number must be between 0 and 7, inclusive.");
 
-            if (AlwaysUseSlowCheck)
+            using (Stream crStream = new CheckRevisionStream(files))
             {
-                return SlowCheckRevision(valueString, files, mpqNumber);
+                uint A, B, C;
+                List<string> formulas = new List<string>();
+
+                CheckRevisionFormulaTracker.InitializeValues(valueString, formulas, out A, out B, out C);
+
+                A ^= hashcodes[mpqNumber];
+
+                int result = DoCheckRevisionCompiled(A, B, C, formulas, crStream);
+                return result;
             }
-            else
-            {
-                switch (OptimizationStrategy)
-                {
-                    case CheckRevisionOptimizationStrategy.LoadFilesOnDemand:
-                        return SlowCheckRevision(valueString, files, mpqNumber);
-                    case CheckRevisionOptimizationStrategy.PreloadAndPersistFiles:
-                    case CheckRevisionOptimizationStrategy.PreloadAllFilesAndClearAfterUse:
-                        return ExecutePreloadedRevisionCheck(valueString, files, mpqNumber);
-                    default:
-                        throw new InvalidOperationException("Optimization strategy is an unsupported value.");
-
-                }
-            }
-        }
-
-        private static int ExecutePreloadedRevisionCheck(
-            string valueString,
-            string[] files,
-            int mpqNumber)
-        {
-            uint A, B, C;
-            List<string> formulas = new List<string>();
-
-            CheckRevisionFormulaTracker.InitializeValues(valueString, formulas, out A, out B, out C);
-
-            A ^= hashcodes[mpqNumber];
-
-            Stream dataStream = CheckRevisionPreloadTracker.GetFiles(files);
-
-            int result = DoCheckRevisionCompiled(A, B, C, formulas, dataStream);
-
-            if (OptimizationStrategy == CheckRevisionOptimizationStrategy.PreloadAllFilesAndClearAfterUse)
-            {
-                dataStream.Dispose();
-                dataStream = null;
-            }
-
-            return result;
-        }
-
-        // This method always assumes the inputs have been sanity-checked.
-        private static int SlowCheckRevision(
-            string valueString,
-            string[] files,
-            int mpqNumber)
-        {
-            uint[] values = new uint[4];
-
-            int[] opValueDest = new int[4];
-            int[] opValueSrc1 = new int[4];
-            char[] operation = new char[4];
-            int[] opValueSrc2 = new int[4];
-
-            string[] tokens = valueString.Split(new char[] { ' ' });
-
-            int currentFormula = 0;
-
-            // while (stringTokenizer.hasMoreTokens())
-            for (int i = 0; i < tokens.Length; i++)
-            {
-                string token = tokens[i];
-                // as long as there is a '=' in the string
-                if (token.IndexOf('=') != -1)
-                {
-                    string[] nameTokens = token.Split(new char[] { '=' });
-                    if (nameTokens.Length != 2)
-                        return 0;
-
-                    int variable = getNum(nameTokens[0][0]);
-                    string value = nameTokens[1];
-
-                    // If it starts with a number, assign that number to the appropriate variable
-                    if (char.IsDigit(value[0]))
-                    {
-                        values[variable] = uint.Parse(value, CultureInfo.InvariantCulture);
-                    }
-                    else
-                    {
-                        opValueDest[currentFormula] = variable;
-
-                        opValueSrc1[currentFormula] = getNum(value[0]);
-                        operation[currentFormula] = value[1];
-                        opValueSrc2[currentFormula] = getNum(value[2]);
-
-                        currentFormula++;
-                    }
-                }
-            }
-
-            // Now we actually do the hashing for each file
-            // Start by hashing A by the hashcode
-            values[0] ^= hashcodes[mpqNumber];
-
-            byte[] currentOperandBuffer = new byte[1024];
-            for (int i = 0; i < files.Length; i++)
-            {
-                using (FileStream currentFile = new FileStream(files[i], FileMode.Open, FileAccess.Read, FileShare.Read))
-                {
-                    while (currentFile.Position < currentFile.Length)
-                    {
-                        long currentFilePosition = 0;
-                        long amountToRead = Math.Min(currentFile.Length - currentFile.Position, 1024);
-                        currentFile.Read(currentOperandBuffer, 0, (int)amountToRead);
-
-                        if (amountToRead < 1024)
-                        {
-                            byte currentPaddingByte = 0xff;
-                            for (int j = (int)amountToRead; j < 1024; j++)
-                            {
-                                unchecked
-                                {
-                                    currentOperandBuffer[j] = currentPaddingByte--;
-                                }
-                            }
-                        }
-                        CheckRevisionFormulaTracker.FileAppendBytes("c:\\projects\\baseline.bin", currentOperandBuffer);
-
-                        for (int j = 0; j < 1024; j += 4)
-                        {
-                            values[3] = BitConverter.ToUInt32(currentOperandBuffer, j);
-
-                            for (int k = 0; k < currentFormula; k++)
-                            {
-                                switch (operation[k])
-                                {
-                                    case '+':
-                                        values[opValueDest[k]] = values[opValueSrc1[k]] + values[opValueSrc2[k]];
-                                        break;
-
-                                    case '-':
-                                        values[opValueDest[k]] = values[opValueSrc1[k]] - values[opValueSrc2[k]];
-                                        break;
-
-                                    case '^':
-                                        values[opValueDest[k]] = values[opValueSrc1[k]] ^ values[opValueSrc2[k]];
-                                        break;
-
-                                    case '*': // as shady said, you never know.
-                                        values[opValueDest[k]] = values[opValueSrc1[k]] * values[opValueSrc2[k]];
-                                        break;
-
-                                    case '/': // in case blizz gets "sneaky"
-                                        values[opValueDest[k]] = values[opValueSrc1[k]] / values[opValueSrc2[k]];
-                                        break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            return unchecked((int)values[2]);
         }
 
         // This method assumes all parameters have been sanity checked
@@ -467,7 +323,7 @@ namespace BNSharp.BattleNet.Core
             out string exeInfoString)
         {
             if (fileName == null)
-                throw new ArgumentNullException(Resources.param_fileName, Resources.crExeFileNull);
+                throw new ArgumentNullException("fileName");
 
             string file = fileName.Substring(fileName.LastIndexOf('\\') + 1);
             uint fileSize = 0;
@@ -490,113 +346,12 @@ namespace BNSharp.BattleNet.Core
                 (fvi.FileBuildPart << 8) | fvi.FilePrivatePart);
 
             exeInfoString = String.Format(CultureInfo.InvariantCulture,
-                Resources.exeInfoFmt,
+                "{0} {1:MM/dd/yy hh:mm:ss} {2}",
                 file, ft.Month, ft.Day, ft.Year % 100, ft.Hour, ft.Minute, ft.Second, fileSize
                 );
 
             return version;
         }
-
-        /// <summary>
-        /// Gets the current "version byte" for the specified product.
-        /// </summary>
-        /// <remarks>
-        /// <para>Only the following product IDs can be used with the web service: STAR, SEXP, W2BN, D2DV, D2XP,
-        /// WAR3, and W3XP.  Other product IDs will result an a <see cref="NotSupportedException">NotSupportedException</see>
-        /// being thrown.</para>
-        /// <para><span style="color: red;">This method is new and currently in testing.  W2BN, D2DV, and D2XP are currently
-        /// unsupported.</span></para>
-        /// </remarks>
-        /// <param name="productID">The four-character product ID for the product in question.</param>
-        /// <exception cref="NotSupportedException">Thrown in all cases.</exception>
-        /// <returns>The version byte of the product.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "productID")]
-        [Obsolete("Use of the MBNCSUtil web service for retrieving version bytes is no longer possible.", true)]
-        public static byte GetVersionByte(string productID)
-        {
-            throw new NotSupportedException();
-            /*
-            string val = productID.ToUpper();
-            WebRequest req = HttpWebRequest.Create("http://www.jinxbot.net/mbncsutil/mbncsutil_bytes.aspx?Client=" + val);
-            WebResponse resp = req.GetResponse();
-            Stream strm = resp.GetResponseStream();
-            StreamReader sr = new StreamReader(strm);
-            int ver = int.Parse(sr.ReadLine());
-            return (byte)ver;
-             * */
-        }
-
-        /// <summary>
-        /// Gets or sets whether to use the slow revision check.
-        /// </summary>
-        /// <remarks>
-        /// <para>By default, the revision check operation for non-Lockdown clients uses dynamic compilation based on 
-        /// the standard format of the revision check formula (<c>A=x B=y C=z 4 A=A?S B=B?C C=C?A A=A?B</c>).  If there
-        /// is a compatibility problem, clients can disable the use of dynamic compilation by setting this property
-        /// to <see langword="true" />.</para>
-        /// <para>In the current version of MBNCSUtil and BN#, setting this property to <see langword="true" /> has the effect of causing the
-        /// revision check process to use the <see cref="CheckRevisionOptimizationStrategy.LoadFilesOnDemand">LoadFilesOnDemand</see> 
-        /// <see cref="OptimizationStrategy">optimization strategy</see>, regardless of the value of that property, to ensure 100% compatibility with
-        /// the older version of the revision check formulas.  Future versions will vary according to that property.</para>
-        /// </remarks>
-        [DefaultValue(false)]
-        public static bool AlwaysUseSlowCheck
-        {
-            get;
-            set;
-        }
-
-        private static CheckRevisionOptimizationStrategy _optimizationStrategy = CheckRevisionOptimizationStrategy.PreloadAllFilesAndClearAfterUse;
-        /// <summary>
-        /// Gets or sets the optimization strategy used by the revision check file loader.
-        /// </summary>
-        /// <remarks>
-        /// <para>For more information about the differences between the optimization strategies, see 
-        /// <see>CheckRevisionOptimizationStrategy</see>.</para>
-        /// <para>By default, this is set to <see>CheckRevisionOptimizationStrategy.PreloadAllFilesAndClearAfterUse</see>.
-        /// </para>
-        /// </remarks>
-        [DefaultValue(CheckRevisionOptimizationStrategy.PreloadAllFilesAndClearAfterUse)]
-        public static CheckRevisionOptimizationStrategy OptimizationStrategy
-        {
-            get { return _optimizationStrategy; }
-            set
-            {
-                if (!Enum.IsDefined(typeof(CheckRevisionOptimizationStrategy), value))
-                    throw new InvalidEnumArgumentException("value", (int)value, typeof(CheckRevisionOptimizationStrategy));
-                _optimizationStrategy = value;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Specifies the optimization strategy that <see>CheckRevision</see> should use when loading files from disk.
-    /// </summary>
-    public enum CheckRevisionOptimizationStrategy
-    {
-        /// <summary>
-        /// Reads all the files and inserts the appropriate padding before executing the revision check, allowing the 
-        /// operation to execute in a single pass without (generally) needing to hit the disk.  This is the default 
-        /// optimization strategy, and will use about 11mb of memory transitionally during the operation of the check,
-        /// but will free it following the check.
-        /// </summary>
-        PreloadAllFilesAndClearAfterUse,
-        /// <summary>
-        /// Reads all of the files and inserts the appropriate padding before executing the revision check, based on a 
-        /// combination of the names of the files that are being used.  This allows the operation to execute in a single
-        /// pass without needing to hit the disk.  When the revision check is completed, the file data are retained so 
-        /// that future calls don't need to recombine the file data.  For clients that use classic revision check, this
-        /// means that files will take about 11mb each.  For clients that use lockdown, because the lockdown file is part
-        /// of the hashed file data, this may be up to about 200mb.  This strategy is probably ideal for applications 
-        /// similar to BNLS that need to focus on serving revision check requests, and not for general client use.
-        /// </summary>
-        PreloadAndPersistFiles,
-        /// <summary>
-        /// Reads files one kilobyte at a time, as the revision check needs the file data to be read in.  This is probably 
-        /// the slowest optimization strategy, but it probably will hit the disk more than once during the operation.
-        /// It also uses the least amount of memory.
-        /// </summary>
-        LoadFilesOnDemand
     }
 }
 

@@ -56,8 +56,15 @@
     <Compile Include="BattleNet\Core\CheckRevision.cs" />
     <Compile Include="BattleNet\Core\CheckRevisionCompiler.cs" />
     <Compile Include="BattleNet\Core\CheckRevisionFormulaTracker.cs" />
-    <Compile Include="BattleNet\Core\CheckRevisionPreloadTracker.cs" />
+    <Compile Include="BattleNet\Core\CheckRevisionStream.cs" />
+    <Compile Include="BattleNet\Core\HeapPtr.cs" />
+    <Compile Include="BattleNet\Core\LockdownCrev.cs" />
+    <Compile Include="BattleNet\Core\LockdownHeap.cs" />
+    <Compile Include="BattleNet\Core\LockdownSha1.cs" />
+    <Compile Include="BattleNet\Core\Native.cs" />
     <Compile Include="BattleNet\Core\ParseCallback.cs" />
+    <Compile Include="BattleNet\Core\PeFileLoader.cs" />
+    <Compile Include="BattleNet\Core\PeFileReader.cs" />
     <Compile Include="BattleNet\Core\XSha1.cs" />
     <Compile Include="BattleNet\Ftp\BnFtpRequestBase.cs" />
     <Compile Include="BattleNet\Ftp\BnFtpVersion1Request.cs" />

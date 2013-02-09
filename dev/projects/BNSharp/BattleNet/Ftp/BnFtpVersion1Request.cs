@@ -62,7 +62,7 @@ namespace BNSharp.BattleNet.Ftp
             string prod = this.Product.ProductCode;
 
             if (prod == "WAR3" || prod == "W3XP")
-                throw new ArgumentOutOfRangeException("product", productId, "Cannot make a BnFtp version 1 request with Warcraft III: The Reign of Chaos or Warcraft III: The Frozen Throne.");
+                throw new ArgumentOutOfRangeException("product", product, "Cannot make a BnFtp version 1 request with Warcraft III: The Reign of Chaos or Warcraft III: The Frozen Throne.");
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace BNSharp.BattleNet.Ftp
         /// with the Battle.net protocol that this constructor is used.</para>
         /// </remarks>
         public BnFtpVersion1Request(ClassicProduct product, string fileName, DateTime fileTime, int adBannerId, string adBannerExtension)
-            : this(productId, fileName, fileTime)
+            : this(product, fileName, fileTime)
         {
             _adExt = adBannerExtension;
             _adId = adBannerId;

@@ -74,7 +74,7 @@ namespace BNSharp.BattleNet.Core
         {
             _id = (byte)id;
             InsertByte(0xff);
-            InsertByte(id);
+            InsertByte((byte)id);
             InsertInt16(0);
         }
 

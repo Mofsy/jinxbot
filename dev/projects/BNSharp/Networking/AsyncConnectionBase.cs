@@ -12,7 +12,7 @@ namespace BNSharp.Networking
     /// <summary>
     /// Represents a asynchronous TCP/IP connection.
     /// </summary>
-    public class AsyncConnectionBase
+    public class AsyncConnectionBase : IDisposable
     {
         private TcpClient _client;
         private IPEndPoint _ipep;
@@ -42,6 +42,11 @@ namespace BNSharp.Networking
         }
 
         #region IDisposable Members
+
+        ~AsyncConnectionBase()
+        {
+            Dispose(false);
+        }
 
         /// <summary>
         /// Disposes the specified object.
@@ -244,7 +249,7 @@ namespace BNSharp.Networking
 
             int totRecv = 0;
             var stream = _client.GetStream();
-            while (_open && _client.Connected && totRecv < length)
+            while (_open && _client.Connected && totRecv < count)
             {
                 try
                 {
