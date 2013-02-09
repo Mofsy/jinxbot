@@ -71,6 +71,22 @@ namespace BNSharp.BattleNet.Core
         public override int Read(byte[] buffer, int offset, int count)
         {
             // TODO: Figure out
+            // get buffer by current position
+            long[] positions = _sourceStreams.Keys.ToArray();
+            long currentStreamStart = 0;
+            for (int i = positions.Length - 1; i >= 0; i--)
+            {
+                long positionToTest = positions[i];
+                if (positionToTest <= _curPos)
+                {
+                    // this is it
+                    Stream interestingStream = _sourceStreams[positionToTest];
+
+                    // reorient based on the stream properties
+                    int lengthRead = interestingStream.Read(buffer, offset, count);
+                    return lengthRead;
+                }
+            }
         }
 
         public override long Seek(long offset, SeekOrigin origin)

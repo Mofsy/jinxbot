@@ -84,7 +84,7 @@ namespace BNSharp.BattleNet.Core
         /// <returns>A string representing this buffer's contents in hexadecimal notation.</returns>
         public override string ToString()
         {
-            return DataFormatter.Format(this.UnderlyingBuffer, 0, this.Length);
+            return DataFormatter.Format(this.UnderlyingBuffer.UnderlyingBuffer, 0, this.Length);
         }
 
     }
