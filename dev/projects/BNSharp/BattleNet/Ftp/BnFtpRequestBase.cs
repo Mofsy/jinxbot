@@ -108,7 +108,7 @@ namespace BNSharp.BattleNet.Ftp
             set
             {
                 if (value == null)
-                    throw new ArgumentNullException(Resources.param_value, Resources.fileNull);
+                    throw new ArgumentNullException("value");
 
                 if (!value.Contains("\\"))
                 {

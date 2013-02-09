@@ -100,7 +100,7 @@ namespace BNSharp.BattleNet.Core
         }
 
 
-        public override async Task<int> SendAsync(AsyncConnectionBase connection)
+        public override Task<int> SendAsync(AsyncConnectionBase connection)
         {
             ConstructPacket();
             return base.SendAsync(connection);

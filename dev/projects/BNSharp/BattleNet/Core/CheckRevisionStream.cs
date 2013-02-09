@@ -22,11 +22,13 @@ namespace BNSharp.BattleNet.Core
                 _sourceStreams.Add(curPos, stream);
                 int remainder = CalculatePaddedBufferSize(stream.Length);
                 curPos += stream.Length;
+                _len += stream.Length;
                 if (remainder > 0)
                 {
                     Stream paddingStream = CreatePaddingStream(remainder);
                     _sourceStreams.Add(curPos, paddingStream);
-                    _curPos += remainder;
+                    curPos += remainder;
+                    _len += remainder;
                 }
             }
         }
@@ -84,9 +86,12 @@ namespace BNSharp.BattleNet.Core
 
                     // reorient based on the stream properties
                     int lengthRead = interestingStream.Read(buffer, offset, count);
+                    _curPos += lengthRead;
                     return lengthRead;
                 }
             }
+
+            return 0;
         }
 
         public override long Seek(long offset, SeekOrigin origin)
@@ -107,7 +112,7 @@ namespace BNSharp.BattleNet.Core
 
         private static int CalculatePaddedBufferSize(long baseFileSize)
         {
-            int remainder = baseFileSize % 1024;
+            int remainder = (int)(baseFileSize % 1024);
             
             if (remainder == 0) return 0;
             else return 1024 - remainder;

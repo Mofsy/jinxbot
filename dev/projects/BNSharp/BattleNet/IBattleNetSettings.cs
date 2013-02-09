@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BNSharp.BattleNet.Core;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -77,7 +78,7 @@ namespace BNSharp.BattleNet
         /// <remarks>
         /// <para>This property is required for all products.</para>
         /// </remarks>
-        string CdKey1
+        CdKey CdKey1
         {
             get;
             set;
@@ -91,7 +92,7 @@ namespace BNSharp.BattleNet
         /// when emulating the down-level clients, it will still be used if it is supported (for example, when logging onto Warcraft III: The 
         /// Reign of Chaos even though you have Warcraft III: The Frozen Throne installed).</para>
         /// </remarks>
-        string CdKey2
+        CdKey CdKey2
         {
             get;
             set;
@@ -125,7 +126,7 @@ namespace BNSharp.BattleNet
         ///     </item>
         /// </list>
         /// </remarks>
-        Stream GameExe
+        string GameExe
         {
             get;
             set;
@@ -152,7 +153,7 @@ namespace BNSharp.BattleNet
         ///     </item>
         /// </list>
         /// </remarks>
-        Stream GameFile2
+        string GameFile2
         {
             get;
             set;
@@ -182,7 +183,7 @@ namespace BNSharp.BattleNet
         ///     </item>
         /// </list>
         /// </remarks>
-        Stream GameFile3
+        string GameFile3
         {
             get;
             set;
@@ -194,7 +195,7 @@ namespace BNSharp.BattleNet
         /// <remarks>
         /// <para>This property is not required for products other than Starcraft and Warcraft II: Battle.net Edition.</para>
         /// </remarks>
-        Stream ImageFile
+        string ImageFile
         {
             get;
             set;

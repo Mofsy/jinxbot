@@ -111,11 +111,11 @@ namespace BNSharp.BattleNet.Ftp
                 buf.InsertInt16(20); // Length
                 buf.InsertInt16(0x0200); // Protocol version
                 buf.InsertDwordString("IX86");
-                buf.InsertDwordString(Product);
-                if (m_ad)
+                buf.InsertDwordString(Product.ProductCode);
+                if (_ad)
                 {
-                    buf.InsertInt32(m_adId);
-                    buf.InsertDwordString(m_adExt);
+                    buf.InsertInt32(_adId);
+                    buf.InsertDwordString(_adExt);
                 }
                 else
                 {
@@ -129,10 +129,7 @@ namespace BNSharp.BattleNet.Ftp
                 await connection.SendAsync(new byte[] { 2 });
 
                 byte[] outgoingData = buf.UnderlyingStream.ToArray();
-                outgoingData = await connection.SendAsync(outgoingData);
-
-                if (outgoingData == null)
-                    throw new IOException("Unable to send request to Battle.net.");
+                await connection.SendAsync(outgoingData);
 
                 byte[] incomingData = new byte[4];
                 incomingData = await connection.ReceiveAsync(incomingData, 0, 4);
@@ -159,10 +156,8 @@ namespace BNSharp.BattleNet.Ftp
                 buf.InsertByte(0);
 
                 outgoingData = buf.UnderlyingStream.ToArray();
-                outgoingData = await connection.SendAsync(outgoingData);
-                if (outgoingData == null)
-                    throw new IOException("Could not send file request to Battle.net.");
-
+                await connection.SendAsync(outgoingData);
+                
                 incomingData = new byte[8];
                 incomingData = await connection.ReceiveAsync(incomingData, 0, 8);
                 if (incomingData == null)

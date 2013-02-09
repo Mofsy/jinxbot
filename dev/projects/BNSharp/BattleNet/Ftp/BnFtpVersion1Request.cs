@@ -154,14 +154,14 @@ namespace BNSharp.BattleNet.Ftp
                 this.FileSize = fileSize;
 
                 byte[] remainingHeader = new byte[headerLength - 8];
-                results = await connection.ReceiveAsync(remainingHeader, 0, headerLength - 8);
-                if (results == null)
+                remainingHeader = await connection.ReceiveAsync(remainingHeader, 0, headerLength - 8);
+                if (remainingHeader == null)
                     throw new IOException("Battle.net did not send the complete header.");
 
                 headerReader = new DataReader(remainingHeader);
-                rdr.Seek(8);
-                long fileTime = rdr.ReadInt64();
-                string name = rdr.ReadCString();
+                headerReader.Seek(8);
+                long fileTime = headerReader.ReadInt64();
+                string name = headerReader.ReadCString();
                 if (string.Compare(name, FileName, StringComparison.OrdinalIgnoreCase) != 0 || FileSize == 0)
                 {
                     throw new FileNotFoundException("The specified file was not found by Battle.net.");
