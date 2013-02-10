@@ -10,7 +10,7 @@ namespace BNSharp.BattleNet
 {
     public interface IBattleNetClient : 
         IChatConnection,
-        ISingleChannelClient<ChatUser>
+        ISingleChannelClient<ChatUser, UserFlags>
     {
         IWardenModule WardenHandler { get; set; }
 

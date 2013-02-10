@@ -23,6 +23,7 @@ namespace BNSharp.BattleNet
         private NetworkBufferStorage _storage;
         private IBattleNetSettings _settings;
         private Dictionary<BncsPacketId, ParseCallback> _packetToParserMap;
+        private BattleNetClientChannel _channel;
 
         /// <summary>
         /// 
@@ -35,9 +36,19 @@ namespace BNSharp.BattleNet
             _settings = settings;
 
             InitializeParseDictionaries();
+
+            this._channel = new BattleNetClientChannel(this);
         }
 
         #region Parsing support
+        internal ParseCallback RegisterParseCallback(BncsPacketId packetId, ParseCallback callback)
+        {
+            ParseCallback current;
+            _packetToParserMap.TryGetValue(packetId, out current);
+            _packetToParserMap[packetId] = callback;
+            return current;
+        }
+
         private void InitializeParseDictionaries()
         {
             //m_customEventSink = new EventSink(this);
@@ -244,14 +255,14 @@ namespace BNSharp.BattleNet
 
         #region ISingleChannelClient<ChatUser> Members
 
-        public IChannel<ChatUser> Channel
+        public IChannel<ChatUser, UserFlags> Channel
         {
-            get { throw new NotImplementedException(); }
+            get { return _channel; }
         }
 
         public void JoinChannel(string channelName)
         {
-            throw new NotImplementedException();
+            
         }
 
         #endregion
