@@ -10,11 +10,12 @@ namespace BNSharp.Chat
 #pragma warning disable 1591
     // TODO: Document these interfaces
 
-    public interface ISingleChannelClient<TChatUser>
+    public interface ISingleChannelClient<TChatUser, TUserFlags>
         : INotifyPropertyChanged
         where TChatUser : IChatUser
+        where TUserFlags : struct
     {
-        IChannel<TChatUser> Channel { get; }
+        IChannel<TChatUser, TUserFlags> Channel { get; }
         void JoinChannel(string channelName);
 
 

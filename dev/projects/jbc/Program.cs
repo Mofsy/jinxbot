@@ -29,6 +29,12 @@ namespace jbc
             client.AccountCreated += client_AccountCreated;
             client.AccountCreationFailed += client_AccountCreationFailed;
 
+            client.Channel.UserJoined += Client_UserJoinedChannel;
+            client.Channel.UserLeft += Client_UserLeftChannel;
+            client.Channel.UserShown += Client_UserWasInChannel;
+            client.Channel.UserSpoke += Client_UserSpoke;
+            client.Channel.UserEmoted += Client_UserEmoted;
+
 
             client.ConnectAsync();
 
@@ -38,7 +44,8 @@ namespace jbc
                 lastInput = Console.ReadLine();
                 if (lastInput != "/quit")
                 {
-
+                    client.Disconnect();
+                    break;
                 }
             }
             while (lastInput != "/quit");
@@ -147,7 +154,7 @@ namespace jbc
 
 
         #region unused so far
-        static void Client_JoinedChannel()
+        static void Client_JoinedChannel(object sender, ServerChatEventArgs args)
         {
             PrintTidTs(DateTime.Now);
             Console.ForegroundColor = ConsoleColor.Gray;
@@ -156,18 +163,18 @@ namespace jbc
             Console.WriteLine("The Nest");
         }
 
-        static void Client_UserJoinedChannel()
+        static void Client_UserJoinedChannel(object sender, UserEventArgs<ChatUser> args)
         {
             PrintTidTs(DateTime.Now);
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.Write("sno.man ");
+            Console.Write(args.User.Username);
             Console.ForegroundColor = ConsoleColor.Gray;
             Console.Write("joined the channel using ");
             Console.ForegroundColor = ConsoleColor.DarkBlue;
-            Console.WriteLine("Starcraft: Brood War");
+            Console.WriteLine(args.User.Stats.Product.Name);
         }
 
-        static void Client_UserLeftChannel()
+        static void Client_UserLeftChannel(object sender, UserEventArgs<ChatUser> args)
         {
             PrintTidTs(DateTime.Now);
             Console.ForegroundColor = ConsoleColor.Yellow;
@@ -176,24 +183,38 @@ namespace jbc
             Console.WriteLine(" left the channel.");
         }
 
-        static void Client_UserWasInChannel()
+        static void Client_UserWasInChannel(object sender, UserEventArgs<ChatUser> args)
         {
-
+            PrintTidTs(DateTime.Now);
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write(args.User.Username);
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.Write("joined the channel using ");
+            Console.ForegroundColor = ConsoleColor.DarkBlue;
+            Console.WriteLine(args.User.Stats.Product.Name);
         }
 
-        static void Client_UserSpoke()
+        static void Client_UserSpoke(object sender, ChatMessageEventArgs<UserFlags> args)
         {
-
+            PrintTidTs(DateTime.Now);
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write(args.Username);
+            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.Write(": ");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine(args.Text);
         }
 
-        static void Client_UserEmoted()
+        static void Client_UserEmoted(object sender, ChatMessageEventArgs<UserFlags> args)
         {
-
+            PrintTidTs(DateTime.Now);
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("<{0} {1}>", args.Username, args.Text);
         }
 
         static void Client_WhisperReceived()
         {
-
+            
         }
 
         static void Client_WhisperSent()

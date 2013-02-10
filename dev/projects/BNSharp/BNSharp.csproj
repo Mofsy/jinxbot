@@ -45,6 +45,7 @@
     <Compile Include="BattleNet\BattleNetClient.cs" />
     <Compile Include="BattleNet\BattleNetClient.Events.cs" />
     <Compile Include="BattleNet\BattleNetClient.Listen.cs" />
+    <Compile Include="BattleNet\BattleNetClientChannel.cs" />
     <Compile Include="BattleNet\ChannelJoinFlags.cs" />
     <Compile Include="BattleNet\ChatUser.cs" />
     <Compile Include="BattleNet\ClassicProduct.cs" />
@@ -76,9 +77,13 @@
     <Compile Include="BattleNet\Gateway.cs" />
     <Compile Include="BattleNet\IBattleNetClient.cs" />
     <Compile Include="BattleNet\IBattleNetSettings.cs" />
+    <Compile Include="BattleNet\UserFlags.cs" />
     <Compile Include="BattleNet\WarcraftCommands.cs" />
     <Compile Include="Chat\AccountCreationEventArgs.cs" />
     <Compile Include="Chat\AccountCreationFailedEventArgs.cs" />
+    <Compile Include="Chat\ChatEventArgs.cs" />
+    <Compile Include="Chat\ChatEventType.cs" />
+    <Compile Include="Chat\ChatMessageEventArgs.cs" />
     <Compile Include="Chat\CreationFailureReason.cs" />
     <Compile Include="Chat\LoginFailedEventArgs.cs" />
     <Compile Include="Chat\LoginFailureReason.cs" />
@@ -90,6 +95,8 @@
     <Compile Include="Chat\IChatConnection.cs" />
     <Compile Include="Chat\IChatUser.cs" />
     <Compile Include="Chat\ISingleChannelClient.cs" />
+    <Compile Include="Chat\ServerChatEventArgs.cs" />
+    <Compile Include="Chat\UserEventArgs.cs" />
     <Compile Include="DataFormatter.cs" />
     <Compile Include="Networking\AsyncConnectionBase.cs" />
     <Compile Include="Networking\ConnectionErrorEventArgs.cs" />
