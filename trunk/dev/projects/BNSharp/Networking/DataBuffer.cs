@@ -21,6 +21,7 @@ conditions.
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -64,6 +65,13 @@ namespace BNSharp.Networking
             _target = targetBuffer;
             _buffer = targetBuffer.UnderlyingBuffer;
             _ms = new MemoryStream(_buffer, targetBuffer.StartingPosition, targetBuffer.Length, true);
+        }
+
+        internal DataBuffer(byte[] buffer)
+        {
+            Debug.Assert(buffer != null);
+            _buffer = buffer;
+            _ms = new MemoryStream(buffer, 0, buffer.Length, true);
         }
 
         #region Insert methods
@@ -548,7 +556,14 @@ namespace BNSharp.Networking
         /// <returns>A string representing this buffer's contents in hexadecimal notation.</returns>
         public override string ToString()
         {
-            return DataFormatter.Format(_buffer, 0, Count);
+            if (_target != null)
+            {
+                return DataFormatter.Format(_buffer, _target.StartingPosition, Count);
+            }
+            else
+            {
+                return DataFormatter.Format(_buffer, 0, Count);
+            }
         }
 
     }

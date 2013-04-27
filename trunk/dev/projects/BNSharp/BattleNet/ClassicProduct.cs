@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BNSharp.BattleNet.Ftp;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,7 @@ namespace BNSharp.BattleNet
         private string _descriptiveTitle;
 
         private bool _canConnect, _needs2Keys, _needsLockdown, _usesUdp;
+        private BnFtpVersion _allowedFtpVersion;
         #endregion
 
         #region Constructors
@@ -37,21 +39,22 @@ namespace BNSharp.BattleNet
             s_products.Add(productCode, this);
         }
 
-        private ClassicProduct(string productCode, string descriptiveTitle, bool canConnect, bool needs2Keys)
+        private ClassicProduct(string productCode, string descriptiveTitle, bool canConnect, bool needs2Keys, BnFtpVersion allowedFtpVersion)
             : this(productCode, descriptiveTitle)
         {
             _canConnect = canConnect;
             _needs2Keys = needs2Keys;
+            _allowedFtpVersion = allowedFtpVersion;
         }
 
-        private ClassicProduct(string productCode, string descriptiveTitle, bool canConnect, bool needs2Keys, bool needsLockdown)
-            : this(productCode, descriptiveTitle, canConnect, needs2Keys)
+        private ClassicProduct(string productCode, string descriptiveTitle, bool canConnect, bool needs2Keys, bool needsLockdown, BnFtpVersion allowedFtpVersion)
+            : this(productCode, descriptiveTitle, canConnect, needs2Keys, allowedFtpVersion)
         {
             _needsLockdown = needsLockdown;
         }
 
-        private ClassicProduct(string productCode, string descriptiveTitle, bool canConnect, bool needs2Keys, bool needsLockdown, bool needsUdp)
-            : this(productCode, descriptiveTitle, canConnect, needs2Keys, needsLockdown)
+        private ClassicProduct(string productCode, string descriptiveTitle, bool canConnect, bool needs2Keys, bool needsLockdown, bool needsUdp, BnFtpVersion allowedFtpVersion)
+            : this(productCode, descriptiveTitle, canConnect, needs2Keys, needsLockdown, allowedFtpVersion)
         {
             _usesUdp = needsUdp;
         }
@@ -67,7 +70,7 @@ namespace BNSharp.BattleNet
         /// <summary>
         /// The <see>Product</see> object for Starcraft (Retail).
         /// </summary>
-        public static readonly ClassicProduct StarcraftRetail = new ClassicProduct("STAR", "Starcraft (Retail)", true, false, true, true);
+        public static readonly ClassicProduct StarcraftRetail = new ClassicProduct("STAR", "Starcraft (Retail)", true, false, true, true, BnFtpVersion.Version1);
         /// <summary>
         /// The <see>Product</see> object for Starcraft Shareware.
         /// </summary>
@@ -75,16 +78,16 @@ namespace BNSharp.BattleNet
         /// <summary>
         /// The <see>Product</see> object for Starcraft: Brood War.
         /// </summary>
-        public static readonly ClassicProduct StarcraftBroodWar = new ClassicProduct("SEXP", "Starcraft: Brood War", true, false, true, true);
+        public static readonly ClassicProduct StarcraftBroodWar = new ClassicProduct("SEXP", "Starcraft: Brood War", true, false, true, true, BnFtpVersion.Version1);
         /// <summary>
         /// The <see>Product</see> object for Japan Starcraft.
         /// </summary>
-        public static readonly ClassicProduct JapanStarcraft = new ClassicProduct("JSTR", "Japan Starcraft", true, false, false, true);
+        public static readonly ClassicProduct JapanStarcraft = new ClassicProduct("JSTR", "Japan Starcraft", true, false, false, true, BnFtpVersion.Version1);
 
         /// <summary>
         /// The <see>Product</see> object for Warcraft II: Battle.net Edition.
         /// </summary>
-        public static readonly ClassicProduct Warcraft2BNE = new ClassicProduct("W2BN", "Warcraft II: Battle.net Edition", true, false, true, true);
+        public static readonly ClassicProduct Warcraft2BNE = new ClassicProduct("W2BN", "Warcraft II: Battle.net Edition", true, false, true, true, BnFtpVersion.Version1);
 
         /// <summary>
         /// The <see>Product</see> object for Diablo (Retail).
@@ -102,21 +105,21 @@ namespace BNSharp.BattleNet
         /// <summary>
         /// The <see>Product</see> object for Diablo 2 (Retail).
         /// </summary>
-        public static readonly ClassicProduct Diablo2Retail = new ClassicProduct("D2DV", "Diablo II (Retail)", true, false);
+        public static readonly ClassicProduct Diablo2Retail = new ClassicProduct("D2DV", "Diablo II (Retail)", true, false, BnFtpVersion.Version1);
         /// <summary>
         /// The <see>Product</see> object for Diablo 2: The Lord of Destruction.
         /// </summary>
-        public static readonly ClassicProduct Diablo2Expansion = new ClassicProduct("D2XP", "Diablo II: The Lord of Destruction", true, true);
+        public static readonly ClassicProduct Diablo2Expansion = new ClassicProduct("D2XP", "Diablo II: The Lord of Destruction", true, true, BnFtpVersion.Version1);
 
         /// <summary>
         /// The <see>Product</see> object for Warcraft 3: The Reign of Chaos.
         /// </summary>
-        public static readonly ClassicProduct Warcraft3Retail = new ClassicProduct("WAR3", "Warcraft III: The Reign of Chaos", true, false);
+        public static readonly ClassicProduct Warcraft3Retail = new ClassicProduct("WAR3", "Warcraft III: The Reign of Chaos", true, false, BnFtpVersion.Version2);
 
         /// <summary>
         /// The <see>Product</see> object for Warcraft 3: The Frozen Throne.
         /// </summary>
-        public static readonly ClassicProduct Warcraft3Expansion = new ClassicProduct("W3XP", "Warcraft III: The Frozen Throne", true, true);
+        public static readonly ClassicProduct Warcraft3Expansion = new ClassicProduct("W3XP", "Warcraft III: The Frozen Throne", true, true, BnFtpVersion.Version2);
 
         /// <summary>
         /// The <see>Product</see> object that represents any product unrecognized by BN#.
@@ -186,6 +189,11 @@ namespace BNSharp.BattleNet
         internal bool UsesUdpPing
         {
             get { return _usesUdp; }
+        }
+
+        internal BnFtpVersion AllowedBnFtpVersion
+        {
+            get { return _allowedFtpVersion; }
         }
 
         #region IEquatable<string> Members
