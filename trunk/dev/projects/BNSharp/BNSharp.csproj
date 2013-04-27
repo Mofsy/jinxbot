@@ -77,6 +77,7 @@
     <Compile Include="BattleNet\Ftp\BnFtpVersion1Request.cs" />
     <Compile Include="BattleNet\Ftp\BnFtpVersion2Request.cs" />
     <Compile Include="BattleNet\Gateway.cs" />
+    <Compile Include="BattleNet\IBattleNetChatConnection.cs" />
     <Compile Include="BattleNet\IBattleNetClient.cs" />
     <Compile Include="BattleNet\IBattleNetSettings.cs" />
     <Compile Include="BattleNet\UserFlags.cs" />

@@ -31,6 +31,8 @@ namespace BNSharp.Chat
             get;
         }
 
+        event EventHandler<ServerChatEventArgs> NewChannelJoined;
+
         event EventHandler<UserEventArgs<TChatUser>> UserShown;
         event EventHandler<UserEventArgs<TChatUser>> UserJoined;
         event EventHandler<UserEventArgs<TChatUser>> UserLeft;
@@ -44,6 +46,8 @@ namespace BNSharp.Chat
         where TChatUser : IChatUser
         where TUserFlags : struct
     {
+        void OnNewChannelJoined(ServerChatEventArgs args);
+
         void OnUserShown(UserEventArgs<TChatUser> args);
         void OnUserJoined(UserEventArgs<TChatUser> args);
         void OnUserLeft(UserEventArgs<TChatUser> args);

@@ -24,6 +24,10 @@ namespace BNSharp.Chat
         event EventHandler Connected;
         event EventHandler Disconnected;
         event EventHandler<string> MessageSent;
+
+        event EventHandler<ServerChatEventArgs> Broadcast;
+        event EventHandler<ServerChatEventArgs> ServerError;
+        event EventHandler<ServerChatEventArgs> ServerInformation;
     }
 
     public interface IChatConnectionEventSource
@@ -35,6 +39,10 @@ namespace BNSharp.Chat
         void OnConnected();
         void OnDisconnected();
         void OnMessageSent(string message);
+
+        void OnBroadcast(ServerChatEventArgs args);
+        void OnServerError(ServerChatEventArgs args);
+        void OnServerInformation(ServerChatEventArgs args);
     }
 #pragma warning restore 1591
 }
