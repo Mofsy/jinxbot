@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -294,7 +295,7 @@ namespace BNSharp.Networking
         /// <param name="startIndex"></param>
         /// <param name="length"></param>
         /// <returns></returns>
-        public async Task<NetworkBuffer> ReceiveAsync(NetworkBuffer partialDestination, int startIndex, int length)
+        public async Task<NetworkBuffer> ReceiveAsync(NetworkBuffer partialDestination, int startIndex, int length, bool assertHeader = false)
         {
             if (partialDestination == null)
                 throw new ArgumentNullException("partialDestination");
@@ -327,6 +328,9 @@ namespace BNSharp.Networking
                 }
             }
 
+            if (assertHeader)
+                Debug.Assert(partialDestination.UnderlyingBuffer[startIndex + partialDestination.StartingPosition] == 0xff);
+
             return partialDestination;
         }
 
@@ -357,7 +361,6 @@ namespace BNSharp.Networking
         public virtual async Task SendAsync(NetworkBuffer data, int length)
         {
             await SendAsync(data, 0, length);
-            _storage.Release(data);
         }
 
         /// <summary>

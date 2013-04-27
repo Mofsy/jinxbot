@@ -35,6 +35,11 @@ namespace BNSharp.BattleNet
             _ldValStr = null;
         }
 
+        private void HandleChatEvent(BncsReader dr)
+        {
+
+        }
+
         private async void HandleAuthInfo(BncsReader dr)
         {
             try

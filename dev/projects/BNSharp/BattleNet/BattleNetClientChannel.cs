@@ -107,30 +107,24 @@ namespace BNSharp.BattleNet
 
         private void HandleServerChatEvent(ServerChatEventArgs scArgs)
         {
-            //switch (scArgs.EventType)
-            //{
-            //    case ChatEventType.Broadcast:
-            //        OnServerBroadcast(scArgs);
-            //        break;
-            //    case ChatEventType.ChannelDNE:
-            //        OnChannelDidNotExist(scArgs);
-            //        break;
-            //    case ChatEventType.ChannelFull:
-            //        OnChannelWasFull(scArgs);
-            //        break;
-            //    case ChatEventType.ChannelRestricted:
-            //        OnChannelWasRestricted(scArgs);
-            //        break;
-            //    case ChatEventType.Error:
-            //        OnServerErrorReceived(scArgs);
-            //        break;
-            //    case ChatEventType.Information:
-            //        OnInformationReceived(scArgs);
-            //        break;
-            //}
+            switch (scArgs.EventType)
+            {
+                case ChatEventType.Broadcast:
+                    ((IChatConnectionEventSource)_client).OnBroadcast(scArgs);
+                    break;
+                case ChatEventType.ChannelDNE:
+                case ChatEventType.ChannelFull:
+                case ChatEventType.ChannelRestricted:
+                case ChatEventType.Error:
+                    ((IChatConnectionEventSource)_client).OnServerError(scArgs);
+                    break;
+                case ChatEventType.Information:
+                    ((IChatConnectionEventSource)_client).OnServerInformation(scArgs);
+                    break;
+            }
         }
 
-        private void HandleChatMessageEvent(ChatMessageEventArgs<UserFlags> cmArgs)
+        internal void HandleChatMessageEvent(ChatMessageEventArgs<UserFlags> cmArgs)
         {
             switch (cmArgs.EventType)
             {
@@ -140,12 +134,12 @@ namespace BNSharp.BattleNet
                 case ChatEventType.Talk:
                     OnUserSpoke(cmArgs);
                     break;
-                //case ChatEventType.WhisperReceived:
-                //    OnWhisperReceived(cmArgs);
-                //    break;
-                //case ChatEventType.WhisperSent:
-                //    OnWhisperSent(cmArgs);
-                //    break;
+                case ChatEventType.WhisperReceived:
+                    ((IBattleNetChatConnectionEventSource)_client).OnWhisperReceived(cmArgs);
+                    break;
+                case ChatEventType.WhisperSent:
+                    ((IBattleNetChatConnectionEventSource)_client).OnWhisperSent(cmArgs);
+                    break;
             }
         }
 
@@ -171,7 +165,7 @@ namespace BNSharp.BattleNet
 
         private void OnJoinedChannel(ServerChatEventArgs args)
         {
-            _channelName = args.Text;
+            ((IChannelEventSource<ChatUser, UserFlags>)this).OnNewChannelJoined(args);
         }
 
         #region IChannel<ChatUser,UserFlags> Members
@@ -185,6 +179,8 @@ namespace BNSharp.BattleNet
         {
             get { return _namesToUsers.Values.AsEnumerable(); }
         }
+
+        public event EventHandler<ServerChatEventArgs> NewChannelJoined;
 
         public event EventHandler<UserEventArgs<ChatUser>> UserShown;
 
@@ -207,6 +203,13 @@ namespace BNSharp.BattleNet
         #endregion
 
         #region IChannelEventSource<ChatUser,UserFlags> Members
+
+        void IChannelEventSource<ChatUser, UserFlags>.OnNewChannelJoined(ServerChatEventArgs args)
+        {
+            var tmp = NewChannelJoined;
+            if (tmp != null)
+                tmp(this, args);
+        }
 
         private void OnUserShown(UserEventArgs<ChatUser> args)
         {

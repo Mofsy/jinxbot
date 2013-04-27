@@ -60,6 +60,8 @@ namespace BNSharp.Networking
 
         public async void Release(NetworkBuffer buffer)
         {
+            DebugVerifyBufferIsNotAlreadyInList(buffer);
+
             if (ClearOnRelease)
                 await buffer.Clear();
 
@@ -69,6 +71,13 @@ namespace BNSharp.Networking
             {
                 _buffers.Push(buffer);
             }
+        }
+
+        [Conditional("DEBUG")]
+        [DebuggerStepThrough]
+        private void DebugVerifyBufferIsNotAlreadyInList(NetworkBuffer buffer)
+        {
+            Debug.Assert(!_buffers.Contains(buffer));
         }
     }
 }

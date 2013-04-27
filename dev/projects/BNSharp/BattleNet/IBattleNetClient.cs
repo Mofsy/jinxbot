@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace BNSharp.BattleNet
 {
     public interface IBattleNetClient : 
-        IChatConnection,
+        IBattleNetChatConnection,
         ISingleChannelClient<ChatUser, UserFlags>
     {
         IWardenModule WardenHandler { get; set; }

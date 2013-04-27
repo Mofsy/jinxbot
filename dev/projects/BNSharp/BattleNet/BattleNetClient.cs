@@ -17,13 +17,17 @@ namespace BNSharp.BattleNet
     /// <summary>
     /// 
     /// </summary>
-    public partial class BattleNetClient : IBattleNetClient, IChatConnectionEventSource, ISingleChannelClientEventSource<ChatUser>
+    public partial class BattleNetClient : IBattleNetClient, IBattleNetChatConnectionEventSource, ISingleChannelClientEventSource<ChatUser>
     {
         private AsyncConnectionBase _connection;
         private NetworkBufferStorage _storage;
         private IBattleNetSettings _settings;
         private Dictionary<BncsPacketId, ParseCallback> _packetToParserMap;
         private BattleNetClientChannel _channel;
+
+        const string EMOTE_1 = "/me ";
+        const string EMOTE_2 = "/emote ";
+        const string COMMAND_START = "/";
 
         /// <summary>
         /// 
@@ -57,7 +61,7 @@ namespace BNSharp.BattleNet
             {
                 //{ BncsPacketId.EnterChat, HandleEnterChat },
                 //{ BncsPacketId.GetChannelList, HandleGetChannelList },
-                //{ BncsPacketId.ChatEvent, HandleChatEvent },
+                { BncsPacketId.ChatEvent, HandleChatEvent },
                 //{ BncsPacketId.CheckAd, HandleCheckAd },
                 { BncsPacketId.Ping, HandlePing },
                 //{ BncsPacketId.ReadUserData, HandleUserProfileRequest },
@@ -154,7 +158,7 @@ namespace BNSharp.BattleNet
             while (_connection.IsConnected)
             {
                 NetworkBuffer nextPacket = _storage.Acquire();
-                NetworkBuffer result = await _connection.ReceiveAsync(nextPacket, 0, 4);
+                NetworkBuffer result = await _connection.ReceiveAsync(nextPacket, 0, 4, true);
                 if (result == null) return; // disconnected
                 BncsReader reader = new BncsReader(result);
                 
@@ -173,6 +177,7 @@ namespace BNSharp.BattleNet
                 }
 
                 DispatchPacketHandler(reader);
+                _storage.Release(nextPacket);
             }
         }
 
@@ -200,7 +205,28 @@ namespace BNSharp.BattleNet
 
         public void Send(string text)
         {
-            
+            if (IsConnected)
+            {
+                BncsPacket pck = new BncsPacket(BncsPacketId.ChatCommand, _storage.Acquire());
+                pck.InsertCString(text, Encoding.UTF8);
+                pck.SendAsync(_connection);
+
+                if (text.StartsWith(EMOTE_1, StringComparison.OrdinalIgnoreCase) || text.StartsWith(EMOTE_2, StringComparison.OrdinalIgnoreCase))
+                {
+                    // do nothing, but we need this case first so that command sent doesn't fire for emotes.
+                }
+                else if (text.StartsWith(COMMAND_START, StringComparison.Ordinal))
+                {
+                    //OnCommandSent(new InformationEventArgs(text));
+                }
+                else
+                {
+                    ChatMessageEventArgs<UserFlags> cme = new ChatMessageEventArgs<UserFlags>(ChatEventType.Talk, UserFlags.None, "(me)", text);
+                    _channel.HandleChatMessageEvent(cme);
+                    //ChatMessageEventArgs<UserFlags> cme = new ChatMessageEventArgs<UserFlags>(ChatEventType.Talk, UserFlags.None, this._uniqueUN, text);
+                    OnMessageSent(text);
+                }
+            }
         }
 
         public void CreateAccount(string accountName, string password)
@@ -283,83 +309,6 @@ namespace BNSharp.BattleNet
         /// Represents an error that occurred.
         /// </summary>
         public event EventHandler<ConnectionErrorEventArgs> ConnectionErrorOccurred;
-        #endregion
-
-        #region INotifyPropertyChanged Members
-
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-
-        #endregion
-
-        #region IChatConnectionEventSource Members
-
-        private void OnAccountCreated(AccountCreationEventArgs args)
-        {
-            ((IChatConnectionEventSource)this).OnAccountCreated(args);
-        }
-
-        void IChatConnectionEventSource.OnAccountCreated(AccountCreationEventArgs args)
-        {
-            var tmp = this.AccountCreated;
-            if (tmp != null) tmp(this, args);
-        }
-
-        private void OnAccountCreationFailed(AccountCreationFailedEventArgs args)
-        {
-            ((IChatConnectionEventSource)this).OnAccountCreationFailed(args);
-        }
-
-        void IChatConnectionEventSource.OnAccountCreationFailed(AccountCreationFailedEventArgs args)
-        {
-            var tmp = this.AccountCreationFailed;
-            if (tmp != null) tmp(this, args);
-        }
-
-        private void OnConnected()
-        {
-            ((IChatConnectionEventSource)this).OnConnected();
-        }
-
-        void IChatConnectionEventSource.OnConnected()
-        {
-            var temp = this.Connected;
-            if (temp != null)
-                temp(this, EventArgs.Empty);
-        }
-
-        private void OnDisconnected()
-        {
-            ((IChatConnectionEventSource)this).OnDisconnected();
-        }
-
-        void IChatConnectionEventSource.OnDisconnected()
-        {
-            var temp = this.Disconnected;
-            if (temp != null)
-                temp(this, EventArgs.Empty);
-        }
-
-        private void OnMessageSent(string message)
-        {
-            ((IChatConnectionEventSource)this).OnMessageSent(message);
-        }
-
-        void IChatConnectionEventSource.OnMessageSent(string message)
-        {
-            var temp = this.MessageSent;
-            if (temp != null)
-                temp(this, message);
-        }
-
-        #endregion
-
-        #region ISingleChannelClientEventSource<ChatUser> Members
-
-        void ISingleChannelClientEventSource<ChatUser>.OnPropertyChanged(string propertyName)
-        {
-            throw new NotImplementedException();
-        }
-
         #endregion
 
         public IWardenModule WardenHandler { get; set; }
