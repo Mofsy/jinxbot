@@ -51,6 +51,14 @@ namespace BNSharp.Networking
             }
         }
 
+        internal byte[] CoreUnderlyingData
+        {
+            get
+            {
+                return _data;
+            }
+        }
+
         #region ctors
         /// <summary>
         /// Creates a new data reader with the specified byte array.

@@ -61,6 +61,7 @@
     <Compile Include="BattleNet\Core\CheckRevisionFormulaTracker.cs" />
     <Compile Include="BattleNet\Core\CheckRevisionStream.cs" />
     <Compile Include="BattleNet\Core\HeapPtr.cs" />
+    <Compile Include="BattleNet\Core\InternalExtensions.cs" />
     <Compile Include="BattleNet\Core\LockdownCrev.cs" />
     <Compile Include="BattleNet\Core\LockdownHeap.cs" />
     <Compile Include="BattleNet\Core\LockdownSha1.cs" />
@@ -72,6 +73,7 @@
     <Compile Include="BattleNet\Core\PeFileReader.cs" />
     <Compile Include="BattleNet\Core\XSha1.cs" />
     <Compile Include="BattleNet\Ftp\BnFtpRequestBase.cs" />
+    <Compile Include="BattleNet\Ftp\BnFtpVersion.cs" />
     <Compile Include="BattleNet\Ftp\BnFtpVersion1Request.cs" />
     <Compile Include="BattleNet\Ftp\BnFtpVersion2Request.cs" />
     <Compile Include="BattleNet\Gateway.cs" />

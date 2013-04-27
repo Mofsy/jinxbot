@@ -1,32 +1,14 @@
-﻿/*
-MBNCSUtil -- Managed Battle.net Authentication Library
-Copyright (C) 2005-2008 by Robert Paveza
-
-Redistribution and use in source and binary forms, with or without modification, 
-are permitted provided that the following conditions are met: 
-
-1.) Redistributions of source code must retain the above copyright notice, 
-this list of conditions and the following disclaimer. 
-2.) Redistributions in binary form must reproduce the above copyright notice, 
-this list of conditions and the following disclaimer in the documentation 
-and/or other materials provided with the distribution. 
-3.) The name of the author may not be used to endorse or promote products derived 
-from this software without specific prior written permission. 
-	
-See LICENSE.TXT that should have accompanied this software for full terms and 
-conditions.
-
-*/
-
-
+﻿using BNSharp.Networking;
 using System;
-using System.IO;
-using System.Text;
-using System.Security.Cryptography;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Numerics;
-using BNSharp.Networking;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace BNSharp.BattleNet.Core
 {
@@ -40,7 +22,6 @@ namespace BNSharp.BattleNet.Core
     /// its values are being modified in the appropriate sequence;
     /// the NLS authorization scheme is left up to the consumer.</para>
     /// </remarks>
-    /// <threadsafety>This type is safe for all multithreaded operations.</threadsafety>
     public sealed class NLS
     {
         #region constants
@@ -66,8 +47,8 @@ namespace BNSharp.BattleNet.Core
         private static readonly SHA1 s_sha = new SHA1Managed();
         private static readonly RandomNumberGenerator s_rand =
             new RNGCryptoServiceProvider();
-        private static readonly BigInteger s_modulus = BigInteger.Parse(Modulus, NumberStyles.HexNumber); //new BigInteger(Modulus, 16);
-        private static readonly BigInteger s_generator = new BigInteger((ulong)47);
+        private static readonly BigInteger s_modulus = BigInteger.Parse(Modulus, NumberStyles.HexNumber);
+        private static readonly BigInteger s_generator = new BigInteger(Generator);
         #endregion
         #region fields
         private string userName, password;
@@ -78,18 +59,18 @@ namespace BNSharp.BattleNet.Core
         /// <summary>
         /// Creates a new NLS login context.
         /// </summary>
-        /// <param name="Username">The username to use for authentication.</param>
-        /// <param name="Password">The password to use for authentication.</param>
+        /// <param name="username">The username to use for authentication.</param>
+        /// <param name="password">The password to use for authentication.</param>
         /// <remarks>
         /// This type does not validate the sequence from moving from one message to the next.  Ensure that you
         /// have the correct sequence of calls.
         /// </remarks>
         /// <returns>An NLS context ID.</returns>
-        public NLS(string Username, string Password)
+        public NLS(string username, string password)
         {
-            userName = Username;
+            userName = username;
             userNameAscii = Encoding.ASCII.GetBytes(userName);
-            password = Password;
+            password = password;
 
             byte[] rand_a = new byte[32];
             s_rand.GetNonZeroBytes(rand_a);
@@ -97,7 +78,6 @@ namespace BNSharp.BattleNet.Core
             a %= s_modulus;
 
             a = new BigInteger(ReverseArray(a.ToByteArray()));
-            //A = s_generator.ModPow(a, s_modulus);
             A = new BigInteger(ReverseArray(BigInteger.ModPow(s_generator, a, s_modulus).ToByteArray()));
         }
         #endregion
@@ -120,24 +100,26 @@ namespace BNSharp.BattleNet.Core
         public bool VerifyServerProof(byte[] serverProof)
         {
             if (serverProof.Length != 20)
-                throw new ArgumentOutOfRangeException("serverProof", serverProof, "The server proof must be exactly 20 bytes in length.");
+                throw new ArgumentOutOfRangeException("Server proof must be exactly 20 bytes.");
 
-            MemoryStream ms_m2 = new MemoryStream(92);
-            BinaryWriter bw = new BinaryWriter(ms_m2);
-            bw.Write(EnsureArrayLength(A.ToByteArray(), 32));
-            bw.Write(m1.ToByteArray());
-            bw.Write(k);
-            byte[] client_m2_data = ms_m2.GetBuffer();
-            ms_m2.Close();
+            using (MemoryStream ms_m2 = new MemoryStream(92))
+            {
+                BinaryWriter bw = new BinaryWriter(ms_m2);
+                bw.Write(EnsureArrayLength(A.ToByteArray(), 32));
+                bw.Write(m1.ToByteArray());
+                bw.Write(k);
+                byte[] client_m2_data = ms_m2.GetBuffer();
+                ms_m2.Close();
 
-            byte[] client_hash_m2 = s_sha.ComputeHash(client_m2_data);
-            BigInteger client_m2 = new BigInteger(client_hash_m2);
-            BigInteger server_m2 = new BigInteger(serverProof);
+                byte[] client_hash_m2 = s_sha.ComputeHash(client_m2_data);
+                BigInteger client_m2 = new BigInteger(client_hash_m2);
+                BigInteger server_m2 = new BigInteger(serverProof);
 
-            Debug.WriteLine(client_m2.ToString("x"), "Client");
-            Debug.WriteLine(server_m2.ToString("x"), "Server");
+                Debug.WriteLine(client_m2.ToHexString(), "Client");
+                Debug.WriteLine(server_m2.ToHexString(), "Server");
 
-            return client_m2.Equals(server_m2);
+                return client_m2.Equals(server_m2);
+            }
         }
         #endregion
         #region login proof
@@ -164,12 +146,12 @@ namespace BNSharp.BattleNet.Core
         public int LoginProof(Stream stream, byte[] serverSalt, byte[] serverRandomKey)
         {
             if (serverSalt.Length != 32)
-                throw new ArgumentOutOfRangeException("salt", serverSalt, "The salt value was not 32 bytes.");
+                throw new ArgumentOutOfRangeException("serverSalt", serverSalt, "Server salt must be exactly 32 bytes.");
             if (serverRandomKey.Length != 32)
-                throw new ArgumentOutOfRangeException("serverKey", serverRandomKey, "The server key was not 32 bytes.");
+                throw new ArgumentOutOfRangeException("serverRandomKey", serverRandomKey, "Server key must be exactly 32 bytes.");
 
             if (stream.Position + 20 > stream.Length)
-                throw new IOException("There is insufficient space in the data buffer for the account login proof packet.");
+                throw new IOException("The stream does not have enough capacity.");
 
             CalculateM1(serverSalt, serverRandomKey);
 
@@ -204,8 +186,10 @@ namespace BNSharp.BattleNet.Core
         /// <returns>The total number of bytes written to the buffer.</returns>
         public int LoginProof(byte[] buffer, int startIndex, int totalLength, byte[] serverSalt, byte[] serverKey)
         {
-            MemoryStream ms = new MemoryStream(buffer, startIndex, totalLength, true);
-            return LoginProof(ms, serverSalt, serverKey);
+            using (MemoryStream ms = new MemoryStream(buffer, startIndex, totalLength, true))
+            {
+                return LoginProof(ms, serverSalt, serverKey);
+            }
         }
 
         /// <summary>
@@ -253,7 +237,7 @@ namespace BNSharp.BattleNet.Core
         public int LoginAccount(Stream stream)
         {
             if ((stream.Position + 33 + userNameAscii.Length) > stream.Length)
-                throw new IOException("There is insufficient space in the data buffer for the account login packet.");
+                throw new IOException("The stream does not have enough capacity.");
 
             stream.Write(EnsureArrayLength(A.ToByteArray(), 32), 0, 32);
             stream.Write(userNameAscii, 0, userNameAscii.Length);
@@ -325,7 +309,7 @@ namespace BNSharp.BattleNet.Core
         public int CreateAccount(Stream stream)
         {
             if ((stream.Position + 65 + userNameAscii.Length) > stream.Length)
-                throw new IOException("There is insufficient space in the data buffer for the account creation packet.");
+                throw new IOException("The stream does not have enough capacity.");
 
             byte[] clientSalt = new byte[32];
             s_rand.GetNonZeroBytes(clientSalt);
@@ -379,8 +363,10 @@ namespace BNSharp.BattleNet.Core
         /// <returns>The total number of bytes written to the buffer.</returns>
         public int CreateAccount(byte[] buffer, int startIndex, int totalLength)
         {
-            MemoryStream ms = new MemoryStream(buffer, startIndex, totalLength, true);
-            return CreateAccount(ms);
+            using (MemoryStream ms = new MemoryStream(buffer, startIndex, totalLength, true))
+            {
+                return CreateAccount(ms);
+            }
         }
         #endregion
         #region warcraft 3 server verifier (static)
@@ -401,7 +387,7 @@ namespace BNSharp.BattleNet.Core
             // code based on iago's code.
 
             if (serverSignature.Length != 128)
-                throw new ArgumentOutOfRangeException("The server signature must be exactly 128 bytes in length.");
+                throw new ArgumentOutOfRangeException("The server signature must be exactly 128 bytes long.");
 
             BigInteger key = new BigInteger(new byte[] { 0, 1, 0, 1 } /* ReverseArray(new BigInteger((ulong)SignatureKey).GetBytes()) */);
             BigInteger mod = BigInteger.Parse(ServerModulus, NumberStyles.HexNumber);
@@ -410,18 +396,20 @@ namespace BNSharp.BattleNet.Core
             byte[] result = BigInteger.ModPow(sig, key, mod).ToByteArray();
             BigInteger res = new BigInteger(ReverseArray(result));
 
-            MemoryStream ms_res = new MemoryStream(result.Length);
-            ms_res.Write(ipAddress, 0, 4);
-            for (int i = 4; i < result.Length; i++)
-                ms_res.WriteByte(0xbb);
+            using (MemoryStream ms_res = new MemoryStream(result.Length))
+            {
+                ms_res.Write(ipAddress, 0, 4);
+                for (int i = 4; i < result.Length; i++)
+                    ms_res.WriteByte(0xbb);
 
-            ms_res.Seek(-1, SeekOrigin.Current);
-            ms_res.WriteByte(0x0b);
+                ms_res.Seek(-1, SeekOrigin.Current);
+                ms_res.WriteByte(0x0b);
 
-            BigInteger cor_res = new BigInteger(ms_res.GetBuffer());
-            ms_res.Close();
+                BigInteger cor_res = new BigInteger(ms_res.GetBuffer());
+                return cor_res.Equals(res);
+            }
 
-            return cor_res.Equals(res);
+            
         }
         #endregion
         #region private methods
@@ -457,7 +445,8 @@ namespace BNSharp.BattleNet.Core
 
             // first calculate u.
             byte[] u_sha = s_sha.ComputeHash(issuedServerKey);
-            BigInteger u = new BigInteger(BitConverter.ToUInt32(u_sha, 0)); // previous call was new BigInteger(u_sha, 4)
+            //BigInteger u = new BigInteger(u_sha, 4);
+            BigInteger u = new BigInteger(u_sha);
 
             if (verifier == null)
                 CalculateVerifier(saltFromServer);
@@ -496,25 +485,23 @@ namespace BNSharp.BattleNet.Core
             BigInteger sha_n = new BigInteger(s_sha.ComputeHash(ReverseArray(s_modulus.ToByteArray())));
             BigInteger g_xor_n = sha_g ^ sha_n;
 
-            MemoryStream ms = new MemoryStream(40 + saltFromServer.Length + A.ToByteArray().Length + issuedServerKey.Length + local_k.Length);
-            BinaryWriter bw = new BinaryWriter(ms);
-            bw.Write(g_xor_n.ToByteArray());
-            bw.Write(s_sha.ComputeHash(Encoding.ASCII.GetBytes(userName.ToUpper(CultureInfo.InvariantCulture))));
-            bw.Write(saltFromServer);
-            bw.Write(EnsureArrayLength(A.ToByteArray(), 32));
-#if DEBUG
-            if (A.ToByteArray().Length < 32)
-                DataFormatter.WriteToTrace(A.ToByteArray(), "A length less than 32 bytes");
-#endif
-            bw.Write(issuedServerKey);
-            bw.Write(local_k);
-
-            byte[] m1_data = ms.GetBuffer();
-            ms.Close();
-            byte[] m1_hash = s_sha.ComputeHash(m1_data);
-
-            lock (this)
+            using (MemoryStream ms = new MemoryStream(40 + saltFromServer.Length + A.ToByteArray().Length + issuedServerKey.Length + local_k.Length))
             {
+                BinaryWriter bw = new BinaryWriter(ms);
+                bw.Write(g_xor_n.ToByteArray());
+                bw.Write(s_sha.ComputeHash(Encoding.ASCII.GetBytes(userName.ToUpper(CultureInfo.InvariantCulture))));
+                bw.Write(saltFromServer);
+                bw.Write(EnsureArrayLength(A.ToByteArray(), 32));
+#if DEBUG
+                if (A.ToByteArray().Length < 32)
+                    DataFormatter.WriteToTrace(A.ToByteArray(), "A length less than 32 bytes");
+#endif
+                bw.Write(issuedServerKey);
+                bw.Write(local_k);
+
+                byte[] m1_data = ms.GetBuffer();
+                byte[] m1_hash = s_sha.ComputeHash(m1_data);
+
                 this.k = local_k;
                 //this.salt = saltFromServer;
                 //this.serverKey = issuedServerKey;
