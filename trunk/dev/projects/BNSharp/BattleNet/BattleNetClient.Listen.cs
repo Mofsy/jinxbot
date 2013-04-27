@@ -23,6 +23,12 @@ namespace BNSharp.BattleNet
         private bool _usingLockdown;
         private byte[] _ldValStr, _ldDigest, _w3srv;
         private NLS _nls;
+        private bool _firstChannelList;
+
+        private BncsPacket CreatePacket(BncsPacketId id)
+        {
+            return new BncsPacket(id, _connection.NetworkBuffers.Acquire());
+        }
 
         private void ResetState()
         {
@@ -33,6 +39,7 @@ namespace BNSharp.BattleNet
             _versioningFilename = null;
             _usingLockdown = false;
             _ldValStr = null;
+            _firstChannelList = false;
         }
 
         private void HandleChatEvent(BncsReader dr)
@@ -406,26 +413,26 @@ namespace BNSharp.BattleNet
             {
                 RequestChannelList();
 
-                BncsPacket pckJoinChannel = new BncsPacket(BncsPacketId.JoinChannel, _storage.Acquire());
-                string client = "Starcraft";
-                switch (_settings.Client.ProductCode)
-                {
-                    case "SEXP":
-                        client = "Brood War";
-                        break;
-                    case "W2BN":
-                        client = "Warcraft II BNE";
-                        break;
-                    case "D2DV":
-                        client = "Diablo II";
-                        break;
-                    case "D2XP":
-                        client = "Lord of Destruction";
-                        break;
-                }
-                pckJoinChannel.InsertInt32((int)ChannelJoinFlags.FirstJoin);
-                pckJoinChannel.InsertCString(client);
-                await pckJoinChannel.SendAsync(_connection);
+                //BncsPacket pckJoinChannel = new BncsPacket(BncsPacketId.JoinChannel, _storage.Acquire());
+                //string client = "Starcraft";
+                //switch (_settings.Client.ProductCode)
+                //{
+                //    case "SEXP":
+                //        client = "Brood War";
+                //        break;
+                //    case "W2BN":
+                //        client = "Warcraft II BNE";
+                //        break;
+                //    case "D2DV":
+                //        client = "Diablo II";
+                //        break;
+                //    case "D2XP":
+                //        client = "Lord of Destruction";
+                //        break;
+                //}
+                //pckJoinChannel.InsertInt32((int)ChannelJoinFlags.FirstJoin);
+                //pckJoinChannel.InsertCString(client);
+                //await pckJoinChannel.SendAsync(_connection);
             }
 
             if (isClientWar3 || isClientStar)
@@ -442,6 +449,50 @@ namespace BNSharp.BattleNet
             BncsPacket pckChanReq = new BncsPacket(BncsPacketId.GetChannelList, _storage.Acquire());
             pckChanReq.InsertDwordString(_settings.Client.ProductCode);
             await pckChanReq.SendAsync(_connection);
+        }
+
+        private async void HandleGetChannelList(BncsReader dr)
+        {
+            List<string> channelList = new List<string>();
+            string channel;
+            do
+            {
+                channel = dr.ReadCString();
+                if (!string.IsNullOrEmpty(channel))
+                    channelList.Add(channel);
+            } while (!string.IsNullOrEmpty(channel));
+
+            ChannelListEventArgs e = new ChannelListEventArgs(channelList.ToArray());
+            ((IChatConnectionEventSource)this).OnChannelListReceived(e);
+
+            if (!_firstChannelList)
+            {
+                _firstChannelList = true;
+
+                BncsPacket pckJoinChan = CreatePacket(BncsPacketId.JoinChannel);
+                if (_settings.Client == ClassicProduct.Diablo2Retail || _settings.Client == ClassicProduct.Diablo2Expansion)
+                    pckJoinChan.InsertInt32((int)ChannelJoinFlags.Diablo2FirstJoin);
+                else
+                    pckJoinChan.InsertInt32((int)ChannelJoinFlags.FirstJoin);
+
+                switch (_settings.Client.ProductCode)
+                {
+                    case "STAR":
+                    case "SEXP":
+                    case "W2BN":
+                    case "D2DV":
+                    case "D2XP":
+                    case "JSTR":
+                        pckJoinChan.InsertCString(_settings.Client.ProductCode);
+                        break;
+                    case "WAR3":
+                    case "W3XP":
+                        pckJoinChan.InsertCString("W3");
+                        break;
+                }
+
+                await pckJoinChan.SendAsync(_connection);
+            }
         }
     }
 }

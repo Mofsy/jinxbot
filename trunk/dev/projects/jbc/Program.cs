@@ -36,6 +36,7 @@ namespace jbc
             console.OutputBackgroundColor = ConsoleColor.Black;
             console.OutputForegroundColor = ConsoleColor.White;
             console.InputBackgroundColor = ConsoleColor.Black;
+            console.WindowWidth = 200;
             console.Clear();
 
             var client = new BattleNetClient(_settings);
@@ -61,7 +62,7 @@ namespace jbc
             client.Broadcast += client_Broadcast;
             client.WhisperReceived += client_WhisperReceived;
             client.WhisperSent += client_WhisperSent;
-
+            client.ChannelListReceived += client_ChannelListReceived;
 
             client.ConnectAsync();
 
@@ -74,6 +75,18 @@ namespace jbc
                     case "/clear":
                         console.Clear();
                         break;
+                    case "/channel-list":
+                    case "/cl":
+                        if (_channel != null)
+                        {
+                            client_ChannelListReceived(client, _channel);
+                        }
+                        else
+                        {
+                            console.OutputForegroundColor = ConsoleColor.Red;
+                            console.WriteLine("The channel list has not yet been received.");
+                        }
+                        break;
                     case "/quit":
                         client.Disconnect();
                         break;
@@ -85,6 +98,21 @@ namespace jbc
             while (lastInput != "/quit");
 
             _ended.Set();
+        }
+
+        private static ChannelListEventArgs _channel;
+
+        static void client_ChannelListReceived(object sender, ChannelListEventArgs e)
+        {
+            _channel = e;
+            PrintTidTs(DateTime.Now);
+            console.OutputForegroundColor = ConsoleColor.Yellow;
+            console.WriteLine("Available channels:");
+            console.OutputForegroundColor = ConsoleColor.Cyan;
+            foreach (string name in e.Channels)
+            {
+                console.WriteLine(" - {0}", name);
+            }
         }
 
         static void Channel_NewChannelJoined(object sender, ServerChatEventArgs e)

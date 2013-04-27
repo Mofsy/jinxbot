@@ -28,6 +28,7 @@ namespace BNSharp.Chat
         event EventHandler<ServerChatEventArgs> Broadcast;
         event EventHandler<ServerChatEventArgs> ServerError;
         event EventHandler<ServerChatEventArgs> ServerInformation;
+        event EventHandler<ChannelListEventArgs> ChannelListReceived;
     }
 
     public interface IChatConnectionEventSource
@@ -43,6 +44,7 @@ namespace BNSharp.Chat
         void OnBroadcast(ServerChatEventArgs args);
         void OnServerError(ServerChatEventArgs args);
         void OnServerInformation(ServerChatEventArgs args);
+        void OnChannelListReceived(ChannelListEventArgs args);
     }
 #pragma warning restore 1591
 }
