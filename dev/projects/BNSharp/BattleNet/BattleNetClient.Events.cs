@@ -79,6 +79,8 @@ namespace BNSharp.BattleNet
 
         public event EventHandler<ServerChatEventArgs> ServerInformation;
 
+        public event EventHandler<ChannelListEventArgs> ChannelListReceived;
+
         #endregion
 
         #region IBattleNetChatConnectionEventSource Members
@@ -119,6 +121,13 @@ namespace BNSharp.BattleNet
         void IChatConnectionEventSource.OnServerInformation(ServerChatEventArgs args)
         {
             var tmp = ServerInformation;
+            if (tmp != null)
+                tmp(this, args);
+        }
+
+        void IChatConnectionEventSource.OnChannelListReceived(ChannelListEventArgs args)
+        {
+            var tmp = ChannelListReceived;
             if (tmp != null)
                 tmp(this, args);
         }

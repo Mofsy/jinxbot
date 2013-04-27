@@ -84,6 +84,7 @@
     <Compile Include="BattleNet\WarcraftCommands.cs" />
     <Compile Include="Chat\AccountCreationEventArgs.cs" />
     <Compile Include="Chat\AccountCreationFailedEventArgs.cs" />
+    <Compile Include="Chat\ChannelListEventArgs.cs" />
     <Compile Include="Chat\ChatEventArgs.cs" />
     <Compile Include="Chat\ChatEventType.cs" />
     <Compile Include="Chat\ChatMessageEventArgs.cs" />

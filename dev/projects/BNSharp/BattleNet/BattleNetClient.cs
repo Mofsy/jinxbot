@@ -60,7 +60,7 @@ namespace BNSharp.BattleNet
             _packetToParserMap = new Dictionary<BncsPacketId, ParseCallback>()
             {
                 //{ BncsPacketId.EnterChat, HandleEnterChat },
-                //{ BncsPacketId.GetChannelList, HandleGetChannelList },
+                { BncsPacketId.GetChannelList, HandleGetChannelList },
                 { BncsPacketId.ChatEvent, HandleChatEvent },
                 //{ BncsPacketId.CheckAd, HandleCheckAd },
                 { BncsPacketId.Ping, HandlePing },
